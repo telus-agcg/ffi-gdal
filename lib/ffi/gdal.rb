@@ -449,5 +449,97 @@ module FFI
     attach_function :GDALGetRasterColorTable,
       [:GDALRasterBandH],
       :GDALColorTableH
+
+    attach_function :GDALHasArbitraryOverviews, [:GDALRasterBandH], :int
+    attach_function :GDALGetOverviewCount, [:GDALRasterBandH], :int
+    attach_function :GDALGetOverview, [:GDALRasterBandH, :int], :GDALRasterBandH
+    attach_function :GDALGetRasterNoDataValue,
+      [:GDALRasterBandH, :pointer],
+      :double
+    attach_function :GDALSetRasterNoDataValue,
+      [:GDALRasterBandH, :double],
+      CPLErr
+    attach_function :GDALGetRasterCategoryNames,
+      [:GDALRasterBandH],
+      :pointer
+    attach_function :GDALSetRasterCategoryNames,
+      [:GDALRasterBandH, :pointer],
+      CPLErr
+    attach_function :GDALGetRasterMinimum,
+      [:GDALRasterBandH, :pointer],
+      :double
+    attach_function :GDALGetRasterMaximum,
+      [:GDALRasterBandH, :pointer],
+      :double
+    attach_function :GDALGetRasterStatistics,
+      [:GDALRasterBandH, :int, :int, :pointer, :pointer, :pointer, :pointer],
+      CPLErr
+    attach_function :GDALComputeRasterStatistics,
+      [
+        :GDALRasterBandH,
+        :int,
+        :int,
+        :pointer,
+        :pointer,
+        :pointer,
+        :pointer,
+        :GDALProgressFunc,
+        :pointer
+      ], CPLErr
+    attach_function :GDALSetRasterStatistics,
+      [:GDALRasterBandH, :double, :double, :double, :double],
+      CPLErr
+    attach_function :GDALGetRasterUnitType, [:GDALRasterBandH], :string
+    attach_function :GDALSetRasterUnitType, [:GDALRasterBandH, :string], CPLErr
+    attach_function :GDALGetRasterOffset, [:GDALRasterBandH, :pointer], :double
+    attach_function :GDALSetRasterOffset, [:GDALRasterBandH, :double], CPLErr
+    attach_function :GDALGetRasterScale, [:GDALRasterBandH, :pointer], :double
+    attach_function :GDALSetRasterScale, [:GDALRasterBandH, :double], CPLErr
+    attach_function :GDALComputeRasterMinMax,
+      [:GDALRasterBandH, :int, :pointer],
+      :void
+    attach_function :GDALFlushRasterCache, [:GDALRasterBandH], CPLErr
+    attach_function :GDALGetRasterHistogram,
+      [
+        :GDALRasterBandH,
+        :double,
+        :double,
+        :int,
+        :pointer,
+        :int,
+        :int,
+        :GDALProgressFunc,
+        :pointer
+      ], CPLErr
+
+    attach_function :GDALGetDefaultHistogram,
+      [
+        :GDALRasterBandH,
+        :pointer,
+        :pointer,
+        :pointer,
+        :pointer,
+        :int,
+        :GDALProgressFunc,
+        :pointer
+      ], CPLErr
+    attach_function :GDALSetDefaultHistogram,
+      [
+        :GDALRasterBandH,
+        :double,
+        :double,
+        :int,
+        :pointer
+      ], CPLErr
+
+    attach_function :GDALGetRandomRasterSample,
+      [:GDALRasterBandH, :int, :pointer],
+      :int
+    attach_function :GDALGetRasterSampleOverview,
+      [:GDALRasterBandH, :int],
+      :GDALRasterBandH
+    attach_function :GDALFillRaster,
+      [:GDALRasterBandH, :double, :double],
+      CPLErr
   end
 end
