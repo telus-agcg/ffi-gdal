@@ -1,5 +1,6 @@
 require 'ffi'
 require_relative 'gdal/version'
+require_relative 'gdal/cpl_conv'
 require_relative 'gdal/cpl_error'
 require_relative 'gdal/ogr_core'
 require_relative 'gdal/ogr_api'
@@ -11,6 +12,7 @@ module FFI
     ffi_lib 'gdal'
 
     include CPLError
+    include CPLConv
     include OGRCore
     include OGRAPI
     include OGRSRSAPI
@@ -60,86 +62,84 @@ module FFI
     end
 
     def gdal_check_version(psz_calling_component_name)
-
     end
-
 
     #-----------------------------------------------------------------
     # Enums
     #-----------------------------------------------------------------
-    GDALDataType = enum :unknown, 0,
-      :byte,        1,
-      :uint16,      2,
-      :int16,       3,
-      :uint32,      4,
-      :int32,       5,
-      :float32,     6,
-      :float64,     7,
-      :cint16,      8,
-      :cint32,      9,
-      :cfloat32,   10,
-      :cfloat64,   11,
-      :type_count, 12
+    GDALDataType = enum :GDT_Unknown, 0,
+      :GDT_Byte,        1,
+      :GDT_UInt16,      2,
+      :GDT_Int16,       3,
+      :GDT_UInt32,      4,
+      :GDT_Int32,       5,
+      :GDT_Float32,     6,
+      :GDT_Float64,     7,
+      :GDT_CInt16,      8,
+      :GDT_CInt32,      9,
+      :GDT_CFloat32,    10,
+      :GDT_CFloat64,    11,
+      :GDT_TypeCount,   12
 
-    GDALAsyncStatusType = enum :pending, 0,
-      :update,     1,
-      :error,      2,
-      :complete,   3,
-      :type_count, 4
+    GDALAsyncStatusType = enum :GARIO_PENDING, 0,
+      :GARIO_UPDATE,     1,
+      :GARIO_ERROR,      2,
+      :GARIO_COMPLETE,   3,
+      :GARIO_TypeCount,  4
 
-    GDALAccess = enum :read_only, 0,
-      :update, 1
+    GDALAccess = enum :GA_ReadOnly, 0,
+      :GA_update, 1
 
-    GDALRWFlag = enum :read, 0,
-      :write, 1
+    GDALRWFlag = enum :GF_Read, 0,
+      :GF_Write, 1
 
-    GDALColorInterp = enum :undefined, 0,
-      :gray_index,      1,
-      :palette_index,   2,
-      :red_band,        3,
-      :green_band,      4,
-      :blue_band,       5,
-      :alpha_band,      6,
-      :hue_band,        7,
-      :saturation_band, 8,
-      :lightness_band,  9,
-      :cyan_band,       10,
-      :magenta_band,    11,
-      :yellow_band,     12,
-      :black_band,      13,
-      :ycbcr_y_band,    14,
-      :ycbcr_cb_band,   15,
-      :ycbcr_cr_band,   16,
-      :max, 16      # Seems wrong that this is also 16...
+    GDALColorInterp = enum :GCI_Undefined, 0,
+      :GCI_GrayIndex,      1,
+      :GCI_PaletteIndex,   2,
+      :GCI_RedBand,        3,
+      :GCI_GreenBand,      4,
+      :GCI_BlueBand,       5,
+      :GCI_AlphaBand,      6,
+      :GCI_HueBand,        7,
+      :GCI_SaturationBand, 8,
+      :GCI_LightnessBand,  9,
+      :GCI_CyanBand,       10,
+      :GCI_MagentaBand,    11,
+      :GCI_YellowBand,     12,
+      :GCI_BlackBand,      13,
+      :GCI_YCbCr_YBand,    14,
+      :GCI_YCbCr_CbBand,   15,
+      :GCI_YCbCr_CrBand,   16,
+      :GCI_Max, 16      # Seems wrong that this is also 16...
 
-    GDALPaletteInterp = enum :gray, 0,
-      :rgb, 1,
-      :cmyk, 2,
-      :hls, 3
+    GDALPaletteInterp = enum :GPI_Gray, 0,
+      :GPI_RGB,   1,
+      :GPI_CMYK,  2,
+      :GPI_HLS,   3
 
-    GDALRATFieldUsage = enum :generic, 0,
-      :pixel_count, 1,
-      :name,        2,
-      :min,         3,
-      :max,         4,
-      :min_max,     5,
-      :red,         6,
-      :green,       7,
-      :blue,        8,
-      :alpha,       9,
-      :red_min,     10,
-      :green_min,   11,
-      :blue_min,    12,
-      :alpha_min,   13,
-      :red_max,     14,
-      :green_max,   15,
-      :blue_max,    16,
-      :alpha_max,   17,
-      :max_count
+    GDALRATFieldUsage = enum :GFU_Generic, 0,
+      :GFU_PixelCount,  1,
+      :GFU_Name,        2,
+      :GFU_Min,         3,
+      :GFU_Max,         4,
+      :GFU_MinMax,      5,
+      :GFU_Red,         6,
+      :GFU_Green,       7,
+      :GFU_Blue,        8,
+      :GFU_Alpha,       9,
+      :GFU_RedMin,     10,
+      :GFU_GreenMin,   11,
+      :GFU_BlueMin,    12,
+      :GFU_AlphaMin,   13,
+      :GFU_RedMax,     14,
+      :GFU_GreenMax,   15,
+      :GFU_BlueMax,    16,
+      :GFU_AlphaMax,   17,
+      :GFU_MaxCount
 
-    GDALTileOrganization = enum :tip,
-      :bit,
-      :bsq
+    GDALTileOrganization = enum :GTO_TIP,
+      :GTO_BIT,
+      :GTO_BSQ
 
     #-----------------------------------------------------------------
     # typedefs

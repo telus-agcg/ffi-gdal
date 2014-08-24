@@ -15,7 +15,7 @@ file_name = File.expand_path(name, dir)
 puts "file name: #{file_name}"
 
 FFI::GDAL.GDALAllRegister
-dataset = GDALOpen(file_name, :read_only)
+dataset = GDALOpen(file_name, :GA_ReadOnly)
 
 abort 'file was not compatible' if dataset.null?
 puts "dataset: #{dataset}"
@@ -78,3 +78,24 @@ unless raster_color_table.null?
   puts "Band has a color table with #{raster_color_table} entries."
 end
 
+
+#-------------------
+# Reading Raster Data
+#-------------------
+x_size = GDALGetRasterBandXSize(raster_band)
+#paf_scanline = FFI::MemoryPointer.new(:float, CPLMalloc(FFI.type_size(FFI::Type::INT)))
+paf_scanline = FFI::MemoryPointer.new(:float, x_size)
+GDALRasterIO(raster_band,
+  :GF_Read,
+  0,
+  0,
+  x_size,
+  1,
+  paf_scanline,
+  x_size,
+  1,
+  :GDT_Float32,
+  0,
+  0)
+
+puts "scanline: #{paf_scanline.read_float}"
