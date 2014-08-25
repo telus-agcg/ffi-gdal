@@ -201,7 +201,7 @@ module FFI
 
     attach_function :GDALDumpOpenDatasets, [:pointer], :int
     attach_function :GDALGetDriverByName, [:string], :GDALDriverH
-    attach_function :GDALGetDriverCount, [:void], :int
+    attach_function :GDALGetDriverCount, [], :int
     attach_function :GDALGetDriver, [:int], :GDALDriverH
     attach_function :GDALDestroyDriver, [:GDALDriverH], :void
     attach_function :GDALRegisterDriver, [:GDALDriverH], :int

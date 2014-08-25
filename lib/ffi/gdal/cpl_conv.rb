@@ -30,11 +30,11 @@ module FFI
       #---------
       # Config
       #---------
-      attach_function :CPLVerifyConfiguration, %i[void], :void
+      attach_function :CPLVerifyConfiguration, %i[], :void
       attach_function :CPLGetConfigOption, %i[string string], :string
       attach_function :CPLSetConfigOption, %i[string string], :void
       attach_function :CPLSetThreadLocalConfigOption, %i[string string], :void
-      attach_function :CPLFreeConfig, %i[void], :void
+      attach_function :CPLFreeConfig, %i[], :void
 
       #---------
       # Memory
@@ -87,7 +87,7 @@ module FFI
       attach_function :CPLGetFilename, %i[string], :string
       attach_function :CPLGetBasename, %i[string], :string
       attach_function :CPLGetExtension, %i[string], :string
-      attach_function :CPLGetCurrentDir, %i[void], :string
+      attach_function :CPLGetCurrentDir, [], :string
       attach_function :CPLFormFilename, %i[string string string], :string
       attach_function :CPLFormCIFilename, %i[string string string], :string
       attach_function :CPLResetExtension, %i[string string], :string
@@ -101,16 +101,16 @@ module FFI
       attach_function :CPLFindFile, %i[string string], :string
       attach_function :CPLDefaultFindFile, %i[string string], :string
       attach_function :CPLPushFileFinder, %i[CPLFileFinder], :void
-      attach_function :CPLPopFileFinder, %i[void], :CPLFileFinder
+      attach_function :CPLPopFileFinder, %i[], :CPLFileFinder
       attach_function :CPLPushFinderLocation, %i[string], :void
-      attach_function :CPLPopFinderLocation, %i[void], :void
-      attach_function :CPLFinderClean, %i[void], :void
+      attach_function :CPLPopFinderLocation, %i[], :void
+      attach_function :CPLFinderClean, %i[], :void
       attach_function :CPLStat, %i[string pointer], :int
       attach_function :CPLOpenShared, %i[string string int], :pointer
       attach_function :CPLCloseShared, %i[pointer], :void
       attach_function :CPLGetSharedList, %i[pointer], :pointer
       attach_function :CPLDumpSharedList, %i[pointer], :void
-      attach_function :CPLCleanupSharedFileMutex, %i[void], :void
+      attach_function :CPLCleanupSharedFileMutex, %i[], :void
 
       attach_function :CPLDMSToDec, %i[string], :double
       attach_function :CPLDecToDMS, %i[double string int], :string
@@ -139,7 +139,7 @@ module FFI
       attach_function :CPLValidateXML, %i[string string pointer], :int
       attach_function :CPLsetlocale, %i[int string], :string
 
-      attach_function :CPLCleanupSetlocaleMutex, %i[void], :void
+      attach_function :CPLCleanupSetlocaleMutex, %i[], :void
     end
   end
 end

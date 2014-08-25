@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w[lib]
 
   spec.add_dependency 'ffi'
+  spec.add_dependency 'multi_xml'
   spec.add_dependency 'ruby-progressbar'
   spec.add_development_dependency 'bundler', '~> 1.6'
   spec.add_development_dependency 'rake'
