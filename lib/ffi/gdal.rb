@@ -2,6 +2,7 @@ require 'ffi'
 require_relative 'gdal/version'
 require_relative 'gdal/cpl_conv'
 require_relative 'gdal/cpl_error'
+require_relative 'gdal/cpl_string'
 require_relative 'gdal/ogr_core'
 require_relative 'gdal/ogr_api'
 require_relative 'gdal/ogr_srs_api'
@@ -13,6 +14,7 @@ module FFI
 
     include CPLError
     include CPLConv
+    include CPLString
     include OGRCore
     include OGRAPI
     include OGRSRSAPI
@@ -184,7 +186,7 @@ module FFI
       [:GDALDriverH, :string, :int, :int, :int, GDALDataType, :pointer],
       :GDALDatasetH
     attach_function :GDALCreateCopy,
-      [:GDALDriverH, :string, :GDALDatasetH, :int, :string, :GDALProgressFunc, :pointer],
+      [:GDALDriverH, :string, :GDALDatasetH, :int, :pointer, :GDALProgressFunc, :pointer],
       :GDALDatasetH
     attach_function :GDALIdentifyDriver,
       [:string, :pointer],
