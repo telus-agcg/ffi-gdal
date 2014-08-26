@@ -3,6 +3,8 @@ require_relative 'gdal/version'
 require_relative 'gdal/cpl_conv'
 require_relative 'gdal/cpl_error'
 require_relative 'gdal/cpl_string'
+require_relative 'gdal/cpl_vsi'
+require_relative 'gdal/gdal_color_entry'
 require_relative 'gdal/ogr_core'
 require_relative 'gdal/ogr_api'
 require_relative 'gdal/ogr_srs_api'
@@ -15,6 +17,7 @@ module FFI
     include CPLError
     include CPLConv
     include CPLString
+    include CPLVSI
     include OGRCore
     include OGRAPI
     include OGRSRSAPI
@@ -180,6 +183,10 @@ module FFI
 
     # PaletteInterpretation
     attach_function :GDALGetPaletteInterpretationName, [GDALPaletteInterp], :string
+    attach_function :GDALGetPaletteInterpretation, [:GDALColorTableH], GDALPaletteInterp
+    attach_function :GDALGetColorEntryCount, [:GDALColorTableH], :int
+    attach_function :GDALGetColorEntry, [:GDALColorTableH, :int], GDALColorEntry
+    attach_function :GDALGetColorEntryAsRGB, [:GDALColorTableH, :int, GDALColorEntry], :int
 
     attach_function :GDALAllRegister, [], :void
     attach_function :GDALCreate,

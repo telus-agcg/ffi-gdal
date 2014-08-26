@@ -1,6 +1,7 @@
 require_relative '../ffi/gdal'
 require_relative 'driver'
 require_relative 'geo_transform'
+require_relative 'raster_band'
 
 
 module GDAL
@@ -42,6 +43,16 @@ module GDAL
     # @return [Fixnum]
     def raster_count
       GDALGetRasterCount(@gdal_dataset)
+    end
+
+    # @param raster_index [Fixnum]
+    # @return [GDAL::RasterBand]
+    def raster_band(raster_index)
+      @raster_bands ||= Array.new(raster_count)
+
+      @raster_bands.fetch(raster_index) do |i|
+        GDAL::RasterBand.new(@gdal_dataset, i)
+      end
     end
 
     # @return [String]

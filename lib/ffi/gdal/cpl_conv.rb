@@ -1,5 +1,6 @@
 require 'ffi'
 require_relative 'cpl_error'
+require_relative 'cpl_vsi'
 
 
 module FFI
@@ -9,6 +10,11 @@ module FFI
       ffi_lib 'gdal'
 
       include CPLError
+
+      def CPLFree(pointer)
+        extend CPLVSI
+        VSIFree(pointer)
+      end
 
       #------------------------------------------------------------------------
       # cpl_port Typedefs
