@@ -29,8 +29,10 @@ module GDAL
       raise UnsupportedFileFormat.new(@path) if null?
     end
 
-    def null?
-      @gdal_dataset.null?
+    # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
+    # this Ruby object.
+    def c_pointer
+      @gdal_dataset
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this

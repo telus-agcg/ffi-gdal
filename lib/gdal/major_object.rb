@@ -8,8 +8,9 @@ module GDAL
     # @return [Array<String>]
     def metadata_domain_list
       list_pointer = GDALGetMetadataDomainList(c_pointer)
+      strings = list_pointer.get_array_of_string(0)
 
-      read_array_of_strings(list_pointer)
+      strings.compact.delete_if(&:empty?)
     end
 
     def metadata(domain=nil)

@@ -554,28 +554,5 @@ module FFI
 
     # Register all drivers!
     FFI::GDAL.GDALAllRegister
-
-    # Takes a char** and reads into a Ruby Array of Strings.
-    #
-    # @param pointer [FFI::Pointer]
-    # @return [Array<String>]
-    def read_array_of_strings(pointer)
-      list = []
-      return list if pointer.null?
-
-      data_pointer = pointer.read_pointer
-      current_element = 0
-
-      until data_pointer.null?
-        string = data_pointer.read_string
-        break if string.empty?
-
-        list << string
-        current_element += 1
-        data_pointer = pointer.get_pointer(current_element)
-      end
-
-      list.compact.uniq
-    end
   end
 end
