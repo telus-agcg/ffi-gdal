@@ -1,10 +1,12 @@
 require_relative '../ffi/gdal'
 require_relative 'color_table'
+require_relative 'major_object'
 
 
 module GDAL
   class RasterBand
     include FFI::GDAL
+    include MajorObject
 
     attr_reader :dataset
 
@@ -19,6 +21,10 @@ module GDAL
     # @return [Boolean]
     def null?
       @gdal_raster_band && @gdal_raster_band.null?
+    end
+
+    def c_pointer
+      @gdal_raster_band
     end
 
     # @return [Fixnum]

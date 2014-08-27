@@ -3,6 +3,7 @@ require_relative 'driver'
 require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
+require_relative 'major_object'
 
 
 module GDAL
@@ -12,6 +13,7 @@ module GDAL
   # definition of all bands.
   class Dataset
     include FFI::GDAL
+    include MajorObject
 
     ACCESS_FLAGS = {
       'r' => :GA_ReadOnly,

@@ -1,10 +1,12 @@
 require_relative '../ffi/gdal'
+require_relative 'major_object'
 require 'multi_xml'
 
 
 module GDAL
   class Driver
     include FFI::GDAL
+    include MajorObject
 
     GDAL_DOCS_URL = 'http://gdal.org'
 
@@ -31,6 +33,10 @@ module GDAL
       elsif dataset
         GDALGetDatasetDriver(dataset)
       end
+    end
+
+    def c_pointer
+      @gdal_driver_handle
     end
 
     # @return [String]
