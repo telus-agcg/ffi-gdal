@@ -1,11 +1,14 @@
 require './lib/gdal/dataset'
 
+#dir = '../../agrian/gis_engine/test/test_files'
+#dir = '~/Desktop/geotiffs'
+dir = './spec/support'
+
 #name = 'empty_red_image.tif'
 #name = 'empty_black_image.tif'
-name = 'NDVI20000201032.tif'
+#name = 'NDVI20000201032.tif'
+name = 'google_earth_test.jpg'
 
-#dir = '../../agrian/gis_engine/test/test_files'
-dir = '~/Desktop/geotiffs'
 filename = File.expand_path(name, dir)
 dataset = GDAL::Dataset.new(filename, 'r')
 
@@ -15,6 +18,16 @@ puts '#------------------------------------------------------------------------'
 puts "* Raster x size:\t\t#{dataset.raster_x_size}"
 puts "* Raster y size:\t\t#{dataset.raster_y_size}"
 puts "* Raster count:\t\t\t#{dataset.raster_count}"
+puts "* GCP count:\t\t\t#{dataset.gcp_count}"
+puts "* GCP projection:\t\t'#{dataset.gcp_projection}'"
+puts '* GCPs:'
+puts "  - ID:\t\t\t\t'#{dataset.gcps[:id]}'"
+puts "  - Info:\t\t\t'#{dataset.gcps[:info]}'"
+puts "  - Pixel:\t\t\t#{dataset.gcps[:pixel]}"
+puts "  - Line:\t\t\t#{dataset.gcps[:line]}"
+puts "  - X:\t\t\t\t#{dataset.gcps[:x]}"
+puts "  - Y:\t\t\t\t#{dataset.gcps[:y]}"
+puts "  - Z:\t\t\t\t#{dataset.gcps[:z]}"
 puts "* Projection definition:\t#{dataset.projection_definition}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
 puts "* Open dataset count:\t\t#{dataset.open_dataset_count}"
@@ -22,7 +35,10 @@ puts
 puts '* Driver Info'
 puts "  - Short name:\t\t\t#{dataset.driver.short_name}"
 puts "  - Long name:\t\t\t#{dataset.driver.long_name}"
-puts "  - Creation option list:\t#{dataset.driver.creation_option_list}"
+puts '  * Creation option list:'
+dataset.driver.creation_option_list.each do |option|
+  puts "    - #{option}"
+end
 puts "  - Help topic:\t\t\t#{dataset.driver.help_topic}"
 puts
 puts '* Raster Band Info'

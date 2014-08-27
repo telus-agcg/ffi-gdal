@@ -72,6 +72,27 @@ module GDAL
     end
 
     # @return [Fixnum]
+    def gcp_count
+      GDALGetGCPCount(@gdal_dataset)
+    end
+
+    # @return [String]
+    def gcp_projection
+      GDALGetGCPProjection(@gdal_dataset)
+    end
+
+    # @return [FFI::GDAL::GDALGCP]
+    def gcps
+      gcp_array_pointer = GDALGetGCPs(@gdal_dataset)
+
+      if gcp_array_pointer.null?
+        GDALGCP.new
+      else
+        GDALGCP.new(gcp_array_pointer)
+      end
+    end
+
+    # @return [Fixnum]
     def open_dataset_count
       FFI::GDAL.GDALDumpOpenDatasets(@gdal_dataset)
     end
