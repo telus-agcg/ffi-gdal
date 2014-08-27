@@ -51,6 +51,8 @@ module GDAL
 
     # @return [String]
     def help_topic
+      return '' unless @gdal_driver_handle
+
       "#{GDAL_DOCS_URL}/#{GDALGetDriverHelpTopic(@gdal_driver_handle)}"
     end
 
@@ -59,6 +61,8 @@ module GDAL
     #
     # @return [Array]
     def creation_option_list
+      return [] unless @gdal_driver_handle
+
       creation_option_list_xml = GDALGetDriverCreationOptionList(@gdal_driver_handle)
       MultiXml.parse(creation_option_list_xml)['CreationOptionList']['Option']
     end

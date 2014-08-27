@@ -10,27 +10,43 @@ module GDAL
 
     def initialize(dataset, index)
       @dataset = dataset
-      @gdal_raster_band = GDALGetRasterBand(dataset, index)
+
+      if @dataset && !@dataset.null?
+        @gdal_raster_band = GDALGetRasterBand(@dataset, index)
+      end
+    end
+
+    # @return [Boolean]
+    def null?
+      @gdal_raster_band && @gdal_raster_band.null?
     end
 
     # @return [Fixnum]
     def x_size
+      return nil if null?
+
       GDALGetRasterBandXSize(@gdal_raster_band)
     end
 
     # @return [Fixnum]
     def y_size
+      return nil if null?
+
       GDALGetRasterBandYSize(@gdal_raster_band)
     end
 
     # @return [Symbol]
     def access_flag
+      return nil if null?
+
       flag = GDALGetRasterAccess(@gdal_raster_band)
       GDALAccess[flag]
     end
 
     # @return [Fixnum]
     def band_number
+      return nil if null?
+
       GDALGetBandNumber(@gdal_raster_band)
     end
 
@@ -41,7 +57,13 @@ module GDAL
 
     # @return [GDAL::ColorTable]
     def color_table
-      @color_table ||= ColorTable.new(@gdal_raster_band)
+      return @color_table if @color_table
+
+      @color_table = if @gdal_raster_band && !null?
+        ColorTable.new(@gdal_raster_band)
+      else
+        ColorTable.new
+      end
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALDataType.

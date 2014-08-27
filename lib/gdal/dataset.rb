@@ -24,24 +24,40 @@ module GDAL
       @gdal_dataset = GDALOpen(@path, ACCESS_FLAGS[access_flag])
     end
 
+    def null?
+      @gdal_dataset.null?
+    end
+
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      @driver ||= Driver.new(dataset: @gdal_dataset)
+      return @driver if @driver
+
+      @driver = if @gdal_dataset && !null?
+        Driver.new(dataset: @gdal_dataset)
+      else
+        Driver.new
+      end
     end
 
     # @return [Fixnum]
     def raster_x_size
+      return nil if null?
+
       GDALGetRasterXSize(@gdal_dataset)
     end
 
     # @return [Fixnum]
     def raster_y_size
+      return nil if null?
+
       GDALGetRasterYSize(@gdal_dataset)
     end
 
     # @return [Fixnum]
     def raster_count
+      return 0 if null?
+
       GDALGetRasterCount(@gdal_dataset)
     end
 
@@ -50,39 +66,53 @@ module GDAL
     def raster_band(raster_index)
       @raster_bands ||= Array.new(raster_count)
 
-      @raster_bands.fetch(raster_index) do |i|
-        GDAL::RasterBand.new(@gdal_dataset, i)
+      if @raster_bands[raster_index] && !@raster_bands[raster_index].null?
+        return @raster_bands[raster_index]
       end
+
+      @raster_bands[raster_index] =
+        GDAL::RasterBand.new(@gdal_dataset, raster_index)
     end
 
     # @return [String]
     def projection_definition
+      return '' if null?
+
       GDALGetProjectionRef(@gdal_dataset)
     end
 
     # @return [Symbol]
     def access_flag
+      return nil if null?
+
       flag = GDALGetAccess(@gdal_dataset)
+
       GDALAccess[flag]
     end
 
     # @return [Array]
     def geo_transform
-      GeoTransform.new(@gdal_dataset)
+      @geo_transform ||= GeoTransform.new(@gdal_dataset)
     end
 
     # @return [Fixnum]
     def gcp_count
+      return 0 if null?
+
       GDALGetGCPCount(@gdal_dataset)
     end
 
     # @return [String]
     def gcp_projection
+      return '' if null?
+
       GDALGetGCPProjection(@gdal_dataset)
     end
 
     # @return [FFI::GDAL::GDALGCP]
     def gcps
+      return GDALGCP.new if null?
+
       gcp_array_pointer = GDALGetGCPs(@gdal_dataset)
 
       if gcp_array_pointer.null?
@@ -94,6 +124,8 @@ module GDAL
 
     # @return [Fixnum]
     def open_dataset_count
+      return 0 if null?
+
       FFI::GDAL.GDALDumpOpenDatasets(@gdal_dataset)
     end
   end
