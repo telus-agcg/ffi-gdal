@@ -551,5 +551,8 @@ module FFI
     attach_function :GDALFillRaster,
       [:GDALRasterBandH, :double, :double],
       CPLErr
+
+    # Register all drivers!
+    FFI::GDAL.GDALAllRegister
   end
 end

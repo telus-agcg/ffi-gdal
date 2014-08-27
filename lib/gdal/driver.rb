@@ -19,8 +19,6 @@ module GDAL
     #   GDAL::Driver.driver_count.
     # @param dataset [FFI::Pointer] Pointer to the GDALDataset.
     def initialize(file_path: file_path, name: name, index: index, dataset: dataset)
-      FFI::GDAL.GDALAllRegister
-
       @gdal_driver_handle = if file_path
         GDALIdentifyDriver(::File.expand_path(file_path), nil)
       elsif name

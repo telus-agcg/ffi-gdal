@@ -9,16 +9,17 @@ require './lib/gdal/dataset'
 #name = 'NDVI20000701183.tif'
 #name = 'NDVI20000701183.zip'
 
-dir = './spec/support'
-name = 'google_earth_test.jpg'
+#dir = './spec/support'
+#name = 'google_earth_test.jpg'
 #name = 'compassdata_gcparchive_google_earth.kmz'
+
+dir = './spec/support/osgeo'
+name = 'c41078a1.tif'
 
 #dir = './spec/support/ShapeDailyCurrent'
 #name = '851449507.dbf'
 #name = '851449507.prj'
 
-#dir = '~/Desktop/geotiffs/osgeo'
-#name = 'c41078a1.tif'
 
 filename = File.expand_path(name, dir)
 dataset = GDAL::Dataset.new(filename, 'r')
@@ -66,7 +67,7 @@ puts "  - Y:\t\t\t\t#{dataset.gcps[:y]}"
 puts "  - Z:\t\t\t\t#{dataset.gcps[:z]}"
 puts "* Projection definition:\t#{dataset.projection_definition}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
-puts "* Open dataset count:\t\t#{dataset.open_dataset_count}"
+#puts "* Open dataset count:\t\t#{dataset.open_dataset_count}"
 puts
 puts '  * Color Table Info'
 puts "    - palette interp:\t\t\t#{dataset.raster_band(1).color_table.palette_interpretation}"

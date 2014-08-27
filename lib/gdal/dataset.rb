@@ -21,7 +21,6 @@ module GDAL
     # @param path [String] Path to the file that contains the dataset.
     # @param access_flag [String] 'r' or 'w'.
     def initialize(path, access_flag)
-      FFI::GDAL.GDALAllRegister
       @path = ::File.expand_path(path)
       @gdal_dataset = GDALOpen(@path, ACCESS_FLAGS[access_flag])
 
@@ -130,7 +129,7 @@ module GDAL
     def open_dataset_count
       return 0 if null?
 
-      FFI::GDAL.GDALDumpOpenDatasets(@gdal_dataset)
+      GDALDumpOpenDatasets(@gdal_dataset)
     end
   end
 end
