@@ -2,9 +2,11 @@ require_relative '../ffi/gdal'
 require_relative 'driver'
 require_relative 'geo_transform'
 require_relative 'raster_band'
+require_relative 'exceptions'
 
 
 module GDAL
+
   # A set of associated raster bands and info common to them all.  It's also
   # responsible for the georeferencing transform and coordinate system
   # definition of all bands.
@@ -22,6 +24,8 @@ module GDAL
       FFI::GDAL.GDALAllRegister
       @path = ::File.expand_path(path)
       @gdal_dataset = GDALOpen(@path, ACCESS_FLAGS[access_flag])
+
+      raise UnsupportedFileFormat.new(@path) if null?
     end
 
     def null?
