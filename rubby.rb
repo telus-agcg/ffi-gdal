@@ -6,10 +6,19 @@ require './lib/gdal/dataset'
 
 #dir = '~/Desktop/geotiffs'
 #name = 'NDVI20000201032.tif'
+#name = 'NDVI20000701183.tif'
+#name = 'NDVI20000701183.zip'
 
 dir = './spec/support'
-#name = 'google_earth_test.jpg'
-name = 'compassdata_gcparchive_google_earth.kmz'
+name = 'google_earth_test.jpg'
+#name = 'compassdata_gcparchive_google_earth.kmz'
+
+#dir = './spec/support/ShapeDailyCurrent'
+#name = '851449507.dbf'
+#name = '851449507.prj'
+
+#dir = '~/Desktop/geotiffs/osgeo'
+#name = 'c41078a1.tif'
 
 filename = File.expand_path(name, dir)
 dataset = GDAL::Dataset.new(filename, 'r')
@@ -66,12 +75,12 @@ puts "    - color entry 0:\t\t\t#{dataset.raster_band(1).color_table.color_entry
 puts "    - color entry as RGB 0:\t\t#{dataset.raster_band(1).color_table.color_entry_as_rgb(0)}"
 puts
 puts '* Geo-transform Info'
-puts "  - pixel width (A):\t\t#{dataset.geo_transform.pixel_width}"
-puts "  - x rotation (B):\t\t#{dataset.geo_transform.x_rotation}"
 puts "  - x origin (C):\t\t#{dataset.geo_transform.x_origin}"
-puts "  - y rotation (D):\t\t#{dataset.geo_transform.y_rotation}"
-puts "  - pixel height (E):\t\t#{dataset.geo_transform.pixel_height}"
 puts "  - y origin (F):\t\t#{dataset.geo_transform.y_origin}"
-puts "  - x projection:\t\t#{dataset.geo_transform.x_projection(0.1, 0.2)}"
-puts "  - y projection:\t\t#{dataset.geo_transform.y_projection(0.2, 0.1)}"
+puts "  - pixel width (A):\t\t#{dataset.geo_transform.pixel_width}"
+puts "  - pixel height (E):\t\t#{dataset.geo_transform.pixel_height}"
+puts "  - x rotation (B):\t\t#{dataset.geo_transform.x_rotation}"
+puts "  - y rotation (D):\t\t#{dataset.geo_transform.y_rotation}"
+puts "  - x projection (0.1, 0.2):\t#{dataset.geo_transform.x_projection(0.1, 0.2)}"
+puts "  - y projection (0.2, 0.1):\t#{dataset.geo_transform.y_projection(0.2, 0.1)}"
 puts '#----------------------------------------------------'

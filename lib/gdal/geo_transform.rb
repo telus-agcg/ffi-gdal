@@ -9,12 +9,11 @@ module GDAL
 
     # @param gdal_dataset [FFI::Pointer]
     def initialize(gdal_dataset=nil)
-      @gdal_dataset = gdal_dataset
+      @gdal_dataset = gdal_dataset || FFI::MemoryPointer.new(:pointer)
     end
 
     def gdal_geo_transform
       return @gdal_geo_transform if @gdal_geo_transform
-      return nil if @gdal_dataset.nil? or @gdal_dataset.null?
 
       @gdal_geo_transform = FFI::MemoryPointer.new(:double, 6)
       GDALGetGeoTransform(@gdal_dataset, @gdal_geo_transform)
@@ -23,7 +22,7 @@ module GDAL
     end
 
     def null?
-      @gdal_geo_transform.nil? || @gdal_geo_transform.null?
+      gdal_geo_transform.null?
     end
 
     # X-coordinate of the center of the upper left pixel.
