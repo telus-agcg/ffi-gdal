@@ -10,10 +10,10 @@ module GDAL
 
     attr_reader :dataset
 
-    def initialize(dataset, index)
+    def initialize(dataset=nil, index=nil)
       @dataset = dataset
 
-      if @dataset && !@dataset.null?
+      if @dataset && !@dataset.null? && index
         @gdal_raster_band = GDALGetRasterBand(@dataset, index)
       end
     end
@@ -25,6 +25,10 @@ module GDAL
 
     def c_pointer
       @gdal_raster_band
+    end
+
+    def c_pointer=(ptr)
+      @gdal_raster_band = ptr
     end
 
     # @return [Fixnum]
@@ -99,6 +103,20 @@ module GDAL
     # @return [Fixnum]
     def overview_count
       GDALGetOverviewCount(@gdal_raster_band)
+    end
+
+    # @return [Boolean]
+    def arbitrary_overviews?
+      GDALHasArbitraryOverviews(@gdal_raster_band).zero? ? false : true
+    end
+
+    # @return [GDAL::RasterBand]
+    def overview(index)
+      overview_pointer = GDALGetOverview(@gdal_raster_band, index)
+      o = GDAL::RasterBand.new
+      o.c_pointer = overview_pointer
+
+      o
     end
 
     # TODO: Something about the pointer allocation smells here...

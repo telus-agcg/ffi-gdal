@@ -11,12 +11,12 @@ require 'pp'
 #name = 'NDVI20000701183.zip'
 #name = 'NDVI20000401092.tif'
 
-#dir = './spec/support'
-#name = 'google_earth_test.jpg'
+dir = './spec/support'
+name = 'google_earth_test.jpg'
 #name = 'compassdata_gcparchive_google_earth.kmz'
 
-dir = './spec/support/aaron/Floyd'
-name = 'Floyd_1058_20140612_NRGB.tif'
+#dir = './spec/support/aaron/Floyd'
+#name = 'Floyd_1058_20140612_NRGB.tif'
 
 #dir = './spec/support/osgeo'
 #name = 'c41078a1.tif'
@@ -98,8 +98,21 @@ if dataset.raster_count > 0
     puts "  + type:\t\t\t#{band.raster_data_type}"
     puts "  + block size:\t\t\t#{band.block_size}"
     puts "  + value range:\t\t#{band.minimum_value}..#{band.maximum_value}"
-    puts "  + overview count:\t\t#{band.overview_count}"
     puts "  + read:\t\t\t#{band.read}"
+    puts "  + has arbitrary overviews?\t#{band.arbitrary_overviews?}"
+    puts "  + overview count:\t\t#{band.overview_count}"
+    if band.overview_count > 0
+      (0...band.overview_count).each do |j|
+        overview = band.overview(j)
+        puts "  # Overview #{j} Info:"
+        puts "    - size (x, y):\t\t#{overview.x_size}, #{overview.y_size}"
+        puts "    - color interp:\t\t#{overview.color_interpretation}"
+        puts "    - type:\t\t\t#{overview.raster_data_type}"
+        puts "    - block size:\t\t#{overview.block_size}"
+        puts "    - value range:\t\t#{overview.minimum_value}..#{overview.maximum_value}"
+        puts "    - overview count:\t\t#{overview.overview_count}"
+      end
+    end
     puts '  + Metadata:'
     band.all_metadata.each do |domain, data|
       puts "\t\t\t\t+ Domain: #{domain}"
