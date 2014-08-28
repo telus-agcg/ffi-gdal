@@ -11,15 +11,15 @@ require 'pp'
 #name = 'NDVI20000701183.zip'
 #name = 'NDVI20000401092.tif'
 
-dir = './spec/support'
-name = 'google_earth_test.jpg'
+#dir = './spec/support'
+#name = 'google_earth_test.jpg'
 #name = 'compassdata_gcparchive_google_earth.kmz'
 
 #dir = './spec/support/aaron/Floyd'
 #name = 'Floyd_1058_20140612_NRGB.tif'
 
-#dir = './spec/support/osgeo'
-#name = 'c41078a1.tif'
+dir = './spec/support/osgeo'
+name = 'c41078a1.tif'
 
 #dir = './spec/support/ShapeDailyCurrent'
 #name = '851449507.dbf'
@@ -125,17 +125,29 @@ if dataset.raster_count > 0
         end
       end
     end
-    puts '  + Color Table Info'
-    puts "    - palette interp:\t\t\t#{band.color_table.palette_interpretation}"
-    puts "    - color entry count:\t\t#{band.color_table.color_entry_count}"
-    if band.color_table.color_entry_count > 0
-      puts "    - #{band.color_table.color_entry_count} color entries:"
+    if band.color_table
+      puts '  + Color Table Info'
+      puts "    - palette interp:\t\t#{band.color_table.palette_interpretation}"
+      puts "    - color entry count:\t#{band.color_table.color_entry_count}"
+      if band.color_table.color_entry_count > 0
+        puts "    - #{band.color_table.color_entry_count} color entries:"
 
-      (0..band.color_table.color_entry_count).each do |i|
-        puts "    - #{i}:\t\t\t#{band.color_table.color_entry(0)}"
-        puts "    - #{i} as RGB:\t\t#{band.color_table.color_entry_as_rgb(0)}"
+        (0...band.color_table.color_entry_count).each do |j|
+          ce = band.color_table.color_entry(j)
+          ce_string = "(#{ce[:c1]},#{ce[:c2]},#{ce[:c3]},#{ce[:c4]})"
+
+          rgb = band.color_table.color_entry_as_rgb(j)
+          rgb_string = "(#{rgb[:c1]},#{rgb[:c2]},#{rgb[:c3]},#{rgb[:c4]})"
+
+          if band.color_table.palette_interpretation == :GPI_RGB
+            puts "\t\t\t\t~ #{j}:\t#{ce_string}"
+          else
+            puts "\t\t\t\t~ #{j}:\t#{ce_string}, RGB: #{rgb_string}"
+          end
+        end
+      else
+        puts '    - No Color Entry Info.'
       end
-    else
     end
   end
 end

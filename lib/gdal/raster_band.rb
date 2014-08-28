@@ -67,13 +67,10 @@ module GDAL
 
     # @return [GDAL::ColorTable]
     def color_table
-      return @color_table if @color_table
+      gdal_color_table = GDALGetRasterColorTable(@gdal_raster_band)
+      return nil if gdal_color_table.null?
 
-      @color_table = if @gdal_raster_band && !null?
-        ColorTable.new(@gdal_raster_band)
-      else
-        ColorTable.new
-      end
+      @color_table ||= ColorTable.new(@gdal_raster_band, gdal_color_table)
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALDataType.

@@ -5,26 +5,22 @@ module GDAL
   class ColorTable
     include FFI::GDAL
 
-    attr_accessor :gdal_raster_band
-
-    def initialize(gdal_raster_band=nil)
+    def initialize(gdal_raster_band, gdal_color_table=nil)
       @gdal_raster_band = gdal_raster_band
+      @gdal_color_table = gdal_color_table
     end
 
     def gdal_color_table
-      return @gdal_color_table if @gdal_color_table
-      return nil unless @gdal_raster_band
-
-      @gdal_color_table = GDALGetRasterColorTable(@gdal_raster_band)
+      @gdal_color_table ||= GDALGetRasterColorTable(@gdal_raster_band)
     end
 
     def null?
-      @gdal_color_table.nil? || @gdal_color_table.null?
+      gdal_color_table.nil? || gdal_color_table.null?
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      return GDALPaletteInterp[0] if null?
+      #return GDALPaletteInterp[0] if null?
 
       GDALGetPaletteInterpretation(gdal_color_table)
     end
@@ -41,16 +37,19 @@ module GDAL
     def color_entry(index)
       return nil if null?
 
-      GDALGetColorEntry(gdal_color_table, index)
+      ptr = GDALGetColorEntry(gdal_color_table, index)
+      GDALColorEntry.new(ptr)
     end
 
     # @param index [Fixnum]
-    # @return [Fixnum]
+    # @return [GGI::GDAL::GDALColorEntry]
     def color_entry_as_rgb(index)
-      entry = color_entry(index)
-      return 0 if entry.nil?
+      return nil if null?
 
+      entry = GDALColorEntry.new
       GDALGetColorEntryAsRGB(gdal_color_table, index, entry)
+
+      entry
     end
   end
 end
