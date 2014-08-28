@@ -15,11 +15,11 @@ require 'pp'
 #name = 'google_earth_test.jpg'
 #name = 'compassdata_gcparchive_google_earth.kmz'
 
-#dir = './spec/support/aaron/Floyd'
-#name = 'Floyd_1058_20140612_NRGB.tif'
+dir = './spec/support/aaron/Floyd'
+name = 'Floyd_1058_20140612_NRGB.tif'
 
-dir = './spec/support/osgeo'
-name = 'c41078a1.tif'
+#dir = './spec/support/osgeo'
+#name = 'c41078a1.tif'
 
 #dir = './spec/support/ShapeDailyCurrent'
 #name = '851449507.dbf'
@@ -37,10 +37,7 @@ puts "* Raster size (x, y):\t\t#{dataset.raster_x_size}, #{dataset.raster_y_size
 puts "* Raster count:\t\t\t#{dataset.raster_count}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
 puts "* Projection definition:\t#{dataset.projection_definition}"
-puts '* Files:'
-dataset.files.each do |file|
-  puts "\t\t\t\t- #{file}"
-end
+puts "File\t\t\t\t- #{dataset.file_path}"
 puts '* Metadata'
 dataset.all_metadata.each do |domain, data|
   puts "\t\t\t\t+ Domain: #{domain}"
@@ -53,6 +50,10 @@ dataset.all_metadata.each do |domain, data|
     end
   end
 end
+
+p dataset.file_list
+dataset.to_a
+#exit
 puts
 
 
@@ -91,14 +92,25 @@ if dataset.raster_count > 0
     band = dataset.raster_band(i)
     puts "* Band #{i}/#{dataset.raster_count}"
     puts "  + description:\t\t\t#{band.description}"
-    puts "  + size (x, y):\t\t#{band.x_size}, #{band.y_size}"
+    puts "  + size (x,y):\t\t#{band.x_size},#{band.y_size}"
     puts "  + access flag:\t\t#{band.access_flag}"
-    puts "  + number:\t\t\t#{band.band_number}"
+    puts "  + number:\t\t\t#{band.number}"
     puts "  + color interp:\t\t#{band.color_interpretation}"
-    puts "  + type:\t\t\t#{band.raster_data_type}"
+    puts "  + type:\t\t\t#{band.data_type}"
     puts "  + block size:\t\t\t#{band.block_size}"
     puts "  + value range:\t\t#{band.minimum_value}..#{band.maximum_value}"
     puts "  + read:\t\t\t#{band.read}"
+    puts "  + mask flags:\t\t\t#{band.mask_flags}"
+
+    if band.mask_band
+      puts '  + Mask band:'
+      puts "    - number:\t\t\t\t#{band.mask_band.number}"
+      puts "    - size (x,y):\t\t\t#{band.mask_band.x_size},#{band.mask_band.y_size}"
+      puts "    - color interp:\t\t\t#{band.mask_band.color_interpretation}"
+      puts "    - type:\t\t\t\t#{band.mask_band.data_type}"
+      puts "    - block size:\t\t\t#{band.mask_band.block_size}"
+      puts "    - value range:\t\t\t#{band.mask_band.minimum_value}..#{band.mask_band.maximum_value}"
+    end
     puts "  + has arbitrary overviews?\t#{band.arbitrary_overviews?}"
     puts "  + overview count:\t\t#{band.overview_count}"
     if band.overview_count > 0
@@ -107,7 +119,7 @@ if dataset.raster_count > 0
         puts "  # Overview #{j} Info:"
         puts "    - size (x, y):\t\t#{overview.x_size}, #{overview.y_size}"
         puts "    - color interp:\t\t#{overview.color_interpretation}"
-        puts "    - type:\t\t\t#{overview.raster_data_type}"
+        puts "    - type:\t\t\t#{overview.data_type}"
         puts "    - block size:\t\t#{overview.block_size}"
         puts "    - value range:\t\t#{overview.minimum_value}..#{overview.maximum_value}"
         puts "    - overview count:\t\t#{overview.overview_count}"

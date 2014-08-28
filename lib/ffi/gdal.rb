@@ -391,6 +391,8 @@ module FFI
         :GDALProgressFunc,
         :pointer
       ], CPLErr
+    attach_function :GDALGetMaskBand, [:GDALRasterBandH], :GDALRasterBandH
+    attach_function :GDALGetMaskFlags, [:GDALRasterBandH], :int
     #attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
     #attach_function :GDALDatasetGetLayer, [:GDALDatasetH, :int], :OGRLayerH
     #attach_function :GDALDatasetGetLayerByName, [:GDALDatasetH, :string], :OGRLayerH

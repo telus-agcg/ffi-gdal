@@ -54,7 +54,7 @@ module GDAL
     end
 
     # @return [Fixnum]
-    def band_number
+    def number
       return nil if null?
 
       GDALGetBandNumber(@gdal_raster_band)
@@ -74,7 +74,7 @@ module GDAL
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALDataType.
-    def raster_data_type
+    def data_type
       GDALGetRasterDataType(@gdal_raster_band)
     end
 
@@ -110,10 +110,44 @@ module GDAL
     # @return [GDAL::RasterBand]
     def overview(index)
       overview_pointer = GDALGetOverview(@gdal_raster_band, index)
-      o = GDAL::RasterBand.new
+      return nil if overview_pointer.null?
+
+      o = self.class.new
       o.c_pointer = overview_pointer
 
       o
+    end
+
+    # @return [GDAL::RasterBand]
+    def mask_band
+      band_pointer = GDALGetMaskBand(@gdal_raster_band)
+      return nil if band_pointer.null?
+
+      o = self.class.new
+      o.c_pointer = band_pointer
+
+      o
+    end
+
+    # @return [Array<Symbol>]
+    def mask_flags
+      flag_list = GDALGetMaskFlags(@gdal_raster_band).to_s(2).scan(/\d/)
+      flags = []
+
+      flag_list.reverse.each_with_index do |flag, i|
+        puts "i: #{i}, #{flag}"
+        if i == 0 && flag.to_i == 1
+          flags << :GMF_ALL_VALID
+        elsif i == 1 && flag.to_i == 1
+          flags << :GMF_PER_DATASET
+        elsif i == 2 && flag.to_i == 1
+          flags << :GMF_ALPHA
+        elsif i == 3 && flag.to_i == 1
+          flags << :GMF_NODATA
+        end
+      end
+
+      flags
     end
 
     # TODO: Something about the pointer allocation smells here...
@@ -130,7 +164,7 @@ module GDAL
         scan_line,
         x_size,
         y_size,
-        raster_data_type,
+        data_type,
         pixel_space,
         line_space
       )
