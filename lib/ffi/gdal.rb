@@ -167,6 +167,8 @@ module FFI
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
 
+    attach_function :GDALVersionInfo, %i[string], :string
+
     # DataType
     attach_function :GDALGetDataTypeSize, [GDALDataType], :int
     attach_function :GDALDataTypeIsComplex, [GDALDataType], :int

@@ -1,4 +1,4 @@
-require './lib/gdal/dataset'
+require './lib/ffi-gdal'
 require 'pp'
 
 #dir = '../../agrian/gis_engine/test/test_files'
@@ -29,6 +29,17 @@ name = 'Floyd_1058_20140612_NRGB.tif'
 filename = File.expand_path(name, dir)
 dataset = GDAL::Dataset.new(filename, 'r')
 
+
+puts '#------------------------------------------------------------------------'
+puts '#'
+puts "# #{GDAL.long_version}"
+puts '#'
+puts '# Build info:'
+GDAL.build_info.each do |k, v|
+  puts "#  - #{k} -> #{v}"
+end
+puts '#'
+puts '#------------------------------------------------------------------------'
 puts '#------------------------------------------------------------------------'
 puts '#  Dataset Info'
 puts '#------------------------------------------------------------------------'
