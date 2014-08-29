@@ -16,7 +16,9 @@ require './lib/ffi-gdal'
 #name = 'compassdata_gcparchive_google_earth.kmz'
 
 dir = './spec/support/aaron/Floyd'
-name = 'Floyd_1058_20140612_NRGB.tif'
+#name = 'Floyd_1058_20140612_NRGB.tif'
+#name = 'Floyd_1058_20140612_RGBNRGB.bmp'
+name = 'Floyd_1058_20140612_RGBNRGB.jpg'
 
 #dir = './spec/support/osgeo'
 #name = 'c41078a1.tif'
@@ -55,6 +57,9 @@ end
 red = bands[2]
 nir = bands[3]
 
+if nir.nil?
+  abort 'No near-infrared band found!'
+end
 ndvi = (nir - red) / (nir + red)
 p nir
 p red
