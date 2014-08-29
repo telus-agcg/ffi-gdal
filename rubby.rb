@@ -1,5 +1,6 @@
 require './lib/ffi-gdal'
 require 'pp'
+require 'pathname'
 
 #dir = '../../agrian/gis_engine/test/test_files'
 #name = 'empty_red_image.tif'
@@ -15,8 +16,11 @@ require 'pp'
 #name = 'google_earth_test.jpg'
 #name = 'compassdata_gcparchive_google_earth.kmz'
 
-dir = './spec/support/aaron/Floyd'
-name = 'Floyd_1058_20140612_NRGB.tif'
+#dir = './spec/support/aaron/Floyd'
+#name = 'Floyd_1058_20140612_NRGB.tif'
+
+dir = './spec/support/images/Harper'
+name = 'Harper_1058_20140612_NRGB.tif'
 
 #dir = './spec/support/osgeo'
 #name = 'c41078a1.tif'
@@ -25,10 +29,10 @@ name = 'Floyd_1058_20140612_NRGB.tif'
 #name = '851449507.dbf'
 #name = '851449507.prj'
 
-
 filename = File.expand_path(name, dir)
 dataset = GDAL::Dataset.new(filename, 'r')
 
+current_directory = Pathname.new(Dir.pwd)
 
 puts '#------------------------------------------------------------------------'
 puts '#'
@@ -48,7 +52,13 @@ puts "* Raster size (x, y):\t\t#{dataset.raster_x_size}, #{dataset.raster_y_size
 puts "* Raster count:\t\t\t#{dataset.raster_count}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
 puts "* Projection definition:\t#{dataset.projection_definition}"
-puts "File\t\t\t\t- #{dataset.file_path}"
+puts "* Base File\t\t\t#{Pathname.new(dataset.file_path).relative_path_from(current_directory)}"
+puts '* File list:'
+dataset.file_list.each do |path|
+  p = Pathname.new(path)
+  puts "\t\t\t\t- #{p.relative_path_from(current_directory)}"
+end
+
 puts '* Metadata'
 dataset.all_metadata.each do |domain, data|
   puts "\t\t\t\t+ Domain: #{domain}"
@@ -62,10 +72,6 @@ dataset.all_metadata.each do |domain, data|
   end
 end
 
-p dataset.file_list
-dataset.to_a
-#exit
-puts
 
 
 puts '#------------------------------------------------------------------------'
@@ -77,12 +83,12 @@ puts "* Long name:\t\t#{dataset.driver.long_name}"
 puts "* Help topic:\t\t#{dataset.driver.help_topic}"
 puts '* Metadata:'
 dataset.driver.all_metadata.each do |domain, data|
-  puts "\t\t\t\t+ Domain: #{domain}"
+  puts "\t\t\t+ Domain: #{domain}"
   if data.empty?
-    puts "\t\t\t\t\t- No values"
+    puts "\t\t\t\t- No values"
   else
     data.each do |k, v|
-      print "\t\t\t\t\t- #{k} => "
+      print "\t\t\t\t- #{k} => "
       pp v
     end
   end
@@ -102,24 +108,24 @@ if dataset.raster_count > 0
   (1..dataset.raster_count).each do |i|
     band = dataset.raster_band(i)
     puts "* Band #{i}/#{dataset.raster_count}"
-    puts "  + description:\t\t\t#{band.description}"
-    puts "  + size (x,y):\t\t\t#{band.x_size},#{band.y_size}"
-    puts "  + no-data value:\t\t#{band.no_data_value}"
-    puts "  + access flag:\t\t#{band.access_flag}"
-    puts "  + number:\t\t\t#{band.number}"
-    puts "  + color interp:\t\t#{band.color_interpretation}"
-    puts "  + type:\t\t\t#{band.data_type}"
-    puts "  + block size:\t\t\t#{band.block_size}"
-    puts "  + category names:\t\t#{band.category_names}"
+    puts "  - description:\t\t\t#{band.description}"
+    puts "  - size (x,y):\t\t\t#{band.x_size},#{band.y_size}"
+    puts "  - no-data value:\t\t#{band.no_data_value}"
+    puts "  - access flag:\t\t#{band.access_flag}"
+    puts "  - number:\t\t\t#{band.number}"
+    puts "  - color interp:\t\t#{band.color_interpretation}"
+    puts "  - type:\t\t\t#{band.data_type}"
+    puts "  - block size:\t\t\t#{band.block_size}"
+    puts "  - category names:\t\t#{band.category_names}"
     band.category_names = 'meow'
-    puts "  + category names:\t\t#{band.category_names}"
-    puts "  + value range:\t\t#{band.minimum_value}..#{band.maximum_value}"
-    puts "  + read:\t\t\t#{band.read}"
-    puts "  + unit type:\t\t\t#{band.unit_type}"
-    puts "  + statistics:\t\t\t#{band.statistics}"
-    puts "  + scale:\t\t\t#{band.scale}"
-    puts "  + offset:\t\t\t#{band.offset}"
-    puts "  + mask flags:\t\t\t#{band.mask_flags}"
+    puts "  - category names:\t\t#{band.category_names}"
+    puts "  - value range:\t\t#{band.minimum_value}..#{band.maximum_value}"
+    #puts "  + read:\t\t\t#{band.read}"
+    puts "  - unit type:\t\t\t#{band.unit_type}"
+    puts "  - statistics:\t\t\t#{band.statistics}"
+    puts "  - scale:\t\t\t#{band.scale}"
+    puts "  - offset:\t\t\t#{band.offset}"
+    puts "  - mask flags:\t\t\t#{band.mask_flags}"
     #puts "  + default histogram:\t\t\t#{band.default_histogram}"
     #puts "  + histogram:\t\t\t#{band.histogram(-0.5, 255.5, 256)}"
 
@@ -132,9 +138,9 @@ if dataset.raster_count > 0
       puts "    - block size:\t\t\t#{band.mask_band.block_size}"
       puts "    - value range:\t\t\t#{band.mask_band.minimum_value}..#{band.mask_band.maximum_value}"
     end
-    puts "  + has arbitrary overviews?\t#{band.arbitrary_overviews?}"
-    puts "  + raster sample overview:\t#{band.raster_sample_overview}"
-    puts "  + overview count:\t\t#{band.overview_count}"
+    puts "  - has arbitrary overviews?\t#{band.arbitrary_overviews?}"
+    puts "  - raster sample overview:\t#{band.raster_sample_overview}"
+    puts "  - overview count:\t\t#{band.overview_count}"
     if band.overview_count > 0
       (0...band.overview_count).each do |j|
         overview = band.overview(j)
@@ -195,13 +201,13 @@ puts "* GCP count:\t\t\t#{dataset.gcp_count}"
 if dataset.gcp_count > 0
   puts "* GCP projection:\t\t'#{dataset.gcp_projection}'"
   puts '* GCPs:'
-  puts "  + ID:\t\t\t\t'#{dataset.gcps[:id]}'"
-  puts "  + Info:\t\t\t'#{dataset.gcps[:info]}'"
-  puts "  + Pixel:\t\t\t#{dataset.gcps[:pixel]}"
-  puts "  + Line:\t\t\t#{dataset.gcps[:line]}"
-  puts "  + X:\t\t\t\t#{dataset.gcps[:x]}"
-  puts "  + Y:\t\t\t\t#{dataset.gcps[:y]}"
-  puts "  + Z:\t\t\t\t#{dataset.gcps[:z]}"
+  puts "\t\t\t- ID:\t\t\t\t'#{dataset.gcps[:id]}'"
+  puts "\t\t\t- Info:\t\t\t'#{dataset.gcps[:info]}'"
+  puts "\t\t\t- Pixel:\t\t\t#{dataset.gcps[:pixel]}"
+  puts "\t\t\t- Line:\t\t\t#{dataset.gcps[:line]}"
+  puts "\t\t\t- X:\t\t\t\t#{dataset.gcps[:x]}"
+  puts "\t\t\t- Y:\t\t\t\t#{dataset.gcps[:y]}"
+  puts "\t\t\t- Z:\t\t\t\t#{dataset.gcps[:z]}"
 end
 
 puts
