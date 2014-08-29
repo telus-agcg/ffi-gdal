@@ -7,6 +7,7 @@ module GDAL
   class Driver
     include FFI::GDAL
     include MajorObject
+    include LogSwitch::Mixin
 
     GDAL_DOCS_URL = 'http://gdal.org'
 
@@ -69,6 +70,48 @@ module GDAL
 
       creation_option_list_xml = GDALGetDriverCreationOptionList(@gdal_driver_handle)
       MultiXml.parse(creation_option_list_xml)['CreationOptionList']['Option']
+    end
+
+    # Copy all of the associated files of a dataset from one file to another.
+    #
+    # @return true on success, false on warning.
+    # @raise [GDAL::CPLErrFailure] If failures.
+    def copy_dataset_files(destination, source)
+      cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, destination, source)
+
+      cpl_err.to_ruby
+    end
+
+    # Create a new Dataset with this driver.  Legal arguments depend on the
+    # driver and can't be retrieved programmatically.
+    #
+    # @param filename [String]
+    # @param x_size [Fixnum] Width of created raster in pixels.
+    # @param y_size [Fixnum] Height of created raster in pixels.
+    # @param bands [Fixnum]
+    # @param type [FFI::GDAL::GDALDataType]
+    # @return [GDAL::Dataset] Returns the *closed* dataset.  You'll need to
+    #   reopen it if you with to continue working with it.
+    # @todo Implement options.
+    def create_dataset(filename, x_size, y_size, bands: 1, type: :GDT_Byte, **options, &block)
+      log "creating dataset with size #{x_size},#{y_size}"
+
+      dataset_pointer = GDALCreate(@gdal_driver_handle,
+        filename,
+        x_size,
+        y_size,
+        bands,
+        type,
+        nil
+      )
+
+      raise CreateFail if dataset_pointer.null?
+
+      dataset = Dataset.new(dataset_pointer)
+      block.call(dataset) if block_given?
+      dataset.close
+
+      dataset
     end
   end
 end

@@ -6,7 +6,9 @@ module GDAL
     end
   end
 
-  class CPLError < StandardError
+  class CPLErrFailure < StandardError
+  end
 
+  class CreateFail < StandardError
   end
 end

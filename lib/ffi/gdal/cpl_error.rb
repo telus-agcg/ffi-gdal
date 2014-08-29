@@ -1,3 +1,6 @@
+require_relative '../../ext/cpl_error_symbols'
+
+
 module FFI
   module GDAL
     module CPLError

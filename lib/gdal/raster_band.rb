@@ -114,10 +114,7 @@ module GDAL
 
       cpl_err = GDALSetRasterCategoryNames(@gdal_raster_band, names_pointer)
 
-      case cpl_err
-      when :warning then return []
-      when :failure then raise CPLError
-      end
+      cpl_err.to_ruby(warning: [])
     end
 
     # The no data value for a band is generally a special marker value used to
@@ -210,10 +207,7 @@ module GDAL
         mean,
         standard_deviation)
 
-      case cpl_err
-      when :warning then return {}
-      when :failure then raise CPLError
-      else
+      cpl_err.to_ruby(warning: {}) do
         {
           minimum: min.read_double,
           maximum: max.read_double,
@@ -362,7 +356,7 @@ module GDAL
 
     # TODO: Something about the pointer allocation smells here...
     #def read(x_offset: 0, y_offset: 0, x_size: x_size, y_size: 1, pixel_space: 0, line_space: 0)
-    def read(line_count=nil)
+    def readlines
       x_offset = 0
       line_size = 1
       pixel_space = 0
@@ -384,11 +378,43 @@ module GDAL
           line_space
         )
 
-        #puts
-        # data = scan_line.read_array_of_float(x_size).dup
-        #
-        # yield data
         yield scan_line.read_array_of_float(x_size).dup
+      end
+    end
+
+    # @param pixel_array [NArray]
+    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: :GDT_Byte)
+      line_size = 1
+      pixel_space = 0
+      line_space = 0
+      x_size = pixel_array.sizes.first
+      y_size = pixel_array.sizes.last
+      data_type = data_type
+      starting_y = y_offset + 1
+      columns_to_write = x_size - x_offset
+      lines_to_write = y_size - starting_y
+
+      scan_line = FFI::MemoryPointer.new(:float, columns_to_write)
+
+      (y_offset + 1).upto(lines_to_write) do |y|
+        pixels = pixel_array[true, y]
+        #:w
+        # p pixels
+        scan_line.write_array_of_float(pixel_array[true, y])
+
+        GDALRasterIO(@gdal_raster_band,
+          :GF_Write,
+          x_offset,
+          y,
+          x_size,
+          line_size,
+          scan_line,
+          x_size,
+          line_size,
+          data_type,
+          pixel_space,
+          line_space
+        )
       end
     end
 

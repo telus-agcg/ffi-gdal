@@ -30,7 +30,7 @@ name = 'Harper_1058_20140612_NRGB.tif'
 #name = '851449507.prj'
 
 filename = File.expand_path(name, dir)
-dataset = GDAL::Dataset.new(filename, 'r')
+dataset = GDAL::Dataset.open(filename, 'r')
 
 current_directory = Pathname.new(Dir.pwd)
 
@@ -52,7 +52,6 @@ puts "* Raster size (x, y):\t\t#{dataset.raster_x_size}, #{dataset.raster_y_size
 puts "* Raster count:\t\t\t#{dataset.raster_count}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
 puts "* Projection definition:\t#{dataset.projection_definition}"
-puts "* Base File\t\t\t#{Pathname.new(dataset.file_path).relative_path_from(current_directory)}"
 puts '* File list:'
 dataset.file_list.each do |path|
   p = Pathname.new(path)

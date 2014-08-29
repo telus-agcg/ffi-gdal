@@ -20,21 +20,50 @@ module GDAL
       'w' => :GA_Update
     }
 
-    attr_reader :file_path
-
     # @param path [String] Path to the file that contains the dataset.
     # @param access_flag [String] 'r' or 'w'.
-    def initialize(path, access_flag)
-      @file_path = ::File.expand_path(path)
-      @gdal_dataset = GDALOpen(@file_path, ACCESS_FLAGS[access_flag])
+    def self.open(path, access_flag)
+      file_path = ::File.expand_path(path)
+      pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+      raise UnsupportedFileFormat.new(file_path) if pointer.null?
 
-      raise UnsupportedFileFormat.new(@file_path) if null?
+      new(pointer)
+    end
+
+    # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
+    def initialize(dataset_pointer)
+      @gdal_dataset = dataset_pointer
+      @last_known_file_list = []
+      @open = true
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
     # this Ruby object.
     def c_pointer
       @gdal_dataset
+    end
+
+    # Close the dataset.
+    def close
+      @last_known_file_list = file_list
+      GDALClose(@gdal_dataset)
+      @open = false
+    end
+
+    # Tries to reopen the dataset using the first item from #file_list before
+    # the dataset was closed.
+    #
+    # @param access_flag [String]
+    # @return [Boolean]
+    def reopen(access_flag)
+      @gdal_dataset = GDALOpen(@last_known_file_list.first, access_flag)
+
+      @open = true unless @gdal_dataset.null?
+    end
+
+    # @return [Boolean]
+    def open?
+      @open
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
@@ -49,8 +78,14 @@ module GDAL
       end
     end
 
+    # Fetches all files that form the dataset.
+    # @return [Array<String>]
     def file_list
-      GDALGetFileList(c_pointer).get_array_of_string(0)
+      list_pointer = GDALGetFileList(c_pointer)
+      file_list = list_pointer.get_array_of_string(0)
+      CSLDestroy(list_pointer)
+
+      file_list
     end
 
     # @return [Fixnum]
@@ -132,17 +167,6 @@ module GDAL
         GDALGCP.new
       else
         GDALGCP.new(gcp_array_pointer)
-      end
-    end
-
-    def to_a
-      x_size = raster_x_size
-      y_size = raster_y_size
-
-      (1..raster_count).each do |i|
-        band = raster_band(i)
-        type = band.data_type
-        puts "band type: #{type}"
       end
     end
 

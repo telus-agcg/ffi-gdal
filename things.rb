@@ -17,13 +17,15 @@ require './lib/ffi-gdal'
 
 #dir = './spec/support/aaron/Floyd'
 #name = 'Floyd_1058_20140612_NRGB.tif'
+dir = './spec/support/images/Harper'
+name = 'Harper_1058_20140612_NRGB.tif'
 
-dir = './spec/support/osgeo'
-name = 'c41078a1.tif'
+#dir = './spec/support/osgeo'
+#name = 'c41078a1.tif'
 
 
 filename = File.expand_path(name, dir)
-dataset = GDAL::Dataset.new(filename, 'r')
+dataset = GDAL::Dataset.open(filename, 'r')
 histogram = FFI::MemoryPointer.new(:int, 256)
 
 if dataset.raster_count > 0
