@@ -9,6 +9,7 @@ require_relative 'gdal/gdal_gcp'
 require_relative 'gdal/ogr_core'
 require_relative 'gdal/ogr_api'
 require_relative 'gdal/ogr_srs_api'
+require_relative '../ext/to_bool'
 
 module FFI
   module GDAL
@@ -162,7 +163,13 @@ module FFI
     #-----------------------------------------------------------------
     # functions
     #-----------------------------------------------------------------
-    callback :GDALProgressFunc, [:double, :string, :pointer], :int
+    # @param completion [Float]
+    # @param message [String]
+    # @param progress_arg [Pointer]
+    # @return [Boolean] true if the operation should continue; false if the
+    #   user has cancelled.
+    callback :GDALProgressFunc, [:double, :string, :pointer], :bool
+
     callback :GDALDerivedPixelFunc,
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
@@ -486,7 +493,7 @@ module FFI
       [:GDALRasterBandH, :pointer],
       :double
     attach_function :GDALGetRasterStatistics,
-      [:GDALRasterBandH, :int, :int, :pointer, :pointer, :pointer, :pointer],
+      [:GDALRasterBandH, :bool, :bool, :pointer, :pointer, :pointer, :pointer],
       CPLErr
     attach_function :GDALComputeRasterStatistics,
       [
@@ -520,8 +527,8 @@ module FFI
         :double,
         :int,
         :pointer,
-        :int,
-        :int,
+        :bool,
+        :bool,
         :GDALProgressFunc,
         :pointer
       ], CPLErr
@@ -533,7 +540,7 @@ module FFI
         :pointer,
         :pointer,
         :pointer,
-        :int,
+        :bool,
         :GDALProgressFunc,
         :pointer
       ], CPLErr

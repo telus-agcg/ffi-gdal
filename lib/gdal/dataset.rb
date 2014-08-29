@@ -20,13 +20,15 @@ module GDAL
       'w' => :GA_Update
     }
 
+    attr_reader :file_path
+
     # @param path [String] Path to the file that contains the dataset.
     # @param access_flag [String] 'r' or 'w'.
     def initialize(path, access_flag)
-      @path = ::File.expand_path(path)
-      @gdal_dataset = GDALOpen(@path, ACCESS_FLAGS[access_flag])
+      @file_path = ::File.expand_path(path)
+      @gdal_dataset = GDALOpen(@file_path, ACCESS_FLAGS[access_flag])
 
-      raise UnsupportedFileFormat.new(@path) if null?
+      raise UnsupportedFileFormat.new(@file_path) if null?
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
@@ -45,6 +47,10 @@ module GDAL
       else
         Driver.new
       end
+    end
+
+    def file_list
+      GDALGetFileList(c_pointer).get_array_of_string(0)
     end
 
     # @return [Fixnum]
@@ -126,6 +132,17 @@ module GDAL
         GDALGCP.new
       else
         GDALGCP.new(gcp_array_pointer)
+      end
+    end
+
+    def to_a
+      x_size = raster_x_size
+      y_size = raster_y_size
+
+      (1..raster_count).each do |i|
+        band = raster_band(i)
+        type = band.data_type
+        puts "band type: #{type}"
       end
     end
 

@@ -5,4 +5,8 @@ module GDAL
       super(message)
     end
   end
+
+  class CPLError < StandardError
+
+  end
 end
