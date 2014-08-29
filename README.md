@@ -1,8 +1,10 @@
-# Ffi::Gdal
+FFI::GDAL
+=========
 
 TODO: Write a gem description
 
-## Installation
+Installation
+------------
 
 Add this line to your application's Gemfile:
 
@@ -22,7 +24,7 @@ TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/ffi-gdal/fork )
+1. Fork it ( https://github.com/turboladen/ffi-gdal/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
