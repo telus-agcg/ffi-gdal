@@ -169,12 +169,5 @@ module GDAL
         GDALGCP.new(gcp_array_pointer)
       end
     end
-
-    # @return [Fixnum]
-    def open_dataset_count
-      return 0 if null?
-
-      GDALDumpOpenDatasets(@gdal_dataset)
-    end
   end
 end

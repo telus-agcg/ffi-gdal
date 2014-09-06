@@ -18,8 +18,9 @@ module GDAL
       strings.compact.delete_if(&:empty?)
     end
 
+    # @param domain [String] Name of the domain to get metadata for.
     # @return [Hash]
-    def metadata_for_domain(domain=nil)
+    def metadata_for_domain(domain='')
       m = GDALGetMetadata(c_pointer, domain)
       return {} if m.null?
 
