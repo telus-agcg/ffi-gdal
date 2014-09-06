@@ -40,6 +40,7 @@ module GDAL
       end
     end
 
+    # @return [String]
     def long_version
       FFI::GDAL.GDALVersionInfo('--version')
     end
