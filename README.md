@@ -21,7 +21,24 @@ Or install it yourself as:
 Usage
 -----
 
-TODO: Write usage instructions here
+ffi-gdal provides two interfaces, really: the direct FFI wrapper around GDAL's
+C API, and a Ruby-fied interface that uses the FFI wrapper to make use more
+like using an object-oriented library instead of a functional one.  Most likely
+you'll just want to use the Ruby-fied library, but if for some reason that
+doesn't get you what you want, direct access to the FFI wrapper (which is
+really just direct access to the C API) is available.
+
+
+### The Ruby-fied Library
+
+To distinguish this gem from the already-existing gdal gem, you
+`require ffi-gdal` to get access to the `GDAL` module and its children.
+
+
+### The direct FFI wrapper
+
+Following RubyGem conventions, to get access to the FFI wrapper, you
+`require ffi/gdal`.
 
 
 Testing
