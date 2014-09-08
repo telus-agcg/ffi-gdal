@@ -16,6 +16,9 @@ module GDAL
       FFI::GDAL.GDALGetDriverCount
     end
 
+    # Creates a new GDAL::Driver object based on the mutually exclusive given
+    # parameters.  Pass in only one of the allowed parameters.
+    #
     # @param file_path [String] File to get the driver for.
     # @param name [String] Name of the registered GDALDriver.
     # @param index [Fixnum] Index of the registered driver.  Must be less than
@@ -74,10 +77,12 @@ module GDAL
 
     # Copy all of the associated files of a dataset from one file to another.
     #
+    # @param new_name [String]
+    # @param old_name [String]
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
-    def copy_dataset_files(destination, source)
-      cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, destination, source)
+    def copy_dataset_files(new_name, old_name)
+      cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, new_name, old_name)
 
       cpl_err.to_ruby
     end
@@ -112,6 +117,29 @@ module GDAL
       dataset.close
 
       dataset
+    end
+
+    # Delete the dataset represented by +file_name+.  Depending on the driver,
+    # this could mean deleting associated files, database objects, etc.
+    #
+    # @param file_name [String]
+    # @return true on success, false on warning.
+    # @raise [GDAL::CPLErrFailure] If failures.
+    def delete_dataset(file_name)
+      cpl_err = GDALDeleteDataset(@gdal_driver_handle, file_name)
+
+      cpl_err.to_ruby
+    end
+
+    # @param new_name [String]
+    # @param old_name [String]
+    # @return true on success, false on warning.
+    # @raise [GDAL::CPLErrFailure] If failures.
+    def rename_dataset(new_name, old_name)
+      cpl_err = GDALRenameDataset(@gdal_driver_handle, new_name, old_name)
+
+
+      cpl_err.to_ruby
     end
   end
 end

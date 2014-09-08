@@ -1,4 +1,7 @@
 $:.unshift File.expand_path('../lib', __FILE__)
+$:.unshift File.expand_path('../spec', __FILE__)
+
+Dir['./spec/support/shared_examples/**/*.rb'].sort.each { |f| require f}
 
 RSpec.configure do |config|
 
