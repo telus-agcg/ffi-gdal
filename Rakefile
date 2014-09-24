@@ -1,4 +1,5 @@
 require 'bundler/gem_tasks'
+require 'rspec/core/rake_task'
 
 desc 'Download files for running integration tests against'
 task :get_tifs do
@@ -52,3 +53,5 @@ def files_and_dirs(in_dir, ftp)
   [files, dirs]
 end
 
+
+RSpec::Core::RakeTask.new
