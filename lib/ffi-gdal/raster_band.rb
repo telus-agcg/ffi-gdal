@@ -2,6 +2,7 @@ require_relative '../ffi/gdal'
 require_relative 'color_table'
 require_relative 'major_object'
 require_relative 'raster_attribute_table'
+require 'narray'
 
 module GDAL
   class RasterBand
@@ -290,10 +291,6 @@ module GDAL
       GDALSetRasterOffset(@gdal_raster_band, new_offset)
     end
 
-    # def units
-    #
-    # end
-
     # @return [String]
     def unit_type
       GDALGetRasterUnitType(@gdal_raster_band)
@@ -447,7 +444,7 @@ module GDAL
       line_space = 0
       scan_line = FFI::MemoryPointer.new(:float, x_size)
 
-      1.upto(y_size) do |y|
+      0.upto(y_size - 1) do |y|
         GDALRasterIO(@gdal_raster_band,
           :GF_Read,
           x_offset,
@@ -551,6 +548,19 @@ module GDAL
       value = GDALGetRasterMaximum(@gdal_raster_band, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
+    end
+
+    # Iterates through all lines and builds an NArray of pixels.
+    #
+    # @return [NArray]
+    def to_a
+      lines = []
+
+      readlines do |line|
+        lines << line
+      end
+
+      NArray.to_na(lines)
     end
   end
 end

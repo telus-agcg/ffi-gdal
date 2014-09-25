@@ -1,6 +1,7 @@
 require_relative '../ffi/gdal'
 require_relative 'major_object'
 require 'multi_xml'
+require 'log_switch'
 
 
 module GDAL
@@ -14,6 +15,11 @@ module GDAL
     # @return [Fixnum]
     def self.driver_count
       FFI::GDAL.GDALGetDriverCount
+    end
+
+    # @return [GDAL::Driver]
+    def self.by_name(name)
+      new(name: name)
     end
 
     # Creates a new GDAL::Driver object based on the mutually exclusive given

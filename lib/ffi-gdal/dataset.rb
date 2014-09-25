@@ -1,4 +1,5 @@
 require_relative '../ffi/gdal'
+require_relative '../ffi-gdal'
 require_relative 'driver'
 require_relative 'geo_transform'
 require_relative 'raster_band'
@@ -125,7 +126,7 @@ module GDAL
     end
 
     # @return [String]
-    def projection_definition
+    def projection
       return '' if null?
 
       GDALGetProjectionRef(@gdal_dataset)
@@ -169,6 +170,28 @@ module GDAL
         GDALGCP.new
       else
         GDALGCP.new(gcp_array_pointer)
+      end
+    end
+
+    # Iterates raster bands from 1 to #raster_count and yields them to the given
+    # block.
+    def each_band
+      1.upto(raster_count) do |i|
+        yield(raster_band(i))
+      end
+    end
+
+    # Returns the first raster band for which the block returns true.  Ex.
+    #
+    #   dataset.find_band do |band|
+    #     band.color_interpretation == :GCI_RedBand
+    #   end
+    #
+    # @return [GDAL::RasterBand]
+    def find_band
+      each_band do |band|
+        result = yield(band)
+        return band if result
       end
     end
   end

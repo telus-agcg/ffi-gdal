@@ -356,7 +356,9 @@ module FFI
     attach_function :GDALGetProjectionRef, [:GDALDatasetH], :string
     attach_function :GDALSetProjection, [:GDALDatasetH, :string], CPLErr
     attach_function :GDALGetGeoTransform, [:GDALDatasetH, :pointer], CPLErr
-    attach_function :GDALSetGeoTransform, [:GDALDatasetH, :pointer], CPLErr
+    attach_function :GDALSetGeoTransform,
+      [:GDALDatasetH, :pointer],
+      CPLErr
     attach_function :GDALGetGCPCount, [:GDALDatasetH], :int
     attach_function :GDALGetGCPProjection, [:GDALDatasetH], :string
     attach_function :GDALGetGCPs, [:GDALDatasetH], :pointer

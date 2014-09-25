@@ -56,9 +56,9 @@ TIF_FILES.each do |file|
       end
     end
 
-    describe '#projection_definition' do
+    describe '#projection' do
       it 'is a String' do
-        expect(subject.projection_definition).to be_a String
+        expect(subject.projection).to be_a String
       end
     end
 

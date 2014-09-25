@@ -51,7 +51,7 @@ puts "* Description:\t\t\t#{dataset.description}"
 puts "* Raster size (x, y):\t\t#{dataset.raster_x_size}, #{dataset.raster_y_size}"
 puts "* Raster count:\t\t\t#{dataset.raster_count}"
 puts "* Access flag:\t\t\t#{dataset.access_flag}"
-puts "* Projection definition:\t#{dataset.projection_definition}"
+puts "* Projection:\t#{dataset.projection}"
 puts '* File list:'
 dataset.file_list.each do |path|
   p = Pathname.new(path)
