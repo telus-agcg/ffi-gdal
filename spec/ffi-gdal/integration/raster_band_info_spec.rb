@@ -266,6 +266,16 @@ TIF_FILES.each do |file|
       end
     end
 
+    describe '#default_raster_attribute_table' do
+      it 'returns a GDAL::RasterAttributeTable' do
+        rat = subject.default_raster_attribute_table
+
+        if rat
+          expect(rat).to be_a GDAL::RasterAttributeTable
+        end
+      end
+    end
+
     describe '#compute_min_max' do
       it 'returns a 2-element Array of Floats' do
         expect(subject.compute_min_max).to be_a Array

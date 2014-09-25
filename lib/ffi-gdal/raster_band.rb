@@ -1,6 +1,7 @@
 require_relative '../ffi/gdal'
 require_relative 'color_table'
 require_relative 'major_object'
+require_relative 'raster_attribute_table'
 
 module GDAL
   class RasterBand
@@ -80,7 +81,8 @@ module GDAL
       gdal_color_table = GDALGetRasterColorTable(@gdal_raster_band)
       return nil if gdal_color_table.null?
 
-      @color_table ||= ColorTable.new(@gdal_raster_band, gdal_color_table)
+      @color_table ||= ColorTable.new(@gdal_raster_band,
+        color_table_pointer: gdal_color_table)
     end
 
     # The pixel data type for this band.
@@ -377,6 +379,15 @@ module GDAL
       when :warning then return nil
       when :failure, :fatal then raise CPLError
       end
+    end
+
+    # @return [GDAL::RasterAttributeTable]
+    def default_raster_attribute_table
+      rat_pointer = GDALGetDefaultRAT(c_pointer)
+      return nil if rat_pointer.null?
+
+      GDAL::RasterAttributeTable.new(c_pointer,
+        raster_attribute_table_pointer: rat_pointer)
     end
 
     # Computes a histogram using the given inputs.  If you just want the default

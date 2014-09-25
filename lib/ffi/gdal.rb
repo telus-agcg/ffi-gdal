@@ -124,6 +124,10 @@ module FFI
       :GPI_CMYK,  2,
       :GPI_HLS,   3
 
+    GDALRATFieldType = enum :GFT_Integer,
+      :GFT_Real,
+      :GFT_String
+
     GDALRATFieldUsage = enum :GFU_Generic, 0,
       :GFU_PixelCount,  1,
       :GFU_Name,        2,
@@ -562,6 +566,38 @@ module FFI
     attach_function :GDALFillRaster,
       [:GDALRasterBandH, :double, :double],
       CPLErr
+
+    # Raster Attribute Table functions
+    attach_function :GDALGetDefaultRAT,
+      [:GDALRasterBandH],
+      :GDALRasterAttributeTableH
+    attach_function :GDALSetDefaultRAT,
+      [:GDALRasterBandH, :GDALRasterAttributeTableH],
+      CPLErr
+    attach_function :GDALRATGetColumnCount,
+      [:GDALRasterAttributeTableH],
+      :int
+    attach_function :GDALRATGetNameOfCol,
+      [:GDALRasterAttributeTableH, :int],
+      :string
+    attach_function :GDALRATGetUsageOfCol,
+      [:GDALRasterAttributeTableH, :int],
+      GDALRATFieldUsage
+    attach_function :GDALRATGetTypeOfCol,
+      [:GDALRasterAttributeTableH, :int],
+      GDALRATFieldType
+    attach_function :GDALRATGetColOfUsage,
+      [:GDALRasterAttributeTableH, GDALRATFieldUsage],
+      :int
+    attach_function :GDALRATGetRowCount,
+      [:GDALRasterAttributeTableH],
+      :int
+    attach_function :GDALRATTranslateToColorTable,
+      [:GDALRasterAttributeTableH, :int],
+      :GDALColorTableH
+    attach_function :GDALRATDumpReadable,
+      [:GDALRasterAttributeTableH, :string],
+      :void
 
     # Register all drivers!
     FFI::GDAL.GDALAllRegister
