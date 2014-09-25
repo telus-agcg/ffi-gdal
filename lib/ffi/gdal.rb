@@ -199,7 +199,7 @@ module FFI
     attach_function :GDALGetPaletteInterpretationName, [GDALPaletteInterp], :string
     attach_function :GDALGetPaletteInterpretation, [:GDALColorTableH], GDALPaletteInterp
     attach_function :GDALGetColorEntryCount, [:GDALColorTableH], :int
-    attach_function :GDALGetColorEntry, [:GDALColorTableH, :int], GDALColorEntry
+    attach_function :GDALGetColorEntry, [:GDALColorTableH, :int], GDALColorEntry.ptr
     attach_function :GDALGetColorEntryAsRGB, [:GDALColorTableH, :int, GDALColorEntry], :int
 
     attach_function :GDALAllRegister, [], :void

@@ -23,10 +23,10 @@ module GDAL
       c_pointer.nil? || c_pointer.null?
     end
 
+    # Usually :GPI_RGB.
+    #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      #return GDALPaletteInterp[0] if null?
-
       GDALGetPaletteInterpretation(c_pointer)
     end
 
@@ -42,8 +42,7 @@ module GDAL
     def color_entry(index)
       return nil if null?
 
-      ptr = GDALGetColorEntry(c_pointer, index)
-      GDALColorEntry.new(ptr)
+      GDALGetColorEntry(c_pointer, index)
     end
 
     # @param index [Fixnum]

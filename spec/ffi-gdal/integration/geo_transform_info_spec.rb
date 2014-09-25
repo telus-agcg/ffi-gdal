@@ -6,7 +6,7 @@ require 'ffi-gdal'
 TIF_FILES.each do |file|
   dataset =  GDAL::Dataset.open(file, 'r')
 
-  describe 'Raster Band Info' do
+  describe 'GeoTransform Info' do
     after :all do
       dataset.close
     end
