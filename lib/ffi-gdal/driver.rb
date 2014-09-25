@@ -104,7 +104,7 @@ module GDAL
     # @return [GDAL::Dataset] Returns the *closed* dataset.  You'll need to
     #   reopen it if you with to continue working with it.
     # @todo Implement options.
-    def create_dataset(filename, x_size, y_size, bands: 1, type: :GDT_Byte, **options, &block)
+    def create_dataset(filename, x_size, y_size, bands: 1, type: :GDT_Byte, **options)
       log "creating dataset with size #{x_size},#{y_size}"
 
       dataset_pointer = GDALCreate(@gdal_driver_handle,
@@ -119,7 +119,7 @@ module GDAL
       raise CreateFail if dataset_pointer.null?
 
       dataset = Dataset.new(dataset_pointer)
-      block.call(dataset) if block_given?
+      yield(dataset) if block_given?
       dataset.close
 
       dataset
