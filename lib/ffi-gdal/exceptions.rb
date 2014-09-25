@@ -11,4 +11,7 @@ module GDAL
 
   class CreateFail < StandardError
   end
+
+  class RequiredBandNotFound < StandardError
+  end
 end

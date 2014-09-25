@@ -31,6 +31,40 @@ module GDAL
       new(pointer)
     end
 
+    # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
+    # a GDAL::RequiredBandNotFound if one of those band types isn't found.
+    #
+    # @param source [String] Path to the dataset that contains the red and NIR
+    #   bands.
+    # @param destination [String] Path to output the new dataset to.
+    # @param driver_name [String] The type of dataset to create.
+    def self.extract_ndvi(source, destination, driver_name: 'GTiff')
+      dataset = open(source, 'r')
+      red = dataset.red_band
+      nir = dataset.undefined_band
+      if red.nil?
+        fail RequiredBandNotFound, 'Red band not found.'
+      elsif nir.nil?
+        fail RequiredBandNotFound, 'Near-infrared'
+      end
+
+      the_array = dataset.calculate_ndvi(red.to_a, nir.to_a)
+
+      geo_transform = dataset.geo_transform
+      projection = dataset.projection
+      rows = dataset.raster_y_size
+      columns = dataset.raster_x_size
+
+      driver = GDAL::Driver.by_name(driver_name)
+      driver.create_dataset(destination, columns, rows) do |ndvi_dataset|
+        ndvi_dataset.geo_transform = geo_transform
+        ndvi_dataset.projection = projection
+
+        ndvi_band = ndvi_dataset.raster_band(1)
+        ndvi_band.write_array(the_array)
+      end
+    end
+
     # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
     def initialize(dataset_pointer)
       @gdal_dataset = dataset_pointer
@@ -155,6 +189,7 @@ module GDAL
     end
 
     # @param new_transform [GDAL::GeoTransform]
+    # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = new_transform.c_pointer.dup
       cpl_err = GDALSetGeoTransform(@gdal_dataset, new_pointer)
@@ -209,6 +244,27 @@ module GDAL
       each_band do |band|
         result = yield(band)
         return band if result
+      end
+    end
+
+    # @param red_band_array [NArray]
+    # @param nir_band_array [NArray]
+    # @return [NArray]
+    def calculate_ndvi(red_band_array, nir_band_array)
+      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+    end
+
+    # @return [GDAL::RasterBand]
+    def red_band
+      find_band do |band|
+        band.color_interpretation == :GCI_RedBand
+      end
+    end
+
+    # @return [GDAL::RasterBand]
+    def undefined_band
+      find_band do |band|
+        band.color_interpretation == :GCI_Undefined
       end
     end
   end
