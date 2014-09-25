@@ -239,6 +239,33 @@ TIF_FILES.each do |file|
       end
     end
 
+    describe '#default_histogram' do
+      let!(:histogram) { subject.default_histogram }
+
+      it 'returns a Hash with :mininum, :maximum, :buckets, and :totals' do
+        expect(histogram).to be_a Hash
+        expect(histogram.keys).to eq %i[minimum maximum buckets totals]
+      end
+
+      it 'has :mimimum as a Float' do
+        expect(histogram[:minimum]).to be_a Float
+      end
+
+      it 'has :maximum as a Float' do
+        expect(histogram[:maximum]).to be_a Float
+      end
+
+      it 'has :buckets as a Fixnum' do
+        expect(histogram[:buckets]).to be_a Fixnum
+      end
+
+      it 'has :totals as an Array of 256 Fixnums' do
+        expect(histogram[:totals]).to be_an Array
+        expect(histogram[:totals].size).to eq 256
+        expect(histogram[:totals].all? { |t| t.class == Fixnum}).to eq true
+      end
+    end
+
     describe '#compute_min_max' do
       it 'returns a 2-element Array of Floats' do
         expect(subject.compute_min_max).to be_a Array

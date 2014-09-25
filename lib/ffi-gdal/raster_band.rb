@@ -304,78 +304,128 @@ module GDAL
       GDALSetRasterUnitType(@gdal_raster_band, new_unit_type)
     end
 
-    # def default_histogram(force=false)
-    #   min_pointer = FFI::MemoryPointer.new(:double)
-    #   max_pointer = FFI::MemoryPointer.new(:double)
-    #   buckets_pointer = FFI::MemoryPointer.new(:int)
-    #   histogram_pointer = FFI::MemoryPointer.new(:int, 256)
-    #   progress = Proc.new do |double, string, pointer|
-    #     puts "progress: #{string}"
-    #     puts "progress: #{double}"
-    #     true
-    #   end
+    # Gets the default raster histogram.  Results are returned as a Hash so some
+    # metadata about the histogram can be returned.  Example:
     #
-    #   cpl_err = GDALGetDefaultHistogram(@gdal_raster_band,
-    #     min_pointer,
-    #     max_pointer,
-    #     buckets_pointer,
-    #     histogram_pointer,
-    #     force,
-    #     progress,
-    #     nil
-    #   )
+    #   {
+    #     :mininum => -0.9,
+    #     :maximum => 255.9,
+    #     :buckets => 256,
+    #     :totals => [
+    #       3954, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0,
+    #       0, 0, 10, 27, 201, 699, 1766, 3472, 5013, 6464, 7698, 8352,
+    #       9039, 10054, 11378, 13132, 14377, 14371, 14221, 14963, 14740,
+    #       14379, 13724, 12938, 11318, 9828, 8504, 7040, 5700, 4890,
+    #       4128, 3276, 2749, 2322, 1944, 1596, 1266, 1050, 784, 663,
+    #       547, 518, 367, 331, 309, 279, 178, 169, 162, 149, 109, 98,
+    #       90, 89, 82, 85, 74, 75, 42, 40, 39, 35, 39, 36, 36, 27, 20,
+    #       12, 13, 19, 16, 12, 11, 6, 6, 8, 12, 6, 8, 11, 3, 7, 9, 2,
+    #       5, 2, 5, 1, 4, 0, 0, 1, 0, 1, 2, 1, 0, 2, 1, 0, 0, 1, 0, 1,
+    #       1, 1, 0, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    #     ]
+    #   }
     #
-    #   min = min_pointer.read_double
-    #   max = max_pointer.read_double
-    #   buckets = buckets_pointer.read_int
-    #   puts "min: #{min}"
-    #   puts "max: #{max}"
-    #   puts "buckets: #{buckets}"
-    #   h = histogram_pointer.dup
-    #   bucket_size = (max - min) / buckets
-    #   puts "bucket size: #{bucket_size}"
-    #
-    #   case cpl_err
-    #   when :warning then return nil
-    #   when :failure then raise CPLError
-    #   when :none
-    #     h.read_array_of_int(256)
-    #
-    #   end
-    # end
+    # @param force [Boolean] Forces the computation of the histogram.  If
+    #   +false+ and the default histogram isn't available, this returns nil.
+    # @param block [Proc] No required, but can be used to output progess info
+    #   during processing.
+    # @yieldparam completion [Float] The ration completed as a decimal.
+    # @yieldparam message [String] Message string to display.
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
+    #   totals => Array<Fixnum>}]
+    def default_histogram(force=false, &block)
+      min_pointer = FFI::MemoryPointer.new(:double)
+      max_pointer = FFI::MemoryPointer.new(:double)
+      buckets_pointer = FFI::MemoryPointer.new(:int)
+      histogram_pointer = FFI::MemoryPointer.new(:pointer)
 
-    # def histogram(min, max, buckets, include_out_of_range=false, approx_ok=false)
-    #   histogram_pointer = FFI::MemoryPointer.new(:int, buckets)
+      progress_proc = block || Proc.new do |completion, message, progress_arg|
+        puts "completion: #{completion * 100}"
+        puts "message: #{message}"
+        true
+      end
+
+      cpl_err = GDALGetDefaultHistogram(@gdal_raster_band,
+        min_pointer,
+        max_pointer,
+        buckets_pointer,
+        histogram_pointer,
+        force,
+        progress_proc,
+        nil
+      )
+
+      min = min_pointer.read_double
+      max = max_pointer.read_double
+      buckets = buckets_pointer.read_int
+      totals = histogram_pointer.get_pointer(0).read_array_of_int(buckets)
+
+      case cpl_err.to_ruby
+      when :none, :debug
+        {
+          minimum: min,
+          maximum: max,
+          buckets: buckets,
+          totals: totals
+        }
+      when :warning then return nil
+      when :failure, :fatal then raise CPLError
+      end
+    end
+
+    # Computes a histogram using the given inputs.  If you just want the default
+    # histogram, use #default_histogram.
     #
-    #   progress = Proc.new do |completion, message, progress_arg|
-    #     puts "progress: #{completion * 100}"
-    #     puts "progress: #{message}"
-    #     #puts "progress: #{progress_arg.read_string}"
-    #     true
-    #   end
-    #
-    #   cpl_err = GDALGetRasterHistogram(@gdal_raster_band,
-    #     min,
-    #     max,
-    #     buckets,
-    #     histogram_pointer,
-    #     include_out_of_range,
-    #     approx_ok,
-    #     progress,
-    #     'doing things'
-    #   )
-    #
-    #   puts "result: #{cpl_err}"
-    #   puts "min: #{min}"
-    #   puts "max: #{max}"
-    #
-    #   case cpl_err
-    #   when :warning then return nil
-    #   when :failure then raise CPLError
-    #   when :none
-    #     histogram_pointer.read_array_of_int(0)
-    #   end
-    # end
+    # @param min [Float]
+    # @param max [Float]
+    # @param buckets [Fixnum]
+    # @param include_out_of_range [Boolean]
+    # @param approx_ok [Boolean]
+    # @param block [Proc] No required, but can be used to output progess info
+    #   during processing.
+    # @yieldparam completion [Float] The ration completed as a decimal.
+    # @yieldparam message [String] Message string to display.
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
+    #   totals => Array<Fixnum>}]
+    def histogram(min, max, buckets, include_out_of_range: false,
+      approx_ok: true, &block)
+      histogram_pointer = FFI::MemoryPointer.new(:int, buckets)
+
+      progress_proc = block || Proc.new do |completion, message, progress_arg|
+        puts "progress: #{completion * 100}"
+        true
+      end
+
+      cpl_err = GDALGetRasterHistogram(@gdal_raster_band,
+        min.to_f,
+        max.to_f,
+        buckets,
+        histogram_pointer,
+        include_out_of_range,
+        approx_ok,
+        progress_proc,
+        'doing things'
+      )
+      totals = histogram_pointer.read_array_of_int(0)
+
+      case cpl_err.to_ruby
+      when :none
+        {
+          minimum: min,
+          maximum: max,
+          buckets: buckets,
+          totals: totals
+        }
+      when :warning then return nil
+      when :failure then raise CPLError
+      end
+    end
 
     # TODO: Something about the pointer allocation smells here...
     #def read(x_offset: 0, y_offset: 0, x_size: x_size, y_size: 1, pixel_space: 0, line_space: 0)
