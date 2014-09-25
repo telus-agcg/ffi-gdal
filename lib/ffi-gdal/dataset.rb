@@ -141,9 +141,23 @@ module GDAL
       GDALAccess[flag]
     end
 
-    # @return [Array]
+    # @return [GDAL::GeoTransform]
     def geo_transform
       @geo_transform ||= GeoTransform.new(@gdal_dataset)
+    end
+
+    # @param new_transform [GDAL::GeoTransform, FFI::Pointer]
+    # @return [Boolean] +true+ if setting was successful.
+    def geo_transform=(new_transform)
+      geo_pointer = if new_transform.is_a? GDAL::GeoTransform
+        new_transform.c_pointer
+      else
+        new_transform
+      end
+
+      cpl_err = GDALSetGeoTransform(@gdal_dataset, geo_pointer.read_pointer)
+
+      cpl_err.to_bool
     end
 
     # @return [Fixnum]

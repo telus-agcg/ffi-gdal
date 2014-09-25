@@ -8,21 +8,50 @@ module GDAL
     attr_accessor :gdal_dataset
 
     # @param gdal_dataset [FFI::Pointer]
-    def initialize(gdal_dataset=nil)
-      @gdal_dataset = gdal_dataset || FFI::MemoryPointer.new(:pointer)
+    def initialize(dataset, geo_transform_pointer: nil)
+      @gdal_dataset = if dataset.nil?
+        FFI::MemoryPointer.new(:pointer)
+      elsif dataset.is_a? GDAL::Dataset
+        dataset.c_pointer
+      else
+        dataset
+      end
+
+      @gdal_geo_transform = if geo_transform_pointer
+        geo_transform_pointer
+      else
+        container_pointer = FFI::MemoryPointer.new(:double, 6)
+        GDALGetGeoTransform(@gdal_dataset, container_pointer)
+        container_pointer
+      end
     end
 
-    def gdal_geo_transform
-      return @gdal_geo_transform if @gdal_geo_transform
-
-      @gdal_geo_transform = FFI::MemoryPointer.new(:double, 6)
-      GDALGetGeoTransform(@gdal_dataset, @gdal_geo_transform)
-
+    def c_pointer
       @gdal_geo_transform
     end
 
     def null?
-      gdal_geo_transform.null?
+      c_pointer.null?
+    end
+
+    # All attributes as an Array, in the order:
+    #   * x_origin
+    #   * pixel_width
+    #   * x_rotation
+    #   * y_origin
+    #   * y_rotation
+    #   * pixel_height
+    #
+    # @return [Array]
+    def to_a
+      [
+        x_origin,
+        pixel_width,
+        x_rotation,
+        y_origin,
+        y_rotation,
+        pixel_height
+      ]
     end
 
     # X-coordinate of the center of the upper left pixel.
@@ -32,7 +61,7 @@ module GDAL
     def x_origin
       return nil if null?
 
-      gdal_geo_transform[0].read_double
+      c_pointer[0].read_double
     end
 
     # AKA X-pixel size.
@@ -42,7 +71,7 @@ module GDAL
     def pixel_width
       return nil if null?
 
-      gdal_geo_transform[1].read_double
+      c_pointer[1].read_double
     end
 
     # Rotation about the x-axis.
@@ -52,7 +81,7 @@ module GDAL
     def x_rotation
       return nil if null?
 
-      gdal_geo_transform[2].read_double
+      c_pointer[2].read_double
     end
 
     # Y-coordinate of the center of the upper left pixel.
@@ -62,7 +91,7 @@ module GDAL
     def y_origin
       return nil if null?
 
-      gdal_geo_transform[3].read_double
+      c_pointer[3].read_double
     end
 
     # Rotation about the y-axis.
@@ -72,7 +101,7 @@ module GDAL
     def y_rotation
       return nil if null?
 
-      gdal_geo_transform[4].read_double
+      c_pointer[4].read_double
     end
 
     # AKA Y-pixel size.
@@ -82,7 +111,7 @@ module GDAL
     def pixel_height
       return nil if null?
 
-      gdal_geo_transform[5].read_double
+      c_pointer[5].read_double
     end
 
     # The calculated UTM easting of the pixel on the map.
