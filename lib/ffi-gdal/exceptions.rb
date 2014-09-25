@@ -1,7 +1,7 @@
 module GDAL
-  class UnsupportedFileFormat < StandardError
+  class OpenFailure < StandardError
     def initialize(file, msg=nil)
-      message = msg || "'#{file}' not recognised as a supported file format"
+      message = msg || "Unabled to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
     end
   end

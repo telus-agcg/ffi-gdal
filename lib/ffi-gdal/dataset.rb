@@ -25,7 +25,7 @@ module GDAL
     def self.open(path, access_flag)
       file_path = ::File.expand_path(path)
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-      raise UnsupportedFileFormat.new(file_path) if pointer.null?
+      raise OpenFailure.new(file_path) if pointer.null?
 
       new(pointer)
     end
@@ -35,6 +35,8 @@ module GDAL
       @gdal_dataset = dataset_pointer
       @last_known_file_list = []
       @open = true
+      close_me = -> { self.close }
+      ObjectSpace.define_finalizer self, close_me
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
@@ -119,7 +121,7 @@ module GDAL
       end
 
       @raster_bands[raster_index] =
-        GDAL::RasterBand.new(@gdal_dataset, raster_index)
+        GDAL::RasterBand.new(@gdal_dataset, band_id: raster_index)
     end
 
     # @return [String]

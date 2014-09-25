@@ -34,11 +34,11 @@ module FFI
       #------------------------------------------------------------------------
       # Enums
       #------------------------------------------------------------------------
-      CPLErr = enum :none, 0,
-        :debug, 1,
-        :warning, 2,
-        :failure, 3,
-        :fatal, 4
+      CPLErr = enum :CE_None, 0,
+        :CE_Debug, 1,
+        :CE_Warning, 2,
+        :CE_Failure, 3,
+        :CE_Fatal, 4
 
       callback :CPLErrorHandler, [CPLErr, :int, :string], :void
 
