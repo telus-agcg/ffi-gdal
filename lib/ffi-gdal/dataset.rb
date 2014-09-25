@@ -132,6 +132,14 @@ module GDAL
       GDALGetProjectionRef(@gdal_dataset)
     end
 
+    # @param new_projection [String]
+    # @return [Boolean]
+    def projection=(new_projection)
+      cpl_err = GDALSetProjection(@gdal_dataset, new_projection)
+
+      cpl_err.to_bool
+    end
+
     # @return [Symbol]
     def access_flag
       return nil if null?
