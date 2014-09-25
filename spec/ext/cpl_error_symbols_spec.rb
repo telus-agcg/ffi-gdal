@@ -6,8 +6,8 @@ describe Symbol do
     context ':CE_None' do
       subject { :CE_None }
 
-      it 'returns true' do
-        expect(subject.to_ruby).to eq true
+      it 'returns :none' do
+        expect(subject.to_ruby).to eq :none
       end
 
       context 'with an explicit value' do
@@ -15,19 +15,13 @@ describe Symbol do
           expect(subject.to_ruby(none: :pants)).to eq :pants
         end
       end
-
-      context 'with a block' do
-        it 'returns what the block returns' do
-          expect(subject.to_ruby { :pants }).to eq :pants
-        end
-      end
     end
 
     context ':CE_Debug' do
       subject { :CE_Debug }
 
-      it 'returns true' do
-        expect(subject.to_ruby).to eq true
+      it 'returns :debug' do
+        expect(subject.to_ruby).to eq :debug
       end
 
       context 'with an explicit value' do
@@ -35,19 +29,13 @@ describe Symbol do
           expect(subject.to_ruby(debug: :pants)).to eq :pants
         end
       end
-
-      context 'with a block' do
-        it 'returns what the block returns' do
-          expect(subject.to_ruby { :pants }).to eq :pants
-        end
-      end
     end
 
     context ':CE_Warning' do
       subject { :CE_Warning }
 
-      it 'returns true' do
-        expect(subject.to_ruby).to eq false
+      it 'returns :warning' do
+        expect(subject.to_ruby).to eq :warning
       end
 
       context 'with an explicit value' do
@@ -55,11 +43,36 @@ describe Symbol do
           expect(subject.to_ruby(warning: :pants)).to eq :pants
         end
       end
+    end
+  end
 
-      context 'with a block' do
-        it 'returns what the block returns' do
-          expect(subject.to_ruby { :pants }).to eq :pants
-        end
+  describe '#to_bool' do
+    context ':CE_None' do
+      subject { :CE_None.to_bool }
+      it { is_expected.to eq true }
+    end
+
+    context ':CE_Debug' do
+      subject { :CE_Debug.to_bool }
+      it { is_expected.to eq true }
+    end
+
+    context ':CE_Warning' do
+      subject { :CE_Warning.to_bool }
+      it { is_expected.to eq false }
+    end
+
+    context ':CE_Failure' do
+      subject { :CE_Failure }
+      it 'raises a CPLErrFailure' do
+        expect { subject.to_bool }.to raise_error GDAL::CPLErrFailure
+      end
+    end
+
+    context ':CE_Fatal' do
+      subject { :CE_Fatal }
+      it 'raises a CPLErrFailure' do
+        expect { subject.to_bool }.to raise_error GDAL::CPLErrFailure
       end
     end
   end

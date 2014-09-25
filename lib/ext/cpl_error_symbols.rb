@@ -15,17 +15,23 @@ class ::Symbol
   #   cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, new_name, old_name)
   #   cpl_err.to_ruby      # returns the default value
   #   cpl_err.to_ruby { raise 'Crap!' }
-  def to_ruby(none: true, debug: true, warning: false, failure: nil, fatal: nil)
-    return yield if block_given?
-
+  def to_ruby(none: :none, debug: :debug, warning: :warning, failure: :failure, fatal: :fatal)
     case self
     when :CE_None then none
     when :CE_Debug then debug
     when :CE_Warning then warning
-    when :CE_Failure 
-      failure.nil? ? (raise CPLErrFailure) : failure
-    when :CE_Fatal
-      fatal.nil? ? (raise CPLErrFailure) : fatal
+    when :CE_Failure then failure
+    when :CE_Fatal then fatal
+    end
+  end
+
+  def to_bool
+    case self
+    when :CE_None then true
+    when :CE_Debug then true
+    when :CE_Warning then false
+    when :CE_Failure then raise GDAL::CPLErrFailure
+    when :CE_Fatal then raise GDAL::CPLErrFailure
     end
   end
 end

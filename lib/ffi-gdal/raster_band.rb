@@ -227,13 +227,16 @@ module GDAL
 
       minimum = min.null? ? 0.0 : min.read_double
 
-      cpl_err.to_ruby(warning: {}) do
+      case cpl_err.to_ruby
+      when :none, :debug
         {
           minimum: min.read_double,
           maximum: max.read_double,
           mean: mean.read_double,
           standard_deviation: standard_deviation.read_double
         }
+      when :warning then {}
+      when :failure, :fatal then raise CPLErrFailure
       end
     end
 

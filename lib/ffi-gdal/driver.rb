@@ -84,7 +84,7 @@ module GDAL
     def copy_dataset_files(new_name, old_name)
       cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, new_name, old_name)
 
-      cpl_err.to_ruby
+      cpl_err.to_bool
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -128,7 +128,7 @@ module GDAL
     def delete_dataset(file_name)
       cpl_err = GDALDeleteDataset(@gdal_driver_handle, file_name)
 
-      cpl_err.to_ruby
+      cpl_err.to_bool
     end
 
     # @param new_name [String]
@@ -139,7 +139,7 @@ module GDAL
       cpl_err = GDALRenameDataset(@gdal_driver_handle, new_name, old_name)
 
 
-      cpl_err.to_ruby
+      cpl_err.to_bool
     end
   end
 end
