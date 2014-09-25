@@ -21,9 +21,11 @@ module GDAL
         geo_transform_pointer
       else
         container_pointer = FFI::MemoryPointer.new(:double, 6)
-        GDALGetGeoTransform(@gdal_dataset, container_pointer)
+        GDALGetGeoTransform(@gdal_dataset, container_pointer).to_ruby
         container_pointer
       end
+
+      to_a
     end
 
     def c_pointer
@@ -31,7 +33,7 @@ module GDAL
     end
 
     def null?
-      c_pointer.null?
+      @gdal_geo_transform.null?
     end
 
     # All attributes as an Array, in the order:
@@ -61,7 +63,7 @@ module GDAL
     def x_origin
       return nil if null?
 
-      c_pointer[0].read_double
+      @gdal_geo_transform[0].read_double
     end
 
     # AKA X-pixel size.
@@ -71,7 +73,7 @@ module GDAL
     def pixel_width
       return nil if null?
 
-      c_pointer[1].read_double
+      @gdal_geo_transform[1].read_double
     end
 
     # Rotation about the x-axis.
@@ -81,7 +83,7 @@ module GDAL
     def x_rotation
       return nil if null?
 
-      c_pointer[2].read_double
+      @gdal_geo_transform[2].read_double
     end
 
     # Y-coordinate of the center of the upper left pixel.
@@ -91,7 +93,7 @@ module GDAL
     def y_origin
       return nil if null?
 
-      c_pointer[3].read_double
+      @gdal_geo_transform[3].read_double
     end
 
     # Rotation about the y-axis.
@@ -101,7 +103,7 @@ module GDAL
     def y_rotation
       return nil if null?
 
-      c_pointer[4].read_double
+      @gdal_geo_transform[4].read_double
     end
 
     # AKA Y-pixel size.
@@ -111,7 +113,7 @@ module GDAL
     def pixel_height
       return nil if null?
 
-      c_pointer[5].read_double
+      @gdal_geo_transform[5].read_double
     end
 
     # The calculated UTM easting of the pixel on the map.

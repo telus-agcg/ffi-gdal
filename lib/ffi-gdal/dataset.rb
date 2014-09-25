@@ -154,18 +154,13 @@ module GDAL
       @geo_transform ||= GeoTransform.new(@gdal_dataset)
     end
 
-    # @param new_transform [GDAL::GeoTransform, FFI::Pointer]
-    # @return [Boolean] +true+ if setting was successful.
+    # @param new_transform [GDAL::GeoTransform]
     def geo_transform=(new_transform)
-      geo_pointer = if new_transform.is_a? GDAL::GeoTransform
-        new_transform.c_pointer
-      else
-        new_transform
-      end
-
-      cpl_err = GDALSetGeoTransform(@gdal_dataset, geo_pointer.read_pointer)
-
+      new_pointer = new_transform.c_pointer.dup
+      cpl_err = GDALSetGeoTransform(@gdal_dataset, new_pointer)
       cpl_err.to_bool
+
+      @geo_transform = GeoTransform.new(@gdal_dataset, geo_transform_pointer: new_pointer)
     end
 
     # @return [Fixnum]
