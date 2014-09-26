@@ -39,31 +39,67 @@ module GDAL
     # @param destination [String] Path to output the new dataset to.
     # @param driver_name [String] The type of dataset to create.
     def self.extract_ndvi(source, destination, driver_name: 'GTiff')
-      dataset = open(source, 'r')
-      red = dataset.red_band
-      nir = dataset.undefined_band
-      if red.nil?
-        fail RequiredBandNotFound, 'Red band not found.'
-      elsif nir.nil?
-        fail RequiredBandNotFound, 'Near-infrared'
+      extract(source, destination, driver_name) do |original, ndvi_dataset|
+        red = original.red_band
+        nir = original.undefined_band
+
+        if red.nil?
+          fail RequiredBandNotFound, 'Red band not found.'
+        elsif nir.nil?
+          fail RequiredBandNotFound, 'Near-infrared'
+        end
+
+        the_array = original.calculate_ndvi(red.to_a, nir.to_a)
+
+        ndvi_band = ndvi_dataset.raster_band(1)
+        ndvi_band.write_array(the_array)
       end
+    end
 
-      the_array = dataset.calculate_ndvi(red.to_a, nir.to_a)
+    def self.extract_gndvi(source, destination, driver_name: 'GTiff')
+      extract(source, destination, driver_name) do |original, gndvi_dataset|
+        green = original.green_band
+        nir = original.undefined_band
 
+        if green.nil?
+          fail RequiredBandNotFound, 'Green band not found.'
+        elsif nir.nil?
+          fail RequiredBandNotFound, 'Near-infrared'
+        end
+
+        the_array = original.calculate_ndvi(green.to_a, nir.to_a)
+
+        gndvi_band = gndvi_dataset.raster_band(1)
+        gndvi_band.write_array(the_array)
+      end
+    end
+
+    def self.extract_nir(source, destination, driver_name: 'GTiff')
+      extract(source, destination, driver_name) do |original, nir_dataset|
+        nir = original.undefined_band
+        fail RequiredBandNotFound, 'Near-infrared' if nir.nil?
+
+        nir_band = nir_dataset.raster_band(1)
+        nir_band.write_array(nir.to_a)
+      end
+    end
+
+    def self.extract(source, destination, driver_name)
+      dataset = open(source, 'r')
       geo_transform = dataset.geo_transform
       projection = dataset.projection
       rows = dataset.raster_y_size
       columns = dataset.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, columns, rows) do |ndvi_dataset|
-        ndvi_dataset.geo_transform = geo_transform
-        ndvi_dataset.projection = projection
+      driver.create_dataset(destination, columns, rows) do |new_dataset|
+        new_dataset.geo_transform = geo_transform
+        new_dataset.projection = projection
 
-        ndvi_band = ndvi_dataset.raster_band(1)
-        ndvi_band.write_array(the_array)
+        yield dataset, new_dataset
       end
     end
+    private_class_method :extract
 
     # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
     def initialize(dataset_pointer)
@@ -258,6 +294,20 @@ module GDAL
     def red_band
       find_band do |band|
         band.color_interpretation == :GCI_RedBand
+      end
+    end
+
+    # @return [GDAL::RasterBand]
+    def green_band
+      find_band do |band|
+        band.color_interpretation == :GCI_GreenBand
+      end
+    end
+
+    # @return [GDAL::RasterBand]
+    def blue_band
+      find_band do |band|
+        band.color_interpretation == :GCI_BlueBand
       end
     end
 
