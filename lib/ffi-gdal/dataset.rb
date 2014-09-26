@@ -27,7 +27,7 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
       uri = URI.parse(path)
-      file_path = u.scheme.nil? ? ::File.expand_path(path) : path
+      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
 
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
       raise OpenFailure.new(file_path) if pointer.null?
@@ -53,7 +53,7 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = original.calculate_ndvi(red.to_a, nir.to_a)
+        the_array = calculate_ndvi(red.to_a, nir.to_a)
 
         ndvi_band = ndvi_dataset.raster_band(1)
         ndvi_band.write_array(the_array)
@@ -71,7 +71,7 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = original.calculate_ndvi(green.to_a, nir.to_a)
+        the_array = calculate_ndvi(green.to_a, nir.to_a)
 
         gndvi_band = gndvi_dataset.raster_band(1)
         gndvi_band.write_array(the_array)
@@ -112,6 +112,13 @@ module GDAL
         new_blue_band = new_dataset.raster_band(3)
         new_blue_band.write_array(original_blue_band.to_a)
       end
+    end
+
+    # @param red_band_array [NArray]
+    # @param nir_band_array [NArray]
+    # @return [NArray]
+    def self.calculate_ndvi(red_band_array, nir_band_array)
+      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
     end
 
     def self.extract_8bit(source, destination, driver_name)
@@ -313,39 +320,40 @@ module GDAL
       end
     end
 
-    # @param red_band_array [NArray]
-    # @param nir_band_array [NArray]
-    # @return [NArray]
-    def calculate_ndvi(red_band_array, nir_band_array)
-      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
-    end
-
     # @return [GDAL::RasterBand]
     def red_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_RedBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def green_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_GreenBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def blue_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_BlueBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def undefined_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_Undefined
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
   end
 end
