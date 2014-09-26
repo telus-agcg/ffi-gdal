@@ -39,7 +39,7 @@ module GDAL
     # @param destination [String] Path to output the new dataset to.
     # @param driver_name [String] The type of dataset to create.
     def self.extract_ndvi(source, destination, driver_name: 'GTiff')
-      extract(source, destination, driver_name) do |original, ndvi_dataset|
+      extract_8bit(source, destination, driver_name) do |original, ndvi_dataset|
         red = original.red_band
         nir = original.undefined_band
 
@@ -57,7 +57,7 @@ module GDAL
     end
 
     def self.extract_gndvi(source, destination, driver_name: 'GTiff')
-      extract(source, destination, driver_name) do |original, gndvi_dataset|
+      extract_8bit(source, destination, driver_name) do |original, gndvi_dataset|
         green = original.green_band
         nir = original.undefined_band
 
@@ -75,7 +75,7 @@ module GDAL
     end
 
     def self.extract_nir(source, destination, driver_name: 'GTiff')
-      extract(source, destination, driver_name) do |original, nir_dataset|
+      extract_8bit(source, destination, driver_name) do |original, nir_dataset|
         nir = original.undefined_band
         fail RequiredBandNotFound, 'Near-infrared' if nir.nil?
 
@@ -84,7 +84,33 @@ module GDAL
       end
     end
 
-    def self.extract(source, destination, driver_name)
+    def self.extract_natural_color(source, destination, driver_name: 'GTiff')
+      original_dataset = open(source, 'r')
+      geo_transform = original_dataset.geo_transform
+      projection = original_dataset.projection
+      rows = original_dataset.raster_y_size
+      columns = original_dataset.raster_x_size
+
+      driver = GDAL::Driver.by_name(driver_name)
+      driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
+        new_dataset.geo_transform = geo_transform
+        new_dataset.projection = projection
+        original_red_band = original_dataset.red_band
+        original_green_band = original_dataset.green_band
+        original_blue_band = original_dataset.blue_band
+
+        new_red_band = new_dataset.raster_band(1)
+        new_red_band.write_array(original_red_band.to_a)
+
+        new_green_band = new_dataset.raster_band(2)
+        new_green_band.write_array(original_green_band.to_a)
+
+        new_blue_band = new_dataset.raster_band(3)
+        new_blue_band.write_array(original_blue_band.to_a)
+      end
+    end
+
+    def self.extract_8bit(source, destination, driver_name)
       dataset = open(source, 'r')
       geo_transform = dataset.geo_transform
       projection = dataset.projection
@@ -99,7 +125,7 @@ module GDAL
         yield dataset, new_dataset
       end
     end
-    private_class_method :extract
+    private_class_method :extract_8bit
 
     # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
     def initialize(dataset_pointer)
