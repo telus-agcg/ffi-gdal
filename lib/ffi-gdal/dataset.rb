@@ -53,7 +53,7 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = original.calculate_ndvi(red.to_a, nir.to_a)
+        the_array = calculate_ndvi(red.to_a, nir.to_a)
 
         ndvi_band = ndvi_dataset.raster_band(1)
         ndvi_band.write_array(the_array)
@@ -71,7 +71,7 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = original.calculate_ndvi(green.to_a, nir.to_a)
+        the_array = calculate_ndvi(green.to_a, nir.to_a)
 
         gndvi_band = gndvi_dataset.raster_band(1)
         gndvi_band.write_array(the_array)
@@ -112,6 +112,13 @@ module GDAL
         new_blue_band = new_dataset.raster_band(3)
         new_blue_band.write_array(original_blue_band.to_a)
       end
+    end
+
+    # @param red_band_array [NArray]
+    # @param nir_band_array [NArray]
+    # @return [NArray]
+    def self.calculate_ndvi(red_band_array, nir_band_array)
+      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
     end
 
     def self.extract_8bit(source, destination, driver_name)
@@ -311,13 +318,6 @@ module GDAL
         result = yield(band)
         return band if result
       end
-    end
-
-    # @param red_band_array [NArray]
-    # @param nir_band_array [NArray]
-    # @return [NArray]
-    def calculate_ndvi(red_band_array, nir_band_array)
-      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
     end
 
     # @return [GDAL::RasterBand]
