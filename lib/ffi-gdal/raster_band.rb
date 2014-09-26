@@ -337,7 +337,8 @@ module GDAL
     # @yieldparam completion [Float] The ration completed as a decimal.
     # @yieldparam message [String] Message string to display.
     # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
-    #   totals => Array<Fixnum>}]
+    #   totals => Array<Fixnum>}] Returns +nil+ if no default histogram is
+    #   available.
     def default_histogram(force=false, &block)
       min_pointer = FFI::MemoryPointer.new(:double)
       max_pointer = FFI::MemoryPointer.new(:double)
@@ -363,7 +364,12 @@ module GDAL
       min = min_pointer.read_double
       max = max_pointer.read_double
       buckets = buckets_pointer.read_int
-      totals = histogram_pointer.get_pointer(0).read_array_of_int(buckets)
+
+      totals = if buckets.zero?
+        []
+      else
+        histogram_pointer.get_pointer(0).read_array_of_int(buckets)
+      end
 
       case cpl_err.to_ruby
       when :none, :debug
