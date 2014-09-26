@@ -408,11 +408,11 @@ module GDAL
     # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
     #   totals => Array<Fixnum>}]
     def histogram(min, max, buckets, include_out_of_range: false,
-      approx_ok: true, &block)
       histogram_pointer = FFI::MemoryPointer.new(:int, buckets)
+      approx_ok: false, &block)
 
       progress_proc = block || Proc.new do |completion, message, progress_arg|
-        puts "progress: #{completion * 100}"
+        print "progress: #{completion * 100}\r"
         true
       end
 
