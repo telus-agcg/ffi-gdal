@@ -322,30 +322,38 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def red_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_RedBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def green_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_GreenBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def blue_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_BlueBand
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
     # @return [GDAL::RasterBand]
     def undefined_band
-      find_band do |band|
+      band = find_band do |band|
         band.color_interpretation == :GCI_Undefined
       end
+
+      band.is_a?(GDAL::RasterBand) ? band : nil
     end
   end
 end
