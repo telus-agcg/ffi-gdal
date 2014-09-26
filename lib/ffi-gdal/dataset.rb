@@ -1,3 +1,4 @@
+require 'uri'
 require_relative '../ffi/gdal'
 require_relative '../ffi-gdal'
 require_relative 'driver'
@@ -21,10 +22,13 @@ module GDAL
       'w' => :GA_Update
     }
 
-    # @param path [String] Path to the file that contains the dataset.
+    # @param path [String] Path to the file that contains the dataset.  Can be
+    #   a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
-      file_path = ::File.expand_path(path)
+      uri = URI.parse(path)
+      file_path = u.scheme.nil? ? ::File.expand_path(path) : path
+
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
       raise OpenFailure.new(file_path) if pointer.null?
 
