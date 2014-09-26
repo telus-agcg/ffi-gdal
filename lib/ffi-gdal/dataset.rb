@@ -27,7 +27,7 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
       uri = URI.parse(path)
-      file_path = u.scheme.nil? ? ::File.expand_path(path) : path
+      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
 
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
       raise OpenFailure.new(file_path) if pointer.null?
