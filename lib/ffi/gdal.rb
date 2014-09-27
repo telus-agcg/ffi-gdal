@@ -1,4 +1,41 @@
 require 'ffi'
+
+module FFI
+  module GDAL
+    extend ::FFI::Library
+
+    def self.search_paths
+      @search_paths ||= begin
+        return if ENV['GDAL_LIBRARY_PATH']
+
+        if FFI::Platform.windows?
+          ENV['PATH'].split(File::PATH_SEPARATOR)
+        else
+          %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib} /usr/lib/{x86_64,i386}-linux-gnu]
+        end
+      end
+    end
+
+    def self.find_lib(lib)
+      if ENV['GDAL_LIBRARY_PATH'] && File.file?(ENV['GDAL_LIBRARY_PATH'])
+        ENV['GDAL_LIBRARY_PATH']
+      else
+        Dir.glob(search_paths.map do |path|
+          File.expand_path(File.join(path, "#{lib}.#{FFI::Platform::LIBSUFFIX}"))
+        end).first
+      end
+    end
+
+    def self.gdal_library_path
+      return @gdal_library_path if @gdal_library_path
+
+      @gdal_library_path = find_lib('{lib,}gdal*')
+    end
+
+    ffi_lib(gdal_library_path)
+  end
+end
+
 require_relative 'gdal/version'
 require_relative 'gdal/cpl_conv'
 require_relative 'gdal/cpl_error'
@@ -13,16 +50,6 @@ require_relative '../ext/to_bool'
 
 module FFI
   module GDAL
-    extend ::FFI::Library
-    ffi_lib 'gdal'
-
-    include CPLError
-    include CPLConv
-    include CPLString
-    include CPLVSI
-    include OGRCore
-    include OGRAPI
-    include OGRSRSAPI
 
     #-----------------------------------------------------------------
     # Defines
