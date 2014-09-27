@@ -1,3 +1,8 @@
+### 0.0.4 / 2014-09-27
+
+* Bug fixes
+    * Fixed failure to load on Ubuntu 12.04 (GDAL v1.7.3).
+
 ### 0.0.3 / 2014-09-26
 
 * Improvements
