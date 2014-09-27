@@ -110,7 +110,7 @@ module FFI
     attach_function :CPLCloseShared, %i[pointer], :void
     attach_function :CPLGetSharedList, %i[pointer], :pointer
     attach_function :CPLDumpSharedList, %i[pointer], :void
-    attach_function :CPLCleanupSharedFileMutex, %i[], :void
+    #attach_function :CPLCleanupSharedFileMutex, %i[], :void
 
     attach_function :CPLDMSToDec, %i[string], :double
     attach_function :CPLDecToDMS, %i[double string int], :string
@@ -124,21 +124,21 @@ module FFI
     #---------
     # Zip Files
     #---------
-    attach_function :CPLCreateZip, %i[string pointer], :pointer
-    attach_function :CPLCreateFileInZip, %i[pointer string pointer], CPLErr
-    attach_function :CPLWriteFileInZip, %i[pointer pointer int], CPLErr
-    attach_function :CPLCloseFileInZip, %i[pointer], CPLErr
-    attach_function :CPLCloseZip, %i[pointer], CPLErr
-    attach_function :CPLZLibDeflate,
-      %i[pointer size_t int pointer size_t pointer],
-      :pointer
-    attach_function :CPLZLibInflate,
-      %i[pointer size_t pointer size_t pointer],
-      :pointer
+    #attach_function :CPLCreateZip, %i[string pointer], :pointer
+    #attach_function :CPLCreateFileInZip, %i[pointer string pointer], CPLErr
+    #attach_function :CPLWriteFileInZip, %i[pointer pointer int], CPLErr
+    #attach_function :CPLCloseFileInZip, %i[pointer], CPLErr
+    #attach_function :CPLCloseZip, %i[pointer], CPLErr
+    #attach_function :CPLZLibDeflate,
+    #  %i[pointer size_t int pointer size_t pointer],
+    #  :pointer
+    #attach_function :CPLZLibInflate,
+    #  %i[pointer size_t pointer size_t pointer],
+    #  :pointer
 
-    attach_function :CPLValidateXML, %i[string string pointer], :int
-    attach_function :CPLsetlocale, %i[int string], :string
+    #attach_function :CPLValidateXML, %i[string string pointer], :int
+    #attach_function :CPLsetlocale, %i[int string], :string
 
-    attach_function :CPLCleanupSetlocaleMutex, %i[], :void
+    #attach_function :CPLCleanupSetlocaleMutex, %i[], :void
   end
 end

@@ -80,23 +80,23 @@ module FFI
     attach_function :CPLUnescapeString, %i[string pointer int], :string
     attach_function :CPLBinaryToHex, %i[int pointer], :string
     attach_function :CPLHexToBinary, %i[string pointer], :pointer
-    attach_function :CPLBase64Encode, %i[int pointer], :string
-    attach_function :CPLBase64DecodeInPlace, %i[pointer], :int
+    #attach_function :CPLBase64Encode, %i[int pointer], :string
+    #attach_function :CPLBase64DecodeInPlace, %i[pointer], :int
 
     attach_function :CPLGetValueType, %i[string], CPLValueType
     attach_function :CPLStrlcpy, %i[string string size_t], :size_t
     attach_function :CPLStrlcat, %i[string string size_t], :size_t
     attach_function :CPLStrnlen, %i[string size_t], :size_t
-    attach_function :CPLEncodingCharSize, %i[string], :int
+    #attach_function :CPLEncodingCharSize, %i[string], :int
 
-    attach_function :CPLClearRecodeWarningFlags, [], :void
+    #attach_function :CPLClearRecodeWarningFlags, [], :void
     attach_function :CPLRecode, %i[string string string], :string
     attach_function :CPLRecodeFromWChar, %i[string string string], :string
     attach_function :CPLRecodeToWChar, %i[string string string], :string
 
     attach_function :CPLIsUTF8, %i[string int], :int
     attach_function :CPLForceToASCII, %i[string int char], :string
-    attach_function :CPLStrlenUTF8, %i[string], :int
+    #attach_function :CPLStrlenUTF8, %i[string], :int
 
     #attach_function :CPLOPrintf, %i[string varargs], :CPLString
     #attach_function :CPLOvPrintf, %i[string varargs], :CPLString

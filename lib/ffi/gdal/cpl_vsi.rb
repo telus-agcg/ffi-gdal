@@ -46,23 +46,23 @@ module FFI
     attach_function :VSIFTellL, %i[pointer], :vsi_l_offset
     attach_function :VSIRewindL, %i[pointer], :void
     attach_function :VSIFReadL, %i[pointer size_t size_t pointer], :size_t
-    attach_function :VSIFReadMultiRangeL,
-      %i[int pointer pointer pointer pointer],
-      :int
+    #attach_function :VSIFReadMultiRangeL,
+    #  %i[int pointer pointer pointer pointer],
+    #  :int
     attach_function :VSIFWriteL, %i[pointer size_t size_t pointer], :size_t
     attach_function :VSIFEofL, %i[pointer], :int
-    attach_function :VSIFTruncateL, %i[pointer vsi_l_offset], :int
+    #attach_function :VSIFTruncateL, %i[pointer vsi_l_offset], :int
     attach_function :VSIFFlushL, %i[pointer], :int
     attach_function :VSIFPrintfL, %i[pointer string varargs], :int
     attach_function :VSIFPutcL, %i[int pointer], :int
-    attach_function :VSIIngestFile,
-      %i[pointer string pointer pointer GIntBig],
-      :int
+    #attach_function :VSIIngestFile,
+    #  %i[pointer string pointer pointer GIntBig],
+    #  :int
     attach_function :VSIStatL, %i[string pointer], :int
-    attach_function :VSIStatExL, %i[string pointer int], :int
+    #attach_function :VSIStatExL, %i[string pointer int], :int
 
-    attach_function :VSIIsCaseSensitiveFS, %i[string], :int
-    attach_function :VSIFGetNativeFileDescriptorL, %i[pointer], :pointer
+    #attach_function :VSIIsCaseSensitiveFS, %i[string], :int
+    #attach_function :VSIFGetNativeFileDescriptorL, %i[pointer], :pointer
 
     attach_function :VSICalloc, %i[size_t size_t], :pointer
     attach_function :VSIMalloc, %i[size_t], :pointer
@@ -73,7 +73,7 @@ module FFI
     attach_function :VSIMalloc3, %i[size_t size_t size_t], :pointer
 
     attach_function :VSIReadDir, %i[string], :pointer
-    attach_function :VSIReadDirRecursive, %i[string], :pointer
+    #attach_function :VSIReadDirRecursive, %i[string], :pointer
     attach_function :VSIMkdir, %i[string long], :int
     attach_function :VSIRmdir, %i[string], :int
     attach_function :VSIUnlink, %i[string], :int
@@ -84,15 +84,15 @@ module FFI
     attach_function :VSIInstallMemFileHandler, [], :void
     attach_function :VSIInstallLargeFileHandler, [], :void
     attach_function :VSIInstallSubFileHandler, [], :void
-    attach_function :VSIInstallCurlFileHandler, [], :void
-    attach_function :VSIInstallCurlStreamingFileHandler, [], :void
-    attach_function :VSIInstallGZipFileHandler, [], :void
-    attach_function :VSIInstallZipFileHandler, [], :void
-    attach_function :VSIInstallStdinHandler, [], :void
-    attach_function :VSIInstallStdoutHandler, [], :void
-    attach_function :VSIInstallSparseFileHandler, [], :void
-    attach_function :VSIInstallTarFileHandler, [], :void
-    attach_function :VSICleanupFileManager, [], :void
+    #attach_function :VSIInstallCurlFileHandler, [], :void
+    #attach_function :VSIInstallCurlStreamingFileHandler, [], :void
+    #attach_function :VSIInstallGZipFileHandler, [], :void
+    #attach_function :VSIInstallZipFileHandler, [], :void
+    #attach_function :VSIInstallStdinHandler, [], :void
+    #attach_function :VSIInstallStdoutHandler, [], :void
+    #attach_function :VSIInstallSparseFileHandler, [], :void
+    #attach_function :VSIInstallTarFileHandler, [], :void
+    #attach_function :VSICleanupFileManager, [], :void
 
     attach_function :VSIFileFromMemBuffer,
       %i[string pointer vsi_l_offset int],

@@ -215,8 +215,8 @@ module FFI
     attach_function :GDALDataTypeUnion, [GDALDataType, GDALDataType], GDALDataType
 
     # AsyncStatus
-    attach_function :GDALGetAsyncStatusTypeName, [GDALAsyncStatusType], :string
-    attach_function :GDALGetAsyncStatusTypeByName, [:string], GDALAsyncStatusType
+    #attach_function :GDALGetAsyncStatusTypeName, [GDALAsyncStatusType], :string
+    #attach_function :GDALGetAsyncStatusTypeByName, [:string], GDALAsyncStatusType
 
     # ColorInterpretation
     attach_function :GDALGetColorInterpretationName, [GDALColorInterp], :string
@@ -286,11 +286,11 @@ module FFI
     attach_function :GDALApplyGeoTransform,
       [:pointer, :double, :double, :pointer, :pointer],
       :void
-    attach_function :GDALComposeGeoTransforms,
-      [:pointer, :pointer, :pointer],
-      :void
+    #attach_function :GDALComposeGeoTransforms,
+    #  [:pointer, :pointer, :pointer],
+    #  :void
 
-    attach_function :GDALGetMetadataDomainList, [:GDALMajorObjectH], :pointer
+    #attach_function :GDALGetMetadataDomainList, [:GDALMajorObjectH], :pointer
     attach_function :GDALGetMetadata, [:GDALMajorObjectH, :string], :pointer
     attach_function :GDALSetMetadata,
       [:GDALMajorObjectH, :pointer, :string],
@@ -320,28 +320,28 @@ module FFI
       [:GDALDatasetH, GDALDataType, :pointer],
       CPLErr
 
-    attach_function :GDALBeginAsyncReader,
-      [
-        :GDALDatasetH,
-        GDALRWFlag,
-        :int,
-        :int,
-        :int,
-        :int,
-        :pointer,
-        :int,
-        :int,
-        GDALDataType,
-        :int,
-        :pointer,
-        :int,
-        :int,
-        :int
-    ], :GDALAsyncReaderH
+    #attach_function :GDALBeginAsyncReader,
+    #  [
+    #    :GDALDatasetH,
+    #    GDALRWFlag,
+    #    :int,
+    #    :int,
+    #    :int,
+    #    :int,
+    #    :pointer,
+    #    :int,
+    #    :int,
+    #    GDALDataType,
+    #    :int,
+    #    :pointer,
+    #    :int,
+    #    :int,
+    #    :int
+    #], :GDALAsyncReaderH
 
-    attach_function :GDALEndAsyncReader,
-      [:GDALDatasetH, :GDALAsyncReaderH],
-      :void
+    #attach_function :GDALEndAsyncReader,
+    #  [:GDALDatasetH, :GDALAsyncReaderH],
+    #  :void
 
     attach_function :GDALDatasetRasterIO,
       [
@@ -416,14 +416,14 @@ module FFI
     attach_function :GDALDatasetCopyWholeRaster,
       [:GDALDatasetH, :GDALDatasetH, :pointer, :GDALProgressFunc, :pointer],
       CPLErr
-    attach_function :GDALRasterBandCopyWholeRaster,
-      [
-        :GDALRasterBandH,
-        :GDALRasterBandH,
-        :pointer,
-        :GDALProgressFunc,
-        :pointer
-      ], CPLErr
+    #attach_function :GDALRasterBandCopyWholeRaster,
+    #  [
+    #    :GDALRasterBandH,
+    #    :GDALRasterBandH,
+    #    :pointer,
+    #    :GDALProgressFunc,
+    #    :pointer
+    #  ], CPLErr
     attach_function :GDALRegenerateOverviews,
       [
         :GDALRasterBandH,
@@ -544,7 +544,7 @@ module FFI
       [:GDALRasterBandH, :double, :double, :double, :double],
       CPLErr
     attach_function :GDALGetRasterUnitType, [:GDALRasterBandH], :string
-    attach_function :GDALSetRasterUnitType, [:GDALRasterBandH, :string], CPLErr
+    #attach_function :GDALSetRasterUnitType, [:GDALRasterBandH, :string], CPLErr
     attach_function :GDALGetRasterOffset, [:GDALRasterBandH, :pointer], :double
     attach_function :GDALSetRasterOffset, [:GDALRasterBandH, :double], CPLErr
     attach_function :GDALGetRasterScale, [:GDALRasterBandH, :pointer], :double
