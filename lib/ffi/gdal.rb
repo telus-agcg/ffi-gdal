@@ -228,6 +228,7 @@ module FFI
     attach_function :GDALGetColorEntryCount, [:GDALColorTableH], :int
     attach_function :GDALGetColorEntry, [:GDALColorTableH, :int], GDALColorEntry.ptr
     attach_function :GDALGetColorEntryAsRGB, [:GDALColorTableH, :int, GDALColorEntry], :int
+    attach_function :GDALSetColorEntry, [:GDALColorTableH, :int, GDALColorEntry.ptr], :void
 
     attach_function :GDALAllRegister, [], :void
     attach_function :GDALCreate,
@@ -503,6 +504,7 @@ module FFI
     attach_function :GDALGetRasterColorTable,
       [:GDALRasterBandH],
       :GDALColorTableH
+    attach_function :GDALCreateColorTable, [GDALPaletteInterp], :GDALColorTableH
 
     attach_function :GDALHasArbitraryOverviews, [:GDALRasterBandH], :int
     attach_function :GDALGetOverviewCount, [:GDALRasterBandH], :int

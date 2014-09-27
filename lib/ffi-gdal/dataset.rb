@@ -57,6 +57,10 @@ module GDAL
 
         ndvi_band = ndvi_dataset.raster_band(1)
         ndvi_band.write_array(the_array)
+        p red.to_a
+
+        red_band = ndvi_dataset.raster_band(2)
+        red_band.write_array(red.to_a.reverse)
       end
     end
 
@@ -129,7 +133,7 @@ module GDAL
       columns = dataset.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, columns, rows) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, bands: 2) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 
@@ -223,13 +227,17 @@ module GDAL
     # @return [GDAL::RasterBand]
     def raster_band(raster_index)
       @raster_bands ||= Array.new(raster_count)
+      zero_index = raster_index - 1
 
-      if @raster_bands[raster_index] && !@raster_bands[raster_index].null?
-        return @raster_bands[raster_index]
+      if @raster_bands[zero_index] && !@raster_bands[zero_index].null?
+        return @raster_bands[zero_index]
       end
 
-      @raster_bands[raster_index] =
+      @raster_bands[zero_index] =
         GDAL::RasterBand.new(@gdal_dataset, band_id: raster_index)
+      @raster_bands.compact!
+
+      @raster_bands[zero_index]
     end
 
     # @return [String]

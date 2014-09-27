@@ -86,6 +86,19 @@ module GDAL
         color_table_pointer: gdal_color_table)
     end
 
+    # @param new_color_table [GDAL::ColorTable]
+    def color_table=(new_color_table)
+      color_table_pointer = if new_color_table.is_a? GDAL::ColorTable
+                              new_color_table.c_pointer
+                            else
+                              new_color_table
+                            end
+
+      cpl_err = GDALSetRasterColorTable(@gdal_raster_band, color_table_pointer)
+
+      cpl_err.to_bool
+    end
+
     # The pixel data type for this band.
     #
     # @return [Symbol] One of FFI::GDAL::GDALDataType.
