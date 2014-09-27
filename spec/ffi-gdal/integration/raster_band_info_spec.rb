@@ -235,6 +235,8 @@ TIF_FILES.each do |file|
         end
 
         it 'does nothing (because the file formats dont support it)' do
+          skip unless defined? FFI::GDAL::GDALSetRasterUnitType
+
           subject.unit_type = 'ft'
           expect(subject.unit_type).to eq 'ft'
         end

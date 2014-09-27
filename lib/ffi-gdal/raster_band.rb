@@ -300,7 +300,11 @@ module GDAL
     #   is feet; other non-standard values are allowed.
     # @return [FFI::GDAL::CPLErr]
     def unit_type=(new_unit_type)
-      GDALSetRasterUnitType(@gdal_raster_band, new_unit_type)
+      if defined? FFI::GDAL::GDALSetRasterUnitType
+        GDALSetRasterUnitType(@gdal_raster_band, new_unit_type)
+      else
+        warn "GDALSetRasterUnitType is not defined.  Can't call RasterBand#unit_type="
+      end
     end
 
     # @return [GDAL::RasterAttributeTable]

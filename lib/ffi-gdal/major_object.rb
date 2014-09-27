@@ -7,6 +7,11 @@ module GDAL
 
     # @return [Array<String>]
     def metadata_domain_list
+      unless defined? FFI::GDAL::GDALGetMetadataDomainList
+        warn "GDALGetMetadataDomainList is't defined. GDAL::MajorObject#metadata_domain_list disabled."
+        return []
+      end
+
       # I don't quite get it, but if #GDALGetMetadataDomainList isn't called
       # twice, the last domain in the list sometimes doesn't get read.
       GDALGetMetadataDomainList(c_pointer)
