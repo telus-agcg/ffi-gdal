@@ -103,30 +103,40 @@ module GDAL
     # @return [GDAL::Dataset] The newly created dataset.
     def self.extract_natural_color(source, destination,
       driver_name: 'GTiff',
-      band_order: %i[nir red green blue])
-      original_dataset = open(source, 'r')
-      geo_transform = original_dataset.geo_transform
-      projection = original_dataset.projection
+      band_order: nil)
+      original = open(source, 'r')
+      geo_transform = original.geo_transform
+      projection = original.projection
 
-      rows = original_dataset.raster_y_size
-      columns = original_dataset.raster_x_size
+      rows = original.raster_y_size
+      columns = original.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
 
-      driver.create_dataset(destination, columns, rows, bands: 3, type: :GDT_Float32) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, bands: 3,
+      type: :GDT_Float32, photometric: 'RGB') do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 
-        original_bands = bands_by_order(band_order, original_dataset)
+        original_bands = if band_order
+          bands_by_order(band_order, original)
+        else
+          {
+            red: original.red_band,
+            green: original.green_band,
+            blue: original.blue_band,
+            nir: original.undefined_band
+          }
+        end
 
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].to_a)
+        new_red_band.write_array(original_bands[:green].to_a)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].to_a)
+        new_green_band.write_array(original_bands[:blue].to_a)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].to_a)
+        new_blue_band.write_array(original_bands[:nir].to_a)
       end
     end
 
