@@ -92,29 +92,41 @@ module GDAL
       end
     end
 
-    def self.extract_natural_color(source, destination, driver_name: 'GTiff')
+    # @param source [String] The file path of the source dataset to extract
+    #   from.
+    # @param destination [String] The destination file path to write the new
+    #   dataset to.
+    # @param driver_name [String] The name of the GDAL driver to use for
+    #   creating the new dataset.
+    # @param band_order [Array<Symbol>] The order of the bands in the source
+    #   dataset.
+    # @return [GDAL::Dataset] The newly created dataset.
+    def self.extract_natural_color(source, destination,
+      driver_name: 'GTiff',
+      band_order: %i[nir red green blue])
       original_dataset = open(source, 'r')
       geo_transform = original_dataset.geo_transform
       projection = original_dataset.projection
+
       rows = original_dataset.raster_y_size
       columns = original_dataset.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
+
+      driver.create_dataset(destination, columns, rows, bands: 3, type: :GDT_Float32) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
-        original_red_band = original_dataset.red_band
-        original_green_band = original_dataset.green_band
-        original_blue_band = original_dataset.blue_band
+
+        original_bands = bands_by_order(band_order, original_dataset)
 
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_red_band.to_a)
+        new_red_band.write_array(original_bands[:red].to_a)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_green_band.to_a)
+        new_green_band.write_array(original_bands[:green].to_a)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_blue_band.to_a)
+        new_blue_band.write_array(original_bands[:blue].to_a)
       end
     end
 
@@ -125,7 +137,18 @@ module GDAL
       (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
     end
 
-    def self.extract_8bit(source, destination, driver_name)
+    #---------------------------------------------------------------------------
+    # Private class methods
+    #---------------------------------------------------------------------------
+
+    def self.bands_by_order(band_color_list, dataset)
+      band_color_list.each_with_object({}).each_with_index do |(band_color_interp, obj), i|
+        obj[band_color_interp] = dataset.raster_band(i + 1)
+      end
+    end
+    private_class_method :bands_by_order
+
+    def self.extract_8bit(source, destination, driver_name, bands: 1, type: :GDT_Float32)
       dataset = open(source, 'r')
       geo_transform = dataset.geo_transform
       projection = dataset.projection
@@ -133,7 +156,7 @@ module GDAL
       columns = dataset.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, columns, rows, bands: 2) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, bands: bands, type: type) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 
@@ -141,6 +164,10 @@ module GDAL
       end
     end
     private_class_method :extract_8bit
+
+    #---------------------------------------------------------------------------
+    # Instance methods
+    #---------------------------------------------------------------------------
 
     # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
     def initialize(dataset_pointer)
