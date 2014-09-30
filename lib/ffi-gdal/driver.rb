@@ -105,15 +105,19 @@ module GDAL
     #   reopen it if you with to continue working with it.
     # @todo Implement options.
     def create_dataset(filename, x_size, y_size, bands: 1, type: :GDT_Byte, **options)
-      log "creating dataset with size #{x_size},#{y_size}"
+      options_pointer = FFI::MemoryPointer.new(:pointer, 2)
 
+      options.each_with_index.map do |(k, v), i|
+        options_pointer = CSLSetNameValue(options_pointer, k.to_s.upcase, v)
+      end
+      
       dataset_pointer = GDALCreate(@gdal_driver_handle,
         filename,
         x_size,
         y_size,
         bands,
         type,
-        nil
+        options_pointer
       )
 
       raise CreateFail if dataset_pointer.null?
