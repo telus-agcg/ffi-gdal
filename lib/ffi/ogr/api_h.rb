@@ -448,7 +448,7 @@ module FFI
       :OGRErr
 
     #~~~~~~~~~~~~~~~~~
-    # DataSet-related
+    # DataSource-related
     #~~~~~~~~~~~~~~~~~
     attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
     attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string
