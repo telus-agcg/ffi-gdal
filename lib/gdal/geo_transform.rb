@@ -7,7 +7,8 @@ module GDAL
 
     attr_accessor :gdal_dataset
 
-    # @param gdal_dataset [FFI::Pointer]
+    # @param dataset [GDAL::Dataset,FFI::Pointer]
+    # @param geo_transform_pointer [FFI::Pointer]
     def initialize(dataset, geo_transform_pointer: nil)
       @gdal_dataset = if dataset.nil?
         FFI::MemoryPointer.new(:pointer)
@@ -66,6 +67,11 @@ module GDAL
       @gdal_geo_transform[0].read_double
     end
 
+    # @param new_x_origin [Float]
+    def x_origin=(new_x_origin)
+      @gdal_geo_transform[0].write_double(new_x_origin)
+    end
+
     # AKA X-pixel size.
     # In wikipedia's World Map definition, this is "A".
     #
@@ -74,6 +80,11 @@ module GDAL
       return nil if null?
 
       @gdal_geo_transform[1].read_double
+    end
+
+    # @param new_pixel_width [Float]
+    def pixel_width=(new_pixel_width)
+      @gdal_geo_transform[1].write_double(new_pixel_width)
     end
 
     # Rotation about the x-axis.
@@ -86,6 +97,11 @@ module GDAL
       @gdal_geo_transform[2].read_double
     end
 
+    # @param new_x_rotation [Float]
+    def x_rotation=(new_x_rotation)
+      @gdal_geo_transform[2].write_double(new_x_rotation)
+    end
+
     # Y-coordinate of the center of the upper left pixel.
     # In wikipedia's World Map definition, this is "F".
     #
@@ -95,6 +111,12 @@ module GDAL
 
       @gdal_geo_transform[3].read_double
     end
+
+    # @param new_y_origin [Float]
+    def y_origin=(new_y_origin)
+      @gdal_geo_transform[3].write_double(new_y_origin)
+    end
+
 
     # Rotation about the y-axis.
     # In wikipedia's World Map definition, this is "D".
@@ -106,6 +128,11 @@ module GDAL
       @gdal_geo_transform[4].read_double
     end
 
+    # @param new_y_rotation [Float]
+    def y_rotation=(new_y_rotation)
+      @gdal_geo_transform[4].write_double(new_y_rotation)
+    end
+
     # AKA Y-pixel size.
     # In wikipedia's World Map definition, this is "E".
     #
@@ -114,6 +141,11 @@ module GDAL
       return nil if null?
 
       @gdal_geo_transform[5].read_double
+    end
+
+    # @param new_pixel_height [Float]
+    def pixel_height=(new_pixel_height)
+      @gdal_geo_transform[5].write_double(new_pixel_height)
     end
 
     # The calculated UTM easting of the pixel on the map.
