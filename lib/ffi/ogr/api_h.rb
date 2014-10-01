@@ -31,7 +31,7 @@ module FFI
       %i[string OGRSpatialReferenceH pointer int],
       :OGRErr
     attach_function :OGR_G_CreateFromWkt,
-      %i[string OGRSpatialReferenceH pointer],
+      %i[pointer OGRSpatialReferenceH pointer],
       :OGRErr
     attach_function :OGR_G_CreateFromFgf,
       %i[string OGRSpatialReferenceH pointer int pointer],
@@ -71,7 +71,7 @@ module FFI
       %i[OGRGeometryH string int],
       :OGRErr
     attach_function :OGR_G_ExportToWkb,
-      [:OGRGeometryH, OGRwkbByteOrder, :string],
+      [:OGRGeometryH, OGRwkbByteOrder, :pointer],
       :OGRErr
     attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
@@ -104,9 +104,6 @@ module FFI
     attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH string], :string
     attach_function :OGR_G_CreateGeometryFromJson, %i[string], :OGRGeometryH
 
-    #~~~~~~~~~~~~~~~~~
-    # Spatial reference-related
-    #~~~~~~~~~~~~~~~~~
     attach_function :OGR_G_AssignSpatialReference,
       %i[OGRGeometryH OGRSpatialReferenceH],
       :void
@@ -397,9 +394,9 @@ module FFI
     attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string int], :int
     attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
 
-    attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :int], :OGRErr
+    attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :bool], :OGRErr
     attach_function :OGR_L_GetExtentEx,
-      [:OGRLayerH, :int, OGREnvelope.ptr, :int],
+      [:OGRLayerH, :int, OGREnvelope.ptr, :bool],
       :OGRErr
     attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
     attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH int], :OGRErr
