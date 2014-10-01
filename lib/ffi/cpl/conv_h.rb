@@ -1,10 +1,9 @@
-require_relative 'cpl_error'
-require_relative 'cpl_vsi'
+require_relative 'error_h'
+require_relative 'vsi_h'
 
 
 module FFI
   module GDAL
-
     def CPLFree(pointer)
       extend CPLVSI
       VSIFree(pointer)

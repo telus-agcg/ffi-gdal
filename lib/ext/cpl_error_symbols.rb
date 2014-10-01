@@ -1,4 +1,4 @@
-require_relative '../ffi-gdal/exceptions'
+require_relative '../gdal/exceptions'
 
 
 class ::Symbol

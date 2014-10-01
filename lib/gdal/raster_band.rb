@@ -77,8 +77,14 @@ module GDAL
       GDALGetRasterColorInterpretation(@gdal_raster_band)
     end
 
+    def color_interpretation=(new_color_interp)
+      GDALSetRasterColorInterpretation(@gdal_raster_band, new_color_interp).to_ruby
+    end
+
     # @return [GDAL::ColorTable]
     def color_table
+      return @color_table if @color_table
+      
       gdal_color_table = GDALGetRasterColorTable(@gdal_raster_band)
       return nil if gdal_color_table.null?
 
@@ -97,6 +103,10 @@ module GDAL
       cpl_err = GDALSetRasterColorTable(@gdal_raster_band, color_table_pointer)
 
       cpl_err.to_bool
+    end
+
+    def build_color_table(palette_interpretation)
+      @color_table = ColorTable.create(@gdal_raster_band, palette_interpretation)
     end
 
     # The pixel data type for this band.
@@ -466,7 +476,7 @@ module GDAL
           line_space
         )
 
-        yield scan_line.read_array_of_float(x_size).dup
+        yield(scan_line.read_array_of_float(x_size).dup, y)
       end
     end
 
@@ -520,15 +530,9 @@ module GDAL
     #   top-most block, 1 the next block, etc.
     def read_block(x_offset, y_offset, image_buffer=nil)
       image_buffer ||= FFI::MemoryPointer.new(:void)
-      #puts "x offset: #{x_offset}"
-      #puts "y offset: #{y_offset}"
-
       result = GDALReadBlock(@gdal_raster_band, x_offset, y_offset, image_buffer)
 
-      if result == :none
-      elsif result == :failure
-
-      end
+      result.to_bool
     end
 
     # The minimum and maximum values for this band.

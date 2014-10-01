@@ -42,25 +42,41 @@ module GDAL
     #   bands.
     # @param destination [String] Path to output the new dataset to.
     # @param driver_name [String] The type of dataset to create.
-    def self.extract_ndvi(source, destination, driver_name: 'GTiff')
-      extract_8bit(source, destination, driver_name) do |original, ndvi_dataset|
-        red = original.red_band
-        nir = original.undefined_band
+    def self.extract_ndvi(source, destination, driver_name: 'GTiff', band_order: nil)
+      extract_8bit(source, destination, driver_name, bands: 4, type: :GDT_Float32, photometric: 'RGB') do |original, ndvi_dataset|
+        original_bands = if band_order
+          bands_by_order(band_order, original)
+        else
+          {
+            red: original.red_band,
+            green: original.green_band,
+            blue: original.blue_band,
+            nir: original.undefined_band
+          }
+        end
 
-        if red.nil?
+        if original_bands[:red].nil?
           fail RequiredBandNotFound, 'Red band not found.'
-        elsif nir.nil?
+        elsif original_bands[:nir].nil?
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = calculate_ndvi(red.to_a, nir.to_a)
+        ndvi_array = calculate_ndvi(original_bands[:red].to_a,
+          original_bands[:nir].to_a, true)
+        #red, green, blue = shit(ndvi_array)
 
-        ndvi_band = ndvi_dataset.raster_band(1)
-        ndvi_band.write_array(the_array)
-        p red.to_a
+        red_band = ndvi_dataset.raster_band(1)
+        red_band.write_array(original_bands[:red].to_a)
 
-        red_band = ndvi_dataset.raster_band(2)
-        red_band.write_array(red.to_a.reverse)
+        green_band = ndvi_dataset.raster_band(2)
+        green_band.write_array(original_bands[:green].to_a)
+
+        blue_band = ndvi_dataset.raster_band(3)
+        blue_band.write_array(original_bands[:blue].to_a)
+
+        ndvi_band = ndvi_dataset.raster_band(4)
+        ndvi_band.write_array(ndvi_array)
+
       end
     end
 
@@ -75,20 +91,43 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = calculate_ndvi(green.to_a, nir.to_a)
+        the_array = calculate_ndvi(green.to_a, nir.to_a, true)
 
         gndvi_band = gndvi_dataset.raster_band(1)
         gndvi_band.write_array(the_array)
+
+        red_band = gndvi_dataset.raster_band(2)
+        #red_band.write_array(red)
+        red_band.write_array(original.raster_band(2).to_a)
+
+        green_band = gndvi_dataset.raster_band(3)
+        #green_band.write_array(green)
+        green_band.write_array(original.raster_band(3).to_a)
+
+        blue_band = gndvi_dataset.raster_band(4)
+        #blue_band.write_array(blue)
+        blue_band.write_array(original.raster_band(4).to_a)
       end
     end
 
-    def self.extract_nir(source, destination, driver_name: 'GTiff')
-      extract_8bit(source, destination, driver_name) do |original, nir_dataset|
+    def self.extract_nir(source, destination,
+      driver_name: 'GTiff',
+      band_order: %i[nir red green blue])
+      extract_8bit(source, destination, driver_name, bands: 3) do |original, nir_dataset|
         nir = original.undefined_band
         fail RequiredBandNotFound, 'Near-infrared' if nir.nil?
 
-        nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.to_a)
+        original_bands = bands_by_order(band_order, original)
+
+        new_red_band = nir_dataset.raster_band(1)
+        new_red_band.write_array(original_bands[:red].to_a)
+
+        new_green_band = nir_dataset.raster_band(2)
+        new_green_band.write_array(original_bands[:green].to_a)
+
+        new_blue_band = nir_dataset.raster_band(3)
+        new_blue_band.write_array(original_bands[:blue].to_a)
+
       end
     end
 
@@ -143,8 +182,19 @@ module GDAL
     # @param red_band_array [NArray]
     # @param nir_band_array [NArray]
     # @return [NArray]
-    def self.calculate_ndvi(red_band_array, nir_band_array)
-      (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+    def self.calculate_ndvi(red_band_array, nir_band_array, remove_negatives=false)
+      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+
+      return ndvi unless remove_negatives
+
+      # Zero out
+      i = 0
+      ndvi.each do |pixel|
+        ndvi[i] = 0 if ndvi[i] < 0
+        i += i
+      end
+
+      ndvi
     end
 
     #---------------------------------------------------------------------------
@@ -158,7 +208,7 @@ module GDAL
     end
     private_class_method :bands_by_order
 
-    def self.extract_8bit(source, destination, driver_name, bands: 1, type: :GDT_Float32)
+    def self.extract_8bit(source, destination, driver_name, bands: 1, type: :GDT_Float32, **options)
       dataset = open(source, 'r')
       geo_transform = dataset.geo_transform
       projection = dataset.projection
@@ -166,7 +216,7 @@ module GDAL
       columns = dataset.raster_x_size
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, columns, rows, bands: bands, type: type) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, bands: bands, type: type, **options) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 

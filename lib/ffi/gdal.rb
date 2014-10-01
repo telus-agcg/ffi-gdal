@@ -37,15 +37,13 @@ module FFI
 end
 
 require_relative 'gdal/version'
-require_relative 'gdal/cpl_conv'
-require_relative 'gdal/cpl_error'
-require_relative 'gdal/cpl_string'
-require_relative 'gdal/cpl_vsi'
+require_relative 'cpl/conv_h'
+require_relative 'cpl/error_h'
+require_relative 'cpl/minixml_h'
+require_relative 'cpl/string_h'
+require_relative 'cpl/vsi_h'
 require_relative 'gdal/gdal_color_entry'
 require_relative 'gdal/gdal_gcp'
-require_relative 'gdal/ogr_core'
-require_relative 'gdal/ogr_api'
-require_relative 'gdal/ogr_srs_api'
 require_relative '../ext/to_bool'
 
 module FFI
@@ -189,7 +187,6 @@ module FFI
     typedef :pointer, :GDALColorTableH
     typedef :pointer, :GDALRasterAttributeTableH
     typedef :pointer, :GDALAsyncReaderH
-    #typedef :pointer, :OGRGeometryH
 
     #-----------------------------------------------------------------
     # functions
@@ -221,6 +218,7 @@ module FFI
     # ColorInterpretation
     attach_function :GDALGetColorInterpretationName, [GDALColorInterp], :string
     attach_function :GDALGetColorInterpretationByName, [:string], GDALColorInterp
+    attach_function :GDALSetRasterColorInterpretation, [GDALColorInterp], CPLErr
 
     # PaletteInterpretation
     attach_function :GDALGetPaletteInterpretationName, [GDALPaletteInterp], :string
@@ -505,6 +503,7 @@ module FFI
       [:GDALRasterBandH],
       :GDALColorTableH
     attach_function :GDALCreateColorTable, [GDALPaletteInterp], :GDALColorTableH
+    attach_function :GDALSetRasterColorTable, [:GDALRasterBandH, :GDALColorTableH], CPLErr
 
     attach_function :GDALHasArbitraryOverviews, [:GDALRasterBandH], :int
     attach_function :GDALGetOverviewCount, [:GDALRasterBandH], :int
