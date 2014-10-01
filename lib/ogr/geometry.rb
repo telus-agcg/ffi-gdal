@@ -1,3 +1,5 @@
+require_relative 'envelope'
+
 module OGR
   class Geometry
     include FFI::GDAL
@@ -81,7 +83,7 @@ module OGR
       OGR_G_GetCoordinateDimension(@ogr_geometry_pointer)
     end
 
-    # @return [FFI::GDAL::OGREnvelope, FFI::GDAL::OGREnvelope3D]
+    # @return [OGR::Envelope]
     def envelope
       case dimension
       when 2
@@ -96,7 +98,7 @@ module OGR
 
       return nil if envelope.null?
 
-      envelope
+      OGR::Envelope.new(envelope)
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]

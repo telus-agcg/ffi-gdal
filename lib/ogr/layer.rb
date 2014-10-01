@@ -1,4 +1,5 @@
 require_relative '../ffi/ogr'
+require_relative 'envelope'
 require_relative 'geometry'
 require_relative 'feature'
 require_relative 'feature_definition'
@@ -99,22 +100,22 @@ module OGR
       OGR::SpatialReference.new(ogr_spatial_ref_pointer: spatial_ref_pointer)
     end
 
-    # @return [FFI::GDAL::OGREnvelope]
+    # @return [OGR::Envelope]
     def extent(force=true)
       envelope = FFI::GDAL::OGREnvelope.new
       OGR_L_GetExtent(@ogr_layer_pointer, envelope, force)
       return nil if envelope.null?
 
-      envelope
+      OGR::Envelope.new(envelope)
     end
 
-    # @return [FFI::GDAL::OGREnvelope]
+    # @return [OGR::Envelope]
     def extent_by_geometry(geometry_field_index, force=true)
       envelope = FFI::GDAL::OGREnvelope.new
       OGR_L_GetExtentEx(@ogr_layer_pointer, geometry_field_index, envelope, force)
       return nil if envelope.null?
 
-      envelope
+      OGR::Envelope.new(envelope)
     end
 
     # The name of the underlying database column.  '' if not supported.

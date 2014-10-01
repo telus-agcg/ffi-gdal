@@ -1,6 +1,5 @@
 require_relative '../ffi/ogr'
 require_relative 'feature_definition'
-require_relative 'field'
 require_relative 'field_definition'
 
 module OGR
