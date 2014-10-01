@@ -469,10 +469,6 @@ module FFI
       :OGRLayerH
     attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
 
-    attach_function :OGR_DS_Reference, %i[OGRDataSourceH], :int
-    attach_function :OGR_DS_Dereference, %i[OGRDataSourceH], :int
-    attach_function :OGR_DS_GetRefCount, %i[OGRDataSourceH], :int
-    attach_function :OGR_DS_GetSummaryRefCount, %i[OGRDataSourceH], :int
     attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], :OGRErr
     attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
     attach_function :OGR_DS_SetStyleTableDirectly,

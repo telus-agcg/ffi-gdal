@@ -8,58 +8,68 @@ data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/state
 first_layer = data_source.layer(0)
 first_feature = first_layer.feature(0)
 
+puts <<-DS
+DataSet Info
+* name: #{data_source.name}
+* layer_count: #{data_source.layer_count}
+* style_table: #{data_source.style_table}
+DS
+
+puts '-' * 40
+
 puts <<-LAYER
 Layer Info
-name: #{first_layer.name}
-geometry_type: #{first_layer.geometry_type}
-spatial_filter: #{first_layer.spatial_filter}
-first feature: #{first_feature}
-feature_count: #{first_layer.feature_count}
-features_read: #{first_layer.features_read}
-layer_definition: #{first_layer.layer_definition}
-extent: #{first_layer.extent}
-fid_column: #{first_layer.fid_column}
-geometry_column: #{first_layer.geometry_column}
-style_table: #{first_layer.style_table}
-spatial reference: #{first_layer.spatial_reference}
+* name: #{first_layer.name}
+* geometry_type: #{first_layer.geometry_type}
+* spatial_filter: #{first_layer.spatial_filter}
+* first feature: #{first_feature}
+* feature_count: #{first_layer.feature_count}
+* features_read: #{first_layer.features_read}
+* layer_definition: #{first_layer.layer_definition}
+* extent: #{first_layer.extent}
+* fid_column: #{first_layer.fid_column}
+* geometry_column: #{first_layer.geometry_column}
+* style_table: #{first_layer.style_table}
+* spatial reference: #{first_layer.spatial_reference}
 LAYER
 
 puts '-' * 40
 
 geom = OGR::Geometry.create_from_wkt(proj, first_layer.spatial_reference)
 puts <<-GEOM
-dimension: #{geom.dimension}
-coordinate_dimension: #{geom.coordinate_dimension}
-envelope: #{geom.envelope}
-type: #{geom.type}
-name: #{geom.name}
-geometry_count: #{geom.geometry_count}
-point_count: #{geom.point_count}
-x(0): #{geom.x(0)}
-y(0): #{geom.y(0)}
-z(0): #{geom.z(0)}
-point(0): #{geom.point(0)}
-length: #{geom.length}
-area: #{geom.area}
+Geometry Info
+* dimension: #{geom.dimension}
+* coordinate_dimension: #{geom.coordinate_dimension}
+* envelope: #{geom.envelope}
+* type: #{geom.type}
+* name: #{geom.name}
+* geometry_count: #{geom.geometry_count}
+* point_count: #{geom.point_count}
+* x(0): #{geom.x(0)}
+* y(0): #{geom.y(0)}
+* z(0): #{geom.z(0)}
+* point(0): #{geom.point(0)}
+* length: #{geom.length}
+* area: #{geom.area}
 
-intersects self? #{geom.intersects?(geom)}
-equals self? #{geom.equals?(geom)}
-disjoint self? #{geom.disjoint?(geom)}
-touches self? #{geom.touches?(geom)}
-within self? #{geom.within?(geom)}
-contains self? #{geom.contains?(geom)}
-overlaps self? #{geom.overlaps?(geom)}
-empty? #{geom.empty?}
-valid? #{geom.valid?}
-simple? #{geom.simple?}
-ring? #{geom.ring?}
+* intersects self? #{geom.intersects?(geom)}
+* equals self? #{geom.equals?(geom)}
+* disjoint self? #{geom.disjoint?(geom)}
+* touches self? #{geom.touches?(geom)}
+* within self? #{geom.within?(geom)}
+* contains self? #{geom.contains?(geom)}
+* overlaps self? #{geom.overlaps?(geom)}
+* empty? #{geom.empty?}
+* valid? #{geom.valid?}
+* simple? #{geom.simple?}
+* ring? #{geom.ring?}
 
-diff of self: #{(geom - geom).to_wkt}
-distance to self: #{geom.distance(geom)}
-point on surface: #{geom.point_on_surface.to_wkt}
-spatial reference: #{geom.spatial_reference}
-boundary: #{geom.boundary.to_wkt}
-convex_hull: #{geom.convex_hull.to_wkt}
+* diff of self: #{(geom - geom).to_wkt}
+* distance to self: #{geom.distance(geom)}
+* point on surface: #{geom.point_on_surface.to_wkt}
+* spatial reference: #{geom.spatial_reference}
+* boundary: #{geom.boundary.to_wkt}
+* convex_hull: #{geom.convex_hull.to_wkt}
 GEOM
 
 binding.pry

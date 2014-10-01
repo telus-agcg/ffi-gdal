@@ -3,6 +3,7 @@ require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
 require_relative 'exceptions'
 require_relative 'layer'
+require_relative 'style_table'
 
 
 module OGR
@@ -60,6 +61,21 @@ module OGR
       layer_pointer = OGR_DS_GetLayer(@ogr_data_source, index)
 
       OGR::Layer.new(ogr_layer_pointer: layer_pointer)
+    end
+
+    # @param name [String]
+    # @return [OGR::Layer]
+    def layer_by_name(name)
+      layer_pointer = OGR_DS_GetLayerByName(@ogr_data_source, name)
+
+      OGR::Layer.new(ogr_layer_pointer: layer_pointer)
+    end
+
+    # @return [OGR::StyleTable]
+    def style_table
+      style_table_ptr = OGR_DS_GetStyleTable(@ogr_data_source)
+
+      OGR::StyleTable.new(ogr_style_table_pointer: style_table_ptr)
     end
   end
 end
