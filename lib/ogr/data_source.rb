@@ -59,6 +59,7 @@ module OGR
     # @return [OGR::Layer]
     def layer(index)
       layer_pointer = OGR_DS_GetLayer(@ogr_data_source, index)
+      return nil if layer_pointer.null?
 
       OGR::Layer.new(ogr_layer_pointer: layer_pointer)
     end
@@ -67,6 +68,7 @@ module OGR
     # @return [OGR::Layer]
     def layer_by_name(name)
       layer_pointer = OGR_DS_GetLayerByName(@ogr_data_source, name)
+      return nil if layer_pointer.null?
 
       OGR::Layer.new(ogr_layer_pointer: layer_pointer)
     end
