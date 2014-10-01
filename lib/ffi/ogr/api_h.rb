@@ -385,6 +385,7 @@ module FFI
       :void
     attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], :OGRErr
     attach_function :OGR_L_ResetReading, %i[OGRLayerH], :void
+
     attach_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
     attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], :OGRErr
     attach_function :OGR_L_GetFeature, %i[OGRLayerH long], :OGRFeatureH
@@ -394,7 +395,8 @@ module FFI
     attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
     attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], :OGRSpatialReferenceH
     attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string int], :int
-    attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH int], :int
+    attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
+
     attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :int], :OGRErr
     attach_function :OGR_L_GetExtentEx,
       [:OGRLayerH, :int, OGREnvelope.ptr, :int],
@@ -542,8 +544,8 @@ module FFI
     #~~~~~~~~~~~~~~~~~
     # Main functions
     #~~~~~~~~~~~~~~~~~
-    attach_function :OGROpen, %i[string int OGRSFDriverH], :OGRDataSourceH
-    attach_function :OGROpenShared, %i[string int OGRSFDriverH], :OGRDataSourceH
+    attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
+    attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
     attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], :OGRErr
     attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
     attach_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
