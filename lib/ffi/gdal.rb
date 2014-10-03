@@ -202,6 +202,9 @@ module FFI
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
 
+    #-----------------------------------------------------------------
+    # functions
+    #-----------------------------------------------------------------
     attach_function :GDALVersionInfo, %i[string], :string
 
     # DataType
@@ -437,7 +440,7 @@ module FFI
     #attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
     #attach_function :GDALDatasetGetLayer, [:GDALDatasetH, :int], :OGRLayerH
     #attach_function :GDALDatasetGetLayerByName, [:GDALDatasetH, :string], :OGRLayerH
-    #attach_function :GDALDatasetDeleteLayer, [:GDALDatasetH, :int], :OGRErr
+    #attach_function :GDALDatasetDeleteLayer, [:GDALDatasetH, :int], OGRErr
     #attach_function :GDALDatasetCreateLayer
     #attach_function :GDALDatasetCopyLayer
     #attach_function :GDALDatasetTestCapability, [:GDALDatasetH, :string], :int

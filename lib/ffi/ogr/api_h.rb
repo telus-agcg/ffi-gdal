@@ -29,13 +29,13 @@ module FFI
     #------------------------------------------------------------------------
     attach_function :OGR_G_CreateFromWkb,
       %i[string OGRSpatialReferenceH pointer int],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_CreateFromWkt,
       %i[pointer OGRSpatialReferenceH pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_CreateFromFgf,
       %i[string OGRSpatialReferenceH pointer int pointer],
-      :OGRErr
+      OGRErr
 
     #~~~~~~~~~~~~~~~~~
     # Geometry-related
@@ -69,14 +69,14 @@ module FFI
 
     attach_function :OGR_G_ImportFromWkb,
       %i[OGRGeometryH string int],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_ExportToWkb,
       [:OGRGeometryH, OGRwkbByteOrder, :pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
-    attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], :OGRErr
-    attach_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], :OGRErr
+    attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], OGRErr
+    attach_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], OGRErr
 
     attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], OGRwkbGeometryType
     attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :string
@@ -113,10 +113,10 @@ module FFI
 
     attach_function :OGR_G_Transform,
       %i[OGRGeometryH OGRCoordinateTransformationH],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_TransformTo,
       %i[OGRGeometryH OGRSpatialReferenceH],
-      :OGRErr
+      OGRErr
     attach_function :OGR_G_Simplify, %i[OGRGeometryH double], :OGRGeometryH
     attach_function :OGR_G_SimplifyPreserveTopology,
       %i[OGRGeometryH double],
@@ -199,9 +199,9 @@ module FFI
     attach_function :OGR_G_GetGeometryCount, %i[OGRGeometryH], :int
     attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH
 
-    attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], :OGRErr
-    attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], :OGRErr
-    attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int int], :OGRErr
+    attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], OGRErr
+    attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], OGRErr
+    attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int int], OGRErr
 
     attach_function :OGRBuildPolygonFromEdges,
       %i[OGRGeometryH int int double pointer],
@@ -267,10 +267,10 @@ module FFI
       :void
     attach_function :OGR_FD_DeleteFieldDefn,
       %i[OGRFeatureDefnH int],
-      :OGRErr
+      OGRErr
     # attach_function :OGR_FD_ReorderFieldDefns,
     #   %i[OGRFeatureDefnH pointer],
-    #   :OGRErr
+    #   OGRErr
     attach_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], OGRwkbGeometryType
     attach_function :OGR_FD_SetGeomType,
       [:OGRFeatureDefnH, OGRwkbGeometryType],
@@ -294,7 +294,7 @@ module FFI
       :void
     attach_function :OGR_FD_DeleteGeomFieldDefn,
       %i[OGRFeatureDefnH int],
-      :OGRErr
+      OGRErr
 
     attach_function :OGR_FD_IsSame,
       %i[OGRFeatureDefnH OGRFeatureDefnH],
@@ -308,10 +308,10 @@ module FFI
     attach_function :OGR_F_GetDefnRef, %i[OGRFeatureH], :OGRFeatureDefnH
     attach_function :OGR_F_SetGeometryDirectly,
       %i[OGRFeatureH OGRGeometryH],
-      :OGRErr
+      OGRErr
     attach_function :OGR_F_SetGeometry,
       %i[OGRFeatureH OGRGeometryH],
-      :OGRErr
+      OGRErr
     attach_function :OGR_F_GetGeometryRef, %i[OGRFeatureH], :OGRGeometryH
     attach_function :OGR_F_StealGeometry, %i[OGRFeatureH], :OGRGeometryH
 
@@ -350,14 +350,14 @@ module FFI
     attach_function :OGR_F_GetGeomFieldDefnRef, %i[OGRFeatureH int], :OGRGeomFieldDefnH
     attach_function :OGR_F_GetGeomFieldIndex, %i[OGRFeatureH string], :int
     attach_function :OGR_F_GetGeomFieldRef, %i[OGRFeatureH int], :OGRGeometryH
-    attach_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH], :OGRErr
-    attach_function :OGR_F_SetGeomField, %i[OGRFeatureH int OGRGeometryH], :OGRErr
+    attach_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH], OGRErr
+    attach_function :OGR_F_SetGeomField, %i[OGRFeatureH int OGRGeometryH], OGRErr
 
     attach_function :OGR_F_GetFID, %i[OGRFeatureH], :long
-    attach_function :OGR_F_SetFID, %i[OGRFeatureH long], :OGRErr
+    attach_function :OGR_F_SetFID, %i[OGRFeatureH long], OGRErr
     attach_function :OGR_F_DumpReadable, %i[OGRFeatureH string], :void
-    attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], :OGRErr
-    attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], :OGRErr
+    attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], OGRErr
+    attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], OGRErr
 
     attach_function :OGR_F_GetStyleString, %i[OGRFeatureH], :string
     attach_function :OGR_F_SetStyleString, %i[OGRFeatureH string], :void
@@ -380,42 +380,42 @@ module FFI
     attach_function :OGR_L_SetSpatialFilterRectEx,
       %i[OGRLayerH int double double double double],
       :void
-    attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], :OGRErr
+    attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], OGRErr
     attach_function :OGR_L_ResetReading, %i[OGRLayerH], :void
 
     attach_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
-    attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], :OGRErr
+    attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], OGRErr
     attach_function :OGR_L_GetFeature, %i[OGRLayerH long], :OGRFeatureH
-    attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], :OGRErr
-    attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], :OGRErr
-    attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], :OGRErr
+    attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], OGRErr
+    attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], OGRErr
+    attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], OGRErr
     attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
     attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], :OGRSpatialReferenceH
     attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string int], :int
     attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
 
-    attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :bool], :OGRErr
+    attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :bool], OGRErr
     attach_function :OGR_L_GetExtentEx,
       [:OGRLayerH, :int, OGREnvelope.ptr, :bool],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
-    attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH int], :OGRErr
+    attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH int], OGRErr
     attach_function :OGR_L_CreateGeomField,
       %i[OGRLayerH OGRGeomFieldDefnH int],
-      :OGRErr
-    attach_function :OGR_L_DeleteField, %i[OGRLayerH int], :OGRErr
-    attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], :OGRErr
-    attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], :OGRErr
-    attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], :OGRErr
+      OGRErr
+    attach_function :OGR_L_DeleteField, %i[OGRLayerH int], OGRErr
+    attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], OGRErr
+    attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], OGRErr
+    attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], OGRErr
 
-    attach_function :OGR_L_StartTransaction, %i[OGRLayerH], :OGRErr
-    attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], :OGRErr
-    attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], :OGRErr
+    attach_function :OGR_L_StartTransaction, %i[OGRLayerH], OGRErr
+    attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], OGRErr
+    attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], OGRErr
 
     attach_function :OGR_L_Reference, %i[OGRLayerH], :int
     attach_function :OGR_L_Dereference, %i[OGRLayerH], :int
     attach_function :OGR_L_GetRefCount, %i[OGRLayerH], :int
-    attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], :OGRErr
+    attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], OGRErr
 
     attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], :GIntBig
     attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :string
@@ -423,29 +423,29 @@ module FFI
     attach_function :OGR_L_GetStyleTable, %i[OGRLayerH], :OGRStyleTableH
     attach_function :OGR_L_SetStyleTableDirectly, %i[OGRLayerH OGRStyleTableH], :void
     attach_function :OGR_L_SetStyleTable, %i[OGRLayerH OGRStyleTableH], :void
-    attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], :OGRErr
+    attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], OGRErr
 
     attach_function :OGR_L_Intersection,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_Union,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_SymDifference,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_Identity,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_Update,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_Clip,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
     attach_function :OGR_L_Erase,
       %i[OGRLayerH OGRLayerH OGRLayerH pointer GDALProgressFunc pointer],
-      :OGRErr
+      OGRErr
 
     #~~~~~~~~~~~~~~~~~
     # DataSource-related
@@ -455,7 +455,7 @@ module FFI
     attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
     attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
     attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH
-    attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], :OGRErr
+    attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], OGRErr
     attach_function :OGR_DS_GetDriver, %i[OGRDataSourceH], :OGRSFDriverH
     attach_function :OGR_DS_CreateLayer,
       [:OGRDataSourceH, :string, :OGRSpatialReferenceH, OGRwkbGeometryType, :pointer],
@@ -469,7 +469,7 @@ module FFI
       :OGRLayerH
     attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
 
-    attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], :OGRErr
+    attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], OGRErr
     attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
     attach_function :OGR_DS_SetStyleTableDirectly,
       %i[OGRDataSourceH OGRStyleTableH],
@@ -486,7 +486,7 @@ module FFI
     attach_function :OGR_Dr_CopyDataSource,
       %i[OGRSFDriverH OGRDataSourceH string pointer],
       :OGRDataSourceH
-    attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], :OGRErr
+    attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], OGRErr
 
     #~~~~~~~~~~~~~~~~~
     # Style Manager-related
@@ -539,7 +539,7 @@ module FFI
     #~~~~~~~~~~~~~~~~~
     attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
     attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
-    attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], :OGRErr
+    attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], OGRErr
     attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
     attach_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
     attach_function :OGRGetDriverCount, [], :int

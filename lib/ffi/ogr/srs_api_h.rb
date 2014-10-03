@@ -34,45 +34,45 @@ module FFI
     #------------------------------------------------------------------------
     attach_function :OSRAxisEnumToName, [OGRAxisOrientation], :string
     attach_function :OSRNewSpatialReference, [:string], :OGRSpatialReferenceH
-    attach_function :OSRValidate, %i[OGRSpatialReferenceH], :OGRErr
-    attach_function :OSRFixupOrdering, %i[OGRSpatialReferenceH], :OGRErr
-    attach_function :OSRFixup, %i[OGRSpatialReferenceH], :OGRErr
-    attach_function :OSRStripCTParms, %i[OGRSpatialReferenceH], :OGRErr
-    attach_function :OSRImportFromEPSG, %i[OGRSpatialReferenceH int], :OGRErr
-    attach_function :OSRImportFromEPSGA, %i[OGRSpatialReferenceH int], :OGRErr
-    attach_function :OSRImportFromWkt, %i[OGRSpatialReferenceH pointer], :OGRErr
-    attach_function :OSRImportFromProj4, %i[OGRSpatialReferenceH string], :OGRErr
-    attach_function :OSRImportFromESRI, %i[OGRSpatialReferenceH pointer], :OGRErr
+    attach_function :OSRValidate, %i[OGRSpatialReferenceH], OGRErr
+    attach_function :OSRFixupOrdering, %i[OGRSpatialReferenceH], OGRErr
+    attach_function :OSRFixup, %i[OGRSpatialReferenceH], OGRErr
+    attach_function :OSRStripCTParms, %i[OGRSpatialReferenceH], OGRErr
+    attach_function :OSRImportFromEPSG, %i[OGRSpatialReferenceH int], OGRErr
+    attach_function :OSRImportFromEPSGA, %i[OGRSpatialReferenceH int], OGRErr
+    attach_function :OSRImportFromWkt, %i[OGRSpatialReferenceH pointer], OGRErr
+    attach_function :OSRImportFromProj4, %i[OGRSpatialReferenceH string], OGRErr
+    attach_function :OSRImportFromESRI, %i[OGRSpatialReferenceH pointer], OGRErr
     attach_function :OSRImportFromPCI,
       %i[OGRSpatialReferenceH string string pointer],
-      :OGRErr
+      OGRErr
     attach_function :OSRImportFromUSGS,
       %i[OGRSpatialReferenceH long long pointer long],
-      :OGRErr
-    attach_function :OSRImportFromXML, %i[OGRSpatialReferenceH string], :OGRErr
-    attach_function :OSRImportFromMICoordSys, %i[OGRSpatialReferenceH string], :OGRErr
+      OGRErr
+    attach_function :OSRImportFromXML, %i[OGRSpatialReferenceH string], OGRErr
+    attach_function :OSRImportFromMICoordSys, %i[OGRSpatialReferenceH string], OGRErr
     attach_function :OSRImportFromERM,
       %i[OGRSpatialReferenceH string string string],
-      :OGRErr
-    attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], :OGRErr
+      OGRErr
+    attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], OGRErr
 
-    attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH pointer], :OGRErr
-    attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH pointer int], :OGRErr
-    attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH pointer], :OGRErr
+    attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH pointer], OGRErr
+    attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH pointer int], OGRErr
+    attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH pointer], OGRErr
     attach_function :OSRExportToPCI,
       %i[OGRSpatialReferenceH pointer pointer pointer],
-      :OGRErr
+      OGRErr
     attach_function :OSRExportToUSGS,
       %i[OGRSpatialReferenceH pointer pointer pointer pointer],
-      :OGRErr
-    attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer string], :OGRErr
-    attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH pointer], :OGRErr
+      OGRErr
+    attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer string], OGRErr
+    attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH pointer], OGRErr
     attach_function :OSRExportToERM,
       %i[OGRSpatialReferenceH string string string],
-      :OGRErr
+      OGRErr
     attach_function :OSRMorphToESRI,
       %i[OGRSpatialReferenceH],
-      :OGRErr
+      OGRErr
 
     attach_function :OSRIsGeographic, %i[OGRSpatialReferenceH], :bool
     attach_function :OSRIsLocal, %i[OGRSpatialReferenceH], :bool

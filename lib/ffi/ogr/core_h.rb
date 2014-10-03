@@ -4,16 +4,6 @@ module FFI
     #------------------------------------------------------------------------
     # Defines
     #------------------------------------------------------------------------
-    OGRERR_NONE                       = 0
-    OGRERR_NOT_ENOUGH_DATA            = 1
-    OGRERR_NOT_ENOUGH_MEMORY          = 2
-    OGRERR_UNSUPPORTED_GEOMETRY_TYPE  = 3
-    OGRERR_UNSUPPORTED_OPERATION      = 4
-    OGRERR_CORRUPT_DATA               = 5
-    OGRERR_FAILURE                    = 6
-    OGRERR_UNSUPPORTED_SRS            = 7
-    OGRERR_INVALID_HANDLE             = 8
-
     WKB_25D_BIT = 0x80000000
     #WKB_FLATTEN
     OGR_Z_MARKER = 0x21125711
@@ -53,6 +43,18 @@ module FFI
     #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
+    # The C API defines :OGRErr as a function that returns constants.  I'm
+    # taking the liberty to turn this into an enum.
+    OGRErr = enum :OGRERR_NONE,
+      :OGRERR_NOT_ENOUGH_DATA,
+      :OGRERR_NOT_ENOUGH_MEMORY,
+      :OGRERR_UNSUPPORTED_GEOMETRY_TYPE,
+      :OGRERR_UNSUPPORTED_OPERATION,
+      :OGRERR_CORRUPT_DATA,
+      :OGRERR_FAILURE,
+      :OGRERR_UNSUPPORTED_SRS,
+      :OGRERR_INVALID_HANDLE
+
     OGRwkbGeometryType = enum :wkbUnknown, 0,
       :wkbPoint,                  1,
       :wkbLineString,             2,
@@ -167,14 +169,7 @@ module FFI
     #------------------------------------------------------------------------
     # Typedefs
     #------------------------------------------------------------------------
-    typedef :int, :OGRErr
     typedef :int, :OGRBoolean
-    # typedef OGRStyleToolClassID, :OGRSTClassId
-    # typedef OGRStyleToolUnitsID, :OGRSTUnitId
-    # typedef OGRStyleToolParamPenID, :OGRSTPenParam
-    # typedef OGRStyleToolParamBrushID, :OGRSTBrushParam
-    # typedef OGRStyleToolParamSymbolID, :OGRSTSymbolParam
-    # typedef OGRStyleToolParamLabelID, :OGRSTLabelParam
 
     #------------------------------------------------------------------------
     # Functions
@@ -182,7 +177,6 @@ module FFI
     attach_function :OGRMalloc, [:size_t], :pointer
     attach_function :OGRCalloc, [:size_t, :size_t], :pointer
     attach_function :OGRRealloc, [:pointer, :size_t], :pointer
-    #attach_function :OGRStrdup, [:string], :string
     attach_function :OGRFree, [:pointer], :void
     attach_function :OGRGeometryTypeToName, [OGRwkbGeometryType], :string
     attach_function :OGRMergeGeometryTypes,
