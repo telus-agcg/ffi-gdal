@@ -57,6 +57,11 @@ module OGR
       OGR_FD_GetGeomType(@ogr_feature_defn_pointer)
     end
 
+    # @param new_type [FFI::GDAL::OGRwkbGeometryType]
+    def geometry_type=(new_type)
+      OGR_FD_SetGeomType(@ogr_feature_defn_pointer, new_type)
+    end
+
     # @return [Boolean]
     def geometry_ignored?
       OGR_FD_IsGeometryIgnored(@ogr_feature_defn_pointer)
