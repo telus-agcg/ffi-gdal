@@ -137,6 +137,13 @@ module GDAL
       @raster_bands[zero_index]
     end
 
+    # @return [Array<GDAL::RasterBand>]
+    def raster_bands
+      1.upto(raster_count).map do |i|
+        raster_band(i)
+      end
+    end
+
     # @return [String]
     def projection
       return '' if null?
