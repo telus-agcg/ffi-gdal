@@ -184,10 +184,8 @@ module GDAL
         return ndvi unless remove_negatives
 
         # Zero out
-        i = 0
-        ndvi.each do |_|
+        0.upto(ndvi.size - 1) do |i|
           ndvi[i] = 0 if ndvi[i] < 0
-          i += i
         end
 
         ndvi
