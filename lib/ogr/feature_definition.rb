@@ -114,6 +114,6 @@ module OGR
 
       OGR_FD_IsSame(@ogr_feature_defn_pointer, fd_ptr)
     end
-    alias_method, :==, :same?
+    alias_method :==, :same?
   end
 end
