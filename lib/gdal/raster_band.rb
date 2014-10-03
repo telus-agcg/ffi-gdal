@@ -84,7 +84,7 @@ module GDAL
     # @return [GDAL::ColorTable]
     def color_table
       return @color_table if @color_table
-      
+
       gdal_color_table = GDALGetRasterColorTable(@gdal_raster_band)
       return nil if gdal_color_table.null?
 
@@ -166,6 +166,15 @@ module GDAL
       value = GDALGetRasterNoDataValue(@gdal_raster_band, associated)
 
       { value: value, is_associated: associated.read_bytes(1).to_bool }
+    end
+
+    # Sets the no data value for this band.
+    #
+    # @param value [Float]
+    def no_data_value=(value)
+      cpl_err = GDALSetRasterNoDataValue(@gdal_raster_band, value)
+
+      cpl_err.to_bool
     end
 
     # @return [Fixnum]
