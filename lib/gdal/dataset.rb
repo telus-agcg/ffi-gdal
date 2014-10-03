@@ -6,6 +6,7 @@ require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
+require_relative '../ogr/spatial_reference'
 
 
 module GDAL
@@ -151,6 +152,16 @@ module GDAL
       GDALGetProjectionRef(@gdal_dataset)
     end
 
+    # Creates a OGR::SpatialReference object from the dataset's projection.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference
+      p = projection
+      return nil if p.empty?
+
+      OGR::SpatialReference.new(projection)
+    end
+
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
@@ -266,6 +277,42 @@ module GDAL
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
+    end
+
+    # @param band_numbers [Array<Fixnum>, Fixnum]
+    # @param geometries [Array<OGR::Geometry>, OGR::Geometry]
+    # @param burn_values [Array<Float>, Float]
+    def rasterize_geometries(band_numbers, geometries, burn_values, transformer=nil, transform_arg=nil, &progress_block)
+      band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+      geometries = geometries.is_a?(Array) ? geometries : [geometries]
+      burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
+
+      band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
+      band_numbers_ptr.write_array_of_int(band_numbers)
+
+      geometries_ptr = FFI::MemoryPointer.new(:pointer, geometries.size)
+      geometries_ptr.write_array_of_pointer(geometries.map(&:c_pointer))
+
+      burn_values_ptr = FFI::MemoryPointer.new(:pointer, burn_values.size)
+      burn_values_ptr.write_array_of_double(burn_values)
+
+      # not allowing for now
+      options = nil
+      progress_callback_data = nil
+
+      cpl_err = GDALRasterizeGeometries(@gdal_dataset,
+        band_numbers.size,
+        band_numbers_ptr,
+        geometries.size,
+        geometries_ptr,
+        transformer,
+        transform_arg,
+        burn_values_ptr,
+        options,
+        progress_block,
+        progress_callback_data)
+
+      cpl_err.to_bool
     end
   end
 end
