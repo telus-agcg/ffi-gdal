@@ -1,4 +1,5 @@
 require_relative 'dataset'
+require_relative '../ogr/coordinate_transformation'
 
 module GDAL
   class Utils
@@ -30,57 +31,94 @@ module GDAL
             fail RequiredBandNotFound, 'Near-infrared'
           end
 
-          if clip_to_wkt
-            clip(clip_to_wkt, ndvi_dataset.geo_transform,
-              original_bands[:red].to_a, original_bands[:nir].to_a)
-          end
-
-          ndvi_array = calculate_ndvi(original_bands[:red].to_a,
-            original_bands[:nir].to_a, true)
-
+          red_array = original_bands[:red].to_a
+          nir_array = original_bands[:nir].to_a
+          ndvi_array = calculate_ndvi(red_array, nir_array, true)
           ndvi_band = ndvi_dataset.raster_band(1)
+          #ndvi_band.no_data_value = -9999
           ndvi_band.write_array(ndvi_array)
+
+          if clip_to_wkt
+            #points = clip(clip_to_wkt, original, ndvi_dataset)
+            #puts "points: #{points}"
+            #puts "points: #{points.size}"
+            #puts "ndvi array: #{ndvi_array.to_a}"
+            #ndvi_array = ndvi_array[points]
+            geometry = clip(clip_to_wkt, original, ndvi_dataset)
+          end
+          puts "ndvi first row: #{ndvi_array[false, 0].to_a}"
+
         end
       end
 
-      def clip(wkt, geo_transform, red_array, nir_array)
-        geometry = OGR::Geometry.create_from_wkt(wkt)
+      def clip(wkt_geometry, original, new_dataset)
+        puts "original x_origin: #{original.geo_transform.x_origin}"
+        puts "original y_origin: #{original.geo_transform.y_origin}"
+        puts "original pixel_width: #{original.geo_transform.pixel_width}"
+        puts "original pixel_height: #{original.geo_transform.pixel_height}"
 
-        ulx, uly = world_to_pixel(geo_transform, geometry.envelope.min_x,
-          geometry.envelope.max_y)
-        lrx, lry = world_to_pixel(geo_transform, geometry.envelope.max_x,
-          geometry.envelope.min_y)
-        puts "min x: #{geometry.envelope.min_x}"
-        puts "min y: #{geometry.envelope.min_y}"
-        puts "max x: #{geometry.envelope.max_x}"
-        puts "max y: #{geometry.envelope.max_y}"
-        puts "ulx: #{ulx}"
-        puts "uly: #{uly}"
-        puts "lrx: #{lrx}"
-        puts "lry: #{lry}"
+        # create geometry from the wkt_geometry
+        wkt_spatial_ref = OGR::SpatialReference.new
+        wkt_spatial_ref.from_epsg(4326)
+        geometry = OGR::Geometry.create_from_wkt(wkt_geometry, wkt_spatial_ref)
+        puts "geometry spatial reference: #{geometry.spatial_reference}"
 
-        pixel_width = (lrx - ulx).to_i
-        pixel_height = (lry - uly).to_i
+        # reproject new dataset to use projection from original dataset
+        target_spatial_ref = OGR::SpatialReference.new(original.projection)
+        coordinate_transformation = OGR::CoordinateTransformation.create(wkt_spatial_ref,
+          target_spatial_ref)
 
-        puts "pixel width: #{pixel_width}"
-        puts "pixel height: #{pixel_height}"
+        geometry.transform(coordinate_transformation)
+
+        # Get geometry extent
+        boundary = geometry.boundary.to_line_string
+        points = boundary.points_array
+
+        x_min = boundary.envelope.min_x
+        x_max = boundary.envelope.max_x
+        y_min = boundary.envelope.min_y
+        y_max = boundary.envelope.max_y
+        # x_min = new_dataset.geo_transform.x_origin
+        # x_max = new_dataset.geo_transform.x_origin
+        # y_min = boundary.envelope.min_y
+        # y_max = boundary.envelope.max_y
+        puts "min x: #{boundary.envelope.min_x}"
+        puts "min y: #{boundary.envelope.min_y}"
+        puts "max x: #{boundary.envelope.max_x}"
+        puts "max y: #{boundary.envelope.max_y}"
+        puts "new x origin: #{new_dataset.geo_transform.x_origin}"
+        puts "new y origin: #{new_dataset.geo_transform.y_origin}"
+        puts "new pixel_width: #{new_dataset.geo_transform.pixel_width}"
+        puts "new pixel_height: #{new_dataset.geo_transform.pixel_height}"
+
+        # Specify offset and rows and columns to read
+        x_offset = ((x_min - original.geo_transform.x_origin) / original.geo_transform.pixel_width).to_i
+        y_offset = ((original.geo_transform.y_origin - y_max) / original.geo_transform.pixel_width).to_i
+        x_count = ((x_max - x_min) / original.geo_transform.pixel_width).to_i + 1
+        y_count = ((y_max - y_min) / original.geo_transform.pixel_width).to_i + 1
+        puts "x_offset: #{x_offset}"
+        puts "y_offset: #{y_offset}"
+        puts "x_count: #{x_count}"
+        puts "y_count: #{y_count}"
+
         # clipped_array = NArray.int(pixel_height, pixel_width)
         # red_clipped = red_array[uly..lry, ulx..lrx]
         # nir_clipped = nir_array[uly..lry, ulx..lrx]
 
-        puts "geo_transform x origin was: #{geo_transform.x_origin}"
-        puts "geo_transform y origin was: #{geo_transform.y_origin}"
-        geo_transform.x_origin = geometry.envelope.min_x
-        geo_transform.y_origin = geometry.envelope.min_y
-        puts "geo_transform x origin is now: #{geo_transform.x_origin}"
-        puts "geo_transform y origin is now: #{geo_transform.y_origin}"
+        puts "geo_transform x origin was: #{new_dataset.geo_transform.x_origin}"
+        puts "geo_transform y origin was: #{new_dataset.geo_transform.y_origin}"
+        new_dataset.geo_transform.x_origin = x_min
+        new_dataset.geo_transform.y_origin = y_max
+        puts "geo_transform x origin is now: #{new_dataset.geo_transform.x_origin}"
+        puts "geo_transform y origin is now: #{new_dataset.geo_transform.y_origin}"
 
-        points = geometry.points_array
-        puts "points: #{points}"
-        pixels = points.map do |x, y|
-          world_to_pixel(geo_transform, x, y)
-        end
-        puts "pixels: #{pixels}"
+        original_srs = OGR::SpatialReference.new(original.projection)
+        new_dataset.projection = original_srs.to_wkt
+
+        # raster zone polygon to raster
+        new_dataset.rasterize_geometries(1, geometry, 1)
+
+        #ndvi_band = new_dataset.raster_band(1)
       end
 
       def extract_gndvi(source, destination, driver_name: 'GTiff')
@@ -202,6 +240,8 @@ module GDAL
       def world_to_pixel(geo_transform, x, y)
         pixel = ((x - geo_transform.x_origin) / geo_transform.pixel_width)
         line = ((geo_transform.y_origin - y) / geo_transform.pixel_height)
+        #pixel = geo_transform.x_origin + (x * geo_transform.pixel_width) + (y * geo_transform.x_rotation)
+        #line = geo_transform.y_origin + (x * geo_transform.y_rotation) + (y * geo_transform.pixel_height)
 
         [pixel, line]
       end
