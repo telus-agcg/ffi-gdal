@@ -88,7 +88,7 @@ module GDAL
     end
 
     # Rotation about the x-axis.
-    # In wikipedia's World Map definition, this is "B".
+    # In wikipedia's World File definition, this is "B".
     #
     # @return [Float]
     def x_rotation
