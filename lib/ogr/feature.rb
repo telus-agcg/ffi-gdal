@@ -7,11 +7,11 @@ module OGR
     include FFI::GDAL
 
     # @param feature_definition [OGR::FeatureDefinition]
-    def initialize(feature_defintion, ogr_feature_pointer: nil)
+    def initialize(feature_def, ogr_feature_pointer: nil)
       @ogr_feature_pointer = if ogr_feature_pointer
         ogr_feature_pointer
       else
-        OGR_F_Create(field_definition.c_pointer)
+        OGR_F_Create(feature_def.c_pointer)
       end
 
       close_me = -> { FFI::GDAL.OGR_F_Destroy(@ogr_feature_pointer) }
