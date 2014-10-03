@@ -3,6 +3,7 @@ require_relative 'core_h'
 require_relative 'ogr_envelope'
 require_relative 'ogr_envelope_3d'
 require_relative 'ogr_field'
+require_relative 'srs_api_h'
 
 module FFI
   module GDAL
@@ -11,8 +12,6 @@ module FFI
     # Typedefs
     #------------------------------------------------------------------------
     typedef :pointer, :OGRGeometryH
-    typedef :pointer, :OGRSpatialReferenceH
-    typedef :pointer, :OGRCoordinateTransformationH
     typedef :pointer, :OGRFieldDefnH
     typedef :pointer, :OGRFeatureDefnH
     typedef :pointer, :OGRFeatureH
