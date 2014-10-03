@@ -42,8 +42,6 @@ require_relative 'cpl/error_h'
 require_relative 'cpl/minixml_h'
 require_relative 'cpl/string_h'
 require_relative 'cpl/vsi_h'
-require_relative 'gdal/gdal_color_entry'
-require_relative 'gdal/gdal_gcp'
 require_relative '../ext/to_bool'
 
 module FFI
@@ -188,9 +186,6 @@ module FFI
     typedef :pointer, :GDALRasterAttributeTableH
     typedef :pointer, :GDALAsyncReaderH
 
-    #-----------------------------------------------------------------
-    # functions
-    #-----------------------------------------------------------------
     # @param completion [Float]
     # @param message [String]
     # @param progress_arg [Pointer]
@@ -201,6 +196,16 @@ module FFI
     callback :GDALDerivedPixelFunc,
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
+  end
+end
+
+# These requires depend on ^^^
+require_relative 'gdal/alg_h'
+require_relative 'gdal/gdal_color_entry'
+require_relative 'gdal/gdal_gcp'
+
+module FFI
+  module GDAL
 
     #-----------------------------------------------------------------
     # functions

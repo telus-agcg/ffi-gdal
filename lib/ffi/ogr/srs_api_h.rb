@@ -30,6 +30,12 @@ module FFI
       :odt_ld_max, 32767
 
     #------------------------------------------------------------------------
+    # Typedefs
+    #------------------------------------------------------------------------
+    typedef :pointer, :OGRSpatialReferenceH
+    typedef :pointer, :OGRCoordinateTransformationH
+
+    #------------------------------------------------------------------------
     # Functions
     #------------------------------------------------------------------------
     attach_function :OSRAxisEnumToName, [OGRAxisOrientation], :string
