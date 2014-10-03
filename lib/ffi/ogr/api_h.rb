@@ -70,7 +70,7 @@ module FFI
       %i[OGRGeometryH string int],
       OGRErr
     attach_function :OGR_G_ExportToWkb,
-      [:OGRGeometryH, OGRwkbByteOrder, :pointer],
+      [:OGRGeometryH, OGRwkbByteOrder, :buffer_out],
       OGRErr
     attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
@@ -200,7 +200,7 @@ module FFI
 
     attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], OGRErr
     attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], OGRErr
-    attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int int], OGRErr
+    attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int bool], OGRErr
 
     attach_function :OGRBuildPolygonFromEdges,
       %i[OGRGeometryH int int double pointer],
@@ -274,10 +274,10 @@ module FFI
     attach_function :OGR_FD_SetGeomType,
       [:OGRFeatureDefnH, OGRwkbGeometryType],
       :void
-    attach_function :OGR_FD_IsGeometryIgnored, %i[OGRFeatureDefnH], :int
-    attach_function :OGR_FD_SetGeometryIgnored, %i[OGRFeatureDefnH int], :void
-    attach_function :OGR_FD_IsStyleIgnored, %i[OGRFeatureDefnH], :int
-    attach_function :OGR_FD_SetStyleIgnored, %i[OGRFeatureDefnH int], :void
+    attach_function :OGR_FD_IsGeometryIgnored, %i[OGRFeatureDefnH], :bool
+    attach_function :OGR_FD_SetGeometryIgnored, %i[OGRFeatureDefnH bool], :void
+    attach_function :OGR_FD_IsStyleIgnored, %i[OGRFeatureDefnH], :bool
+    attach_function :OGR_FD_SetStyleIgnored, %i[OGRFeatureDefnH bool], :void
     attach_function :OGR_FD_Reference, %i[OGRFeatureDefnH], :int
     attach_function :OGR_FD_Dereference, %i[OGRFeatureDefnH], :int
     attach_function :OGR_FD_GetReferenceCount, %i[OGRFeatureDefnH], :int
