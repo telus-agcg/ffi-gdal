@@ -132,22 +132,22 @@ module GDAL
             fail RequiredBandNotFound, 'Near-infrared'
           end
 
-          the_array = calculate_ndvi(green.to_a, nir.to_a, true)
+          the_array = calculate_ndvi(green.to_na, nir.to_na, true)
 
           gndvi_band = gndvi_dataset.raster_band(1)
           gndvi_band.write_array(the_array)
 
           red_band = gndvi_dataset.raster_band(2)
           #red_band.write_array(red)
-          red_band.write_array(original.raster_band(2).to_a)
+          red_band.write_array(original.raster_band(2).to_na)
 
           green_band = gndvi_dataset.raster_band(3)
           #green_band.write_array(green)
-          green_band.write_array(original.raster_band(3).to_a)
+          green_band.write_array(original.raster_band(3).to_na)
 
           blue_band = gndvi_dataset.raster_band(4)
           #blue_band.write_array(blue)
-          blue_band.write_array(original.raster_band(4).to_a)
+          blue_band.write_array(original.raster_band(4).to_na)
         end
       end
 
@@ -161,7 +161,7 @@ module GDAL
           original_bands = bands_by_order(band_order, original)
 
           new_red_band = nir_dataset.raster_band(1)
-          new_red_band.write_array(original_bands[:red].to_a)
+          new_red_band.write_array(original_bands[:red].to_na)
         end
       end
 
@@ -203,13 +203,13 @@ module GDAL
           end
 
           new_red_band = new_dataset.raster_band(1)
-          new_red_band.write_array(original_bands[:green].to_a)
+          new_red_band.write_array(original_bands[:green].to_na)
 
           new_green_band = new_dataset.raster_band(2)
-          new_green_band.write_array(original_bands[:blue].to_a)
+          new_green_band.write_array(original_bands[:blue].to_na)
 
           new_blue_band = new_dataset.raster_band(3)
-          new_blue_band.write_array(original_bands[:nir].to_a)
+          new_blue_band.write_array(original_bands[:nir].to_na)
         end
       end
 

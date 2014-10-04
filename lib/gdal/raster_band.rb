@@ -578,7 +578,7 @@ module GDAL
     # Iterates through all lines and builds an NArray of pixels.
     #
     # @return [NArray]
-    def to_a
+    def to_na
       lines = []
 
       readlines do |line|
