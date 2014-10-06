@@ -81,13 +81,9 @@ module GDAL
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      return @driver if @driver
+      driver_ptr = GDALGetDatasetDriver(@gdal_dataset)
 
-      @driver = if @gdal_dataset && !null?
-        Driver.new(dataset: @gdal_dataset)
-      else
-        Driver.new
-      end
+      Driver.new(driver_ptr)
     end
 
     # Fetches all files that form the dataset.
@@ -131,8 +127,8 @@ module GDAL
         return @raster_bands[zero_index]
       end
 
-      @raster_bands[zero_index] =
-        GDAL::RasterBand.new(@gdal_dataset, band_id: raster_index)
+      dataset_ptr = GDALGetRasterBand(@dataset, raster_index)
+      @raster_bands[zero_index] = GDAL::RasterBand.new(@gdal_dataset, raster_index)
       @raster_bands.compact!
 
       @raster_bands[zero_index]
