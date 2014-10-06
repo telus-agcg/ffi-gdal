@@ -5,12 +5,18 @@ module OGR
   class FeatureDefinition
     include FFI::GDAL
 
+    def self.create(name)
+      ogr_feature_defn_pointer = OGR_FD_Create(name)
+
+      new(ogr_field_defn_pointer)
+    end
+
     # @param name [String]
-    def initialize(name, ogr_feature_defn_pointer: nil)
-      @ogr_feature_defn_pointer = if ogr_feature_defn_pointer
-        ogr_feature_defn_pointer
+    def initialize(feature_definition)
+      @ogr_feature_defn_pointer = if feature_definition.is_a? OGR::FeatureDefinition
+        feature_definition.c_pointer
       else
-        OGR_FD_Create(name)
+        feature_definition
       end
 
       close_me = -> { FFI::GDAL.OGR_FD_Destroy(@ogr_feature_defn_pointer) }
@@ -37,7 +43,7 @@ module OGR
       field_def_ptr = OGR_FD_GetFieldDefn(@ogr_feature_defn_pointer)
       return nil if field_def_ptr.null?
 
-      OGR::FieldDefinition.new(ogr_field_defn_pointer: field_def_ptr)
+      OGR::FieldDefinition.new(field_def_ptr)
     end
 
     # @param name [String]
@@ -93,7 +99,7 @@ module OGR
       fd_ptr = OGR_FD_GetGeomFieldDefn(@ogr_feature_defn_pointer, index)
       return nil if fd_ptr.null?
 
-      OGR::FieldDefinition.new(ogr_field_defn_pointer: fd_ptr)
+      OGR::FieldDefinition.new(fd_ptr)
     end
 
     # @param name [String]

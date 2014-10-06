@@ -9,7 +9,7 @@ module OGR
     def self.create(type)
       geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
 
-      new(ogr_geometry_pointer: geometry_pointer)
+      new(geometry_pointer)
     end
 
     # @param wkt_data [String]
@@ -38,7 +38,7 @@ module OGR
         geometry_ptr_ptr.null? ||
         geometry_ptr_ptr.read_pointer.nil?
 
-      new(ogr_geometry_pointer: geometry_ptr_ptr.read_pointer)
+      new(geometry_ptr_ptr.read_pointer)
     end
 
     # @param gml_data [String]
@@ -46,7 +46,7 @@ module OGR
     def self.create_from_gml(gml_data)
       geometry_pointer = FFI::GDAL.OGR_G_CreateFromGML(gml_data)
 
-      new(ogr_geometry_pointer: geometry_pointer)
+      new(geometry_pointer)
     end
 
     # @param json_data [String]
@@ -54,18 +54,23 @@ module OGR
     def self.create_from_json(json_data)
       geometry_pointer = FFI::GDAL.OGR_G_CreateGeometryFromJson(json_data)
 
-      new(ogr_geometry_pointer: geometry_pointer)
+      new(geometry_pointer)
     end
 
     # @param type [FFI::GDAL::OGRwkbGeometryType]
-    # @param ogr_geometry_pointer [FFI::Pointer]
-    def initialize(type: nil, ogr_geometry_pointer: nil)
-      @ogr_geometry_pointer = if ogr_geometry_pointer
-        ogr_geometry_pointer
-      elsif type
-        OGR_G_CreateGeometry(type)
+    # @return [OGR::Geometry]
+    def self.create(type)
+      ogr_geometry_pointer = OGR_G_CreateGeometry(type)
+
+      new(ogr_geometry_pointer)
+    end
+
+    # @param ogr_geometry [OGR::Geometry, FFI::Pointer]
+    def initialize(geometry)
+      @ogr_geometry_pointer = if geometry.is_a? OGR::Geometry
+        geometry.c_pointer
       else
-        raise "Can't create #{self.class} without a type or pointer."
+        geometry
       end
 
       close_me = -> { OGR_G_DestroyGeometry(@ogr_geometry_pointer) }
@@ -82,7 +87,7 @@ module OGR
     def clone
       new_geometry_ptr = OGR_G_Clone(@ogr_geometry_pointer)
 
-      self.class.new(ogr_geometry_pointer: new_geometry_ptr)
+      self.class.new(new_geometry_ptr)
     end
 
     # If this geometry is a container, this fetches the geometry at the
@@ -421,7 +426,7 @@ module OGR
       spatial_ref_ptr = OGR_G_GetSpatialReference(@ogr_geometry_pointer)
       return nil if spatial_ref_ptr.null?
 
-      OGR::SpatialReference.new(ogr_spatial_ref_pointer: spatial_ref_ptr)
+      OGR::SpatialReference.new(spatial_ref_ptr)
     end
 
     # Assigns a spatial reference to this geometry.  Any existing spatial

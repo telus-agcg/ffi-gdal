@@ -22,12 +22,16 @@ module OGR
 
       ct_ptr = FFI::GDAL::OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
-      new(ogr_coordinate_transformation_pointer: ct_ptr)
+      new(ct_ptr)
     end
 
-    def initialize(ogr_coordinate_transformation_pointer: nil)
-      @ogr_layer_pointer = if ogr_coordinate_transformation_pointer
-        ogr_coordinate_transformation_pointer
+    # @param coordinate_transformation [OGR::CoordinateTransformation,
+    #   FFI::Pointer]
+    def initialize(coordinate_transformation)
+      @ogr_layer_pointer = if coordinate_transformation.is_a? OGR::CoordinateTransformation
+        coordinate_transformation.c_pointer
+      else
+        coordinate_transformation
       end
 
       close_me = -> { OCTDestroyCoordinateTransformation(@ogr_layer_pointer) }

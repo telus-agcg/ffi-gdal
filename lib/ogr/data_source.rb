@@ -24,8 +24,6 @@ module OGR
       else raise "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
       end
 
-      #driver = FFI::MemoryPointer.new(:pointer)
-      #pointer = FFI::GDAL.OGROpen(file_path, access_bool, driver)
       pointer = FFI::GDAL.OGROpen(file_path, access_bool, nil)
       raise OGR::OpenFailure.new(file_path) if pointer.null?
 
@@ -35,7 +33,8 @@ module OGR
     # @param data_source_pointer [FFI::Pointer]
     def initialize(data_source_pointer)
       @ogr_data_source = data_source_pointer
-      close_me = -> { self.close }
+
+      close_me = -> { OGR_DS_Destroy(@ogr_data_source) }
       ObjectSpace.define_finalizer self, close_me
     end
 
@@ -61,7 +60,7 @@ module OGR
       layer_pointer = OGR_DS_GetLayer(@ogr_data_source, index)
       return nil if layer_pointer.null?
 
-      OGR::Layer.new(ogr_layer_pointer: layer_pointer)
+      OGR::Layer.new(layer_pointer)
     end
 
     # @param name [String]
@@ -70,14 +69,16 @@ module OGR
       layer_pointer = OGR_DS_GetLayerByName(@ogr_data_source, name)
       return nil if layer_pointer.null?
 
-      OGR::Layer.new(ogr_layer_pointer: layer_pointer)
+      OGR::Layer.new(layer_pointer)
+    end
+
     end
 
     # @return [OGR::StyleTable]
     def style_table
       style_table_ptr = OGR_DS_GetStyleTable(@ogr_data_source)
 
-      OGR::StyleTable.new(ogr_style_table_pointer: style_table_ptr)
+      OGR::StyleTable.new(style_table_ptr)
     end
   end
 end

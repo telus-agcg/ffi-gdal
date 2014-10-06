@@ -13,21 +13,18 @@ module GDAL
 
     # @param dataset [GDAL::Dataset, FFI::Pointer]
     # @param band_id [Fixnum] Requried if not passing in +raster_band_pointer+.
-    # @param raster_band_pointer [FFI::Pointer] Requried if not passing in
-    #   +band_id+.
-    def initialize(dataset, band_id: nil, raster_band_pointer: nil)
+    # @param raster_band [GDAL::RasterBand, FFI::Pointer]
+    def initialize(dataset, raster_band=nil)
       @dataset = if dataset.is_a? GDAL::Dataset
         dataset.c_pointer
       else
         dataset
       end
 
-      @gdal_raster_band = if raster_band_pointer
-        raster_band_pointer
-      elsif band_id
-        GDALGetRasterBand(@dataset, band_id)
-      else
-        raise 'Must pass in band_id or the raster_band_pointer.'
+      @gdal_raster_band = if raster_band.is_a? GDAL::RasterBand
+        raster_band.c_pointer
+      elsif raster_band.is_a? FFI::Pointer
+        raster_band
       end
     end
 
@@ -195,7 +192,7 @@ module GDAL
       overview_pointer = GDALGetOverview(@gdal_raster_band, index)
       return nil if overview_pointer.null?
 
-      self.class.new(dataset, raster_band_pointer: overview_pointer)
+      self.class.new(dataset, overview_pointer)
     end
 
     # @param desired_samples [Fixnum] The returned band will have at least this
@@ -206,7 +203,7 @@ module GDAL
       band_pointer = GDALGetRasterSampleOverview(@gdal_raster_band, desired_samples)
       return nil if band_pointer.null?
 
-      self.class.new(dataset, raster_band_pointer: band_pointer)
+      self.class.new(dataset, band_pointer)
     end
 
     # @return [GDAL::RasterBand]
@@ -214,7 +211,7 @@ module GDAL
       band_pointer = GDALGetMaskBand(@gdal_raster_band)
       return nil if band_pointer.null?
 
-      self.class.new(dataset, raster_band_pointer: band_pointer)
+      self.class.new(dataset, band_pointer)
     end
 
     # @return [Array<Symbol>]
@@ -344,8 +341,7 @@ module GDAL
       rat_pointer = GDALGetDefaultRAT(c_pointer)
       return nil if rat_pointer.null?
 
-      GDAL::RasterAttributeTable.new(c_pointer,
-        raster_attribute_table_pointer: rat_pointer)
+      GDAL::RasterAttributeTable.new(c_pointer, rat_pointer)
     end
 
     # Gets the default raster histogram.  Results are returned as a Hash so some

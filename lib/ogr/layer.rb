@@ -10,9 +10,11 @@ module OGR
   class Layer
     include FFI::GDAL
 
-    def initialize(ogr_layer_pointer: nil)
-      @ogr_layer_pointer = if ogr_layer_pointer
-        ogr_layer_pointer
+    def initialize(layer)
+      @ogr_layer_pointer = if layer.is_a? OGR::Layer
+        layer.c_pointer
+      else
+        layer
       end
     end
 
@@ -57,7 +59,7 @@ module OGR
       feature_pointer = OGR_L_GetFeature(@ogr_layer_pointer, index)
       return nil if feature_pointer.null?
 
-      OGR::Feature.new(ogr_feature_pointer: feature_pointer)
+      OGR::Feature.new(feature_pointer)
     end
 
     # The next available feature in this layer.  Only features matching the

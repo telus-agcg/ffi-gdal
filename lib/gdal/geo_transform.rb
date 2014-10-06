@@ -5,25 +5,13 @@ module GDAL
   class GeoTransform
     include FFI::GDAL
 
-    attr_accessor :gdal_dataset
-
     # @param dataset [GDAL::Dataset,FFI::Pointer]
     # @param geo_transform_pointer [FFI::Pointer]
-    def initialize(dataset, geo_transform_pointer: nil)
-      @gdal_dataset = if dataset.nil?
-        FFI::MemoryPointer.new(:pointer)
-      elsif dataset.is_a? GDAL::Dataset
-        dataset.c_pointer
+    def initialize(geo_transform=nil)
+      @gdal_geo_transform = if geo_transform.is_a? GDAL::GeoTransform
+        geo_transform.c_pointer
       else
-        dataset
-      end
-
-      @gdal_geo_transform = if geo_transform_pointer
-        geo_transform_pointer
-      else
-        container_pointer = FFI::MemoryPointer.new(:double, 6)
-        GDALGetGeoTransform(@gdal_dataset, container_pointer).to_ruby
-        container_pointer
+        geo_transform
       end
 
       to_a

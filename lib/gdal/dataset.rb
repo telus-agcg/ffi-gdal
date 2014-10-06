@@ -181,7 +181,11 @@ module GDAL
 
     # @return [GDAL::GeoTransform]
     def geo_transform
-      @geo_transform ||= GeoTransform.new(@gdal_dataset)
+      geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
+      cpl_err = GDALGetGeoTransform(@gdal_dataset, geo_transform_pointer)
+      cpl_err.to_ruby
+
+      GeoTransform.new(geo_transform_pointer)
     end
 
     # @param new_transform [GDAL::GeoTransform]
@@ -191,7 +195,7 @@ module GDAL
       cpl_err = GDALSetGeoTransform(@gdal_dataset, new_pointer)
       cpl_err.to_bool
 
-      @geo_transform = GeoTransform.new(@gdal_dataset, geo_transform_pointer: new_pointer)
+      @geo_transform = GeoTransform.new(new_pointer)
     end
 
     # @return [Fixnum]

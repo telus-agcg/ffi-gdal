@@ -7,11 +7,13 @@ module OGR
   class SpatialReference
     include FFI::GDAL
 
-    def initialize(wkt=nil, ogr_spatial_ref_pointer: nil)
-      @ogr_spatial_ref_pointer = if ogr_spatial_ref_pointer
-        ogr_spatial_ref_pointer
-      else
-        OSRNewSpatialReference(wkt)
+    def initialize(spatial_reference_or_wkt)
+      @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
+        spatial_reference_or_wkt.c_pointer
+      elsif spatial_reference_or_wkt.is_a? String
+        OSRNewSpatialReference(spatial_reference_or_wkt)
+      elsif spatial_reference_or_wkt.is_a? FFI::Pointer
+        spatial_reference_or_wkt
       end
 
       close_me = -> { OSRDestroySpatialReference(@ogr_spatial_ref_pointer) }

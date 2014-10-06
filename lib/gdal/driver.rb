@@ -29,8 +29,7 @@ module GDAL
     # @param name [String] Name of the registered GDALDriver.
     # @param index [Fixnum] Index of the registered driver.  Must be less than
     #   GDAL::Driver.driver_count.
-    # @param dataset [FFI::Pointer] Pointer to the GDALDataset.
-    def initialize(file_path: file_path, name: name, index: index, dataset: dataset)
+    def initialize(file_path: file_path, name: name, index: index)
       @gdal_driver_handle = if file_path
         GDALIdentifyDriver(::File.expand_path(file_path), nil)
       elsif name
@@ -40,8 +39,8 @@ module GDAL
         raise "index must be between 0 and #{count - 1}." if index > count
 
         GDALGetDriver(index)
-      elsif dataset
-        GDALGetDatasetDriver(dataset)
+      else
+        raise 'No Driver identifier given.  My pass in file_path, name, or index.'
       end
     end
 
@@ -51,22 +50,16 @@ module GDAL
 
     # @return [String]
     def short_name
-      return '' unless @gdal_driver_handle
-
       GDALGetDriverShortName(@gdal_driver_handle)
     end
 
     # @return [String]
     def long_name
-      return '' unless @gdal_driver_handle
-
       GDALGetDriverLongName(@gdal_driver_handle)
     end
 
     # @return [String]
     def help_topic
-      return '' unless @gdal_driver_handle
-
       "#{GDAL_DOCS_URL}/#{GDALGetDriverHelpTopic(@gdal_driver_handle)}"
     end
 
@@ -110,7 +103,7 @@ module GDAL
       options.each_with_index.map do |(k, v), i|
         options_pointer = CSLSetNameValue(options_pointer, k.to_s.upcase, v)
       end
-      
+
       dataset_pointer = GDALCreate(@gdal_driver_handle,
         filename,
         x_size,

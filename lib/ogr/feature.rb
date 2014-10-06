@@ -6,12 +6,25 @@ module OGR
   class Feature
     include FFI::GDAL
 
-    # @param feature_definition [OGR::FeatureDefinition]
-    def initialize(feature_def, ogr_feature_pointer: nil)
-      @ogr_feature_pointer = if ogr_feature_pointer
-        ogr_feature_pointer
+    # @param [OGR::FeatureDefinition,FFI::Pointer]
+    # @return [OGR::Feature]
+    def self.create(feature_definition)
+      feature_def_ptr = if feature_definition.is_a? OGR::FeatureDefintition
+        feature_definition.c_pointer
       else
-        OGR_F_Create(feature_def.c_pointer)
+        feature_definition
+      end
+
+      feature_ptr = FFI::GDAL::OGR_F_Create(feature_def_ptr)
+      new(feature_ptr)
+    end
+
+    # @param ogr_feature [OGR::Feature, FFI::Pointer]
+    def initialize(feature)
+      @ogr_feature_pointer = if feature.is_a? OGR::Feature
+        feature.c_pointer
+      else
+        feature
       end
 
       close_me = -> { FFI::GDAL.OGR_F_Destroy(@ogr_feature_pointer) }
@@ -33,7 +46,7 @@ module OGR
       field_defn_pointer = OGR_F_GetFieldDefnRef(@ogr_feature_pointer, index)
       return nil if field_defn_pointer.null?
 
-      OGR::FieldDefinition.new(ogr_field_defn_pointer: field_defn_pointer)
+      OGR::FieldDefinition.new(field_defn_pointer)
     end
 
     # @param name [String]
@@ -71,7 +84,7 @@ module OGR
       geometry_ptr = OGR_F_GetGeometryRef(@ogr_feature_pointer)
       return nil if geometry_ptr.null?
 
-      OGR::Geometry.new(ogr_geometry_pointer: geometry_ptr)
+      OGR::Geometry.new(geometry_ptr)
     end
 
     # @param new_geometry [OGR::Geometry]

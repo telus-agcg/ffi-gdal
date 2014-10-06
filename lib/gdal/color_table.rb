@@ -77,10 +77,10 @@ module GDAL
 
     def self.create(raster_band, palette_interpretation)
       color_table_pointer = FFI::GDAL::GDALCreateColorTable(palette_interpretation)
-      new(raster_band, color_table_pointer: color_table_pointer)
+      new(raster_band, color_table_pointer)
     end
 
-    def initialize(gdal_raster_band, color_table_pointer: nil)
+    def initialize(gdal_raster_band, color_table_pointer=nil)
       @gdal_raster_band = if gdal_raster_band.is_a? GDAL::RasterBand
         gdal_raster_band.c_pointer
       else
