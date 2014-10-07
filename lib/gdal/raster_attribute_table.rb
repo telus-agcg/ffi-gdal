@@ -67,7 +67,7 @@ module GDAL
     def to_color_table(entry_count = -1)
       color_table_pointer = GDALRATTranslateToColorTable(@gdal_raster_attribute_table, entry_count)
 
-      GDAL::ColorTable.new(@raster_band, color_table_pointer)
+      GDAL::ColorTable.new(color_table_pointer)
     end
 
     # @param file_path [String]

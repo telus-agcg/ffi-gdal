@@ -1,97 +1,34 @@
 require_relative '../ffi/gdal'
+require_relative 'color_entry'
 
 
 module GDAL
   module ColorTableTypes
-    module Gray
-      def grays
-        all_entries_for :c1
-      end
-    end
-
-    module RGB
-      def reds(index=nil)
-        all_entries_for :c1
-      end
-
-      def greens
-        all_entries_for :c2
-      end
-
-      def blues
-        all_entries_for :c3
-      end
-
-      def alphas
-        all_entries_for :c4
-      end
-
-      def to_a
-        NArray[reds, greens, blues, alphas].rot90(3).to_a
-      end
-    end
-
-    module CMYK
-      def cyans
-        all_entries_for :c1
-      end
-
-      def magentas
-        all_entries_for :c2
-      end
-
-      def yellows
-        all_entries_for :c3
-      end
-
-      def blacks
-        all_entries_for :c4
-      end
-
-      def to_a
-        NArray[cyans, magentas, yellows, blacks].rot90(3).to_a
-      end
-    end
-
-    module HLS
-      def hues
-        all_entries_for :c1
-      end
-
-      def lightnesses
-        all_entries_for :c2
-      end
-
-      def saturations
-        all_entries_for :c3
-      end
-
-      def to_a
-        NArray[hues, lightnesses, saturations].rot90(3).to_a
-      end
-    end
+    autoload :CMYK,
+      File.expand_path('color_table_types/cmyk', __dir__)
+    autoload :Gray,
+      File.expand_path('color_table_types/gray', __dir__)
+    autoload :HLS,
+      File.expand_path('color_table_types/hls', __dir__)
+    autoload :RGB,
+      File.expand_path('color_table_types/rgb', __dir__)
   end
 
   class ColorTable
     include FFI::GDAL
 
-    def self.create(raster_band, palette_interpretation)
+    # @param raster_band [GDAL::RasterBand, FFI::Pointer]
+    # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
+    # @return [GDAL::ColorTable]
+    def self.create(palette_interpretation)
       color_table_pointer = FFI::GDAL::GDALCreateColorTable(palette_interpretation)
-      new(raster_band, color_table_pointer)
+
+      new(color_table_pointer)
     end
 
-    def initialize(gdal_raster_band, color_table_pointer=nil)
-      @gdal_raster_band = if gdal_raster_band.is_a? GDAL::RasterBand
-        gdal_raster_band.c_pointer
-      else
-        gdal_raster_band
-      end
-
-      @gdal_color_table = if color_table_pointer
-        color_table_pointer
-      else
-        GDALGetRasterColorTable(@gdal_raster_band)
-      end
+    # @param
+    def initialize(color_table_pointer)
+      @color_table_pointer = color_table_pointer
 
       case palette_interpretation
       when :GPI_Gray then extend GDAL::ColorTableTypes::Gray
@@ -102,44 +39,40 @@ module GDAL
     end
 
     def c_pointer
-      @gdal_color_table
+      @color_table_pointer
     end
 
     def null?
-      c_pointer.null?
+      @color_table_pointer.null?
     end
 
     # Usually :GPI_RGB.
     #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      @palette_interpretation ||= GDALGetPaletteInterpretation(@gdal_color_table)
+      @palette_interpretation ||= GDALGetPaletteInterpretation(@color_table_pointer)
     end
 
     # @return [Fixnum]
     def color_entry_count
-      return 0 if null?
-
-      GDALGetColorEntryCount(@gdal_color_table)
+      GDALGetColorEntryCount(@color_table_pointer)
     end
 
     # @param index [Fixnum]
-    # @return [FFI::GDAL::GDALColorEntry]
+    # @return [GDAL::ColorEntry]
     def color_entry(index)
-      return nil if null?
+      color_entry = GDALGetColorEntry(@color_table_pointer, index)
 
-      GDALGetColorEntry(@gdal_color_table, index)
+      GDAL::ColorEntry.new(color_entry)
     end
 
     # @param index [Fixnum]
-    # @return [GGI::GDAL::GDALColorEntry]
+    # @return [GDAL::ColorEntry]
     def color_entry_as_rgb(index)
-      return nil if null?
+      entry = FFI::GDAL.GDALColorEntry.new
+      GDALGetColorEntryAsRGB(@color_table_pointer, index, entry)
 
-      entry = GDALColorEntry.new
-      GDALGetColorEntryAsRGB(@gdal_color_table, index, entry)
-
-      entry
+      GDAL::ColorEntry.new(entry)
     end
 
     # Add a new ColorEntry to the ColorTable.  Valid values depend on the image
@@ -149,14 +82,15 @@ module GDAL
     #
     # @param index [Fixnum] The inex of the color table's color entry to set.
     #   Must be between 0 and color_entry_count - 1.
-    # @param one [Fixnum] The `c1` value of the FFI::GDAL::GDALColorEntry struct
+    # @param one [Fixnum] The `c1` value of the GDAL::ColorEntry struct
     #   to set.
-    # @param two [Fixnum] The `c2` value of the FFI::GDAL::GDALColorEntry struct
+    # @param two [Fixnum] The `c2` value of the GDAL::ColorEntry struct
     #   to set.
-    # @param three [Fixnum] The `c3` value of the FFI::GDAL::GDALColorEntry
+    # @param three [Fixnum] The `c3` value of the GDAL::ColorEntry
     #   struct to set.
-    # @param four [Fixnum] The `c4` value of the FFI::GDAL::GDALColorEntry
+    # @param four [Fixnum] The `c4` value of the GDAL::ColorEntry
     #   struct to set.
+    # @return [GDAL::ColorEntry]
     def add_color_entry(index, one: nil, two: nil, three: nil, four: nil)
       # unless (0..color_entry_count).include? index
       #   raise "Invalid color entry index.  Choose betwen 0 - #{color_entry_count}."
@@ -168,7 +102,9 @@ module GDAL
       entry[:c3] = three if three
       entry[:c4] = four if four
 
-      GDALSetColorEntry(@gdal_color_table, index, entry)
+      GDALSetColorEntry(@color_table_pointer, index, entry)
+
+      GDAL::ColorEntry.new(entry)
     end
 
     def all_entries_for(color_entry_c)
@@ -179,6 +115,18 @@ module GDAL
       0.upto(color_entry_count - 1).map do |i|
         color_entry(i)[color_entry_c]
       end
+    end
+
+    # Automatically creates a color ramp from one color entry to another.  It
+    # can be called several times to create multiple ramps in the same color
+    # table.
+    #
+    # @param start_index [Fixnum] Index to start the ramp on (0..255)
+    # @param start_color [GDAL::ColorEntry] Value to start the ramp.
+    # @param end_index [Fixnum] Index to end the ramp on (0..255)
+    # @param end_color [GDAL::ColorEntry] Value to end the ramp.
+    def create_color_ramp!(start_index, start_color, end_index, end_color)
+      GDALCreateColorRamp(@color_table_pointer, start_index, end_index, end_color)
     end
   end
 end
