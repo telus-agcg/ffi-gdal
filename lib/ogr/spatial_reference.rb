@@ -7,13 +7,23 @@ module OGR
   class SpatialReference
     include FFI::GDAL
 
-    def initialize(spatial_reference_or_wkt)
+    # Builds a spatial reference object using either the passed-in WKT string,
+    # OGR::SpatialReference object, or a pointer to an in-memory
+    # SpatialReference object.  If nothing is passed in, an empty
+    # SpatialReference object is created, in which case you'll need to populate
+    # relevant attributes.
+    #
+    # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
+    #   String]
+    def initialize(spatial_reference_or_wkt=nil)
       @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
         spatial_reference_or_wkt.c_pointer
       elsif spatial_reference_or_wkt.is_a? String
         OSRNewSpatialReference(spatial_reference_or_wkt)
       elsif spatial_reference_or_wkt.is_a? FFI::Pointer
         spatial_reference_or_wkt
+      else
+        OSRNewSpatialReference(nil)
       end
 
       close_me = -> { OSRDestroySpatialReference(@ogr_spatial_ref_pointer) }
@@ -32,19 +42,19 @@ module OGR
     end
 
     def validate
-      OSRValidate(@ogr_spatial_ref_pointer)
+      ogr_err = OSRValidate(@ogr_spatial_ref_pointer)
     end
 
     def fixup_ordering!
-      OSRFixupOrdering(@ogr_spatial_ref_pointer)
+      ogr_err = OSRFixupOrdering(@ogr_spatial_ref_pointer)
     end
 
     def fixup!
-      OSRFixup(@ogr_spatial_ref_pointer)
+      ogr_err = OSRFixup(@ogr_spatial_ref_pointer)
     end
 
     def strip_ct_parameters!
-      OSRStripCTParms(@ogr_spatial_ref_pointer)
+      ogr_err = OSRStripCTParms(@ogr_spatial_ref_pointer)
     end
 
     # @param name [String] The case-insensitive tree node to look for.
@@ -54,7 +64,7 @@ module OGR
       OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
     end
 
-    # @return [Hash]
+    # @return [Hash{unit_name: String, value: Float}]
     def angular_units
       name = FFI::MemoryPointer.new(:string)
       name_ptr = FFI::MemoryPointer.new(:pointer)
@@ -65,7 +75,7 @@ module OGR
       { unit_name: name_ptr.read_pointer.read_string, value: value }
     end
 
-    # @return [Hash]
+    # @return [Hash{unit_name: String, value: Float}]
     def linear_units
       name = FFI::MemoryPointer.new(:string)
       name_ptr = FFI::MemoryPointer.new(:pointer)
@@ -178,15 +188,15 @@ module OGR
     end
 
     def from_epsg(code)
-      OSRImportFromEPSG(@ogr_spatial_ref_pointer, code)
+      ogr_err = OSRImportFromEPSG(@ogr_spatial_ref_pointer, code)
     end
 
     def from_epsga(code)
-      OSRImportFromEPSGA(@ogr_spatial_ref_pointer, code)
+      ogr_err = OSRImportFromEPSGA(@ogr_spatial_ref_pointer, code)
     end
 
     def from_erm(proj, datum, units)
-      OSRImportFromERM(@ogr_spatial_ref_pointer, proj, datum, units)
+      ogr_err = OSRImportFromERM(@ogr_spatial_ref_pointer, proj, datum, units)
     end
 
     # def from_esri(prj)
@@ -196,23 +206,23 @@ module OGR
     # end
 
     def from_mapinfo(coord_sys)
-      OSRImportFromMICoordSys(@ogr_spatial_ref_pointer, coord_sys)
+      ogr_err = OSRImportFromMICoordSys(@ogr_spatial_ref_pointer, coord_sys)
     end
 
     def from_pci(proj, units, proj_params)
-      OSRImportFromPCI(@ogr_spatial_ref_pointer, proj, units, proj_params)
+      ogr_err = OSRImportFromPCI(@ogr_spatial_ref_pointer, proj, units, proj_params)
     end
 
     def from_proj4(proj4)
-      OSRImportFromProj4(@ogr_spatial_ref_pointer, proj4)
+      ogr_err = OSRImportFromProj4(@ogr_spatial_ref_pointer, proj4)
     end
 
     def from_url(url)
-      OSRImportFromUrl(@ogr_spatial_ref_pointer, url)
+      ogr_err = OSRImportFromUrl(@ogr_spatial_ref_pointer, url)
     end
 
     def from_usgs(projsys, zone, proj_params, datum)
-      OSRImportFromUSGS(@ogr_spatial_ref_pointer, projsys, zone, proj_params, datum)
+      ogr_err = OSRImportFromUSGS(@ogr_spatial_ref_pointer, projsys, zone, proj_params, datum)
     end
 
     def from_wkt(wkt)
@@ -220,11 +230,11 @@ module OGR
       wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-      OSRImportFromWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
+      ogr_err = OSRImportFromWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
     end
 
     def from_xml(xml)
-      OSRImportFromXML(@ogr_spatial_ref_pointer, xml)
+      ogr_err = OSRImportFromXML(@ogr_spatial_ref_pointer, xml)
     end
 
     def to_proj4
@@ -259,26 +269,32 @@ module OGR
       wkt_ptr_ptr.read_pointer.read_string
     end
 
+    # @return [Boolean]
     def geographic?
       OSRIsGeographic(@ogr_spatial_ref_pointer)
     end
 
+    # @return [Boolean]
     def local?
       OSRIsLocal(@ogr_spatial_ref_pointer)
     end
 
+    # @return [Boolean]
     def projected?
       OSRIsProjected(@ogr_spatial_ref_pointer)
     end
 
+    # @return [Boolean]
     def compound?
       OSRIsCompound(@ogr_spatial_ref_pointer)
     end
 
+    # @return [Boolean]
     def geocentric?
       OSRIsGeocentric(@ogr_spatial_ref_pointer)
     end
 
+    # @return [Boolean]
     def vertical?
       OSRIsVertical(@ogr_spatial_ref_pointer)
     end
