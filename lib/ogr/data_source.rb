@@ -32,32 +32,33 @@ module OGR
 
     # @param data_source_pointer [FFI::Pointer]
     def initialize(data_source_pointer)
-      @ogr_data_source = data_source_pointer
+      @data_source_pointer = data_source_pointer
 
-      close_me = -> { OGR_DS_Destroy(@ogr_data_source) }
+      close_me = -> { OGR_DS_Destroy(@data_source_pointer) }
       ObjectSpace.define_finalizer self, close_me
     end
 
     def c_pointer
-      @ogr_data_source
+      @data_source_pointer
     end
 
     # Name of the file represented by this object.
     #
     # @return [String]
     def name
-      OGR_DS_GetName(@ogr_data_source)
+      OGR_DS_GetName(@data_source_pointer)
+    end
     end
 
     # @return [Fixnum]
     def layer_count
-      OGR_DS_GetLayerCount(@ogr_data_source)
+      OGR_DS_GetLayerCount(@data_source_pointer)
     end
 
     # @param index [Fixnum] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
-      layer_pointer = OGR_DS_GetLayer(@ogr_data_source, index)
+      layer_pointer = OGR_DS_GetLayer(@data_source_pointer, index)
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
@@ -66,7 +67,7 @@ module OGR
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)
-      layer_pointer = OGR_DS_GetLayerByName(@ogr_data_source, name)
+      layer_pointer = OGR_DS_GetLayerByName(@data_source_pointer, name)
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
@@ -74,9 +75,10 @@ module OGR
 
     end
 
-    # @return [OGR::StyleTable]
+    # @return [OGR::StyleTable, nil]
     def style_table
-      style_table_ptr = OGR_DS_GetStyleTable(@ogr_data_source)
+      style_table_ptr = OGR_DS_GetStyleTable(@data_source_pointer)
+      return nil if style_table_ptr.null?
 
       OGR::StyleTable.new(style_table_ptr)
     end
