@@ -157,7 +157,13 @@ module GDAL
       return [] unless @driver_pointer
 
       creation_option_list_xml = GDALGetDriverCreationOptionList(@driver_pointer)
-      MultiXml.parse(creation_option_list_xml)['CreationOptionList']['Option']
+      root = MultiXml.parse(creation_option_list_xml)
+      return [] if root.nil? || root.empty?
+
+      list = root['CreationOptionList']
+      return [] if list.nil? || list.empty?
+
+      list['Option']
     end
 
     # @param options [Hash]
