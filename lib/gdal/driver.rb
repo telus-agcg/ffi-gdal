@@ -220,7 +220,7 @@ module GDAL
       dataset
     end
 
-    # @param filename [String] The namne for the new dataset file.
+    # @param filename [String] The name for the new dataset file.
     # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
@@ -229,20 +229,33 @@ module GDAL
     #   FFI::GDAL::GDALProgressFunc signature.
     def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
       options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+
       source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
         source_dataset.c_pointer
+      elsif source_dataset.is_a? String
+        GDAL::Dataset.open(source_dataset, 'r').c_pointer
       else
         source_dataset
       end
+
+      raise "Source dataset couldn't be read" if source_dataset_ptr.null?
 
       destination_dataset_ptr = GDALCreateCopy(@driver_pointer,
         filename,
         source_dataset_ptr,
         strict,
-        options,
+        options_ptr,
         progress,
         nil
       )
+
+      raise CreateFail if destination_dataset_ptr.null?
+
+      dataset = Dataset.new(destination_dataset_ptr)
+      yield(dataset) if block_given?
+      dataset.close
+
+      dataset
     end
 
     # Delete the dataset represented by +file_name+.  Depending on the driver,

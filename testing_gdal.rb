@@ -27,4 +27,17 @@ world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
 #world_file = GDAL::GeoTransform.from_world_file(world_file_path)
 world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
-binding.pry
+#grid_driver = GDAL::Driver.by_name 'GSAG'
+#grid_driver.copy_dataset('floyd_grid', floyd_path, strict: true)
+#grid_driver.copy_dataset('floyd_grid', floyd_path, strict: false)
+
+GDAL::Driver.short_names.each do |name|
+  grid_driver = GDAL::Driver.by_name name
+  puts "capabilities for #{name}: #{grid_driver.capabilities}"
+
+  if grid_driver.can_copy_datasets?
+    grid_driver.copy_dataset("floyd_grid-#{name}.#{name.downcase}", floyd_path, strict: true) rescue nil
+  end
+end
+
+#binding.pry

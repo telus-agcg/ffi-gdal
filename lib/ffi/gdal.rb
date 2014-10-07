@@ -228,7 +228,7 @@ module FFI
       [:GDALDriverH, :string, :int, :int, :int, GDALDataType, :pointer],
       :GDALDatasetH
     attach_function :GDALCreateCopy,
-      [:GDALDriverH, :string, :GDALDatasetH, :int, :pointer, :GDALProgressFunc, :pointer],
+      %i[GDALDriverH string GDALDatasetH bool pointer GDALProgressFunc pointer],
       :GDALDatasetH
     attach_function :GDALIdentifyDriver,
       [:string, :pointer],
