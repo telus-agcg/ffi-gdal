@@ -210,13 +210,6 @@ module FFI
     #-----------------------------------------------------------------
     # functions
     #-----------------------------------------------------------------
-    # DataType
-    attach_function :GDALGetDataTypeSize, [GDALDataType], :int
-    attach_function :GDALDataTypeIsComplex, [GDALDataType], :int
-    attach_function :GDALGetDataTypeName, [GDALDataType], :string
-    attach_function :GDALGetDataTypeByName, [:string], GDALDataType
-    attach_function :GDALDataTypeUnion, [GDALDataType, GDALDataType], GDALDataType
-
     # AsyncStatus
     #attach_function :GDALGetAsyncStatusTypeName, [GDALAsyncStatusType], :string
     #attach_function :GDALGetAsyncStatusTypeByName, [:string], GDALAsyncStatusType
@@ -742,6 +735,12 @@ module FFI
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # General stuff
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    attach_function :GDALGetDataTypeSize, [GDALDataType], :int
+    attach_function :GDALDataTypeIsComplex, [GDALDataType], :bool
+    attach_function :GDALGetDataTypeName, [GDALDataType], :string
+    attach_function :GDALGetDataTypeByName, [:string], GDALDataType
+    attach_function :GDALDataTypeUnion, [GDALDataType, GDALDataType], GDALDataType
+
     attach_function :GDALSetCacheMax, %i[int], :void
     attach_function :GDALSetCacheMax64, %i[GIntBig], :void
     attach_function :GDALGetCacheMax, [], :int
