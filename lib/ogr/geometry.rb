@@ -630,7 +630,7 @@ module OGR
       geometry_pointer = yield
       return nil if geometry_pointer.null?
 
-      self.class.new(ogr_geometry_pointer: geometry_pointer)
+      self.class.new(geometry_pointer)
     end
 
     def geometry_pointer_from(geometry)
