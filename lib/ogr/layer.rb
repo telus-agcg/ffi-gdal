@@ -9,6 +9,7 @@ require_relative 'style_table'
 module OGR
   class Layer
     include FFI::GDAL
+    include GDAL::MajorObject
 
     def initialize(layer)
       @ogr_layer_pointer = if layer.is_a? OGR::Layer
