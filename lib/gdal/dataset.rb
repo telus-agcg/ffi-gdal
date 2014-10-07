@@ -42,7 +42,7 @@ module GDAL
 
     # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
     def initialize(dataset_pointer)
-      @gdal_dataset = dataset_pointer
+      @dataset_pointer = dataset_pointer
       @last_known_file_list = []
       @open = true
       close_me = -> { self.close }
@@ -52,13 +52,13 @@ module GDAL
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
     # this Ruby object.
     def c_pointer
-      @gdal_dataset
+      @dataset_pointer
     end
 
     # Close the dataset.
     def close
       @last_known_file_list = file_list
-      GDALClose(@gdal_dataset)
+      GDALClose(@dataset_pointer)
       @open = false
     end
 
@@ -68,9 +68,9 @@ module GDAL
     # @param access_flag [String]
     # @return [Boolean]
     def reopen(access_flag)
-      @gdal_dataset = GDALOpen(@last_known_file_list.first, access_flag)
+      @dataset_pointer = GDALOpen(@last_known_file_list.first, access_flag)
 
-      @open = true unless @gdal_dataset.null?
+      @open = true unless @dataset_pointer.null?
     end
 
     # @return [Boolean]
@@ -81,7 +81,7 @@ module GDAL
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      driver_ptr = GDALGetDatasetDriver(@gdal_dataset)
+      driver_ptr = GDALGetDatasetDriver(@dataset_pointer)
 
       Driver.new(driver_ptr)
     end
@@ -100,21 +100,21 @@ module GDAL
     def raster_x_size
       return nil if null?
 
-      GDALGetRasterXSize(@gdal_dataset)
+      GDALGetRasterXSize(@dataset_pointer)
     end
 
     # @return [Fixnum]
     def raster_y_size
       return nil if null?
 
-      GDALGetRasterYSize(@gdal_dataset)
+      GDALGetRasterYSize(@dataset_pointer)
     end
 
     # @return [Fixnum]
     def raster_count
       return 0 if null?
 
-      GDALGetRasterCount(@gdal_dataset)
+      GDALGetRasterCount(@dataset_pointer)
     end
 
     # @param raster_index [Fixnum]
@@ -127,8 +127,8 @@ module GDAL
         return @raster_bands[zero_index]
       end
 
-      dataset_ptr = GDALGetRasterBand(@dataset, raster_index)
-      @raster_bands[zero_index] = GDAL::RasterBand.new(@gdal_dataset, raster_index)
+      raster_band_ptr = GDALGetRasterBand(@dataset_pointer, raster_index)
+      @raster_bands[zero_index] = GDAL::RasterBand.new(@dataset_pointer, raster_band_ptr)
       @raster_bands.compact!
 
       @raster_bands[zero_index]
@@ -145,7 +145,7 @@ module GDAL
     def projection
       return '' if null?
 
-      GDALGetProjectionRef(@gdal_dataset)
+      GDALGetProjectionRef(@dataset_pointer)
     end
 
     # Creates a OGR::SpatialReference object from the dataset's projection.
@@ -161,7 +161,7 @@ module GDAL
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      cpl_err = GDALSetProjection(@gdal_dataset, new_projection)
+      cpl_err = GDALSetProjection(@dataset_pointer, new_projection)
 
       cpl_err.to_bool
     end
@@ -170,7 +170,7 @@ module GDAL
     def access_flag
       return nil if null?
 
-      flag = GDALGetAccess(@gdal_dataset)
+      flag = GDALGetAccess(@dataset_pointer)
 
       GDALAccess[flag]
     end
@@ -178,7 +178,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
-      cpl_err = GDALGetGeoTransform(@gdal_dataset, geo_transform_pointer)
+      cpl_err = GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
       cpl_err.to_ruby
 
       GeoTransform.new(geo_transform_pointer)
@@ -188,7 +188,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = new_transform.c_pointer.dup
-      cpl_err = GDALSetGeoTransform(@gdal_dataset, new_pointer)
+      cpl_err = GDALSetGeoTransform(@dataset_pointer, new_pointer)
       cpl_err.to_bool
 
       @geo_transform = GeoTransform.new(new_pointer)
@@ -198,21 +198,21 @@ module GDAL
     def gcp_count
       return 0 if null?
 
-      GDALGetGCPCount(@gdal_dataset)
+      GDALGetGCPCount(@dataset_pointer)
     end
 
     # @return [String]
     def gcp_projection
       return '' if null?
 
-      GDALGetGCPProjection(@gdal_dataset)
+      GDALGetGCPProjection(@dataset_pointer)
     end
 
     # @return [FFI::GDAL::GDALGCP]
     def gcps
       return GDALGCP.new if null?
 
-      gcp_array_pointer = GDALGetGCPs(@gdal_dataset)
+      gcp_array_pointer = GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
         GDALGCP.new
@@ -300,7 +300,7 @@ module GDAL
       options = nil
       progress_callback_data = nil
 
-      cpl_err = GDALRasterizeGeometries(@gdal_dataset,
+      cpl_err = GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
         geometries.size,
