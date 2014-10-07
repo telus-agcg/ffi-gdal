@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'ffi-gdal/version_info'
+require 'gdal/version_info'
 
 describe GDAL::VersionInfo do
   subject do
