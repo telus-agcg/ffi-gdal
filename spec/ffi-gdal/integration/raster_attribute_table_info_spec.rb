@@ -12,7 +12,7 @@ TIF_FILES.each do |file|
     end
 
     subject do
-      band = GDAL::RasterBand.new(dataset.c_pointer, band_id: 1)
+      band = dataset.raster_band(1)
       band.default_raster_attribute_table
     end
 

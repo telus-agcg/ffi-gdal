@@ -5,8 +5,8 @@ require 'ffi-gdal'
 
 TIF_FILES.each do |file|
   dataset = GDAL::Dataset.open(file, 'r')
-  dataset.each_band do |band_under_test|
 
+  dataset.each_band do |band_under_test|
     describe "Raster Band Info" do
       after :suite do
         dataset.close
@@ -14,7 +14,7 @@ TIF_FILES.each do |file|
 
       # TODO: Test against each raster band
       subject do
-        GDAL::RasterBand.new(dataset.c_pointer, raster_band_pointer: band_under_test.c_pointer)
+        GDAL::RasterBand.new(band_under_test.c_pointer)
       end
 
       it_behaves_like 'a major object'

@@ -13,7 +13,7 @@ TIF_FILES.each do |file|
 
     # TODO: Test against each raster band
     subject do
-      band = GDAL::RasterBand.new(dataset.c_pointer, band_id: 1)
+      band = dataset.raster_band(1)
       band.color_table
     end
 

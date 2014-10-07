@@ -129,7 +129,7 @@ module GDAL
       end
 
       raster_band_ptr = GDALGetRasterBand(@dataset_pointer, raster_index)
-      @raster_bands[zero_index] = GDAL::RasterBand.new(@dataset_pointer, raster_band_ptr)
+      @raster_bands[zero_index] = GDAL::RasterBand.new(raster_band_ptr)
       @raster_bands.compact!
 
       @raster_bands[zero_index]
