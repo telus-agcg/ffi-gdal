@@ -19,8 +19,8 @@ module GDAL
 
     # @param name [String] Name of the registered GDALDriver.
     # @return [GDAL::Driver]
-    def self.open_by_name(name)
-      driver_ptr = GDALGetDriverByName(name)
+    def self.by_name(name)
+      driver_ptr = FFI::GDAL.GDALGetDriverByName(name)
 
       new(driver_ptr)
     end
@@ -28,20 +28,20 @@ module GDAL
     # @param index [Fixnum] Index of the registered driver.  Must be less than
     #   GDAL::Driver.driver_count.
     # @return [GDAL::Driver]
-    def self.open_by_index(index)
+    def self.at_index(index)
       if index > driver_count
         raise "index must be between 0 and #{driver_count - 1}."
       end
 
-      driver_ptr = GDALGetDriver(index)
+      driver_ptr = FFI::GDAL.GDALGetDriver(index)
 
       new(driver_ptr)
     end
 
     # @param file_path [String] File to get the driver for.
     # @return [GDAL::Driver]
-    def self.open_by_file(file_path)
-      driver_ptr = GDALIdentifyDriver(::File.expand_path(file_path), nil)
+    def self.used_in_file(file_path)
+      driver_ptr = FFI::GDAL.GDALIdentifyDriver(::File.expand_path(file_path), nil)
 
       new(driver_ptr)
     end
