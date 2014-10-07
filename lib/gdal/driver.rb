@@ -17,50 +17,61 @@ module GDAL
       FFI::GDAL.GDALGetDriverCount
     end
 
+    # @param name [String] Name of the registered GDALDriver.
     # @return [GDAL::Driver]
-    def self.by_name(name)
-      new(name: name)
+    def self.open_by_name(name)
+      driver_ptr = GDALGetDriverByName(name)
+
+      new(driver_ptr)
     end
 
-    # Creates a new GDAL::Driver object based on the mutually exclusive given
-    # parameters.  Pass in only one of the allowed parameters.
-    #
-    # @param file_path [String] File to get the driver for.
-    # @param name [String] Name of the registered GDALDriver.
     # @param index [Fixnum] Index of the registered driver.  Must be less than
     #   GDAL::Driver.driver_count.
-    def initialize(file_path: file_path, name: name, index: index)
-      @gdal_driver_handle = if file_path
-        GDALIdentifyDriver(::File.expand_path(file_path), nil)
-      elsif name
-        GDALGetDriverByName(name)
-      elsif index
-        count = self.class.driver_count
-        raise "index must be between 0 and #{count - 1}." if index > count
+    # @return [GDAL::Driver]
+    def self.open_by_index(index)
+      if index > driver_count
+        raise "index must be between 0 and #{driver_count - 1}."
+      end
 
-        GDALGetDriver(index)
+      driver_ptr = GDALGetDriver(index)
+
+      new(driver_ptr)
+    end
+
+    # @param file_path [String] File to get the driver for.
+    # @return [GDAL::Driver]
+    def self.open_by_file(file_path)
+      driver_ptr = GDALIdentifyDriver(::File.expand_path(file_path), nil)
+
+      new(driver_ptr)
+    end
+
+    # @param driver [GDAL::Driver, FFI::Pointer]
+    def initialize(driver)
+      @driver_pointer = if driver.is_a? GDAL::Driver
+        driver.c_pointer
       else
-        raise 'No Driver identifier given.  My pass in file_path, name, or index.'
+        driver
       end
     end
 
     def c_pointer
-      @gdal_driver_handle
+      @driver_pointer
     end
 
     # @return [String]
     def short_name
-      GDALGetDriverShortName(@gdal_driver_handle)
+      GDALGetDriverShortName(@driver_pointer)
     end
 
     # @return [String]
     def long_name
-      GDALGetDriverLongName(@gdal_driver_handle)
+      GDALGetDriverLongName(@driver_pointer)
     end
 
     # @return [String]
     def help_topic
-      "#{GDAL_DOCS_URL}/#{GDALGetDriverHelpTopic(@gdal_driver_handle)}"
+      "#{GDAL_DOCS_URL}/#{GDALGetDriverHelpTopic(@driver_pointer)}"
     end
 
     # Lists and describes the options that can be used when calling
@@ -68,9 +79,9 @@ module GDAL
     #
     # @return [Array]
     def creation_option_list
-      return [] unless @gdal_driver_handle
+      return [] unless @driver_pointer
 
-      creation_option_list_xml = GDALGetDriverCreationOptionList(@gdal_driver_handle)
+      creation_option_list_xml = GDALGetDriverCreationOptionList(@driver_pointer)
       MultiXml.parse(creation_option_list_xml)['CreationOptionList']['Option']
     end
 
@@ -81,7 +92,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def copy_dataset_files(new_name, old_name)
-      cpl_err = GDALCopyDatasetFiles(@gdal_driver_handle, new_name, old_name)
+      cpl_err = GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
 
       cpl_err.to_bool
     end
@@ -104,7 +115,7 @@ module GDAL
         options_pointer = CSLSetNameValue(options_pointer, k.to_s.upcase, v)
       end
 
-      dataset_pointer = GDALCreate(@gdal_driver_handle,
+      dataset_pointer = GDALCreate(@driver_pointer,
         filename,
         x_size,
         y_size,
@@ -137,7 +148,7 @@ module GDAL
         source_dataset
       end
 
-      destination_dataset_ptr = GDALCreateCopy(@gdal_driver_handle,
+      destination_dataset_ptr = GDALCreateCopy(@driver_pointer,
         filename,
         source_dataset_ptr,
         strict,
@@ -154,7 +165,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      cpl_err = GDALDeleteDataset(@gdal_driver_handle, file_name)
+      cpl_err = GDALDeleteDataset(@driver_pointer, file_name)
 
       cpl_err.to_bool
     end
@@ -164,7 +175,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      cpl_err = GDALRenameDataset(@gdal_driver_handle, new_name, old_name)
+      cpl_err = GDALRenameDataset(@driver_pointer, new_name, old_name)
 
 
       cpl_err.to_bool
