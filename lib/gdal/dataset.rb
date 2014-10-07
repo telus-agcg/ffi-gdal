@@ -6,6 +6,7 @@ require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
+require_relative 'options'
 require_relative '../ogr/spatial_reference'
 
 
@@ -279,10 +280,16 @@ module GDAL
       band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
+    # Rasterizes the geometric objects +geometries+ into this raster dataset.
+    # +transformer+ can be nil as long as the +geometries+ are within the
+    # georeferenced coordinates of this raster's dataset.
+    #
     # @param band_numbers [Array<Fixnum>, Fixnum]
     # @param geometries [Array<OGR::Geometry>, OGR::Geometry]
     # @param burn_values [Array<Float>, Float]
-    def rasterize_geometries(band_numbers, geometries, burn_values, transformer=nil, transform_arg=nil, &progress_block)
+    def rasterize_geometries(band_numbers, geometries, burn_values,
+      transformer: nil, transform_arg: nil, **options, &progress_block)
+      gdal_options = options.empty? ? nil : GDAL::Options.new(options).c_pointer
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
       geometries = geometries.is_a?(Array) ? geometries : [geometries]
       burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
@@ -297,7 +304,6 @@ module GDAL
       burn_values_ptr.write_array_of_double(burn_values)
 
       # not allowing for now
-      options = nil
       progress_callback_data = nil
 
       cpl_err = GDALRasterizeGeometries(@dataset_pointer,
@@ -308,7 +314,7 @@ module GDAL
         transformer,
         transform_arg,
         burn_values_ptr,
-        options,
+        gdal_options,
         progress_block,
         progress_callback_data)
 
