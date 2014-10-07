@@ -46,6 +46,20 @@ module GDAL
       @color_table_pointer.null?
     end
 
+    def destroy!
+      GDALDestroyColorTable(@color_table_pointer)
+    end
+
+    # Clones the ColorTable using the C API.
+    #
+    # @return [GDAL::ColorTable]
+    def clone
+      ct_ptr = GDALCloneColorTable(@color_table_pointer)
+      return nil if ct_ptr.null?
+
+      GDAL::ColorTable.new(ct_ptr)
+    end
+
     # Usually :GPI_RGB.
     #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.

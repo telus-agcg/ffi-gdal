@@ -5,6 +5,26 @@ module GDAL
   class GeoTransform
     include FFI::GDAL
 
+    def self.new_pointer
+      FFI::MemoryPointer.new(:double, 6)
+    end
+
+    # @param filename [String]
+    # @return [GDAL::GeoTransform]
+    def self.from_world_file(filename, extension=nil)
+      gt_ptr = new_pointer
+
+      result = if extension
+        FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
+      else
+        FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
+      end
+
+      return nil unless result
+
+      new(gt_ptr)
+    end
+
     # @param dataset [GDAL::Dataset,FFI::Pointer]
     # @param geo_transform_pointer [FFI::Pointer]
     def initialize(geo_transform=nil)
@@ -13,7 +33,7 @@ module GDAL
       elsif geo_transform
         geo_transform
       else
-        FFI::MemoryPointer.new(:double, 6)
+        self.class.new_pointer
       end
 
       to_a
@@ -144,7 +164,7 @@ module GDAL
     def x_projection(x_pixel, y_pixel)
       return nil if null?
 
-      (pixel_width * x_pixel) + (x_rotation * y_pixel) + x_origin
+      apply_geo_transform(x_pixel, y_pixel)[:x_location]
     end
 
     # The calculated UTM northing of the pixel on the map.
@@ -153,7 +173,57 @@ module GDAL
     def y_projection(x_pixel, y_pixel)
       return nil if null?
 
-      (y_rotation * x_pixel) + (pixel_height * y_pixel) + y_origin
+      apply_geo_transform(x_pixel, y_pixel)[:y_location]
+    end
+
+    # @param pixel [Float] Input pixel position.
+    # @param line [Float] Input line position.
+    # @return [Hash{x_location: Float, y_location: Float}]
+    def apply_geo_transform(pixel, line)
+      geo_x_ptr = FFI::MemoryPointer.new(:double)
+      geo_y_ptr = FFI::MemoryPointer.new(:double)
+      GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
+
+      { x_location: geo_x_ptr.read_double, y_location: geo_y_ptr.read_double }
+    end
+
+    # Composes this and the give geo_transform.  The result is equivalent to
+    # applying both geotransforms to a point.
+    #
+    # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
+    # @return [GDAL::GeoTransform]
+    def compose(other_geo_transform)
+      other_ptr = if other_geo_transform.is_a? GDAL::GeoTransform
+        other_geo_transform.c_pointer
+      else
+        other_geo_transform
+      end
+
+      new_gt_ptr = self.class.new_pointer
+      GDALComposeGeoTransforms(@geo_transform_pointer, other_pointer, new_gt_ptr)
+      return nil if new_gt_ptr.null?
+
+      GDAL::GeoTransform.new(new_gt_ptr)
+    end
+
+    # Inverts the current 3x2 set of coefficients and returns a new GeoTransform.
+    # Useful for converting from the geotransform equation from pixel to geo to
+    # being geo to pixel.
+    #
+    # @return [GDAL::GeoTransform]
+    def invert
+      new_geo_transform_ptr = self.class.new_pointer
+      success = GDALInvGeoTransform(@geo_transform_pointer, new_geo_transform_ptr)
+      return nil unless success
+
+      self.class.new(new_geo_transform_ptr)
+    end
+
+    # @param raster_filename [String] The target raster file.
+    # @param world_extension [String]
+    # @return [Boolean]
+    def to_world_file(raster_filename, world_extension)
+      GDALWriteWorldFile(raster_filename, world_extension, @geo_transform_pointer)
     end
   end
 end

@@ -37,10 +37,10 @@ TIF_FILES.each do |file|
         specify { expect(subject.access_flag).to eq :GA_ReadOnly }
       end
 
-      describe '#band_number' do
+      describe '#number' do
         it 'is a non-zero Integer' do
-          expect(subject.band_number).to be_a Fixnum
-          expect(subject.band_number).to be > 0
+          expect(subject.number).to be_a Fixnum
+          expect(subject.number).to be > 0
         end
       end
 

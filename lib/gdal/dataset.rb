@@ -6,7 +6,6 @@ require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
-require_relative 'options'
 require_relative '../ogr/spatial_reference'
 
 
@@ -79,6 +78,15 @@ module GDAL
       @open
     end
 
+    # @return [Symbol]
+    def access_flag
+      return nil if null?
+
+      flag = GDALGetAccess(@dataset_pointer)
+
+      GDALAccess[flag]
+    end
+
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
@@ -95,6 +103,11 @@ module GDAL
       CSLDestroy(list_pointer)
 
       file_list
+    end
+
+    # Flushes all write-cached data to disk.
+    def flush_cache
+      GDALFlushCache(@dataset_pointer)
     end
 
     # @return [Fixnum]
@@ -142,21 +155,24 @@ module GDAL
       end
     end
 
-    # @return [String]
-    def projection
-      return '' if null?
+    # @param type [FFI::GDAL::GDALDataType]
+    # @param options [Hash]
+    # @return [GDAL::RasterBand, nil]
+    def add_band(type, **options)
+      cpl_err = GDALAddBand(@dataset_pointer, type, options_ptr)
+      cpl_err.to_bool
 
-      GDALGetProjectionRef(@dataset_pointer)
+      raster_band(raster_count)
     end
 
-    # Creates a OGR::SpatialReference object from the dataset's projection.
-    #
-    # @return [OGR::SpatialReference]
-    def spatial_reference
-      p = projection
-      return nil if p.empty?
+    # Adds a mask band to the dataset
+    def create_mask_band
+      GDALCreateDatasetMaskBand(@dataset_pointer, 0)
+    end
 
-      OGR::SpatialReference.new(projection)
+    # @return [String]
+    def projection
+      GDALGetProjectionRef(@dataset_pointer)
     end
 
     # @param new_projection [String]
@@ -167,13 +183,14 @@ module GDAL
       cpl_err.to_bool
     end
 
-    # @return [Symbol]
-    def access_flag
-      return nil if null?
+    # Creates a OGR::SpatialReference object from the dataset's projection.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference
+      p = projection
+      return nil if p.empty?
 
-      flag = GDALGetAccess(@dataset_pointer)
-
-      GDALAccess[flag]
+      OGR::SpatialReference.new(projection)
     end
 
     # @return [GDAL::GeoTransform]
@@ -278,6 +295,50 @@ module GDAL
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
+    end
+
+    # @param resampling [String, Symbol] One of:
+    #   * :nearest
+    #   * :gauss
+    #   * :cubic
+    #   * :average
+    #   * :mode
+    #   * :average_magphase
+    #   * :none
+    # @param overview_levels [Array<Fixnum>] The list of overview decimation
+    #   factors to build.
+    # @param band_numbers [Array<Fixnum>] The numbers of the bands to build
+    #   overviews from.
+    def build_overviews(resampling, overview_levels, band_numbers=nil, &progress)
+      resampling_string = if resampling.is_a? String
+        resampling.upcase
+      elsif resampling.is_a? Symbol
+        resampling.to_s.upcase
+      end
+
+      overview_levels_ptr = FFI::MemoryPointer.new(:int, overview_levels.size)
+      overview_levels_ptr.write_array_of_int(overview_levels)
+
+      if band_numbers
+        band_count = band_numbers.size
+        band_numbers_ptr = FFI::MemoryPointer.new(:int, band_count)
+        band_numbers_ptr.write_array_of_int(band_numbers)
+      else
+        band_numbers_ptr = nil
+        band_count = nil
+      end
+
+      cpl_err = GDALBuildOverviews(@dataset_pointer,
+        resampling_string,
+        overview_levels.size,
+        overview_levels_ptr,
+        band_count,
+        band_numbers_ptr,
+        progress,
+        nil
+      )
+
+      cpl_err.to_bool
     end
 
     # Rasterizes the geometric objects +geometries+ into this raster dataset.

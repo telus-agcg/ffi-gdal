@@ -754,7 +754,7 @@ module FFI
     attach_function :GDALWriteWorldFile, %i[string string pointer], :bool
 
     attach_function :GDALPackedDMSToDec, %i[double], :double
-    # attach_function :GDALPackedDecToDMS, %i[double], :double
+     attach_function :GDALDecToPackedDMS, %i[double], :double
 
     attach_function :GDALGeneralCmdLineProcessor, %i[int pointer int], :int
     attach_function :GDALSwapWords,
@@ -769,8 +769,5 @@ module FFI
 
     attach_function :GDALVersionInfo, %i[string], :string
     attach_function :GDALCheckVersion, %i[int int string], :bool
-
-    # Register all drivers!
-    FFI::GDAL.GDALAllRegister
   end
 end

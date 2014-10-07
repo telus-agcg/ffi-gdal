@@ -5,7 +5,7 @@ require 'ffi-gdal'
 TIF_FILES.each do |file|
   describe 'Driver Info' do
     subject do
-      GDAL::Driver.new(file_path: file)
+      GDAL::Driver.open_by_file(file)
     end
 
     it_behaves_like 'a major object'

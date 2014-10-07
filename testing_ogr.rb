@@ -35,41 +35,68 @@ LAYER
 
 puts '-' * 40
 
-geom = OGR::Geometry.create_from_wkt(proj, first_layer.spatial_reference)
-puts <<-GEOM
-Geometry Info
-* dimension: #{geom.dimension}
-* coordinate_dimension: #{geom.coordinate_dimension}
-* envelope: #{geom.envelope}
-* type: #{geom.type}
-* name: #{geom.name}
-* geometry_count: #{geom.geometry_count}
-* point_count: #{geom.point_count}
-* x(0): #{geom.x(0)}
-* y(0): #{geom.y(0)}
-* z(0): #{geom.z(0)}
-* point(0): #{geom.point(0)}
-* length: #{geom.length}
-* area: #{geom.area}
+geom = OGR::Geometry.create_from_wkt(proj)
+# puts <<-GEOM
+# Geometry Info
+# * dimension: #{geom.dimension}
+# * coordinate_dimension: #{geom.coordinate_dimension}
+# * envelope: #{geom.envelope}
+# * type: #{geom.type}
+# * name: #{geom.name}
+# * geometry_count: #{geom.geometry_count}
+# * point_count: #{geom.point_count}
+# * x(0): #{geom.x(0)}
+# * y(0): #{geom.y(0)}
+# * z(0): #{geom.z(0)}
+# * point(0): #{geom.point(0)}
+# * length: #{geom.length}
+# * area: #{geom.area}
+#
+# * intersects self? #{geom.intersects?(geom)}
+# * equals self? #{geom.equals?(geom)}
+# * disjoint self? #{geom.disjoint?(geom)}
+# * touches self? #{geom.touches?(geom)}
+# * within self? #{geom.within?(geom)}
+# * contains self? #{geom.contains?(geom)}
+# * overlaps self? #{geom.overlaps?(geom)}
+# * empty? #{geom.empty?}
+# * valid? #{geom.valid?}
+# * simple? #{geom.simple?}
+# * ring? #{geom.ring?}
+#
+# * diff of self: #{(geom - geom).to_wkt}
+# * distance to self: #{geom.distance(geom)}
+# * point on surface: #{geom.point_on_surface.to_wkt}
+# * spatial reference: #{geom.spatial_reference}
+# * boundary: #{geom.boundary.to_wkt}
+# * convex_hull: #{geom.convex_hull.to_wkt}
+# GEOM
 
-* intersects self? #{geom.intersects?(geom)}
-* equals self? #{geom.equals?(geom)}
-* disjoint self? #{geom.disjoint?(geom)}
-* touches self? #{geom.touches?(geom)}
-* within self? #{geom.within?(geom)}
-* contains self? #{geom.contains?(geom)}
-* overlaps self? #{geom.overlaps?(geom)}
-* empty? #{geom.empty?}
-* valid? #{geom.valid?}
-* simple? #{geom.simple?}
-* ring? #{geom.ring?}
+polygon = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
+sr_polygon = OGR::SpatialReference.new(polygon)
 
-* diff of self: #{(geom - geom).to_wkt}
-* distance to self: #{geom.distance(geom)}
-* point on surface: #{geom.point_on_surface.to_wkt}
-* spatial reference: #{geom.spatial_reference}
-* boundary: #{geom.boundary.to_wkt}
-* convex_hull: #{geom.convex_hull.to_wkt}
-GEOM
+coords = <<-PROJCS
+PROJCS["WGS 84 / UTM zone 16N",
+    GEOGCS["WGS 84",
+        DATUM["WGS_1984",
+            SPHEROID["WGS 84",6378137,298.257223563,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6326"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4326"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",-87],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AUTHORITY["EPSG","32616"]]
+PROJCS
+
+sr_coords = OGR::SpatialReference.new(polygon)
+sr_coords.from_epsg 4326
 
 binding.pry

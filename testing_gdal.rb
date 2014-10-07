@@ -22,5 +22,9 @@ usg = GDAL::Dataset.open(usg_path, 'r')
 peter_path = '~/Downloads/ABCTURF_NEWFARM_15-5_2014-09-14.tif'
 peter = GDAL::Dataset.open(peter_path, 'r')
 
+#world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tfw"
+world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
+#world_file = GDAL::GeoTransform.from_world_file(world_file_path)
+world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
 binding.pry

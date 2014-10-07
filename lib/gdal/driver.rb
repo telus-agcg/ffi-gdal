@@ -17,7 +17,7 @@ module GDAL
       FFI::GDAL.GDALGetDriverCount
     end
 
-    # @param name [String] Name of the registered GDALDriver.
+    # @param name [String] Short name of the registered GDALDriver.
     # @return [GDAL::Driver]
     def self.by_name(name)
       driver_ptr = FFI::GDAL.GDALGetDriverByName(name)
@@ -40,7 +40,7 @@ module GDAL
 
     # @param file_path [String] File to get the driver for.
     # @return [GDAL::Driver]
-    def self.used_in_file(file_path)
+    def self.identify_driver(file_path)
       driver_ptr = FFI::GDAL.GDALIdentifyDriver(::File.expand_path(file_path), nil)
 
       new(driver_ptr)
@@ -83,6 +83,18 @@ module GDAL
 
       creation_option_list_xml = GDALGetDriverCreationOptionList(@driver_pointer)
       MultiXml.parse(creation_option_list_xml)['CreationOptionList']['Option']
+    end
+
+    # @param options [Hash]
+    # @return [Boolean]
+    def validate_creation_options(options)
+      options_pointer = if options.is_a? GDAL::Options
+        options.c_pointer
+      else
+        GDAL::Options.new(options).c_pointer
+      end
+
+      GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
     end
 
     # Copy all of the associated files of a dataset from one file to another.

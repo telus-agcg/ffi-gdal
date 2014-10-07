@@ -23,6 +23,13 @@ module GDAL
       @raster_band_pointer
     end
 
+    # @return [Boolean]
+    def flush_cache
+      cpl_err = GDALFlushRasterCache(@raster_band_pointer)
+
+      cpl_err.to_bool
+    end
+
     # The raster width in pixels.
     #
     # @return [Fixnum]
@@ -54,10 +61,18 @@ module GDAL
     # represents.
     #
     # @return [Fixnum]
-    def band_number
+    def number
       return nil if null?
 
       GDALGetBandNumber(@raster_band_pointer)
+    end
+
+    # @return [GDAL::Dataset, nil]
+    def dataset
+      dataset_ptr = GDALGetBandDataset(@raster_band_pointer)
+      return nil if dataset_ptr.null?
+
+      GDAL::Dataset.new(dataset_ptr)
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALColorInterp.
@@ -220,6 +235,24 @@ module GDAL
       flags
     end
 
+    # @return [Boolean]
+    def create_mask_band
+      cpl_err = GDALCreateMaskBand(@raster_band_pointer)
+
+      cpl_err.to_bool
+    end
+
+    # Fill this band with constant value.  Useful for clearing a band and
+    # setting to a default value.
+    #
+    # @param real_value [Float]
+    # @param imaginary_value [Float]
+    def fill(real_value, imaginary_value=0)
+      cpl_err = GDALFillRaster(@raster_band_pointer, real_value, imaginary_value)
+
+      cpl_err.to_bool
+    end
+
     # Returns minimum, maximum, mean, and standard deviation of all pixel values
     # in this band.
     #
@@ -244,6 +277,39 @@ module GDAL
         standard_deviation)
 
       minimum = min.null? ? 0.0 : min.read_double
+
+      case cpl_err.to_ruby
+      when :none, :debug
+        {
+          minimum: min.read_double,
+          maximum: max.read_double,
+          mean: mean.read_double,
+          standard_deviation: standard_deviation.read_double
+        }
+      when :warning then {}
+      when :failure, :fatal then raise CPLErrFailure
+      end
+    end
+
+    def compute_statistics(approx_ok=true, &progress)
+      min = FFI::MemoryPointer.new(:double)
+      max = FFI::MemoryPointer.new(:double)
+      mean = FFI::MemoryPointer.new(:double)
+      standard_deviation = FFI::MemoryPointer.new(:double)
+
+      cpl_err = GDALComputeRasterStatistics(@raster_band_pointer,
+        approx_ok,
+        min,
+        max,
+        mean,
+        standard_deviation,
+        progress,
+        nil)
+
+      minimum = min.null? ? 0.0 : min.read_double
+      maximum = max.null? ? 0.0 : max.read_double
+      mean = mean.null? ? 0.0 : mean.read_double
+      standard_deviation = standard_deviation.null? ? 0.0 : standard_deviation.read_double
 
       case cpl_err.to_ruby
       when :none, :debug
@@ -328,6 +394,19 @@ module GDAL
       return nil if rat_pointer.null?
 
       GDAL::RasterAttributeTable.new(c_pointer, rat_pointer)
+    end
+
+    # @return [GDAL::RasterAttributeTable]
+    def default_raster_attribute_table=(rat_table)
+      rat_table_ptr = if rat_table.is_a? GDAL::RasterAttributeTable
+        rat_table.c_pointer
+      else
+        rat_table
+      end
+
+      cpl_err = GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
+
+      cpl_err.to_bool
     end
 
     # Gets the default raster histogram.  Results are returned as a Hash so some
@@ -509,7 +588,7 @@ module GDAL
         )
       end
 
-      GDALFlushRasterCache(@raster_band_pointer)
+      flush_cache
     end
 
     # Read a block of image data, more efficiently than #read.  Doesn't
