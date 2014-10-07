@@ -7,7 +7,7 @@ module GDAL
 
     # @return [Array<String>]
     def metadata_domain_list
-      unless defined? FFI::GDAL::GDALGetMetadataDomainList
+      unless defined? FFI::GDAL.GDALGetMetadataDomainList
         warn "GDALGetMetadataDomainList is't defined. GDAL::MajorObject#metadata_domain_list disabled."
         return []
       end
@@ -25,7 +25,7 @@ module GDAL
 
     # @param domain [String] Name of the domain to get metadata for.
     # @return [Hash]
-    def metadata_for_domain(domain='')
+    def metadata(domain='')
       m = GDALGetMetadata(c_pointer, domain)
       return {} if m.null?
 

@@ -297,7 +297,7 @@ module FFI
     #  [:pointer, :pointer, :pointer],
     #  :void
 
-    #attach_function :GDALGetMetadataDomainList, [:GDALMajorObjectH], :pointer
+    attach_function :GDALGetMetadataDomainList, [:GDALMajorObjectH], :pointer
     attach_function :GDALGetMetadata, [:GDALMajorObjectH, :string], :pointer
     attach_function :GDALSetMetadata,
       [:GDALMajorObjectH, :pointer, :string],
