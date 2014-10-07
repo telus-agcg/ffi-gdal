@@ -9,6 +9,7 @@ require_relative 'style_table'
 module OGR
   class DataSource
     include FFI::GDAL
+    include GDAL::MajorObject
     FFI::GDAL.OGRRegisterAll
 
     # @param path [String] Path/URL to the file to open.
@@ -48,6 +49,13 @@ module OGR
     def name
       OGR_DS_GetName(@data_source_pointer)
     end
+
+    # @return [OGR::Driver]
+    def driver
+      driver_ptr = OGR_DS_GetDriver(@data_source_pointer)
+      return nil if driver_ptr.nil?
+
+      GDAL::Driver.new(driver_ptr)
     end
 
     # @return [Fixnum]
@@ -73,6 +81,70 @@ module OGR
       OGR::Layer.new(layer_pointer)
     end
 
+    # @param name [String] The name for the new layer.
+    # @param type [FFI::GDAL::OGRwkbGeometryType]
+    # @param spatial_reference [OGR::SpatialReference] The coordinate system
+    #   to use for the new layer or nil if none is available.
+    # @return [OGR::Layer]
+    def create_layer(name, type=:wkbUnknown, spatial_reference=nil, **options)
+      spatial_ref_ptr = if spatial_reference.is_a? OGR::SpatialReference
+        spatial_reference.c_pointer
+      else
+        spatial_reference
+      end
+
+      options_obj = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      layer_ptr = OGR_DS_CreateLayer(@data_source_pointer, name, spatial_ref_ptr, type, options_obj)
+      return nil if layer_ptr.null?
+
+      OGR::Layer.new(layer_ptr)
+    end
+
+    # @param source_layer [OGR::Layer, FFI::Pointer]
+    # @param new_name [String]
+    # @param options [Hash]
+    # @return [OGR::Layer, nil]
+    def copy_layer(source_layer, new_name, **options)
+      source_layer_ptr = if source_layer.is_a? OGR::Layer
+        source_layer.c_pointer
+      else
+        source_layer
+      end
+
+      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+
+      layer_ptr = OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
+        new_name, options_ptr)
+      return nil if layer_ptr.null?
+
+      OGR::Layer.new(layer_ptr)
+    end
+
+    # @param index [Fixnum]
+    def delete_layer(index)
+      ogr_err = OGR_DS_DeleteLayer(@data_source_pointer, index)
+    end
+
+    # @param command [String] The SQL to execute.
+    # @param spatial_filter [OGR::Geometry, FFI::Pointer]
+    # @param dialect [String] Can pass in 'SQLITE' to use that instead of the
+    #   default OGRSQL dialect.
+    # @return [OGR::Layer, nil]
+    # @see http://www.gdal.org/ogr_sql.html
+    # TODO: not sure how to handle the call to OGR_DS_ReleaseResultSet here...
+    def execute_sql(command, spatial_filter=nil, dialect=nil)
+      geometry_ptr = if spatial_filter.is_a? OGR::Geometry
+        spatial_filter.c_pointer
+      else
+        spatial_filter
+      end
+
+      layer_ptr = OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
+        dialect)
+
+      return nil if layer_ptr.null?
+
+      OGR::Layer.new(layer_ptr)
     end
 
     # @return [OGR::StyleTable, nil]
