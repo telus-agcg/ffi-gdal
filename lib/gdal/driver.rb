@@ -122,6 +122,31 @@ module GDAL
       dataset
     end
 
+    # @param filename [String] The namne for the new dataset file.
+    # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
+    # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
+    #   the output format.
+    # @param options [Hash]
+    # @param progress [Proc] For outputing copy progress.  Conforms to the
+    #   FFI::GDAL::GDALProgressFunc signature.
+    def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
+      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
+        source_dataset.c_pointer
+      else
+        source_dataset
+      end
+
+      destination_dataset_ptr = GDALCreateCopy(@gdal_driver_handle,
+        filename,
+        source_dataset_ptr,
+        strict,
+        options,
+        progress,
+        nil
+      )
+    end
+
     # Delete the dataset represented by +file_name+.  Depending on the driver,
     # this could mean deleting associated files, database objects, etc.
     #
