@@ -79,6 +79,50 @@ module OGR
       OGR_L_GetFeaturesRead(@ogr_layer_pointer)
     end
 
+    # Creates and writes a new feature to the layer.
+    #
+    # @return [OGR::Feature]
+    def create_feature
+      feature_ptr = FFI::MemoryPointer.new(:OGRFeatureH)
+      ogr_err = OGR_L_CreateFeature(@ogr_layer_pointer, feature_ptr)
+
+      OGR::Feature.new(feature_ptr)
+    end
+
+    # Deletes the feature from the layer.
+    #
+    # TODO: Use OGR_L_TestCapability before trying to delete.
+    def delete_feature(feature_id)
+      ogr_err = OGR_L_DeleteFeature(@ogr_layer_pointer, feature_id)
+    end
+
+    # Creates and writes a new field definition to the layer.
+    #
+    # @return [OGR::FieldDefinition]
+    def create_field_definition(approx_ok=false)
+      field_definition_ptr = FFI::MemoryPointer.new(:OGRFieldDefnH)
+      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field_definition_ptr)
+
+      OGR::FieldDefinition.new(field_definition_ptr)
+    end
+
+    # Deletes the field definition from the layer.
+    #
+    # TODO: Use OGR_L_TestCapability before trying to delete.
+    def delete_field(field_id)
+      ogr_err = OGR_L_DeleteField(@ogr_layer_pointer, field_id)
+    end
+
+    # # Creates and writes a new geometry to the layer.
+    # #
+    # # @return [OGR::GeometryField]
+    # def create_geometry_field(approx_ok=false)
+    #   geometry_field_definition_ptr = FFI::MemoryPointer.new(:OGRGeomFieldDefnH)
+    #   ogr_err = OGR_L_CreateGeomField(@ogr_layer_pointer, geometry_field_definition_ptr)
+    #
+    #   OGR::GeometryFieldDefinition.new(geometry_field_definition_ptr)
+    # end
+
     # Resets the sequential reading of features for this layer.
     def reset_reading
       OGR_L_ResetReading(@ogr_layer_pointer)
