@@ -13,7 +13,7 @@ module GDAL
     GDAL_DOCS_URL = 'http://gdal.org'
 
     # @return [Fixnum]
-    def self.driver_count
+    def self.count
       FFI::GDAL.GDALGetDriverCount
     end
 
@@ -29,7 +29,7 @@ module GDAL
     def self.short_names
       return @short_names if @short_names
 
-      names = 0.upto(driver_count - 1).map do |i|
+      names = 0.upto(count - 1).map do |i|
         driver = at_index(i)
         driver.short_name
       end
@@ -41,19 +41,32 @@ module GDAL
     def self.long_names
       return @long_names if @long_names
 
-      names = 0.upto(driver_count - 1).map do |i|
+      names = 0.upto(count - 1).map do |i|
         at_index(i).long_name
       end
 
       @long_names = names.compact.sort
     end
 
+    # @return [Hash{String => String}] Keys are driver short names, values are
+    #   driver long names.
+    def self.names
+      return @names if @names
+
+      names = 0.upto(count - 1).each_with_object({}) do |i, obj|
+        driver = at_index(i)
+        obj[driver.short_name] = driver.long_name
+      end
+
+      @names = Hash[names.sort]
+    end
+
     # @param index [Fixnum] Index of the registered driver.  Must be less than
-    #   GDAL::Driver.driver_count.
+    #   GDAL::Driver.count.
     # @return [GDAL::Driver]
     def self.at_index(index)
-      if index > driver_count
-        raise "index must be between 0 and #{driver_count - 1}."
+      if index > count
+        raise "index must be between 0 and #{count - 1}."
       end
 
       driver_ptr = FFI::GDAL.GDALGetDriver(index)
