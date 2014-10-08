@@ -85,7 +85,7 @@ module OGR
     # @param spatial_reference [OGR::SpatialReference] The coordinate system
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
-    def create_layer(name, type=:wkbUnknown, spatial_reference=nil, **options)
+    def create_layer(name, type: :wkbUnknown, spatial_reference: nil, **options)
       spatial_ref_ptr = if spatial_reference.is_a? OGR::SpatialReference
         spatial_reference.c_pointer
       else
