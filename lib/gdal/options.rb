@@ -6,6 +6,15 @@ module GDAL
   class Options < Hash
     include FFI::GDAL
 
+    # Shortcut for if you just want to build the options and get the pointer to
+    # them.
+    #
+    # @param hash [Hash]
+    # @return [FFI::MemoryPointer, nil]
+    def self.pointer(hash)
+      hash.empty? ? nil : new(hash).c_pointer
+    end
+
     def initialize(hash={})
       super()
       capitalize_keys!(hash)

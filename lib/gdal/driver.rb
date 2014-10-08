@@ -185,7 +185,7 @@ module GDAL
       options_pointer = if options.is_a? GDAL::Options
         options.c_pointer
       else
-        GDAL::Options.new(options).c_pointer
+        GDAL::Options.pointer(options)
       end
 
       GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
@@ -247,7 +247,7 @@ module GDAL
     # @param progress [Proc] For outputing copy progress.  Conforms to the
     #   FFI::GDAL::GDALProgressFunc signature.
     def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
-      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      options_ptr = GDAL::Options.pointer(options)
 
       source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
         source_dataset.c_pointer

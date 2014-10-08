@@ -73,7 +73,7 @@ module OGR
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
     def create_data_source(file_name, **options)
-      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = OGR_Dr_CreateDataSource(@driver_pointer, file_name, options_ptr)
       return nil if data_source_ptr.null?
@@ -97,7 +97,7 @@ module OGR
         source_data_source
       end
 
-      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = OGR_Dr_CopyDataSource(@driver_pointer, source_ptr,
         new_file_name, options_ptr)

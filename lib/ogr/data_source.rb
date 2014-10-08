@@ -93,7 +93,7 @@ module OGR
         spatial_reference
       end
 
-      options_obj = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      options_obj = GDAL::Options.pointer(options)
       layer_ptr = OGR_DS_CreateLayer(@data_source_pointer, name, spatial_ref_ptr, type, options_obj)
       return nil if layer_ptr.null?
 
@@ -111,7 +111,7 @@ module OGR
         source_layer
       end
 
-      options_ptr = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      options_ptr = GDAL::Options.pointer(options)
 
       layer_ptr = OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
         new_name, options_ptr)

@@ -350,7 +350,7 @@ module GDAL
     # @param burn_values [Array<Float>, Float]
     def rasterize_geometries(band_numbers, geometries, burn_values,
       transformer: nil, transform_arg: nil, **options, &progress_block)
-      gdal_options = options.empty? ? nil : GDAL::Options.new(options).c_pointer
+      gdal_options = GDAL::Options.pointer(options)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
       geometries = geometries.is_a?(Array) ? geometries : [geometries]
       burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
