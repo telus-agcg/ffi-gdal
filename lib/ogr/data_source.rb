@@ -10,7 +10,6 @@ module OGR
   class DataSource
     include FFI::GDAL
     include GDAL::MajorObject
-    FFI::GDAL.OGRRegisterAll
 
     # @param path [String] Path/URL to the file to open.
     # @param access_flag [String] 'r' for read, 'w', for write.

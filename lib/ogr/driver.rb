@@ -12,6 +12,7 @@ module OGR
     # @return [OGR::Driver]
     def self.by_name(name)
       driver_ptr = FFI::GDAL.OGRGetDriverByName(name)
+      return nil if driver_ptr.null?
 
       new(driver_ptr)
     end

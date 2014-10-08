@@ -57,6 +57,8 @@ module OGR
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,
     File.expand_path('ogr/style_table', __dir__)
+
+  FFI::GDAL.OGRRegisterAll
 end
 
 GDAL.log_class_name = true
