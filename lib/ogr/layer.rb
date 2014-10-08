@@ -97,14 +97,14 @@ module OGR
       ogr_err = OGR_L_DeleteFeature(@ogr_layer_pointer, feature_id)
     end
 
-    # Creates and writes a new field definition to the layer.
+    # Creates and writes a new field to the layer.
     #
-    # @return [OGR::FieldDefinition]
-    def create_field_definition(approx_ok=false)
-      field_definition_ptr = FFI::MemoryPointer.new(:OGRFieldDefnH)
-      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field_definition_ptr)
+    # @return [OGR::Field]
+    def create_field(approx_ok=false)
+      field_ptr = FFI::MemoryPointer.new(:OGRFieldDefnH)
+      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field_ptr)
 
-      OGR::FieldDefinition.new(field_definition_ptr)
+      OGR::Field.new(field_ptr)
     end
 
     # Deletes the field definition from the layer.
@@ -132,11 +132,11 @@ module OGR
     # The schema information for this layer.
     #
     # @return [OGR::FeatureDefinition,nil]
-    def layer_definition
+    def definition
       feature_defn_pointer = OGR_L_GetLayerDefn(@ogr_layer_pointer)
       return nil if feature_defn_pointer.null?
 
-      OGR::FeatureDefinition.new(ogr_feature_defn_pointer: feature_defn_pointer)
+      OGR::FeatureDefinition.new(feature_defn_pointer)
     end
 
     # @return [OGR::SpatialReference]
@@ -144,7 +144,7 @@ module OGR
       spatial_ref_pointer = OGR_L_GetSpatialRef(@ogr_layer_pointer)
       return nil if spatial_ref_pointer.null?
 
-      OGR::SpatialReference.new(ogr_spatial_ref_pointer: spatial_ref_pointer)
+      OGR::SpatialReference.new(spatial_ref_pointer)
     end
 
     # @return [OGR::Envelope]

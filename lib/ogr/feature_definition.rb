@@ -38,12 +38,12 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @return [OGR::FieldDefinition]
-    def field_definition(index)
-      field_def_ptr = OGR_FD_GetFieldDefn(@ogr_feature_defn_pointer)
-      return nil if field_def_ptr.null?
+    # @return [OGR::Field]
+    def field(index)
+      field_ptr = OGR_FD_GetFieldDefn(@ogr_feature_defn_pointer)
+      return nil if field_ptr.null?
 
-      OGR::FieldDefinition.new(field_def_ptr)
+      OGR::Field.new(field_ptr)
     end
 
     # @param name [String]
@@ -53,9 +53,9 @@ module OGR
     end
 
     # @param name [String]
-    # @return [OGR::FieldDefinition]
+    # @return [OGR::Field]
     def field_by_name(name)
-      field_definition(field_index(name))
+      field(field_index(name))
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
@@ -94,12 +94,12 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @return [OGR::FieldDefinition]
+    # @return [OGR::Field]
     def geometry_field_definition(index)
-      fd_ptr = OGR_FD_GetGeomFieldDefn(@ogr_feature_defn_pointer, index)
-      return nil if fd_ptr.null?
+      field_ptr = OGR_FD_GetGeomFieldDefn(@ogr_feature_defn_pointer, index)
+      return nil if field_ptr.null?
 
-      OGR::FieldDefinition.new(fd_ptr)
+      OGR::Field.new(field_ptr)
     end
 
     # @param name [String]
@@ -109,18 +109,18 @@ module OGR
     end
 
     # @param name [String]
-    # @return [OGR::FieldDefinition]
+    # @return [OGR::Field]
     def geometry_field_by_name(name)
       geometry_field_definition(geometry_field_index(name))
     end
 
-    # @param other_field_defintion [OGR::FieldDefinition, FFI::Pointer]
+    # @param other_feature_defintion [OGR::Feature, FFI::Pointer]
     # @return [Boolean]
-    def same?(other_field_defintion)
-      fd_ptr = if other_field_defintion.is_a? OGR::FieldDefinition
-        other_field_defintion.c_pointer
+    def same?(other_feature_defintion)
+      fd_ptr = if other_feature_defintion.is_a? OGR::FeatureDefinition
+        other_feature_defintion.c_pointer
       else
-        other_field_defintion
+        other_feature_defintion
       end
 
       OGR_FD_IsSame(@ogr_feature_defn_pointer, fd_ptr)

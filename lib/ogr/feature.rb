@@ -37,16 +37,16 @@ module OGR
 
     # @return [Fixnum]
     def field_count
-      OGR_F_FieldCount(@ogr_feature_pointer)
+      OGR_F_GetFieldCount(@ogr_feature_pointer)
     end
 
     # @param index [Fixnum]
-    # @return [OGR::FieldDefinition]
-    def field_definition(index)
-      field_defn_pointer = OGR_F_GetFieldDefnRef(@ogr_feature_pointer, index)
-      return nil if field_defn_pointer.null?
+    # @return [OGR::Field]
+    def field(index)
+      field_pointer = OGR_F_GetFieldDefnRef(@ogr_feature_pointer, index)
+      return nil if field_pointer.null?
 
-      OGR::FieldDefinition.new(field_defn_pointer)
+      OGR::Field.new(field_pointer)
     end
 
     # @param name [String]
