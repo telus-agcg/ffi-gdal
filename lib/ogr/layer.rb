@@ -53,6 +53,15 @@ module OGR
       OGR_L_GetFeatureCount(@ogr_layer_pointer, force)
     end
 
+    # @return [Array<OGR::Feature>]
+    def features
+      feature_list = 0.upto(feature_count).map do |i|
+        feature(i)
+      end
+
+      feature_list.compact
+    end
+
     # @param index [Fixnum] The 0-based index of the feature to get.  It should
     #   be <= +feature_count+, but not checking is done to ensure.
     # @return [OGR::Feature, nil]
