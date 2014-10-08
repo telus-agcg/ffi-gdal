@@ -1,5 +1,5 @@
 require_relative '../ffi/ogr'
-require_relative 'field_definition'
+require_relative 'field'
 
 module OGR
   class FeatureDefinition

@@ -1,6 +1,6 @@
 require_relative '../ffi/ogr'
 require_relative 'feature_definition'
-require_relative 'field_definition'
+require_relative 'field'
 
 module OGR
   class Feature
@@ -61,9 +61,11 @@ module OGR
       OGR_F_IsFieldSet(@ogr_feature_pointer, index)
     end
 
-    # @return [FFI::GDAL::OGRField]
-    def field(index)
-      OGR_F_GetRawFieldRef(@ogr_feature_pointer, index)
+    # @return [Array<OGR::Field>]
+    def fields
+      0.upto(field_count - 1).map do |i|
+        field(i)
+      end
     end
 
     # @param index [Fixnum]
