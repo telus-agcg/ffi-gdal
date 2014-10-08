@@ -60,7 +60,7 @@ module OGR
     # @param type [FFI::GDAL::OGRwkbGeometryType]
     # @return [OGR::Geometry]
     def self.create(type)
-      ogr_geometry_pointer = OGR_G_CreateGeometry(type)
+      ogr_geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
 
       new(ogr_geometry_pointer)
     end
@@ -230,7 +230,7 @@ module OGR
     # @param x [Float]
     # @param y [Float]
     # @param z [Float]
-    def add_point(x, y, z=nil)
+    def add_point(x, y, z=0)
       OGR_G_AddPoint(@ogr_geometry_pointer, x, y, z)
     end
 

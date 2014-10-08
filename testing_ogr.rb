@@ -25,7 +25,7 @@ Layer Info
 * first feature: #{first_feature}
 * feature_count: #{first_layer.feature_count}
 * features_read: #{first_layer.features_read}
-* layer_definition: #{first_layer.layer_definition}
+* definition: #{first_layer.definition}
 * extent: #{first_layer.extent}
 * fid_column: #{first_layer.fid_column}
 * geometry_column: #{first_layer.geometry_column}
@@ -98,5 +98,19 @@ PROJCS
 
 sr_coords = OGR::SpatialReference.new(polygon)
 sr_coords.from_epsg 4326
+
+session = OGR::GeocodingSession.new
+layer = session.geocode "1600 Amphitheatre Parkway, Mountain View, CA"
+feature = layer.feature(0)
+feature.fields.each do |field|
+  puts <<-F
+name: #{field.name}
+justification: #{field.justification}
+precision: #{field.precision}
+type: #{field.type}
+width: #{field.width}
+ignored: #{field.ignored?}
+  F
+end
 
 binding.pry
