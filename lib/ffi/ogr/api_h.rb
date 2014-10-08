@@ -479,7 +479,7 @@ module FFI
     # Driver-related
     #~~~~~~~~~~~~~~~~~
     attach_function :OGR_Dr_GetName, %i[OGRSFDriverH], :string
-    attach_function :OGR_Dr_Open, %i[OGRSFDriverH string int], :OGRDataSourceH
+    attach_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
     attach_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :int
     attach_function :OGR_Dr_CreateDataSource, %i[OGRSFDriverH string pointer], :OGRDataSourceH
     attach_function :OGR_Dr_CopyDataSource,
