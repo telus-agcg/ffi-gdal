@@ -71,6 +71,9 @@ module FFI
       %i[GDALRasterBandH GDALRasterBandH GDALRasterBandH GDALRasterBandH
         GDALColorTableH GDALProgressFunc pointer],
       CPLErr
+    attach_function :GDALPolygonize,
+      %i[GDALRasterBandH GDALRasterBandH OGRLayerH int pointer GDALProgressFunc pointer],
+      CPLErr
     attach_function :GDALFPolygonize,
       %i[GDALRasterBandH GDALRasterBandH OGRLayerH int pointer
         GDALProgressFunc pointer],
@@ -85,9 +88,6 @@ module FFI
       [GDALGridAlgorithm, :pointer, :GUInt32, :pointer, :pointer, :pointer,
         :double, :double, :double, :double, :GUInt32, :GUInt32, GDALDataType,
         :pointer, :GDALProgressFunc, :pointer],
-      CPLErr
-    attach_function :GDALPolygonize,
-      %i[GDALRasterBandH GDALRasterBandH OGRLayerH int pointer GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALRasterizeGeometries,
       %i[GDALDatasetH int pointer int pointer GDALTransformerFunc

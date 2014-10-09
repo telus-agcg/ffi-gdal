@@ -92,11 +92,12 @@ module OGR
     # Creates and writes a new feature to the layer.
     #
     # @return [OGR::Feature]
-    def create_feature
-      feature_ptr = FFI::MemoryPointer.new(:OGRFeatureH)
-      ogr_err = OGR_L_CreateFeature(@ogr_layer_pointer, feature_ptr)
+    def create_feature(name)
+      feature_def = OGR::FeatureDefinition.create(name)
+      feature = OGR::Feature.create(feature_def)
+      ogr_err = OGR_L_CreateFeature(@ogr_layer_pointer, feature.c_pointer)
 
-      OGR::Feature.new(feature_ptr)
+      feature
     end
 
     # Deletes the feature from the layer.
@@ -109,11 +110,11 @@ module OGR
     # Creates and writes a new field to the layer.
     #
     # @return [OGR::Field]
-    def create_field(approx_ok=false)
-      field_ptr = FFI::MemoryPointer.new(:OGRFieldDefnH)
-      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field_ptr)
+    def create_field(name, type, approx_ok=false)
+      field = OGR::Field.create(name, type)
+      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field.c_pointer)
 
-      OGR::Field.new(field_ptr)
+      field
     end
 
     # Deletes the field definition from the layer.
