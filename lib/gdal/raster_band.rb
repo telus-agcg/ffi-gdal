@@ -12,11 +12,7 @@ module GDAL
     # @param band_id [Fixnum] Requried if not passing in +raster_band_pointer+.
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band=nil)
-      @raster_band_pointer = if raster_band.is_a? GDAL::RasterBand
-        raster_band.c_pointer
-      elsif raster_band.is_a? FFI::Pointer
-        raster_band
-      end
+      @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
     end
 
     def c_pointer
@@ -96,12 +92,7 @@ module GDAL
 
     # @param new_color_table [GDAL::ColorTable]
     def color_table=(new_color_table)
-      color_table_pointer = if new_color_table.is_a? GDAL::ColorTable
-                              new_color_table.c_pointer
-                            else
-                              new_color_table
-                            end
-
+      color_table_pointer = GDAL._pointer(GDAL::ColorTable, new_color_table)
       cpl_err = GDALSetRasterColorTable(@raster_band_pointer, color_table_pointer)
 
       cpl_err.to_bool
@@ -398,12 +389,7 @@ module GDAL
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
-      rat_table_ptr = if rat_table.is_a? GDAL::RasterAttributeTable
-        rat_table.c_pointer
-      else
-        rat_table
-      end
-
+      rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
       cpl_err = GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
 
       cpl_err.to_bool

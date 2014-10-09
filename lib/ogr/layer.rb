@@ -12,11 +12,7 @@ module OGR
     include GDAL::MajorObject
 
     def initialize(layer)
-      @ogr_layer_pointer = if layer.is_a? OGR::Layer
-        layer.c_pointer
-      else
-        layer
-      end
+      @ogr_layer_pointer = GDAL._pointer(OGR::Layer, layer)
     end
 
     def c_pointer

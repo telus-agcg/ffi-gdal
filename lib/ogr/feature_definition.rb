@@ -14,11 +14,8 @@ module OGR
 
     # @param name [String]
     def initialize(feature_definition)
-      @feature_definition_pointer = if feature_definition.is_a? OGR::FeatureDefinition
-        feature_definition.c_pointer
-      else
-        feature_definition
-      end
+      @feature_definition_pointer = GDAL._pointer(OGR::FeatureDefinition,
+        feature_definition)
 
       close_me = -> { FFI::GDAL.OGR_FD_Destroy(@feature_definition_pointer) }
       ObjectSpace.define_finalizer self, close_me
@@ -118,11 +115,7 @@ module OGR
     # @param other_feature_defintion [OGR::Feature, FFI::Pointer]
     # @return [Boolean]
     def same?(other_feature_defintion)
-      fd_ptr = if other_feature_defintion.is_a? OGR::FeatureDefinition
-        other_feature_defintion.c_pointer
-      else
-        other_feature_defintion
-      end
+      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_defintion)
 
       OGR_FD_IsSame(@feature_definition_pointer, fd_ptr)
     end

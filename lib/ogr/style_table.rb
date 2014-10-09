@@ -6,11 +6,7 @@ module OGR
 
     # @param style_table [OGR::StyleTable, FFI::Pointer]
     def initialize(style_table)
-      @ogr_style_table_pointer = if style_table.is_a? OGR::StyleTable
-        style_table.c_pointer
-      else
-        style_table
-      end
+      @ogr_style_table_pointer = GDAL._pointer(OGR::StyleTable, style_table)
     end
 
     def c_pointer

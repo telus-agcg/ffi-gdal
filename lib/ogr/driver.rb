@@ -42,11 +42,7 @@ module OGR
     end
 
     def initialize(driver)
-      @driver_pointer = if driver.is_a? OGR::Driver
-        driver.c_pointer
-      else
-        driver
-      end
+      @driver_pointer = GDAL._pointer(OGR::Driver, driver)
     end
 
     def c_pointer
@@ -92,12 +88,7 @@ module OGR
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
     def copy_data_source(source_data_source, new_file_name, **options)
-      source_ptr = if source_data_source.is_a? OGR::DataSource
-        source_data_source.c_pointer
-      else
-        source_data_source
-      end
-
+      source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
       options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = OGR_Dr_CopyDataSource(@driver_pointer, source_ptr,

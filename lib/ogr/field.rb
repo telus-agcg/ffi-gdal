@@ -14,11 +14,7 @@ module OGR
 
     # @param field [OGR::Field, FFI::Pointer]
     def initialize(field)
-      @field_pointer = if field.is_a? OGR::Field
-        field.c_pointer
-      else
-        field
-      end
+      @field_pointer = GDAL._pointer(OGR::Field, field)
     end
 
     def c_pointer

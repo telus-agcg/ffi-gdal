@@ -86,11 +86,7 @@ module OGR
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
     def create_layer(name, type: :wkbUnknown, spatial_reference: nil, **options)
-      spatial_ref_ptr = if spatial_reference.is_a? OGR::SpatialReference
-        spatial_reference.c_pointer
-      else
-        spatial_reference
-      end
+      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference)
 
       options_obj = GDAL::Options.pointer(options)
       layer_ptr = OGR_DS_CreateLayer(@data_source_pointer, name, spatial_ref_ptr, type, options_obj)
@@ -104,12 +100,7 @@ module OGR
     # @param options [Hash]
     # @return [OGR::Layer, nil]
     def copy_layer(source_layer, new_name, **options)
-      source_layer_ptr = if source_layer.is_a? OGR::Layer
-        source_layer.c_pointer
-      else
-        source_layer
-      end
-
+      source_layer_ptr = GDAL._pointer(OGR::Layer, source_layer)
       options_ptr = GDAL::Options.pointer(options)
 
       layer_ptr = OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
@@ -132,11 +123,7 @@ module OGR
     # @see http://www.gdal.org/ogr_sql.html
     # TODO: not sure how to handle the call to OGR_DS_ReleaseResultSet here...
     def execute_sql(command, spatial_filter=nil, dialect=nil)
-      geometry_ptr = if spatial_filter.is_a? OGR::Geometry
-        spatial_filter.c_pointer
-      else
-        spatial_filter
-      end
+      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter)
 
       layer_ptr = OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
         dialect)

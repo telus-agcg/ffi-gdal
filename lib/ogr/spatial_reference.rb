@@ -301,11 +301,7 @@ module OGR
 
     # @return [FFI::Pointer] Pointer to an OGRCreateCoordinateTransformation.
     def create_coordinate_transfomration(destination_spatial_ref)
-      dest_ptr = if destination_spatial_ref.is_a?(OGR::SpatialReference)
-        destination_spatial_ref.c_pointer
-      elsif destination_spatial_ref.kind_of?(FFI::Pointer)
-        destination_spatial_ref
-      end
+      dest_ptr = GDAL._pointer(OGR::SpatialReference, destination_spatial_ref)
 
       OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)
     end

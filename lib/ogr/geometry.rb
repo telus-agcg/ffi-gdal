@@ -21,11 +21,7 @@ module OGR
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-      spatial_ref_pointer = if spatial_reference.is_a? FFI::Pointer
-        spatial_reference
-      elsif spatial_reference.is_a? OGR::SpatialReference
-        spatial_reference.c_pointer
-      end
+      spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_reference)
 
       geometry_ptr = FFI::MemoryPointer.new(:pointer)
       geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -72,11 +68,7 @@ module OGR
 
     # @param ogr_geometry [OGR::Geometry, FFI::Pointer]
     def initialize(geometry)
-      @ogr_geometry_pointer = if geometry.is_a? OGR::Geometry
-        geometry.c_pointer
-      else
-        geometry
-      end
+      @ogr_geometry_pointer = GDAL._pointer(OGR::Geometry, geometry)
 
       close_me = -> { OGR_G_DestroyGeometry(@ogr_geometry_pointer) }
       ObjectSpace.define_finalizer self, close_me
@@ -444,11 +436,7 @@ module OGR
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_ref)
-      new_spatial_ref_ptr = if new_spatial_ref.is_a?(OGR::SpatialReference)
-        new_spatial_ref.c_pointer
-      elsif new_spatial_ref.kind_of?(FFI::Pointer)
-        new_spatial_ref
-      end
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
 
       OGR_G_AssignSpatialReference(@ogr_geometry_pointer, new_spatial_ref_ptr)
     end
@@ -481,11 +469,7 @@ module OGR
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def transform_to(new_spatial_ref)
-      new_spatial_ref_ptr = if new_spatial_ref.is_a?(OGR::SpatialReference)
-        new_spatial_ref.c_pointer
-      elsif new_spatial_ref.kind_of?(FFI::Pointer)
-        new_spatial_ref
-      end
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
 
       ogr_err = OGR_G_TransformTo(@ogr_geometry_pointer, new_spatial_ref_ptr)
     end
@@ -513,7 +497,7 @@ module OGR
       end
     end
 
-    # Modfiy the geometry so that it has no segments longer than +max_length+.
+    # Modify the geometry so that it has no segments longer than +max_length+.
     #
     # @param max_length [Float]
     def segmentize!(max_length)

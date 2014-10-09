@@ -32,6 +32,18 @@ module GDAL
 
   # Register all drivers!
   FFI::GDAL.GDALAllRegister
+
+  # Internal factory method for returning a pointer from +variable+, which could
+  # be either of +klass+ class or a type of FFI::Pointer.
+  def self._pointer(klass, variable)
+    if variable.is_a?(klass)
+      variable.c_pointer
+    elsif variable.kind_of? FFI::Pointer
+      variable
+    else
+      warn "#{variable} is not a valid #{klass} or FFI::Pointer."
+    end
+  end
 end
 
 module OGR

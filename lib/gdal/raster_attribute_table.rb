@@ -17,12 +17,7 @@ module GDAL
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
     # @return [GDAL::RasterAttributeTable]
     def self.from_color_table(color_table)
-      color_table_ptr = if color_table.is_a? GDAL::ColorTable
-        color_table.c_pointer
-      else
-        color_table
-      end
-
+      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
       rat_ptr = FFI::MemoryPointer.new(:GDALRasterAttributeTableH)
       cpl_err = FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
       cpl_err.to_bool
@@ -32,11 +27,7 @@ module GDAL
 
     # @param raster_attribute_table [GDAL::RasterAttributeTable, FFI::Pointer]
     def initialize(raster_attribute_table=nil)
-      @rat_pointer = if raster_attribute_table.is_a? GDAL::RasterAttributeTable
-        raster_attribute_table.c_pointer
-      else
-        raster_attribute_table
-      end
+      @rat_pointer = GDAL._pointer(GDAL::RasterAttributeTable, raster_attribute_table)
     end
 
     def destroy!
@@ -46,7 +37,6 @@ module GDAL
     def c_pointer
       @rat_pointer
     end
-
 
     # Clone using the C API.
     #

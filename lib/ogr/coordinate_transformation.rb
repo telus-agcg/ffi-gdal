@@ -8,18 +8,8 @@ module OGR
     # @param destination_srs [OGR::SpatialReference, FFI::Pointer]
     # @return [OGR::CoordinateTransformation]
     def self.create(source_srs, destination_srs)
-      source_ptr = if source_srs.is_a?(OGR::SpatialReference)
-        source_srs.c_pointer
-      else
-        source_srs
-      end
-
-      destination_ptr = if destination_srs.is_a?(OGR::SpatialReference)
-        destination_srs.c_pointer
-      else
-        destination_srs
-      end
-
+      source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
+      destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
       ct_ptr = FFI::GDAL::OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
       new(ct_ptr)
@@ -28,11 +18,8 @@ module OGR
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
     def initialize(coordinate_transformation)
-      @ogr_layer_pointer = if coordinate_transformation.is_a? OGR::CoordinateTransformation
-        coordinate_transformation.c_pointer
-      else
-        coordinate_transformation
-      end
+      @ogr_layer_pointer = GDAL._pointer(OGR::CoordinateTransformation,
+        coordinate_transformation)
 
       close_me = -> { OCTDestroyCoordinateTransformation(@ogr_layer_pointer) }
       ObjectSpace.define_finalizer self, close_me

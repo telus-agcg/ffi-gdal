@@ -84,11 +84,7 @@ module GDAL
 
     # @param driver [GDAL::Driver, FFI::Pointer]
     def initialize(driver)
-      @driver_pointer = if driver.is_a? GDAL::Driver
-        driver.c_pointer
-      else
-        driver
-      end
+      @driver_pointer = GDAL._pointer(GDAL::Driver, driver)
     end
 
     def c_pointer

@@ -8,12 +8,7 @@ module OGR
     # @param [OGR::FeatureDefinition,FFI::Pointer]
     # @return [OGR::Feature]
     def self.create(feature_definition)
-      feature_def_ptr = if feature_definition.is_a? OGR::FeatureDefinition
-        feature_definition.c_pointer
-      else
-        feature_definition
-      end
-
+      feature_def_ptr = GDAL._pointer(OGR::FeatureDefinition, feature_definition)
       feature_ptr = FFI::GDAL::OGR_F_Create(feature_def_ptr)
       return nil if feature_ptr.null?
 
@@ -22,11 +17,7 @@ module OGR
 
     # @param ogr_feature [OGR::Feature, FFI::Pointer]
     def initialize(feature)
-      @feature_pointer = if feature.is_a? OGR::Feature
-        feature.c_pointer
-      else
-        feature
-      end
+      @feature_pointer = GDAL._pointer(OGR::Feature, feature)
 
       close_me = -> { FFI::GDAL.OGR_F_Destroy(@feature_pointer) }
       ObjectSpace.define_finalizer self, close_me
