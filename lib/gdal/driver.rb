@@ -21,6 +21,7 @@ module GDAL
     # @return [GDAL::Driver]
     def self.by_name(name)
       driver_ptr = FFI::GDAL.GDALGetDriverByName(name)
+      return nil if driver_ptr.null?
 
       new(driver_ptr)
     end

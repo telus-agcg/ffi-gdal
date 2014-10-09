@@ -398,7 +398,7 @@ module FFI
       [:OGRLayerH, :int, OGREnvelope.ptr, :bool],
       OGRErr
     attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
-    attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH int], OGRErr
+    attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], OGRErr
     attach_function :OGR_L_CreateGeomField,
       %i[OGRLayerH OGRGeomFieldDefnH int],
       OGRErr

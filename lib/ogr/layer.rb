@@ -36,7 +36,7 @@ module OGR
       filter_pointer = OGR_L_GetSpatialFilter(@ogr_layer_pointer)
       return nil if filter_pointer.null?
 
-      OGR::Geometry.new(ogr_geometry_pointer: filter_pointer)
+      OGR::Geometry.new(filter_pointer)
     end
 
     # The number of features in this layer.  If +force+ is false and it would be
@@ -77,7 +77,7 @@ module OGR
       feature_pointer = OGR_L_GetNextFeature(@ogr_layer_pointer)
       return nil if feature_pointer.null?
 
-      OGR::Feature.new(ogr_feature_pointer: feature_pointer)
+      OGR::Feature.new(feature_pointer)
     end
 
     # @return [Fixnum]
@@ -105,10 +105,14 @@ module OGR
 
     # Creates and writes a new field to the layer.
     #
+    # @param name [String]
+    # @param type [FFI::GDAL::OGRFieldType]
+    # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
+    #   different form, depending on the limitations of the format driver.
     # @return [OGR::Field]
     def create_field(name, type, approx_ok=false)
       field = OGR::Field.create(name, type)
-      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field.c_pointer)
+      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field.c_pointer, approx_ok)
 
       field
     end
@@ -187,7 +191,7 @@ module OGR
       style_table_pointer = OGR_L_GetStyleTable(@ogr_layer_pointer)
       return nil if style_table_pointer.null?
 
-      OGR::StyleTable.new(ogr_style_table_pointer: style_table_pointer)
+      OGR::StyleTable.new(style_table_pointer)
     end
   end
 end

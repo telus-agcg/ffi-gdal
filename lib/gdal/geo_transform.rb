@@ -127,7 +127,6 @@ module GDAL
       @geo_transform_pointer[3].write_double(new_y_origin)
     end
 
-
     # Rotation about the y-axis.
     # In wikipedia's World Map definition, this is "D".
     #
@@ -176,15 +175,18 @@ module GDAL
       apply_geo_transform(x_pixel, y_pixel)[:y_location]
     end
 
+    # Converts a (pixel, line) coordinate to a georeferenced (geo_x, geo_y)
+    # location.
+    #
     # @param pixel [Float] Input pixel position.
     # @param line [Float] Input line position.
-    # @return [Hash{x_location: Float, y_location: Float}]
+    # @return [Hash{x_location: Float, y_location: Float}] longitude, latitude.
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
       GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
-      { x_location: geo_x_ptr.read_double, y_location: geo_y_ptr.read_double }
+      { longitude: geo_x_ptr.read_double, latitude: geo_y_ptr.read_double }
     end
 
     # Composes this and the give geo_transform.  The result is equivalent to

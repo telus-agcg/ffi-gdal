@@ -66,6 +66,9 @@ module OGR
       OGR::DataSource.new(data_source_ptr)
     end
 
+    # Creates a new data source at path +file_name+.  Yields the newly created
+    # data source to a block, if given.  Always closes/destroys before returning.
+    #
     # @param file_name [String]
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
@@ -75,7 +78,16 @@ module OGR
       data_source_ptr = OGR_Dr_CreateDataSource(@driver_pointer, file_name, options_ptr)
       return nil if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr)
+      ds = OGR::DataSource.new(data_source_ptr)
+
+      yield ds if block_given?
+      ds.close
+
+      ds
+    rescue GDAL::InvalidBandNumber
+      ds.close
+      delete_data_source(file_name)
+      raise
     end
 
     # @param file_name [String]

@@ -34,13 +34,19 @@ module OGR
     def initialize(data_source_pointer)
       @data_source_pointer = data_source_pointer
 
-      close_me = -> { OGR_DS_Destroy(@data_source_pointer) }
+      close_me = -> { destroy }
       ObjectSpace.define_finalizer self, close_me
     end
 
     def c_pointer
       @data_source_pointer
     end
+
+    # Closes opened data source and releases allocated resources.
+    def destroy
+      FFI::GDAL.OGR_DS_Destroy(@data_source_pointer)
+    end
+    alias_method :close, :destroy
 
     # Name of the file represented by this object.
     #

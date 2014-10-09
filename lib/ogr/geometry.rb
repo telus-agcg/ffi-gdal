@@ -452,18 +452,13 @@ module OGR
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
     def transform(coordinate_transformation)
-      coord_trans_ptr = if coordinate_transformation.is_a?(OGR::CoordinateTransformation)
-        coordinate_transformation.c_pointer
-      elsif coordinate_transformation.kind_of?(FFI::Pointer)
-        coordinate_transformation
-      end
 
       return if coord_trans_ptr.nil? or coord_trans_ptr.null?
 
       ogr_err = OGR_G_Transform(@ogr_geometry_pointer, coord_trans_ptr)
     end
 
-    # Similar to +#transform+, but this only works if the geometry alread has an
+    # Similar to +#transform+, but this only works if the geometry already has an
     # assigned spatial reference system _and_ is transformable to the target
     # coordinate system.
     #

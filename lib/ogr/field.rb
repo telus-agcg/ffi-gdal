@@ -5,7 +5,7 @@ module OGR
     # @param name [String]
     # @param type [FFI::GDAL::OGRFieldType]
     # @return [OGR::Field]
-    def create(name, type)
+    def self.create(name, type)
       field_ptr = FFI::GDAL.OGR_Fld_Create(name, type)
       return nil if field_ptr.null?
 
