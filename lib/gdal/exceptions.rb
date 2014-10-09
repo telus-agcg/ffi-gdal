@@ -14,4 +14,7 @@ module GDAL
 
   class RequiredBandNotFound < StandardError
   end
+
+  class InvalidBandNumber < StandardError
+  end
 end

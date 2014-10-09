@@ -17,6 +17,8 @@ module GDAL
   class Dataset
     include FFI::GDAL
     include MajorObject
+    include LogSwitch
+    extend LogSwitch::Mixin
 
     ACCESS_FLAGS = {
       'r' => :GA_ReadOnly,
@@ -382,6 +384,49 @@ module GDAL
         progress_callback_data)
 
       cpl_err.to_bool
+    end
+
+    # Converts raster band number +band_number+ to the vector format
+    # +vector_driver_name+.  Similar to gdal_polygonize.py.
+    #
+    # @param file_name [String] Path to write the vector file to.
+    # @param vector_driver_name [String] One of OGR::Driver.names.
+    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType] The type of geometry
+    #   to use when turning the raster into a vector image.
+    # @param layer_name_prefix [String] Prefix of the name to give the new
+    #   vector layer.
+    # @param band_number [Fixnum] Number of the raster band from this dataset
+    #   to vectorize.
+    # @return [OGR::DataSource]
+    def to_vector(file_name, vector_driver_name, geometry_type: :wkbPolygon,
+      layer_name_prefix: 'band_number', band_numbers: [1],
+      field_name_prefix: 'field')
+      driver = OGR::Driver.by_name(vector_driver_name)
+      spatial_ref = OGR::SpatialReference.new(projection)
+
+      driver.create_data_source(file_name) do |data_source|
+        band_numbers.each_with_index do |band_number, i|
+          GDAL.log "Starting to polygonize raster band #{band_number}..."
+
+          layer_name = "#{layer_name_prefix}-#{band_number}"
+          layer = data_source.create_layer(layer_name,
+            type: geometry_type,
+            spatial_reference: spatial_ref)
+
+          field_name = "#{field_name_prefix}#{i}"
+          layer.create_field(field_name, :OFTInteger)
+
+          band = raster_band(band_number)
+          band.no_data_value = -9999
+
+          unless band
+            raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+          end
+
+          pixel_value_field = layer.definition.field_index(field_name)
+          band.polygonize(layer, pixel_value_field: pixel_value_field)
+        end
+      end
     end
   end
 end

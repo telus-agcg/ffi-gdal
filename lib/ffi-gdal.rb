@@ -41,7 +41,7 @@ module GDAL
     elsif variable.kind_of? FFI::Pointer
       variable
     else
-      warn "#{variable} is not a valid #{klass} or FFI::Pointer."
+      GDAL.log "#{variable} is not a valid #{klass} or FFI::Pointer."
     end
   end
 end
