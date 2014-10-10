@@ -138,6 +138,8 @@ module OGR
 
     # @return [OGR::Envelope]
     def envelope
+      return @envelope if @envelope
+
       case coordinate_dimension
       when 2
         envelope = FFI::GDAL::OGREnvelope.new
@@ -151,7 +153,7 @@ module OGR
 
       return nil if envelope.null?
 
-      OGR::Envelope.new(envelope)
+      @envelope = OGR::Envelope.new(envelope)
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
