@@ -117,6 +117,14 @@ module OGR
       field
     end
 
+    # @param field [OGR::Field, FFI::Pointer]
+    # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
+    #   different form, depending on the limitations of the format driver.
+    def add_field(field, approx_ok=false)
+      field_ptr = GDAL._pointer(OGR::Field, field)
+      ogr_err = OGR_L_CreateField(@ogr_layer_pointer, field_ptr, approx_ok)
+    end
+
     # Deletes the field definition from the layer.
     #
     # TODO: Use OGR_L_TestCapability before trying to delete.
