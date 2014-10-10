@@ -54,14 +54,6 @@ module OGR
       new(geometry_pointer)
     end
 
-    # @param type [FFI::GDAL::OGRwkbGeometryType]
-    # @return [OGR::Geometry]
-    def self.create(type)
-      ogr_geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
-
-      new(ogr_geometry_pointer)
-    end
-
     # @return [String]
     def self.type_to_name(type)
       FFI::GDAL.OGRGeometryTypeToName(type)
