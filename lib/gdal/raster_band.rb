@@ -1,4 +1,5 @@
 require_relative '../ffi/gdal'
+require_relative '../ffi/ogr/api_h'
 require_relative 'color_table'
 require_relative 'major_object'
 require_relative 'raster_attribute_table'
@@ -625,14 +626,72 @@ module GDAL
     # Iterates through all lines and builds an NArray of pixels.
     #
     # @return [NArray]
-    def to_na
+    def to_na(width: nil, height: nil)
       lines = []
 
       readlines do |line|
         lines << line
       end
 
+      if height
+        rows_needed = height - lines.size
+
+        if rows_needed > 0
+          # create new empty lines at the end
+          rows_needed.times { lines << Array.new(lines.first.size, 0.0) }
+        elsif rows_needed < 0
+          # remove lines from the end
+          lines.pop(rows_needed.abs)
+        end
+      end
+
+      if width
+        columns_needed = width - lines.first.size
+
+        if columns_needed > 0
+          # create new empty lines at the end
+          lines.map! { |line| line.push(*Array.new(columns_needed, 0.0)) }
+        elsif rows_needed < 0
+          # remove lines from the end
+          lines.pop(rows_needed.abs)
+        end
+      end
+
       NArray.to_na(lines)
+    end
+
+    # Creates vector polygons for all connected regions of pixels in the raster
+    # that share a common pixel value.
+    #
+    # @param layer [OGR::Layer, FFI::Pointer] The layer to write the polygons
+    #   to.
+    # @param mask_band [GDAL::RasterBand, FFI::Pointer] Optional band, where all
+    #   pixels in the mask with a value other than zero will be considered
+    #   suitable for collection as polygons.
+    # @param pixel_value_field [Fixnum] Index of the feature attribute into
+    #   which the pixel value of the polygon should be written.
+    # @param options [Hash]
+    # @param progress [Proc]
+    # @return [OGR::Layer]
+    def polygonize(layer, mask_band: nil, pixel_value_field: -1, **options, &progress)
+      mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+
+      layer_ptr = GDAL._pointer(OGR::Layer, layer)
+      raise "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+
+      options_ptr = GDAL::Options.pointer(options)
+
+      cpl_err = GDALFPolygonize(@raster_band_pointer,    # hSrcBand
+        mask_band_ptr,                                  # hMaskBand
+        layer_ptr,                                      # hOutLayer
+        pixel_value_field,                              # iPixValField
+        options_ptr,                                    # papszOptions
+        progress,                                      # pfnProgress
+        nil                                             # pProgressArg
+      )
+      cpl_err.to_ruby
+
+      OGR::Layer.new(layer_ptr)
     end
 
     #---------------------------------------------------------------------------

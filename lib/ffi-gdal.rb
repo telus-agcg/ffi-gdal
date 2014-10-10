@@ -42,13 +42,18 @@ module GDAL
 
   # Internal factory method for returning a pointer from +variable+, which could
   # be either of +klass+ class or a type of FFI::Pointer.
-  def self._pointer(klass, variable)
+  def self._pointer(klass, variable, warn_on_nil=true)
     if variable.is_a?(klass)
       variable.c_pointer
     elsif variable.kind_of? FFI::Pointer
       variable
+    elsif warn_on_nil
+      Logger.log "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
+      Logger.log "<#{name}._pointer> Called at: #{caller(1, 1).first}"
     else
-      GDAL.log "#{variable} is not a valid #{klass} or FFI::Pointer."
+      nil
+    end
+  end
     end
   end
 end

@@ -452,7 +452,10 @@ module OGR
     #
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
-    def transform(coordinate_transformation)
+    # @return [Boolean]
+    def transform!(coordinate_transformation)
+      coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
+        coordinate_transformation)
 
       return if coord_trans_ptr.nil? or coord_trans_ptr.null?
 
@@ -464,8 +467,10 @@ module OGR
     # coordinate system.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
-    def transform_to(new_spatial_ref)
+    # @return [Boolean]
+    def transform_to!(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
+      return nil if new_spatial_ref_ptr.null?
 
       ogr_err = OGR_G_TransformTo(@ogr_geometry_pointer, new_spatial_ref_ptr)
     end
