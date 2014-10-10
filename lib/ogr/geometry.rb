@@ -541,7 +541,11 @@ module OGR
     # TODO: should this be a class method?
     # @param wkt_data [String]
     def from_wkt(wkt_data)
-      ogr_err = OGR_G_ImportFromWkt(@ogr_geometry_pointer, wkt_data)
+      wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
+      wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
+      wkt_pointer_pointer.write_pointer(wkt_data_pointer)
+
+      ogr_err = OGR_G_ImportFromWkt(@ogr_geometry_pointer, wkt_pointer_pointer)
     end
 
     # @return [String]
