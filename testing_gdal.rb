@@ -82,7 +82,7 @@ def polygonize_a_raster(source_geometry, pixel_width, *raster_bands)
 end
 
 
-def intersect?(dataset, wkt_geometry_string, wkt_srid)
+def dataset_contains_geometry?(dataset, wkt_geometry_string, wkt_srid)
   source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
   source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
   raster_geometry = dataset.to_geometry
@@ -114,5 +114,5 @@ def intersect?(dataset, wkt_geometry_string, wkt_srid)
   raster_geometry.contains? source_geometry
 end
 
-intersect?(floyd, floyd_wkt, floyd_srid)
+dataset_contains_geometry?(floyd, floyd_wkt, floyd_srid)
 #binding.pry
