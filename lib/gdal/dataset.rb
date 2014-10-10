@@ -463,12 +463,15 @@ module GDAL
     #   to use when turning the raster into a vector image.
     # @param layer_name_prefix [String] Prefix of the name to give the new
     #   vector layer.
-    # @param band_number [Fixnum] Number of the raster band from this dataset
-    #   to vectorize.
+    # @param band_numbers [Array<Fixnum>,Fixnum] Number of the raster band or
+    #   bands from this dataset to vectorize.  Can be a single Fixnum or array
+    #   of Fixnums.
     # @return [OGR::DataSource]
     def to_vector(file_name, vector_driver_name, geometry_type: :wkbPolygon,
       layer_name_prefix: 'band_number', band_numbers: [1],
       field_name_prefix: 'field')
+      band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+
       ogr_driver = OGR::Driver.by_name(vector_driver_name)
       spatial_ref = OGR::SpatialReference.new(projection)
       spatial_ref.auto_identify_epsg!
