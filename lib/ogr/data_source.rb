@@ -29,6 +29,7 @@ module OGR
     # @param data_source_pointer [FFI::Pointer]
     def initialize(data_source_pointer)
       @data_source_pointer = data_source_pointer
+      @file_name = name
 
       close_me = -> { destroy }
       ObjectSpace.define_finalizer self, close_me
@@ -36,6 +37,15 @@ module OGR
 
     def c_pointer
       @data_source_pointer
+    end
+
+    def reopen(access_flag)
+      if driver.name == 'Memory'
+        raise "Can't reopen DataSources that were created and closed using the 'Memory' driver."
+      end
+
+      @data_source_pointer = FFI::GDAL.OGROpen(@file_path,
+        OGR._boolean_access_flag(access_flag), nil)
     end
 
     # Closes opened data source and releases allocated resources.
@@ -53,10 +63,12 @@ module OGR
 
     # @return [OGR::Driver]
     def driver
+      return @driver if @driver
+
       driver_ptr = OGR_DS_GetDriver(@data_source_pointer)
       return nil if driver_ptr.nil?
 
-      GDAL::Driver.new(driver_ptr)
+      @driver = OGR::Driver.new(driver_ptr)
     end
 
     # @return [Fixnum]
