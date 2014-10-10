@@ -5,4 +5,7 @@ module OGR
       super(message)
     end
   end
+
+  class InvalidLayer < StandardError
+  end
 end
