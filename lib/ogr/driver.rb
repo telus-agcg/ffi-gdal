@@ -82,8 +82,10 @@ module OGR
 
       ds = OGR::DataSource.new(data_source_ptr)
 
-      yield ds if block_given?
-      ds.close
+      if block_given?
+        yield ds
+        ds.close
+      end
 
       ds
     rescue GDAL::InvalidBandNumber
