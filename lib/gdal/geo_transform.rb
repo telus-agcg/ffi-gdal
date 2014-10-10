@@ -189,6 +189,35 @@ module GDAL
       { longitude: geo_x_ptr.read_double, latitude: geo_y_ptr.read_double }
     end
 
+    # The algorithm per http://www.gdal.org/gdal_datamodel.html.
+    def pixel_to_world(pixel, line)
+      x_geo = x_origin + (pixel * pixel_width) + (line * x_rotation)
+      y_geo = y_origin + (pixel * pixel_height) + (line * y_rotation)
+
+      { longitude: y_geo, latitude: x_geo }
+    end
+
+    # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
+    # pixel location of a geospatial coordinate.
+    #
+    # @param x [Fixnum]
+    # @param y [Fixnum]
+    # @param value_type [Symbol] Data type to return: :float or :integer.
+    # @return [Hash<x, y>] [pixel, line]
+    def world_to_pixel(lon, lat, value_type: :float)
+      pixel = (lon - x_origin) / pixel_width
+      line = (y_origin - lat) / pixel_height
+
+      case value_type
+      when :float
+        { x: pixel.to_f, y: line.to_f }
+      when :integer
+        { x: pixel.to_i, y: line.to_i }
+      else
+        { x: pixel, y: line }
+      end
+    end
+
     # Composes this and the give geo_transform.  The result is equivalent to
     # applying both geotransforms to a point.
     #
