@@ -10,7 +10,6 @@ module OGR
     def self.create(source_srs, destination_srs)
       source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
-      ct_ptr = FFI::GDAL::OCTNewCoordinateTransformation(source_ptr, destination_ptr)
       ct_ptr = FFI::GDAL.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
       return nil if ct_ptr.null?
 
@@ -29,6 +28,10 @@ module OGR
       new(ct_ptr, source, destination)
     end
 
+    # @param proj4_source [String]
+    # @return [String]
+    def self.proj4_normalize(proj4_source)
+      FFI::GDAL.OCTProj4Normalize(proj4_source)
     end
 
     # @return [OGR::SpatialReference]
