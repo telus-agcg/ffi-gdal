@@ -83,24 +83,32 @@ end
 
 
 def intersect?(dataset, wkt_geometry_string, wkt_srid)
-  source_srs = OGR::SpatialReference.new
-  source_srs.from_epsg(wkt_srid)
+  source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
   source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
 
-  raster_data_source = dataset.to_vector('memory', 'Memory')
+  raster_data_source = dataset.to_vector('memory', 'Memory', geometry_type: :wkbMultiLineString)
   raster_srs = raster_data_source.layer(0).spatial_reference
-  raster_geometry = raster_data_source.layer(0).feature(0).geometry
+  raster_geometry = raster_data_source.layer(0).geometry_from_extent
 
   coordinate_transformation = OGR::CoordinateTransformation.create(source_srs,
     raster_srs)
   GDAL::Logger.log "before transform: #{source_geometry.to_wkt}"
   source_geometry.transform!(coordinate_transformation)
 
-  binding.pry
   #do_they = new_layer.next_feature.geometry.intersects?(feature.geometry)
+  GDAL::Logger.log "raster within wkt? #{raster_geometry.within?(source_geometry)}"
+  GDAL::Logger.log "raster contains wkt? #{raster_geometry.contains?(source_geometry)}"
+  GDAL::Logger.log "raster touches wkt? #{raster_geometry.touches?(source_geometry)}"
+  GDAL::Logger.log "raster crosses wkt? #{raster_geometry.crosses?(source_geometry)}"
+  GDAL::Logger.log "raster overlaps wkt? #{raster_geometry.overlaps?(source_geometry)}"
+  GDAL::Logger.log "wkt within raster? #{source_geometry.within?(raster_geometry)}"
+  GDAL::Logger.log "wkt contains raster? #{source_geometry.contains?(raster_geometry)}"
+  GDAL::Logger.log "wkt touches raster? #{source_geometry.touches?(raster_geometry)}"
+  GDAL::Logger.log "wkt crosses raster? #{source_geometry.crosses?(raster_geometry)}"
+  GDAL::Logger.log "wkt overlaps raster? #{source_geometry.overlaps?(raster_geometry)}"
 
   raster_data_source.close
 end
 
-#intersect?(floyd, floyd_wkt, floyd_srid)
-binding.pry
+intersect?(floyd, floyd_wkt, floyd_srid)
+#binding.pry

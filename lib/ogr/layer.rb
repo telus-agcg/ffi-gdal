@@ -159,11 +159,13 @@ module OGR
 
     # @return [OGR::Envelope]
     def extent(force=true)
+      return @envelope if @envelope
+
       envelope = FFI::GDAL::OGREnvelope.new
       OGR_L_GetExtent(@ogr_layer_pointer, envelope, force)
       return nil if envelope.null?
 
-      OGR::Envelope.new(envelope)
+      @envelope = OGR::Envelope.new(envelope)
     end
 
     # @return [OGR::Envelope]
@@ -173,6 +175,18 @@ module OGR
       return nil if envelope.null?
 
       OGR::Envelope.new(envelope)
+    end
+
+    def geometry_from_extent
+      sr = spatial_reference
+      geometry = OGR::Geometry.create(:wkbLineString)
+
+      geometry.add_point(extent.min_x, extent.min_y)
+      geometry.add_point(extent.min_x, extent.max_y)
+      geometry.add_point(extent.max_x, extent.max_y)
+      geometry.add_point(extent.max_x, extent.min_y)
+
+      geometry.convex_hull
     end
 
     # The name of the underlying database column.  '' if not supported.

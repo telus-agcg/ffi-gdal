@@ -405,6 +405,7 @@ module GDAL
       field_name_prefix: 'field')
       ogr_driver = OGR::Driver.by_name(vector_driver_name)
       spatial_ref = OGR::SpatialReference.new(projection)
+      spatial_ref.auto_identify_epsg!
 
       data_source = ogr_driver.create_data_source(file_name)
       band_numbers.each_with_index do |band_number, i|
@@ -439,8 +440,6 @@ module GDAL
       end
 
       data_source
-    end
-      end
     end
   end
 end
