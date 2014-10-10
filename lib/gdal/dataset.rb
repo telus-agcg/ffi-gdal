@@ -507,5 +507,17 @@ module GDAL
 
       data_source
     end
+
+    # Converts the dataset to an in-memory vector, then creates a OGR::Geometry
+    # from its extent (i.e. from the boundary of the image).
+    #
+    # @param from_type [FFI::GDAL::OGRwkbGeometryType] The geometry type to use
+    #   for vectorizing the raster.
+    # @return [OGR::Geometry] A convex hull geometry.
+    def to_geometry(from_type: :wkbMultiLineString)
+      raster_data_source = to_vector('memory', 'Memory', geometry_type: from_type)
+
+      raster_data_source.layer(0).geometry_from_extent
+    end
   end
 end

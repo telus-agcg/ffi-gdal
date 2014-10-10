@@ -2,45 +2,6 @@ module FFI
   module GDAL
 
     #------------------------------------------------------------------------
-    # Defines
-    #------------------------------------------------------------------------
-    WKB_25D_BIT = 0x80000000
-    #WKB_FLATTEN
-    OGR_Z_MARKER = 0x21125711
-
-    ALTER_NAME_FLAG = 0x1
-    ALTER_TYPE_FLAG = 0x2
-    ALTER_WIDTH_PRECISION_FLAG = 0x4
-    ALTER_ALL_FLAG =
-      ALTER_NAME_FLAG | ALTER_TYPE_FLAG | ALTER_WIDTH_PRECISION_FLAG
-
-    OGRNullFID = -1
-    OGRUnsetMarker = -21121
-    OLCRandomRead = 'RandomRead'
-    OLCSequentialWrite = 'SequentialWrite'
-    OLCRandomeWrite = 'RandomWrite'
-    OLCFastSpatialFilter = 'FastSpatialFilter'
-    OLCFastFeatureCount = 'FastFeatureCount'
-    OLCFastGetExtent = 'FastGetExtent'
-    OLCCreateField = 'CreateField'
-    OLCDeleteField = 'DeleteField'
-    OLCReorderFields = 'ReorderFields'
-    OLCAlterFieldDefn = 'AlterFieldDefn'
-    OLCTransactions = 'Transactions'
-    OLCDeleteFeature = 'DeleteFeature'
-    OLCFastSetNextByIndex = 'FastSetNextByIndex'
-    OLCStringsAsUTF8 = 'StringsAsUTF8'
-    OLCIgnoreFields = 'IgnoreFields'
-    OLCCreateGeomField = 'CreateGeomField'
-
-    ODsCCreateLayer = 'CreateLayer'
-    ODsCDeleteLayer = 'DeleteLayer'
-    ODsCCreateGeomFieldAfterCreateLayer = 'CreateGeomFieldAfterCreateLayer'
-
-    ODrCCreateDataSource = 'CreateDataSource'
-    ODrCDeleteDataSource = 'DeleteDataSource'
-
-    #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
     # The C API defines :OGRErr as a function that returns constants.  I'm

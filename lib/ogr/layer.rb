@@ -185,9 +185,12 @@ module OGR
       OGR::Envelope.new(envelope)
     end
 
+    # @return [OGR::Geometry] A convex hull geometry derived from a LineString
+    #   that connects the 4 bounding box points (from the extent).
     def geometry_from_extent
       sr = spatial_reference
       geometry = OGR::Geometry.create(:wkbLineString)
+      geometry.spatial_reference = sr
 
       geometry.add_point(extent.min_x, extent.min_y)
       geometry.add_point(extent.min_x, extent.max_y)

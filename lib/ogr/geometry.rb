@@ -9,6 +9,7 @@ module OGR
     # @return [OGR::Geometry]
     def self.create(type)
       geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
+      return nil if geometry_pointer.null?
 
       new(geometry_pointer)
     end
@@ -216,7 +217,7 @@ module OGR
       end
     end
 
-    def set_point(index, x, y, z=nil)
+    def set_point(index, x, y, z=0)
       OGR_G_SetPoint(@ogr_geometry_pointer, index, x, y, z)
     end
 
