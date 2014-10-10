@@ -387,7 +387,9 @@ module GDAL
     end
 
     # Converts raster band number +band_number+ to the vector format
-    # +vector_driver_name+.  Similar to gdal_polygonize.py.
+    # +vector_driver_name+.  Similar to gdal_polygonize.py.  If block format is
+    # used, the new DataSource will be closed/flushed when the block returns. If
+    # the non-block format is used, you need to call #close on the DataSource.
     #
     # @param file_name [String] Path to write the vector file to.
     # @param vector_driver_name [String] One of OGR::Driver.names.
@@ -401,31 +403,43 @@ module GDAL
     def to_vector(file_name, vector_driver_name, geometry_type: :wkbPolygon,
       layer_name_prefix: 'band_number', band_numbers: [1],
       field_name_prefix: 'field')
-      driver = OGR::Driver.by_name(vector_driver_name)
+      ogr_driver = OGR::Driver.by_name(vector_driver_name)
       spatial_ref = OGR::SpatialReference.new(projection)
 
-      driver.create_data_source(file_name) do |data_source|
-        band_numbers.each_with_index do |band_number, i|
-          GDAL.log "Starting to polygonize raster band #{band_number}..."
+      data_source = ogr_driver.create_data_source(file_name)
+      band_numbers.each_with_index do |band_number, i|
+        log "Starting to polygonize raster band #{band_number}..."
 
-          layer_name = "#{layer_name_prefix}-#{band_number}"
-          layer = data_source.create_layer(layer_name,
-            type: geometry_type,
-            spatial_reference: spatial_ref)
+        layer_name = "#{layer_name_prefix}-#{band_number}"
+        layer = data_source.create_layer(layer_name,
+        type: geometry_type,
+        spatial_reference: spatial_ref)
 
-          field_name = "#{field_name_prefix}#{i}"
-          layer.create_field(field_name, :OFTInteger)
-
-          band = raster_band(band_number)
-          band.no_data_value = -9999
-
-          unless band
-            raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
-          end
-
-          pixel_value_field = layer.definition.field_index(field_name)
-          band.polygonize(layer, pixel_value_field: pixel_value_field)
+        unless layer
+          raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
         end
+
+        field_name = "#{field_name_prefix}#{i}"
+        layer.create_field(field_name, :OFTInteger)
+
+        band = raster_band(band_number)
+        band.no_data_value = -9999
+
+        unless band
+          raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+        end
+
+        pixel_value_field = layer.definition.field_index(field_name)
+        band.polygonize(layer, pixel_value_field: pixel_value_field)
+      end
+
+      if block_given?
+        yield data_source
+        data_source.close
+      end
+
+      data_source
+    end
       end
     end
   end
