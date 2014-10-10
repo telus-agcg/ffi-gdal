@@ -7,6 +7,83 @@ module OGR
   class SpatialReference
     include FFI::GDAL
 
+    # @return [Array<String>]
+    def self.projection_methods
+      return @projection_methods if @projection_methods
+
+      methods_ptr_ptr = FFI::GDAL.OPTGetProjectionMethods
+      count = FFI::GDAL.CSLCount(methods_ptr_ptr)
+
+      # For some reason #get_array_of_string leaves off the first 6.
+      pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
+
+      pointer_array.map(&:read_string).sort
+    end
+
+    # @param projection_method [String] One of
+    #   OGR::SpatialReference.projection_methods.
+    # @param user_name [String] A user-visible name for the projection name. nil
+    #   if this isn't required.
+    # @return [Hash{parameter => Array<String>, user_visible_name => String}]
+    def self.parameter_list(projection_method)
+      name_ptr = FFI::MemoryPointer.new(:string)
+      name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
+      name_ptr_ptr.write_pointer(name_ptr)
+
+      params_ptr_ptr = FFI::GDAL.OPTGetParameterList(projection_method,
+        name_ptr_ptr)
+      count = FFI::GDAL.CSLCount(params_ptr_ptr)
+
+      # For some reason #get_array_of_string leaves off the first 6.
+      pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
+
+      name = if !name_ptr_ptr.read_pointer.null?
+        name_ptr_ptr.read_pointer.read_string
+      else
+        nil
+      end
+
+      {
+        parameters: pointer_array.map(&:read_string).sort,
+        user_visible_name: name
+      }
+    end
+
+    def self.parameter_info(projection_method, parameter_name)
+      name_ptr = FFI::MemoryPointer.new(:string)
+      name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
+      name_ptr_ptr.write_pointer(name_ptr)
+
+      type_ptr = FFI::MemoryPointer.new(:string)
+      type_ptr_ptr = FFI::MemoryPointer.new(:pointer)
+      type_ptr_ptr.write_pointer(type_ptr)
+
+      default_value_ptr = FFI::MemoryPointer.new(:double)
+
+      result = FFI::GDAL.OPTGetParameterInfo(projection_method, parameter_name,
+        name_ptr_ptr, type_ptr_ptr, default_value_ptr)
+
+      return {} unless result
+
+      name = if !name_ptr_ptr.read_pointer.null?
+        name_ptr_ptr.read_pointer.read_string
+      else
+        nil
+      end
+
+      type = if !type_ptr_ptr.read_pointer.null?
+        type_ptr_ptr.read_pointer.read_string
+      else
+        nil
+      end
+
+      {
+        type: type,
+        default_value: default_value_ptr.read_double,
+        user_visible_name: name
+      }
+    end
+
     # Builds a spatial reference object using either the passed-in WKT string,
     # OGR::SpatialReference object, or a pointer to an in-memory
     # SpatialReference object.  If nothing is passed in, an empty

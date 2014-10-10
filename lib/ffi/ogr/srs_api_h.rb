@@ -315,7 +315,7 @@ module FFI
     #~~~~~~~~~~~~~~
     # Parameters
     #~~~~~~~~~~~~~~
-    attach_function :OPTGetProjectionMethods, %i[void], :pointer
+    attach_function :OPTGetProjectionMethods, %i[], :pointer
     attach_function :OPTGetParameterList, %i[string pointer], :pointer
     attach_function :OPTGetParameterInfo,
       %i[string string pointer pointer pointer],
