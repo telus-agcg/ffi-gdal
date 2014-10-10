@@ -86,10 +86,10 @@ module FFI
     attach_function :OSRExportToUSGS,
       %i[OGRSpatialReferenceH pointer pointer pointer pointer],
       OGRErr
-    attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer string], OGRErr
+    attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer buffer_out], OGRErr
     attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH pointer], OGRErr
     attach_function :OSRExportToERM,
-      %i[OGRSpatialReferenceH string string string],
+      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
       OGRErr
     attach_function :OSRMorphToESRI, %i[OGRSpatialReferenceH], OGRErr
     attach_function :OSRMorphFromESRI, %i[OGRSpatialReferenceH], OGRErr
