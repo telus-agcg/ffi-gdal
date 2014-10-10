@@ -3,6 +3,7 @@ require_relative 'envelope'
 module OGR
   class Geometry
     include FFI::GDAL
+    extend GDAL::Logger
 
     # @param type [FFI::GDAL::OGRwkbGeometryType]
     # @return [OGR::Geometry]

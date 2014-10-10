@@ -5,7 +5,14 @@ require_relative 'gdal/environment_methods'
 module GDAL
   extend VersionInfo
   extend EnvironmentMethods
-  extend LogSwitch
+
+  module Logger
+    extend LogSwitch
+
+    def self.included(base)
+      base.log_class_name = true
+    end
+  end
 
   autoload :ColorEntry,
     File.expand_path('gdal/color_entry', __dir__)
@@ -47,8 +54,6 @@ module GDAL
 end
 
 module OGR
-  extend LogSwitch
-
   autoload :DataSource,
     File.expand_path('ogr/data_source', __dir__)
   autoload :Driver,
@@ -72,9 +77,6 @@ module OGR
 
   FFI::GDAL.OGRRegisterAll
 end
-
-GDAL.log_class_name = true
-OGR.log_class_name = true
 
 require_relative 'ffi/gdal'
 require_relative 'ffi/ogr'

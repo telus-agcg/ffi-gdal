@@ -8,6 +8,7 @@ module GDAL
   class Driver
     include FFI::GDAL
     include MajorObject
+    extend GDAL::Logger
     include LogSwitch::Mixin
 
     GDAL_DOCS_URL = 'http://gdal.org'
