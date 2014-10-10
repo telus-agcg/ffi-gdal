@@ -54,8 +54,6 @@ module GDAL
       nil
     end
   end
-    end
-  end
 end
 
 module OGR
@@ -81,6 +79,14 @@ module OGR
     File.expand_path('ogr/style_table', __dir__)
 
   FFI::GDAL.OGRRegisterAll
+
+  def self._boolean_access_flag(flag)
+    case flag
+    when 'w' then true
+    when 'r' then false
+    else raise "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
+    end
+  end
 end
 
 require_relative 'ffi/gdal'

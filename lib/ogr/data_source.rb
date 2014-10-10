@@ -20,13 +20,7 @@ module OGR
       uri = URI.parse(path)
       file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
 
-      access_bool = case access_flag
-      when 'w' then true
-      when 'r' then false
-      else raise "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
-      end
-
-      pointer = FFI::GDAL.OGROpen(file_path, access_bool, nil)
+      pointer = FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
       raise OGR::OpenFailure.new(file_path) if pointer.null?
 
       new(pointer)

@@ -60,7 +60,7 @@ module OGR
     # @param access_flag [String] 'r' or 'w'.
     # @return [OGR::DataSource, nil]
     def open(file_name, access_flag = 'r')
-      update = access_flag == 'w' ? true : false
+      update = OGR._boolean_access_flag(access_flag)
 
       data_source_ptr = OGR_Dr_Open(@driver_pointer, file_name, update)
       return nil if data_source_ptr.null?
