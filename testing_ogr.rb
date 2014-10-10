@@ -72,8 +72,6 @@ geom = OGR::Geometry.create_from_wkt(proj)
 # * convex_hull: #{geom.convex_hull.to_wkt}
 # GEOM
 
-polygon = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))'
-sr_polygon = OGR::SpatialReference.new(polygon)
 
 coords = <<-PROJCS
 PROJCS["WGS 84 / UTM zone 16N",
@@ -95,22 +93,5 @@ PROJCS["WGS 84 / UTM zone 16N",
         AUTHORITY["EPSG","9001"]],
     AUTHORITY["EPSG","32616"]]
 PROJCS
-
-sr_coords = OGR::SpatialReference.new(polygon)
-sr_coords.from_epsg 4326
-
-session = OGR::GeocodingSession.new
-layer = session.geocode "1600 Amphitheatre Parkway, Mountain View, CA"
-feature = layer.feature(0)
-feature.fields.each do |field|
-  puts <<-F
-name: #{field.name}
-justification: #{field.justification}
-precision: #{field.precision}
-type: #{field.type}
-width: #{field.width}
-ignored: #{field.ignored?}
-  F
-end
 
 binding.pry

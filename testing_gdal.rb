@@ -9,12 +9,20 @@ require 'gdal/utils'
 # WKT
 
 floyd_wkt = 'MULTIPOLYGON (((-87.55634718933241 31.168633650404765, -87.552227316286 31.16870709121005, -87.55234533348232 31.169808696448463, -87.5478606800096 31.1698913163249, -87.54777484932141 31.168679550914895, -87.54380517997858 31.168615290194918, -87.54396611251944 31.16511760526154, -87.55647593536513 31.164906454793982, -87.55634718933241 31.168633650404765)))'
+floyd_srid = 4326
 
 harper_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/Harper/Harper_1058_20140612_NRGB.tif'
 harper = GDAL::Dataset.open(harper_path, 'r')
 
 floyd_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/Floyd/Floyd_1058_20140612_NRGB.tif'
 floyd = GDAL::Dataset.open(floyd_path, 'r')
+
+# spatial_ref = OGR::SpatialReference.new(floyd.projection)
+# spatial_ref.from_epsg 4326
+# #floyd_geometry = OGR::Geometry.create_from_wkt(floyd_wkt, spatial_ref)
+# floyd_geometry = OGR::Geometry.create(:wkbMultiPolygon)
+# floyd_geometry.from_wkt(floyd_wkt)
+# floyd_geometry.transform_to!(spatial_ref)
 
 usg_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/osgeo/geotiff/usgs/c41078a1.tif'
 usg = GDAL::Dataset.open(usg_path, 'r')
@@ -27,16 +35,72 @@ world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
 #world_file = GDAL::GeoTransform.from_world_file(world_file_path)
 world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
-# GDAL::Driver.short_names.each do |name|
-#   grid_driver = GDAL::Driver.by_name name
-#   puts "capabilities for #{name}: #{grid_driver.capabilities}"
-#
-#   puts "options for #{name}: #{grid_driver.creation_option_list}" rescue nil
-#
-#   if grid_driver.can_copy_datasets?
-#     grid_driver.copy_dataset("floyd_grid-#{name}.#{name.downcase}", floyd_path,
-#       strict: false, compress: 'PACKBITS') rescue nil
-#   end
-# end
+def layers_to_raster(layers, geometry, x_resolution, y_resolution)
+  driver = GDAL::Driver.by_name 'GTiff'
 
+  driver.create_dataset('laymeow.tif', x_resolution, y_resolution, type: :GDT_Byte) do |meow|
+    meow.projection = source_dataset.projection
+    meow.geo_transform = source_dataset.geo_transform
+    meow.geo_transform.x_origin = geometry.envelope.min_x
+    meow.geo_transform.y_origin = geometry.envelope.max_y
+    band = meow.raster_band(1)
+    band.no_data_value = -9999
+    meow.rasterize_layers(band.number, [*layers], [*(10..1000).to_a])
+    binding.pry
+  end
+end
+
+def geometries_to_raster(geometries, projection, geo_transform, x_resolution, y_resolution)
+  driver = GDAL::Driver.by_name 'GTiff'
+
+  driver.create_dataset('geomeow.tif', x_resolution, y_resolution, type: :GDT_Byte) do |meow|
+    meow.projection = projection
+    meow.geo_transform = geo_transform
+    meow.geo_transform.x_origin = geometry.envelope.min_x
+    meow.geo_transform.y_origin = geometry.envelope.min_y
+    band = meow.raster_band(1)
+    band.no_data_value = -9999
+    meow.rasterize_geometries(band.number, [*geometries], [*(10..1000).to_a])
+  end
+end
+
+def polygonize_a_raster(source_geometry, pixel_width, *raster_bands)
+  # source_geometry = OGR::Geometry.create(:wkbPolygon)
+  # source_geometry.spatial_reference = spatial_ref
+
+  vector_driver = OGR::Driver.by_name 'Memory'
+  vector_data_source = vector_driver.create_data_source('polygonized_stuff')
+  layers = raster_bands.each_with_index.map do |band, i|
+    vector_data_source.create_layer("Layer #{i}", spatial_reference: source_geometry.spatial_reference)
+  end
+
+  raster_bands.each_with_index do |band, i|
+    band.polygonize(layer[i])
+  end
+
+  vector_data_source
+end
+
+
+def intersect?(dataset, wkt_geometry_string, wkt_srid)
+  source_srs = OGR::SpatialReference.new
+  source_srs.from_epsg(wkt_srid)
+  source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
+
+  raster_data_source = dataset.to_vector('memory', 'Memory')
+  raster_srs = raster_data_source.layer(0).spatial_reference
+  raster_geometry = raster_data_source.layer(0).feature(0).geometry
+
+  coordinate_transformation = OGR::CoordinateTransformation.create(source_srs,
+    raster_srs)
+  GDAL::Logger.log "before transform: #{source_geometry.to_wkt}"
+  source_geometry.transform!(coordinate_transformation)
+
+  binding.pry
+  #do_they = new_layer.next_feature.geometry.intersects?(feature.geometry)
+
+  raster_data_source.close
+end
+
+#intersect?(floyd, floyd_wkt, floyd_srid)
 binding.pry
