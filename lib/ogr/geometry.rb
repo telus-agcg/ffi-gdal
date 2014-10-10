@@ -31,9 +31,7 @@ module OGR
       FFI::GDAL.OGR_G_CreateFromWkt(wkt_pointer_pointer,
         spatial_ref_pointer, geometry_ptr_ptr)
 
-      return nil if geometry_ptr_ptr.null? ||
-        geometry_ptr_ptr.null? ||
-        geometry_ptr_ptr.read_pointer.nil?
+      return nil if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.nil?
 
       new(geometry_ptr_ptr.read_pointer)
     end
