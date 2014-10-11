@@ -84,37 +84,5 @@ def polygonize_a_raster(source_geometry, pixel_width, *raster_bands)
 end
 
 
-def dataset_contains_geometry?(dataset, wkt_geometry_string, wkt_srid)
-  source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
-  source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
-  raster_geometry = dataset.to_geometry
-
-  coordinate_transformation = OGR::CoordinateTransformation.create(source_srs,
-    raster_geometry.spatial_reference)
-  GDAL::Logger.log "wkt before: #{source_geometry.to_wkt}"
-  source_geometry.transform!(coordinate_transformation)
-  GDAL::Logger.log "wkt after: #{source_geometry.to_wkt}"
-
-  # GDAL::Logger.log "raster before: #{raster_geometry.to_wkt}"
-  # coordinate_transformation = OGR::CoordinateTransformation.create(raster_geometry.spatial_reference,
-  #   source_srs)
-  # raster_geometry.transform!(coordinate_transformation)
-  # GDAL::Logger.log "raster after: #{raster_geometry.to_wkt}"
-
-  GDAL::Logger.log "raster within wkt? #{raster_geometry.within?(source_geometry)}"
-  GDAL::Logger.log "raster contains wkt? #{raster_geometry.contains?(source_geometry)}"
-  GDAL::Logger.log "raster touches wkt? #{raster_geometry.touches?(source_geometry)}"
-  GDAL::Logger.log "raster crosses wkt? #{raster_geometry.crosses?(source_geometry)}"
-  GDAL::Logger.log "raster overlaps wkt? #{raster_geometry.overlaps?(source_geometry)}"
-  GDAL::Logger.log "wkt within raster? #{source_geometry.within?(raster_geometry)}"
-  GDAL::Logger.log "wkt contains raster? #{source_geometry.contains?(raster_geometry)}"
-  GDAL::Logger.log "wkt touches raster? #{source_geometry.touches?(raster_geometry)}"
-  GDAL::Logger.log "wkt crosses raster? #{source_geometry.crosses?(raster_geometry)}"
-  GDAL::Logger.log "wkt overlaps raster? #{source_geometry.overlaps?(raster_geometry)}"
-  dataset.close
-
-  raster_geometry.contains? source_geometry
-end
-
-dataset_contains_geometry?(floyd, floyd_wkt, floyd_srid)
-#binding.pry
+#dataset_contains_geometry?(floyd, floyd_wkt, floyd_srid)
+binding.pry
