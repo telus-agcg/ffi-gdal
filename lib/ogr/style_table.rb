@@ -2,7 +2,6 @@ require_relative '../ffi/ogr'
 
 module OGR
   class StyleTable
-    include FFI::GDAL
 
     # @param style_table [OGR::StyleTable, FFI::Pointer]
     def initialize(style_table)
