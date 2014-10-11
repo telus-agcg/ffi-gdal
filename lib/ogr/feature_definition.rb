@@ -5,6 +5,7 @@ module OGR
   class FeatureDefinition
     include FFI::GDAL
 
+    # @param name [String]
     def self.create(name)
       feature_defn_pointer = FFI::GDAL.OGR_FD_Create(name)
       return nil if feature_defn_pointer.null?
@@ -12,7 +13,7 @@ module OGR
       new(feature_defn_pointer)
     end
 
-    # @param name [String]
+    # @param feature_definition [String]
     def initialize(feature_definition)
       @feature_definition_pointer = GDAL._pointer(OGR::FeatureDefinition,
         feature_definition)

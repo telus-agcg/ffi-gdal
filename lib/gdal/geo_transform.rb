@@ -25,8 +25,7 @@ module GDAL
       new(gt_ptr)
     end
 
-    # @param dataset [GDAL::Dataset,FFI::Pointer]
-    # @param geo_transform_pointer [FFI::Pointer]
+    # @param geo_transform [FFI::Pointer]
     def initialize(geo_transform=nil)
       @geo_transform_pointer = if geo_transform.is_a? GDAL::GeoTransform
         geo_transform.c_pointer
@@ -200,8 +199,8 @@ module GDAL
     # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
     # pixel location of a geospatial coordinate.
     #
-    # @param x [Fixnum]
-    # @param y [Fixnum]
+    # @param lon [Fixnum]
+    # @param lat [Fixnum]
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x, y>] [pixel, line]
     def world_to_pixel(lon, lat, value_type: :float)

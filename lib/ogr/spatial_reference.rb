@@ -22,8 +22,6 @@ module OGR
 
     # @param projection_method [String] One of
     #   OGR::SpatialReference.projection_methods.
-    # @param user_name [String] A user-visible name for the projection name. nil
-    #   if this isn't required.
     # @return [Hash{parameter => Array<String>, user_visible_name => String}]
     def self.parameter_list(projection_method)
       name_ptr = FFI::MemoryPointer.new(:string)
@@ -85,7 +83,6 @@ module OGR
     end
 
     # @param code [Fixnum]
-    # @param spatial_reference_or_wkt [String]
     # @return [OGR::SpatialReference]
     def self.new_from_epsg(code)
       build_spatial_ref do |spatial_ref|
@@ -94,7 +91,6 @@ module OGR
     end
 
     # @param code [Fixnum]
-    # @param spatial_reference_or_wkt [String]
     # @return [OGR::SpatialReference]
     def self.new_from_epsga(code)
       build_spatial_ref do |spatial_ref|
@@ -106,10 +102,10 @@ module OGR
     # @param datum_name [String] I.e. "NAD83".
     # @param linear_unit_name [String] Plural form of linear units, i.e. "FEET".
     # @return [OGR::SpatialReference]
-    def self.new_from_erm(projection_name, datum_name, units)
+    def self.new_from_erm(projection_name, datum_name, linear_unit_name)
       build_spatial_ref do |spatial_ref|
         FFI::GDAL.OSRImportFromERM(spatial_ref.c_pointer, projection_name,
-          datum_name, units)
+          datum_name, linear_unit_name)
       end
     end
 

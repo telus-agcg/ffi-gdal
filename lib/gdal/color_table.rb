@@ -17,18 +17,18 @@ module GDAL
   class ColorTable
     include FFI::GDAL
 
-    # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
     # @return [GDAL::ColorTable]
     def self.create(palette_interpretation)
       color_table_pointer = FFI::GDAL::GDALCreateColorTable(palette_interpretation)
+      return nil if color_table_pointer.null?
 
       new(color_table_pointer)
     end
 
-    # @param
-    def initialize(color_table_pointer)
-      @color_table_pointer = color_table_pointer
+    # @param color_table
+    def initialize(color_table)
+      @color_table_pointer = GDAL._pointer(color_table)
 
       case palette_interpretation
       when :GPI_Gray then extend GDAL::ColorTableTypes::Gray

@@ -15,7 +15,7 @@ module OGR
     end
 
     # @param wkt_data [String]
-    # @param spatial_reference_pointer [FFI::Pointer] Optional spatial reference
+    # @param spatial_reference [FFI::Pointer] Optional spatial reference
     #   to assign to the new geometry.
     # @return [OGR::Geometry]
     def self.create_from_wkt(wkt_data, spatial_reference=nil)
@@ -58,7 +58,7 @@ module OGR
       FFI::GDAL.OGRGeometryTypeToName(type)
     end
 
-    # @param ogr_geometry [OGR::Geometry, FFI::Pointer]
+    # @param geometry [OGR::Geometry, FFI::Pointer]
     def initialize(geometry)
       @ogr_geometry_pointer = GDAL._pointer(OGR::Geometry, geometry)
 
@@ -82,7 +82,7 @@ module OGR
     # If this geometry is a container, this fetches the geometry at the
     #   sub_geometry_index.
     #
-    # @sub_geometry_index [Fixnum]
+    # @param sub_geometry_index [Fixnum]
     # @return [OGR::Geometry]
     def geometry_at(sub_geometry_index)
       build_geometry do
@@ -258,7 +258,7 @@ module OGR
       OGR_G_Area(@ogr_geometry_pointer)
     end
 
-    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @param point_geometry [OGR::Geometry, FFI::Pointer]
     # @return [Fixnum]
     def centroid(point_geometry)
       OGR_G_Centroid(@ogr_geometry_pointer, geometry_pointer_from(point_geometry))

@@ -10,7 +10,6 @@ module GDAL
     include FFI::GDAL
     include MajorObject
 
-    # @param band_id [Fixnum] Requried if not passing in +raster_band_pointer+.
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band=nil)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)

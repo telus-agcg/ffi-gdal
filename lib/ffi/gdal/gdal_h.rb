@@ -95,12 +95,11 @@ module FFI
     typedef :pointer, :GDALRasterAttributeTableH
     typedef :pointer, :GDALAsyncReaderH
 
-    # @param completion [Float]
-    # @param message [String]
-    # @param progress_arg [Pointer]
-    # @return [Boolean] true if the operation should continue; false if the
-    #   user has cancelled.
-    callback :GDALProgressFunc, [:double, :string, :pointer], :bool
+    # When using, make sure to return +true+ if the operation should continue;
+    #   +false+ if the user has cancelled.
+    callback :GDALProgressFunc,
+      [:double, :string, :pointer],     # completion, message, progress_arg
+      :bool
 
     callback :GDALDerivedPixelFunc,
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],

@@ -5,7 +5,7 @@ require_relative 'field'
 module OGR
   class Feature
 
-    # @param [OGR::FeatureDefinition,FFI::Pointer]
+    # @param feature_definition [OGR::FeatureDefinition,FFI::Pointer]
     # @return [OGR::Feature]
     def self.create(feature_definition)
       feature_def_ptr = GDAL._pointer(OGR::FeatureDefinition, feature_definition)
@@ -15,7 +15,7 @@ module OGR
       new(feature_ptr)
     end
 
-    # @param ogr_feature [OGR::Feature, FFI::Pointer]
+    # @param feature [OGR::Feature, FFI::Pointer]
     def initialize(feature)
       @feature_pointer = GDAL._pointer(OGR::Feature, feature)
 
