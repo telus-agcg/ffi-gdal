@@ -2,8 +2,6 @@ require_relative '../ffi/ogr'
 
 module OGR
   class Envelope
-    include FFI::GDAL
-
     def initialize(ogr_envelope_struct)
       @ogr_envelope_struct = ogr_envelope_struct
     end
