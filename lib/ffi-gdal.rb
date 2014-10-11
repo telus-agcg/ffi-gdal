@@ -7,11 +7,7 @@ module GDAL
   extend EnvironmentMethods
 
   module Logger
-    extend LogSwitch
-
-    def self.included(base)
-      base.log_class_name = true
-    end
+    include LogSwitch
   end
 
   autoload :ColorEntry,

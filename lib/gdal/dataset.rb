@@ -17,8 +17,7 @@ module GDAL
   class Dataset
     include FFI::GDAL
     include MajorObject
-    extend GDAL::Logger
-    include LogSwitch::Mixin
+    include GDAL::Logger
 
     ACCESS_FLAGS = {
       'r' => :GA_ReadOnly,

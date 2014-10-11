@@ -2,8 +2,7 @@ module OGR
   class Driver
     include FFI::GDAL
     include GDAL::MajorObject
-    extend GDAL::Logger
-    include LogSwitch::Mixin
+    #include GDAL::Logger
 
     # @return [Fixnum]
     def self.count

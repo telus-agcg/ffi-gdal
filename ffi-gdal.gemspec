@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w[lib]
 
   spec.add_dependency 'ffi'
-  spec.add_dependency 'log_switch'
+  spec.add_dependency 'log_switch', '~> 1.0.0'
   spec.add_dependency 'multi_xml'
   spec.add_dependency 'narray', '~> 0.6.0'
   spec.add_dependency 'ruby-progressbar'
