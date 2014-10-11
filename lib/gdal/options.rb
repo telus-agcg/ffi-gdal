@@ -4,8 +4,6 @@ require 'ffi'
 module GDAL
   # A wrapper for the way GDAL does key/value pair options for methods.
   class Options < Hash
-    include FFI::GDAL
-
     # Shortcut for if you just want to build the options and get the pointer to
     # them.
     #
@@ -26,7 +24,7 @@ module GDAL
       options_ptr = FFI::MemoryPointer.new(:pointer, self.size)
 
       self.each do |key, value|
-        options_ptr = CSLSetNameValue(options_ptr, key, value)
+        options_ptr = FFI::GDAL.CSLSetNameValue(options_ptr, key, value)
       end
 
       options_ptr
