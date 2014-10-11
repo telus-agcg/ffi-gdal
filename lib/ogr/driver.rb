@@ -1,8 +1,7 @@
 module OGR
   class Driver
-    include FFI::GDAL
     include GDAL::MajorObject
-    #include GDAL::Logger
+    include GDAL::Logger
 
     # @return [Fixnum]
     def self.count
@@ -27,6 +26,7 @@ module OGR
       end
 
       driver_ptr = FFI::GDAL.OGRGetDriver(index)
+      return nil if driver_ptr.null?
 
       new(driver_ptr)
     end
@@ -42,6 +42,7 @@ module OGR
       @names = names.compact.sort
     end
 
+    # @param driver [OGR::Driver, FFI::Pointer]
     def initialize(driver)
       @driver_pointer = GDAL._pointer(OGR::Driver, driver)
     end
@@ -52,7 +53,7 @@ module OGR
 
     # @return [String]
     def name
-      OGR_Dr_GetName(@driver_pointer)
+      FFI::GDAL.OGR_Dr_GetName(@driver_pointer)
     end
 
     # @param file_name [String]
@@ -61,7 +62,7 @@ module OGR
     def open(file_name, access_flag = 'r')
       update = OGR._boolean_access_flag(access_flag)
 
-      data_source_ptr = OGR_Dr_Open(@driver_pointer, file_name, update)
+      data_source_ptr = FFI::GDAL.OGR_Dr_Open(@driver_pointer, file_name, update)
       return nil if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr)
@@ -76,7 +77,8 @@ module OGR
     def create_data_source(file_name, **options)
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = OGR_Dr_CreateDataSource(@driver_pointer, file_name, options_ptr)
+      data_source_ptr = FFI::GDAL.OGR_Dr_CreateDataSource(@driver_pointer,
+        file_name, options_ptr)
       return nil if data_source_ptr.null?
 
       ds = OGR::DataSource.new(data_source_ptr)
@@ -95,7 +97,7 @@ module OGR
 
     # @param file_name [String]
     def delete_data_source(file_name)
-      ogr_err = OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
+      ogr_err = FFI::GDAL.OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
     end
 
     # @param source_data_source [OGR::DataSource, FFI::Pointer]
@@ -106,8 +108,8 @@ module OGR
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = OGR_Dr_CopyDataSource(@driver_pointer, source_ptr,
-        new_file_name, options_ptr)
+      data_source_ptr = FFI::GDAL.OGR_Dr_CopyDataSource(@driver_pointer,
+        source_ptr, new_file_name, options_ptr)
       return nil if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr)
