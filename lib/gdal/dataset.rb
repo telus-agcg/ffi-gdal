@@ -298,7 +298,7 @@ module GDAL
     # @option @options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
     #   in overwriting of value, while ADD adds the new value to the existing
     #   raster, suitable for heatmaps for instance.
-    def rasterize_geometries(band_numbers, geometries, burn_values,
+    def rasterize_geometries!(band_numbers, geometries, burn_values,
       transformer: nil, transform_arg: nil, **options, &progress_block)
       gdal_options = GDAL::Options.pointer(options)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
@@ -349,7 +349,7 @@ module GDAL
     # @option @options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
     #   in overwriting of value, while ADD adds the new value to the existing
     #   raster, suitable for heatmaps for instance.
-    def rasterize_layers(band_numbers, layers, burn_values,
+    def rasterize_layers!(band_numbers, layers, burn_values,
       transformer: nil, transform_arg: nil, **options, &progress_block)
       gdal_options = GDAL::Options.pointer(options)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
