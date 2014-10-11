@@ -3,8 +3,6 @@ require_relative '../ffi/gdal'
 
 module GDAL
   class GeoTransform
-    include FFI::GDAL
-
     def self.new_pointer
       FFI::MemoryPointer.new(:double, 6)
     end
@@ -183,7 +181,7 @@ module GDAL
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
-      GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
+      FFI::GDAL.GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
       { longitude: geo_x_ptr.read_double, latitude: geo_y_ptr.read_double }
     end
@@ -230,7 +228,7 @@ module GDAL
       end
 
       new_gt_ptr = self.class.new_pointer
-      GDALComposeGeoTransforms(@geo_transform_pointer, other_pointer, new_gt_ptr)
+      FFI::GDAL.GDALComposeGeoTransforms(@geo_transform_pointer, other_pointer, new_gt_ptr)
       return nil if new_gt_ptr.null?
 
       GDAL::GeoTransform.new(new_gt_ptr)
@@ -243,7 +241,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def invert
       new_geo_transform_ptr = self.class.new_pointer
-      success = GDALInvGeoTransform(@geo_transform_pointer, new_geo_transform_ptr)
+      success = FFI::GDAL.GDALInvGeoTransform(@geo_transform_pointer, new_geo_transform_ptr)
       return nil unless success
 
       self.class.new(new_geo_transform_ptr)
@@ -253,7 +251,7 @@ module GDAL
     # @param world_extension [String]
     # @return [Boolean]
     def to_world_file(raster_filename, world_extension)
-      GDALWriteWorldFile(raster_filename, world_extension, @geo_transform_pointer)
+      FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @geo_transform_pointer)
     end
   end
 end
