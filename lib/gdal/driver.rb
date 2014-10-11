@@ -200,7 +200,8 @@ module GDAL
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
-    # driver and can't be retrieved programmatically.
+    # driver and can't be retrieved programmatically.  NOTE: In order to write
+    # out all data to the destination, you must call #close on the dataset!
     #
     # @param filename [String]
     # @param x_size [Fixnum] Width of created raster in pixels.
@@ -230,7 +231,6 @@ module GDAL
 
       dataset = Dataset.new(dataset_pointer)
       yield(dataset) if block_given?
-      dataset.close
 
       dataset
     end

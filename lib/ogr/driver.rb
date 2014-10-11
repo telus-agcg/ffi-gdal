@@ -69,7 +69,8 @@ module OGR
     end
 
     # Creates a new data source at path +file_name+.  Yields the newly created
-    # data source to a block, if given.  Always closes/destroys before returning.
+    # data source to a block, if given.  NOTE: in order to write out all
+    # in-memory data, you need to call #close on the created DataSource.
     #
     # @param file_name [String]
     # @param options [Hash]
@@ -83,10 +84,7 @@ module OGR
 
       ds = OGR::DataSource.new(data_source_ptr)
 
-      if block_given?
-        yield ds
-        ds.close
-      end
+      yield ds if block_given?
 
       ds
     rescue GDAL::InvalidBandNumber
