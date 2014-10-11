@@ -5,7 +5,6 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
-    include FFI::GDAL
 
     # @return [Array<String>]
     def self.projection_methods
@@ -230,25 +229,28 @@ module OGR
       @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
         spatial_reference_or_wkt.c_pointer
       elsif spatial_reference_or_wkt.is_a? String
-        OSRNewSpatialReference(spatial_reference_or_wkt)
+        FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
       elsif spatial_reference_or_wkt.is_a? FFI::Pointer
         spatial_reference_or_wkt
       else
-        OSRNewSpatialReference(nil)
+        FFI::GDAL.OSRNewSpatialReference(nil)
       end
 
-      close_me = -> { OSRDestroySpatialReference(@ogr_spatial_ref_pointer) }
+      close_me = -> { destroy! }
       ObjectSpace.define_finalizer self, close_me
     end
-
 
     def c_pointer
       @ogr_spatial_ref_pointer
     end
 
+    def destroy!
+      FFI::GDAL.OSRDestroySpatialReference(@ogr_spatial_ref_pointer)
+    end
+
     # Uses the C-API to clone this spatial reference object.
     def clone
-      new_spatial_ref_ptr = OSRClone(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::GDAL.OSRClone(@ogr_spatial_ref_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
@@ -257,32 +259,32 @@ module OGR
     #
     # @return [OGR::SpatialReference]
     def clone_geogcs
-      new_spatial_ref_ptr = OSRCloneGeogCS(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::GDAL.OSRCloneGeogCS(@ogr_spatial_ref_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
 
     def validate
-      ogr_err = OSRValidate(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::GDAL.OSRValidate(@ogr_spatial_ref_pointer)
     end
 
     def fixup_ordering!
-      ogr_err = OSRFixupOrdering(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::GDAL.OSRFixupOrdering(@ogr_spatial_ref_pointer)
     end
 
     def fixup!
-      ogr_err = OSRFixup(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::GDAL.OSRFixup(@ogr_spatial_ref_pointer)
     end
 
     def strip_ct_parameters!
-      ogr_err = OSRStripCTParms(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::GDAL.OSRStripCTParms(@ogr_spatial_ref_pointer)
     end
 
     # @param name [String] The case-insensitive tree node to look for.
     # @param child [Fixnum] The child of the node to fetch.
     # @return [String, nil]
     def attribute_value(name, child=0)
-      OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
+      FFI::GDAL.OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
     end
 
     # @return [Hash{unit_name: String, value: Float}]
@@ -291,7 +293,7 @@ module OGR
       name_ptr = FFI::MemoryPointer.new(:pointer)
       name_ptr.write_pointer(name)
 
-      value = OSRGetAngularUnits(@ogr_spatial_ref_pointer, name_ptr)
+      value = FFI::GDAL.OSRGetAngularUnits(@ogr_spatial_ref_pointer, name_ptr)
 
       { unit_name: name_ptr.read_pointer.read_string, value: value }
     end
@@ -302,7 +304,7 @@ module OGR
       name_ptr = FFI::MemoryPointer.new(:pointer)
       name_ptr.write_pointer(name)
 
-      value = OSRGetLinearUnits(@ogr_spatial_ref_pointer, name_ptr)
+      value = FFI::GDAL.OSRGetLinearUnits(@ogr_spatial_ref_pointer, name_ptr)
 
       { unit_name: name_ptr.read_pointer.read_string, value: value }
     end
@@ -314,7 +316,7 @@ module OGR
       name_ptr = FFI::MemoryPointer.new(:pointer)
       name_ptr.write_pointer(name)
 
-      value = OSRGetTargetLinearUnits(@ogr_spatial_ref_pointer, target_key, name_ptr)
+      value = FFI::GDAL.OSRGetTargetLinearUnits(@ogr_spatial_ref_pointer, target_key, name_ptr)
 
       { unit_name: name_ptr.read_pointer.read_string, value: value }
     end
@@ -355,7 +357,7 @@ module OGR
     # @return [Array<Float>]
     def towgs84
       coefficients = FFI::MemoryPointer.new(:double, 7)
-      ogr_err = OSRGetTOWGS84(@ogr_spatial_ref_pointer, coefficients, 7)
+      ogr_err = FFI::GDAL.OSRGetTOWGS84(@ogr_spatial_ref_pointer, coefficients, 7)
 
       coefficients.read_array_of_double(0)
     end
@@ -365,7 +367,7 @@ module OGR
     #   search at the root element.
     # @return [String, nil]
     def authority_code(target_key=nil)
-      OSRGetAuthorityCode(@ogr_spatial_ref_pointer, target_key)
+      FFI::GDAL.OSRGetAuthorityCode(@ogr_spatial_ref_pointer, target_key)
     end
 
     # @param target_key [String] The partial or complete path to the node to get
@@ -373,7 +375,7 @@ module OGR
     #   search at the root element.
     # @return [String, nil]
     def authority_name(target_key=nil)
-      OSRGetAuthorityName(@ogr_spatial_ref_pointer, target_key)
+      FFI::GDAL.OSRGetAuthorityName(@ogr_spatial_ref_pointer, target_key)
     end
 
     # @param axis_number [Fixnum] The Axis to query (0 or 1.)
@@ -382,7 +384,7 @@ module OGR
     def axis(axis_number, target_key=nil)
       axis_orientation_ptr = FFI::MemoryPointer.new(:int)
 
-      name = OSRGetAxis(@ogr_spatial_ref_pointer, target_key, axis_number, axis_orientation_ptr)
+      name = FFI::GDAL.OSRGetAxis(@ogr_spatial_ref_pointer, target_key, axis_number, axis_orientation_ptr)
       ao_value = axis_orientation_ptr.read_int
 
       { name: name, orientation: OGRAxisOrientation[ao_value] }
@@ -391,7 +393,7 @@ module OGR
     # @return [Float]
     def spheroid_inverse_flattening
       err_ptr = FFI::MemoryPointer.new(:int)
-      value = OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
+      value = FFI::GDAL.OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
@@ -404,7 +406,7 @@ module OGR
     # @return [Float]
     def semi_major
       err_ptr = FFI::MemoryPointer.new(:int)
-      value = OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
+      value = FFI::GDAL.OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
@@ -425,13 +427,13 @@ module OGR
       north_ptr = FFI::MemoryPointer.new(:bool)
       north_ptr.write_bytes(north.to_s)
 
-      OSRGetUTMZone(@ogr_spatial_ref_pointer, north_ptr)
+      FFI::GDAL.OSRGetUTMZone(@ogr_spatial_ref_pointer, north_ptr)
     end
 
     # @return [Float]
     def semi_minor
       err_ptr = FFI::MemoryPointer.new(:int)
-      value = OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
+      value = FFI::GDAL.OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
@@ -511,8 +513,8 @@ module OGR
       prj_params_ptr = FFI::MemoryPointer.new(:pointer)
       prj_params_ptr.write_pointer(prj_params)
 
-      ogr_err = OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr, units_ptr,
-        prj_params_ptr)
+      ogr_err = FFI::GDAL.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
+        units_ptr, prj_params_ptr)
 
       binding.pry
       {
@@ -528,7 +530,7 @@ module OGR
       proj4_ptr = FFI::MemoryPointer.new(:pointer)
       proj4_ptr.write_pointer(proj4)
 
-      ogr_err = OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
+      ogr_err = FFI::GDAL.OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
 
       proj4_ptr.read_pointer.read_string
     end
@@ -559,7 +561,7 @@ module OGR
       wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-      ogr_err = OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
+      ogr_err = FFI::GDAL.OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
 
       wkt_ptr_ptr.read_pointer.read_string
     end
@@ -571,7 +573,8 @@ module OGR
       wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-      ogr_err = OSRExportToPrettyWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr, simplify)
+      ogr_err = FFI::GDAL.OSRExportToPrettyWkt(@ogr_spatial_ref_pointer,
+        wkt_ptr_ptr, simplify)
 
       wkt_ptr_ptr.read_pointer.read_string
     end
@@ -604,38 +607,39 @@ module OGR
 
     # @return [Boolean]
     def geographic?
-      OSRIsGeographic(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsGeographic(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean]
     def local?
-      OSRIsLocal(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsLocal(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean]
     def projected?
-      OSRIsProjected(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsProjected(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean]
     def compound?
-      OSRIsCompound(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsCompound(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean]
     def geocentric?
-      OSRIsGeocentric(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsGeocentric(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean]
     def vertical?
-      OSRIsVertical(@ogr_spatial_ref_pointer)
+      FFI::GDAL.OSRIsVertical(@ogr_spatial_ref_pointer)
     end
 
     # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     # @return [Boolean]
     def same?(other_spatial_ref)
       spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
+
       FFI::GDAL.OSRIsSame(@ogr_spatial_ref_pointer, spatial_ref_ptr)
     end
     alias_method :==, :same?
@@ -644,6 +648,7 @@ module OGR
     # @return [Boolean]
     def geoccs_is_same?(other_spatial_ref)
       spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
+
       FFI::GDAL.OSRIsSameGeogCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
     end
 
@@ -651,6 +656,7 @@ module OGR
     # @return [Boolean]
     def vertcs_is_same?(other_spatial_ref)
       spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
+
       FFI::GDAL.OSRIsSameVertCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
     end
 
@@ -658,7 +664,7 @@ module OGR
     def create_coordinate_transfomration(destination_spatial_ref)
       dest_ptr = GDAL._pointer(OGR::SpatialReference, destination_spatial_ref)
 
-      OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)
+      FFI::GDAL.OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)
     end
   end
 end
