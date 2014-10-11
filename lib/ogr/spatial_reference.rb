@@ -116,7 +116,7 @@ module OGR
         prj_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         prj_ptr_ptr.write_pointer(prj_ptr)
 
-        FFI::GDAL.OSRImportFromESRI(spatial_ref.c_pointer, prt_ptr)
+        FFI::GDAL.OSRImportFromESRI(spatial_ref.c_pointer, prj_ptr_ptr)
       end
     end
 

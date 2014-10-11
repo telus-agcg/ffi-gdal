@@ -91,9 +91,10 @@ module GDAL
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
+      return @driver if @driver
       driver_ptr = FFI::GDAL.GDALGetDatasetDriver(@dataset_pointer)
 
-      Driver.new(driver_ptr)
+      @driver = Driver.new(driver_ptr)
     end
 
     # Fetches all files that form the dataset.
@@ -181,10 +182,11 @@ module GDAL
     #
     # @return [OGR::SpatialReference]
     def spatial_reference
-      p = projection
-      return nil if p.empty?
+      return @spatial_reference if @spatial_reference
 
-      OGR::SpatialReference.new(projection)
+      return nil if projection.empty?
+
+      @spatial_reference = OGR::SpatialReference.new(projection)
     end
 
     # @return [GDAL::GeoTransform]

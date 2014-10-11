@@ -96,18 +96,22 @@ module OGR
 
     # @return [OGR::FeatureDefinition,nil]
     def definition
+      return @definition if @definition
+
       feature_defn_ptr = FFI::GDAL.OGR_F_GetDefRef(@feature_pointer)
       return nil if feature_defn_ptr.null?
 
-      OGR::FeatureDefinition.new(feature_defn_ptr)
+      @definition = OGR::FeatureDefinition.new(feature_defn_ptr)
     end
 
     # @return [OGR::Geometry]
     def geometry
+      return @geometry if @geometry
+
       geometry_ptr = FFI::GDAL.OGR_F_GetGeometryRef(@feature_pointer)
       return nil if geometry_ptr.null?
 
-      OGR::Geometry.new(geometry_ptr)
+      @geometry = OGR::Geometry.new(geometry_ptr)
     end
 
     # @return [Fixnum]
@@ -123,6 +127,7 @@ module OGR
     # @param new_geometry [OGR::Geometry]
     def geometry=(new_geometry)
       ogr_err = FFI::GDAL.OGR_F_SetGeometry(@feature_pointer, new_geometry.c_pointer)
+      @geometry = new_geometry
     end
 
     # @return [Fixnum]

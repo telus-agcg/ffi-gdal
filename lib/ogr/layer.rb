@@ -28,14 +28,17 @@ module OGR
       FFI::GDAL.OGR_L_GetGeomType(@ogr_layer_pointer)
     end
 
-    # TODO: per the gdal docs: "The returned pointer is to an internally owned object, and should not be altered or deleted by the caller."
+    # TODO: per the gdal docs: "The returned pointer is to an internally owned
+    # object, and should not be altered or deleted by the caller."
     #
     # @return [OGR::Geometry]
     def spatial_filter
+      return @spatial_filter if @spatial_filter
+
       filter_pointer = FFI::GDAL.OGR_L_GetSpatialFilter(@ogr_layer_pointer)
       return nil if filter_pointer.null?
 
-      OGR::Geometry.new(filter_pointer)
+      @spatial_filter = OGR::Geometry.new(filter_pointer)
     end
 
     # The number of features in this layer.  If +force+ is false and it would be
@@ -150,18 +153,22 @@ module OGR
     #
     # @return [OGR::FeatureDefinition,nil]
     def definition
+      return @definition if @definition
+
       feature_defn_pointer = FFI::GDAL.OGR_L_GetLayerDefn(@ogr_layer_pointer)
       return nil if feature_defn_pointer.null?
 
-      OGR::FeatureDefinition.new(feature_defn_pointer)
+      @definition = OGR::FeatureDefinition.new(feature_defn_pointer)
     end
 
     # @return [OGR::SpatialReference]
     def spatial_reference
+      return @spatial_reference if @spatial_reference
+
       spatial_ref_pointer = FFI::GDAL.OGR_L_GetSpatialRef(@ogr_layer_pointer)
       return nil if spatial_ref_pointer.null?
 
-      OGR::SpatialReference.new(spatial_ref_pointer)
+      @spatial_reference = OGR::SpatialReference.new(spatial_ref_pointer)
     end
 
     # @return [OGR::Envelope]
@@ -212,10 +219,12 @@ module OGR
 
     # @return [OGR::StyleTable, nil]
     def style_table
+      return @style_table if @style_table
+
       style_table_pointer = FFI::GDAL.OGR_L_GetStyleTable(@ogr_layer_pointer)
       return nil if style_table_pointer.null?
 
-      OGR::StyleTable.new(style_table_pointer)
+      @style_table = OGR::StyleTable.new(style_table_pointer)
     end
   end
 end

@@ -103,7 +103,7 @@ module OGR
 
       layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
         spatial_ref_ptr, type, options_obj)
-        
+
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)
@@ -149,10 +149,12 @@ module OGR
 
     # @return [OGR::StyleTable, nil]
     def style_table
+      return @style_table if @style_table
+
       style_table_ptr = FFI::GDAL.OGR_DS_GetStyleTable(@data_source_pointer)
       return nil if style_table_ptr.null?
 
-      OGR::StyleTable.new(style_table_ptr)
+      @style_table = OGR::StyleTable.new(style_table_ptr)
     end
   end
 end

@@ -27,6 +27,7 @@ module GDAL
     # @param color_table
     def initialize(color_table)
       @color_table_pointer = GDAL._pointer(color_table)
+      @color_entries = []
 
       case palette_interpretation
       when :GPI_Gray then extend GDAL::ColorTableTypes::Gray
@@ -73,9 +74,12 @@ module GDAL
     # @param index [Fixnum]
     # @return [GDAL::ColorEntry]
     def color_entry(index)
-      color_entry = FFI::GDAL.GDALGetColorEntry(@color_table_pointer, index)
+      return @color_entries[index] if @color_entries.at(index)
 
-      GDAL::ColorEntry.new(color_entry)
+      color_entry = FFI::GDAL.GDALGetColorEntry(@color_table_pointer, index)
+      c = GDAL::ColorEntry.new(color_entry)
+
+      @color_entries.insert(index, c)
     end
 
     # @param index [Fixnum]
@@ -92,7 +96,7 @@ module GDAL
     # 65535).  Values must also be relevant to the PaletteInterp type you're
     # working with.
     #
-    # @param index [Fixnum] The inex of the color table's color entry to set.
+    # @param index [Fixnum] The index of the color table's color entry to set.
     #   Must be between 0 and color_entry_count - 1.
     # @param one [Fixnum] The `c1` value of the GDAL::ColorEntry struct
     #   to set.
@@ -104,10 +108,6 @@ module GDAL
     #   struct to set.
     # @return [GDAL::ColorEntry]
     def add_color_entry(index, one: nil, two: nil, three: nil, four: nil)
-      # unless (0..color_entry_count).include? index
-      #   raise "Invalid color entry index.  Choose betwen 0 - #{color_entry_count}."
-      # end
-
       entry = FFI::GDAL.GDALColorEntry.new
       entry[:c1] = one if one
       entry[:c2] = two if two
@@ -115,8 +115,10 @@ module GDAL
       entry[:c4] = four if four
 
       FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry)
+      c = GDAL::ColorEntry.new(entry)
+      @color_entries.insert(index, c)
 
-      GDAL::ColorEntry.new(entry)
+      c
     end
 
     def all_entries_for(color_entry_c)

@@ -64,10 +64,12 @@ module GDAL
 
     # @return [GDAL::Dataset, nil]
     def dataset
+      return @dataset if @dataset
+
       dataset_ptr = FFI::GDAL.GDALGetBandDataset(@raster_band_pointer)
       return nil if dataset_ptr.null?
 
-      GDAL::Dataset.new(dataset_ptr)
+      @dataset = GDAL::Dataset.new(dataset_ptr)
     end
 
     # @return [Symbol] One of FFI::GDAL::GDALColorInterp.
@@ -86,13 +88,14 @@ module GDAL
       gdal_color_table = FFI::GDAL.GDALGetRasterColorTable(@raster_band_pointer)
       return nil if gdal_color_table.null?
 
-      @color_table ||= ColorTable.new(gdal_color_table)
+      @color_table = ColorTable.new(gdal_color_table)
     end
 
     # @param new_color_table [GDAL::ColorTable]
     def color_table=(new_color_table)
       color_table_pointer = GDAL._pointer(GDAL::ColorTable, new_color_table)
       cpl_err = FFI::GDAL.GDALSetRasterColorTable(@raster_band_pointer, color_table_pointer)
+      @color_table = ColorTable.new(color_table_pointer)
 
       cpl_err.to_bool
     end
@@ -380,16 +383,20 @@ module GDAL
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table
+      return @default_raster_attribute_table if @default_raster_attribute_table
+
       rat_pointer = FFI::GDAL.GDALGetDefaultRAT(@raster_band_pointer)
       return nil if rat_pointer.null?
 
-      GDAL::RasterAttributeTable.new(c_pointer, rat_pointer)
+      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(c_pointer, rat_pointer)
     end
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
       rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
       cpl_err = FFI::GDAL.GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
+      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(c_pointer,
+        rat_table_pointer)
 
       cpl_err.to_bool
     end
