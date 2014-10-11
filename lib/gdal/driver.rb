@@ -6,7 +6,6 @@ require 'log_switch'
 
 module GDAL
   class Driver
-    include FFI::GDAL
     include MajorObject
     include GDAL::Logger
 
@@ -146,17 +145,17 @@ module GDAL
 
     # @return [String]
     def short_name
-      GDALGetDriverShortName(@driver_pointer)
+      FFI::GDAL.GDALGetDriverShortName(@driver_pointer)
     end
 
     # @return [String]
     def long_name
-      GDALGetDriverLongName(@driver_pointer)
+      FFI::GDAL.GDALGetDriverLongName(@driver_pointer)
     end
 
     # @return [String]
     def help_topic
-      "#{GDAL_DOCS_URL}/#{GDALGetDriverHelpTopic(@driver_pointer)}"
+      "#{GDAL_DOCS_URL}/#{FFI::GDAL.GDALGetDriverHelpTopic(@driver_pointer)}"
     end
 
     # Lists and describes the options that can be used when calling
@@ -166,7 +165,7 @@ module GDAL
     def creation_option_list
       return [] unless @driver_pointer
 
-      creation_option_list_xml = GDALGetDriverCreationOptionList(@driver_pointer)
+      creation_option_list_xml = FFI::GDAL.GDALGetDriverCreationOptionList(@driver_pointer)
       root = MultiXml.parse(creation_option_list_xml)
       return [] if root.nil? || root.empty?
 
@@ -185,7 +184,7 @@ module GDAL
         GDAL::Options.pointer(options)
       end
 
-      GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
+      FFI::GDAL.GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
     end
 
     # Copy all of the associated files of a dataset from one file to another.
@@ -195,7 +194,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def copy_dataset_files(new_name, old_name)
-      cpl_err = GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
+      cpl_err = FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
 
       cpl_err.to_bool
     end
@@ -215,10 +214,10 @@ module GDAL
       options_pointer = FFI::MemoryPointer.new(:pointer, 2)
 
       options.each_with_index.map do |(k, v), i|
-        options_pointer = CSLSetNameValue(options_pointer, k.to_s.upcase, v)
+        options_pointer = FFI::GDAL.CSLSetNameValue(options_pointer, k.to_s.upcase, v)
       end
 
-      dataset_pointer = GDALCreate(@driver_pointer,
+      dataset_pointer = FFI::GDAL.GDALCreate(@driver_pointer,
         filename,
         x_size,
         y_size,
@@ -256,7 +255,7 @@ module GDAL
 
       raise "Source dataset couldn't be read" if source_dataset_ptr.null?
 
-      destination_dataset_ptr = GDALCreateCopy(@driver_pointer,
+      destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@driver_pointer,
         filename,
         source_dataset_ptr,
         strict,
@@ -281,7 +280,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      cpl_err = GDALDeleteDataset(@driver_pointer, file_name)
+      cpl_err = FFI::GDAL.GDALDeleteDataset(@driver_pointer, file_name)
 
       cpl_err.to_bool
     end
@@ -291,7 +290,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      cpl_err = GDALRenameDataset(@driver_pointer, new_name, old_name)
+      cpl_err = FFI::GDAL.GDALRenameDataset(@driver_pointer, new_name, old_name)
 
 
       cpl_err.to_bool
