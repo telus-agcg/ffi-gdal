@@ -1,3 +1,4 @@
+require 'tiff'
 require 'bundler/setup'
 require 'pry'
 require 'ffi-gdal'
@@ -83,6 +84,41 @@ def polygonize_a_raster(source_geometry, pixel_width, *raster_bands)
   vector_data_source
 end
 
+def extract_ndvi(dataset, destination_path, wkt_geometry)
+  wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
+  geometry = OGR::Geometry.create_from_wkt(wkt_geometry,
+    wkt_spatial_ref)
+  geometry.transform_to!(dataset.spatial_reference)
 
-#dataset_contains_geometry?(floyd, floyd_wkt, floyd_srid)
-binding.pry
+  # band_order = %i[nir red green blue]
+  nir_band = dataset.raster_band(1)
+  red_band = dataset.raster_band(2)
+  nir_array = nir_band.to_na
+  red_array = red_band.to_na
+
+  pixel_extent = geometry.envelope.world_to_pixel(dataset.geo_transform)
+
+  blah = GDAL::Driver.by_name('MEM')
+  tmp_dataset = blah.create_dataset('blah', pixel_extent[:pixel_count], pixel_extent[:line_count])
+  geo = GDAL::GeoTransform.new
+  geo.x_origin = pixel_extent[:x_origin]
+  geo.pixel_width = pixel_extent[:pixel_width]
+  geo.x_rotation = 0
+
+  geo.y_origin = pixel_extent[:y_origin]
+  geo.pixel_height = pixel_extent[:pixel_height]
+  geo.y_rotation = 0
+  tmp_dataset.geo_transform = geo
+
+  band = tmp_dataset.raster_band(1)
+  band.no_data_value = -9999
+
+  tmp_dataset.rasterize_geometries!(1, geometry, 1)
+
+  # problem: there aren't any points in my geometry!
+  binding.pry
+end
+
+
+extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
+#binding.pry
