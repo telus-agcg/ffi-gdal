@@ -2,8 +2,7 @@ require_relative 'envelope'
 
 module OGR
   class Geometry
-    include FFI::GDAL
-    #include GDAL::Logger
+    include GDAL::Logger
 
     # @param type [FFI::GDAL::OGRwkbGeometryType]
     # @return [OGR::Geometry]
@@ -23,7 +22,11 @@ module OGR
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-      spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_reference)
+      spatial_ref_pointer = if spatial_reference
+        GDAL._pointer(OGR::SpatialReference, spatial_reference)
+      else
+        FFI::MemoryPointer.new(:pointer)
+      end
 
       geometry_ptr = FFI::MemoryPointer.new(:pointer)
       geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -62,7 +65,7 @@ module OGR
     def initialize(geometry)
       @ogr_geometry_pointer = GDAL._pointer(OGR::Geometry, geometry)
 
-      close_me = -> { OGR_G_DestroyGeometry(@ogr_geometry_pointer) }
+      close_me = -> { destroy! }
       ObjectSpace.define_finalizer self, close_me
     end
 
@@ -74,9 +77,13 @@ module OGR
     #
     # @return [OGR::Geometry]
     def clone
-      new_geometry_ptr = OGR_G_Clone(@ogr_geometry_pointer)
+      new_geometry_ptr = FFI::GDAL.OGR_G_Clone(@ogr_geometry_pointer)
 
       self.class.new(new_geometry_ptr)
+    end
+
+    def destroy!
+      FFI::GDAL.OGR_G_DestroyGeometry(@ogr_geometry_pointer)
     end
 
     # If this geometry is a container, this fetches the geometry at the
@@ -86,7 +93,7 @@ module OGR
     # @return [OGR::Geometry]
     def geometry_at(sub_geometry_index)
       build_geometry do
-        OGR_G_GetGeometryRef(@ogr_geometry_pointer, sub_geometry_index)
+        FFI::GDAL.OGR_G_GetGeometryRef(@ogr_geometry_pointer, sub_geometry_index)
       end
     end
 
@@ -97,35 +104,35 @@ module OGR
     #
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
     def add(sub_geometry)
-      ogr_err = OGR_G_AddGeometry(@ogr_geometry_pointer, geometry_pointer_from(sub_geometry))
+      ogr_err = FFI::GDAL.OGR_G_AddGeometry(@ogr_geometry_pointer, geometry_pointer_from(sub_geometry))
     end
 
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
     def add_directly(sub_geometry)
-      ogr_err = OGR_G_AddGeometryDirectly(@ogr_geometry_pointer, geometry_pointer_from(sub_geometry))
+      ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@ogr_geometry_pointer, geometry_pointer_from(sub_geometry))
     end
 
     # @param geometry_index [Fixnum]
     # @param delete [Boolean]
     def remove(geometry_index, delete=true)
-      ogr_err = OGR_G_RemoveGeometry(@ogr_geometry_pointer, geometry_index, delete)
+      ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@ogr_geometry_pointer, geometry_index, delete)
     end
 
     # Clears all information from the geometry.
     def empty!
-      OGR_G_Empty(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_Empty(@ogr_geometry_pointer)
     end
 
     # @return [Fixnum] 0 for points, 1 for lines, 2 for surfaces.
     def dimension
-      OGR_G_GetDimension(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetDimension(@ogr_geometry_pointer)
     end
 
     # The dimension of coordinates in this geometry (i.e. 2d vs 3d).
     #
     # @return [Fixnum] 2 or 3, but 0 in the case of an empty point.
     def coordinate_dimension
-      OGR_G_GetCoordinateDimension(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetCoordinateDimension(@ogr_geometry_pointer)
     end
 
     # @param new_coordinate_dimension [Fixnum]
@@ -134,7 +141,7 @@ module OGR
         raise "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
       end
 
-      OGR_G_SetCoordinateDimension(@ogr_geometry_pointer, new_coordinate_dimension)
+      FFI::GDAL.OGR_G_SetCoordinateDimension(@ogr_geometry_pointer, new_coordinate_dimension)
     end
 
     # @return [OGR::Envelope]
@@ -144,10 +151,10 @@ module OGR
       case coordinate_dimension
       when 2
         envelope = FFI::GDAL::OGREnvelope.new
-        OGR_G_GetEnvelope(@ogr_geometry_pointer, envelope)
+        FFI::GDAL.OGR_G_GetEnvelope(@ogr_geometry_pointer, envelope)
       when 3
         envelope = FFI::GDAL::OGREnvelope3D.new
-        OGR_G_GetEnvelope3D(@ogr_geometry_pointer, envelope)
+        FFI::GDAL.OGR_G_GetEnvelope3D(@ogr_geometry_pointer, envelope)
       else
         raise 'Unknown envelope dimension.'
       end
@@ -159,7 +166,7 @@ module OGR
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
     def type
-      OGR_G_GetGeometryType(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetGeometryType(@ogr_geometry_pointer)
     end
 
     # @return [String]
@@ -169,37 +176,37 @@ module OGR
 
     # @return [String]
     def name
-      OGR_G_GetGeometryName(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetGeometryName(@ogr_geometry_pointer)
     end
 
     # @return [Fixnum]
     def count
-      OGR_G_GetGeometryCount(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetGeometryCount(@ogr_geometry_pointer)
     end
 
     # @return [Fixnum]
     def point_count
-      OGR_G_GetPointCount(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_GetPointCount(@ogr_geometry_pointer)
     end
 
     # @param new_count [Fixnum]
     def point_count=(new_count)
-      OGR_G_SetPointCount(@ogr_geometry_pointer, new_count)
+      FFI::GDAL.OGR_G_SetPointCount(@ogr_geometry_pointer, new_count)
     end
 
     # @return [Float]
     def x(point_number)
-      OGR_G_GetX(@ogr_geometry_pointer, point_number)
+      FFI::GDAL.OGR_G_GetX(@ogr_geometry_pointer, point_number)
     end
 
     # @return [Float]
     def y(point_number)
-      OGR_G_GetY(@ogr_geometry_pointer, point_number)
+      FFI::GDAL.OGR_G_GetY(@ogr_geometry_pointer, point_number)
     end
 
     # @return [Float]
     def z(point_number)
-      OGR_G_GetZ(@ogr_geometry_pointer, point_number)
+      FFI::GDAL.OGR_G_GetZ(@ogr_geometry_pointer, point_number)
     end
 
     # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
@@ -208,7 +215,7 @@ module OGR
       y_ptr = FFI::MemoryPointer.new(:double)
       z_ptr = FFI::MemoryPointer.new(:double)
 
-      OGR_G_GetPoint(@ogr_geometry_pointer, number, x_ptr, y_ptr, z_ptr)
+      FFI::GDAL.OGR_G_GetPoint(@ogr_geometry_pointer, number, x_ptr, y_ptr, z_ptr)
 
       if coordinate_dimension == 2
         [x_ptr.read_double, y_ptr.read_double]
@@ -218,7 +225,7 @@ module OGR
     end
 
     def set_point(index, x, y, z=0)
-      OGR_G_SetPoint(@ogr_geometry_pointer, index, x, y, z)
+      FFI::GDAL.OGR_G_SetPoint(@ogr_geometry_pointer, index, x, y, z)
     end
 
     # Adds a point to a LineString or Point geometry.
@@ -227,7 +234,7 @@ module OGR
     # @param y [Float]
     # @param z [Float]
     def add_point(x, y, z=0)
-      OGR_G_AddPoint(@ogr_geometry_pointer, x, y, z)
+      FFI::GDAL.OGR_G_AddPoint(@ogr_geometry_pointer, x, y, z)
     end
 
     def points_array
@@ -247,7 +254,7 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Float] 0.0 for unsupported geometry types.
     def length
-      OGR_G_Length(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_Length(@ogr_geometry_pointer)
     end
 
     # Computes area for a LinearRing, Polygon, or MultiPolygon.
@@ -255,13 +262,13 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Float] 0.0 for unsupported geometry types.
     def area
-      OGR_G_Area(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_Area(@ogr_geometry_pointer)
     end
 
     # @param point_geometry [OGR::Geometry, FFI::Pointer]
     # @return [Fixnum]
     def centroid(point_geometry)
-      OGR_G_Centroid(@ogr_geometry_pointer, geometry_pointer_from(point_geometry))
+      FFI::GDAL.OGR_G_Centroid(@ogr_geometry_pointer, geometry_pointer_from(point_geometry))
     end
 
     # Dump as WKT to the give +file+.
@@ -270,94 +277,94 @@ module OGR
     # @param prefix [String] The prefix to put on each line of output.
     # @return [String]
     def dump_readable(file, prefix=nil)
-      OGR_G_DumpReadable(@ogr_geometry_pointer, file, prefix)
+      FFI::GDAL.OGR_G_DumpReadable(@ogr_geometry_pointer, file, prefix)
     end
 
     # Converts this geometry to a 2D geometry.
     def flatten_to_2d!
-      OGR_G_FlattenTo2D(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_FlattenTo2D(@ogr_geometry_pointer)
     end
 
     # If this or any contained geometries has polygon rings that aren't closed,
     # this closes them by adding the starting point at the end.
     def close_rings!
-      OGR_G_CloseRings(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_CloseRings(@ogr_geometry_pointer)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def intersects?(geometry)
-      OGR_G_Intersects(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Intersects(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def equals?(geometry)
-      OGR_G_Equals(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Equals(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
     alias_method :==, :equals?
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def disjoint?(geometry)
-      OGR_G_Disjoint(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Disjoint(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def touches?(geometry)
-      OGR_G_Touches(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Touches(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def crosses?(geometry)
-      OGR_G_Crosses(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Crosses(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def within?(geometry)
-      OGR_G_Within(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Within(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def contains?(geometry)
-      OGR_G_Contains(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Contains(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def overlaps?(geometry)
-      OGR_G_Overlaps(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Overlaps(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # @return [Boolean]
     def empty?
-      OGR_G_IsEmpty(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_IsEmpty(@ogr_geometry_pointer)
     end
 
     # @return [Boolean]
     def valid?
-      OGR_G_IsValid(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_IsValid(@ogr_geometry_pointer)
     end
 
     # @return [Boolean]
     def simple?
-      OGR_G_IsSimple(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_IsSimple(@ogr_geometry_pointer)
     end
 
     # @return [Boolean]
     def ring?
-      OGR_G_IsRing(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_IsRing(@ogr_geometry_pointer)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def intersection(geometry)
       build_geometry do
-        OGR_G_Intersection(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+        FFI::GDAL.OGR_G_Intersection(@ogr_geometry_pointer, geometry_pointer_from(geometry))
       end
     end
 
@@ -365,14 +372,14 @@ module OGR
     # @return [OGR::Geometry]
     def union(geometry)
       build_geometry do
-        OGR_G_Union(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+        FFI::GDAL.OGR_G_Union(@ogr_geometry_pointer, geometry_pointer_from(geometry))
       end
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def union_cascadded
-      build_geometry { OGR_G_UnionCascaded(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_UnionCascaded(@ogr_geometry_pointer) }
     end
 
     # Creates a polygon from a set of sparse edges.  The newly created geometry
@@ -382,14 +389,14 @@ module OGR
     #   MultiLineString or if it's impossible to reassemble due to topological
     #   inconsistencies.
     def polygonize
-      build_geometry { OGR_G_Polygonize(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_Polygonize(@ogr_geometry_pointer) }
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def difference(geometry)
       build_geometry do
-        OGR_G_Difference(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+        FFI::GDAL.OGR_G_Difference(@ogr_geometry_pointer, geometry_pointer_from(geometry))
       end
     end
     alias_method :-, :difference
@@ -398,7 +405,7 @@ module OGR
     # @return [OGR::Geometry]
     def symmetric_difference(geometry)
       build_geometry do
-        OGR_G_SymDifference(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+        FFI::GDAL.OGR_G_SymDifference(@ogr_geometry_pointer, geometry_pointer_from(geometry))
       end
     end
 
@@ -407,19 +414,19 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Float] -1 if an error occurs.
     def distance(geometry)
-      OGR_G_Distance(@ogr_geometry_pointer, geometry_pointer_from(geometry))
+      FFI::GDAL.OGR_G_Distance(@ogr_geometry_pointer, geometry_pointer_from(geometry))
     end
 
     # Returns a point that's guaranteed to lie on the surface.
     #
     # @return [OGR::Geometry]
     def point_on_surface
-      build_geometry { OGR_G_PointOnSurface(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_PointOnSurface(@ogr_geometry_pointer) }
     end
 
     # @return [OGR::SpatialReference]
     def spatial_reference
-      spatial_ref_ptr = OGR_G_GetSpatialReference(@ogr_geometry_pointer)
+      spatial_ref_ptr = FFI::GDAL.OGR_G_GetSpatialReference(@ogr_geometry_pointer)
       return nil if spatial_ref_ptr.null?
 
       OGR::SpatialReference.new(spatial_ref_ptr)
@@ -432,7 +439,7 @@ module OGR
     def spatial_reference=(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
 
-      OGR_G_AssignSpatialReference(@ogr_geometry_pointer, new_spatial_ref_ptr)
+      FFI::GDAL.OGR_G_AssignSpatialReference(@ogr_geometry_pointer, new_spatial_ref_ptr)
     end
 
     # Transforms the coordinates of this geometry in its current spatial
@@ -452,7 +459,7 @@ module OGR
 
       return if coord_trans_ptr.nil? or coord_trans_ptr.null?
 
-      ogr_err = OGR_G_Transform(@ogr_geometry_pointer, coord_trans_ptr)
+      ogr_err = FFI::GDAL.OGR_G_Transform(@ogr_geometry_pointer, coord_trans_ptr)
     end
 
     # Similar to +#transform+, but this only works if the geometry already has an
@@ -465,7 +472,7 @@ module OGR
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
       return nil if new_spatial_ref_ptr.null?
 
-      ogr_err = OGR_G_TransformTo(@ogr_geometry_pointer, new_spatial_ref_ptr)
+      ogr_err = FFI::GDAL.OGR_G_TransformTo(@ogr_geometry_pointer, new_spatial_ref_ptr)
     end
 
     # Computes and returns a new, simplified geometry.
@@ -477,7 +484,7 @@ module OGR
     # @return [OGR::Geometry]
     def simplify(distance_tolerance)
       build_geometry do
-        OGR_G_Simplify(@ogr_geometry_pointer, distance_tolerance)
+        FFI::GDAL.OGR_G_Simplify(@ogr_geometry_pointer, distance_tolerance)
       end
     end
 
@@ -487,7 +494,7 @@ module OGR
     # @return [OGR::Geometry]
     def simplify_preserve_topology(distance_tolerance)
       build_geometry do
-        OGR_G_SimplifyPreserveTopology(@ogr_geometry_pointer, distance_tolerance)
+        FFI::GDAL.OGR_G_SimplifyPreserveTopology(@ogr_geometry_pointer, distance_tolerance)
       end
     end
 
@@ -495,12 +502,12 @@ module OGR
     #
     # @param max_length [Float]
     def segmentize!(max_length)
-      OGR_G_Segmentize(@ogr_geometry_pointer, max_length)
+      FFI::GDAL.OGR_G_Segmentize(@ogr_geometry_pointer, max_length)
     end
 
     # @return [OGR::Geometry]
     def boundary
-      build_geometry { OGR_G_Boundary(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_Boundary(@ogr_geometry_pointer) }
     end
 
     # @param distance [Float] The buffer distance to be applied.
@@ -509,32 +516,32 @@ module OGR
     # @return [OGR::Geometry]
     def buffer(distance, quad_segments)
       build_geometry do
-        OGR_G_Buffer(@ogr_geometry_pointer, distance, quad_segments)
+        FFI::GDAL.OGR_G_Buffer(@ogr_geometry_pointer, distance, quad_segments)
       end
     end
 
     # @return [OGR::Geometry]
     def convex_hull
-      build_geometry { OGR_G_ConvexHull(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ConvexHull(@ogr_geometry_pointer) }
     end
 
     # TODO: should this be a class method?
     # @param wkb_data [String] Binary WKB data.
     def from_wkb(wkb_data)
-      ogr_err = OGR_G_ImportFromWkb(@ogr_geometry_pointer, wkb_data, wkb_data.length)
+      ogr_err = FFI::GDAL.OGR_G_ImportFromWkb(@ogr_geometry_pointer, wkb_data, wkb_data.length)
     end
 
     # The exact number of bytes required to hold the WKB of this object.
     #
     # @return [Fixnum]
     def wkb_size
-      OGR_G_WkbSize(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_WkbSize(@ogr_geometry_pointer)
     end
 
     # @return [String]
     def to_wkb(byte_order=:wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
-      ogr_err = OGR_G_ExportToWkb(@ogr_geometry_pointer, byte_order, output)
+      ogr_err = FFI::GDAL.OGR_G_ExportToWkb(@ogr_geometry_pointer, byte_order, output)
 
       output.read_bytes(wkb_size)
     end
@@ -546,13 +553,13 @@ module OGR
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-      ogr_err = OGR_G_ImportFromWkt(@ogr_geometry_pointer, wkt_pointer_pointer)
+      ogr_err = FFI::GDAL.OGR_G_ImportFromWkt(@ogr_geometry_pointer, wkt_pointer_pointer)
     end
 
     # @return [String]
     def to_wkt
       output = FFI::MemoryPointer.new(:string)
-      ogr_err = OGR_G_ExportToWkt(@ogr_geometry_pointer, output)
+      ogr_err = FFI::GDAL.OGR_G_ExportToWkt(@ogr_geometry_pointer, output)
 
       output.read_pointer.read_string
     end
@@ -561,19 +568,19 @@ module OGR
     #
     # @return [String]
     def to_gml
-      OGR_G_ExportToGML(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_ExportToGML(@ogr_geometry_pointer)
     end
 
     # @param altitude_mode [String] Value to write in the +altitudeMode+
     #   element.
     # @return [String]
     def to_kml(altitude_mode=nil)
-      OGR_G_ExportToKML(@ogr_geometry_pointer, altitude_mode)
+      FFI::GDAL.OGR_G_ExportToKML(@ogr_geometry_pointer, altitude_mode)
     end
 
     # @return [String]
     def to_json
-      OGR_G_ExportToJson(@ogr_geometry_pointer)
+      FFI::GDAL.OGR_G_ExportToJson(@ogr_geometry_pointer)
     end
 
     # Converts the current geometry to a Polygon geometry.  The returned object
@@ -581,7 +588,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_polygon
-      build_geometry { OGR_G_ForceToPolygon(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ForceToPolygon(@ogr_geometry_pointer) }
     end
 
     # Converts the current geometry to a LineString geometry.  The returned
@@ -589,7 +596,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_line_string
-      build_geometry { OGR_G_ForceToLineString(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ForceToLineString(@ogr_geometry_pointer) }
     end
 
     # Converts the current geometry to a MultiPolygon geometry.  The returned
@@ -597,7 +604,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_polygon
-      build_geometry { OGR_G_ForceToMultiPolygon(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ForceToMultiPolygon(@ogr_geometry_pointer) }
     end
 
     # Converts the current geometry to a MultiPoint geometry.  The returned
@@ -605,7 +612,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_point
-      build_geometry { OGR_G_ForceToMultiPoint(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ForceToMultiPoint(@ogr_geometry_pointer) }
     end
 
     # Converts the current geometry to a MultiLineString geometry.  The returned
@@ -613,7 +620,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_line_string
-      build_geometry { OGR_G_ForceToMultiLineString(@ogr_geometry_pointer) }
+      build_geometry { FFI::GDAL.OGR_G_ForceToMultiLineString(@ogr_geometry_pointer) }
     end
 
     private
