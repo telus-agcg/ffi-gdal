@@ -85,6 +85,8 @@ module OGR
       max_values = geo_transform.world_to_pixel(max_x, min_y)
       pixel_count = max_values[:x] - min_values[:x]
       line_count = max_values[:y] - min_values[:y]
+      pixel_width = (max_x - min_x) / pixel_count
+      pixel_height = (max_y - min_y) / pixel_count
 
       case value_type
       when :float
@@ -93,8 +95,10 @@ module OGR
           y_origin: min_values[:y].to_f,
           x_max: max_values[:x].to_f,
           y_max: max_values[:y].to_f,
-          pixel_count: pixel_count.to_f,
-          line_count: line_count.to_f
+          pixel_count: pixel_count.to_i.abs,
+          line_count: line_count.to_i.abs,
+          pixel_width: pixel_width.to_f,
+          pixel_height: pixel_height.to_f
         }
       when :integer
         {
@@ -102,8 +106,10 @@ module OGR
           y_origin: min_values[:y].to_i,
           x_max: max_values[:x].to_i,
           y_max: max_values[:y].to_i,
-          pixel_count: pixel_count.to_i,
-          line_count: line_count.to_i
+          pixel_count: pixel_count.to_i.abs,
+          line_count: line_count.to_i.abs,
+          pixel_width: pixel_width.to_f,
+          pixel_height: pixel_height.to_f
         }
       else
         {
@@ -111,8 +117,10 @@ module OGR
           y_origin: min_values[:y],
           x_max: max_values[:x],
           y_max: max_values[:y],
-          pixel_count: pixel_count,
-          line_count: line_count
+          pixel_count: pixel_count.to_i.abs,
+          line_count: line_count.to_i.abs,
+          pixel_width: pixel_width.to_f,
+          pixel_height: pixel_height.to_f
         }
       end
     end
