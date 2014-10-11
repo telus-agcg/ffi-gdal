@@ -15,8 +15,6 @@ module GDAL
   end
 
   class ColorTable
-    include FFI::GDAL
-
     # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
     # @return [GDAL::ColorTable]
     def self.create(palette_interpretation)
@@ -47,14 +45,14 @@ module GDAL
     end
 
     def destroy!
-      GDALDestroyColorTable(@color_table_pointer)
+      FFI::GDAL.GDALDestroyColorTable(@color_table_pointer)
     end
 
     # Clones the ColorTable using the C API.
     #
     # @return [GDAL::ColorTable]
     def clone
-      ct_ptr = GDALCloneColorTable(@color_table_pointer)
+      ct_ptr = FFI::GDAL.GDALCloneColorTable(@color_table_pointer)
       return nil if ct_ptr.null?
 
       GDAL::ColorTable.new(ct_ptr)
@@ -64,18 +62,18 @@ module GDAL
     #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      @palette_interpretation ||= GDALGetPaletteInterpretation(@color_table_pointer)
+      @palette_interpretation ||= FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
     end
 
     # @return [Fixnum]
     def color_entry_count
-      GDALGetColorEntryCount(@color_table_pointer)
+      FFI::GDAL.GDALGetColorEntryCount(@color_table_pointer)
     end
 
     # @param index [Fixnum]
     # @return [GDAL::ColorEntry]
     def color_entry(index)
-      color_entry = GDALGetColorEntry(@color_table_pointer, index)
+      color_entry = FFI::GDAL.GDALGetColorEntry(@color_table_pointer, index)
 
       GDAL::ColorEntry.new(color_entry)
     end
@@ -84,7 +82,7 @@ module GDAL
     # @return [GDAL::ColorEntry]
     def color_entry_as_rgb(index)
       entry = FFI::GDAL.GDALColorEntry.new
-      GDALGetColorEntryAsRGB(@color_table_pointer, index, entry)
+      FFI::GDAL.GDALGetColorEntryAsRGB(@color_table_pointer, index, entry)
 
       GDAL::ColorEntry.new(entry)
     end
@@ -110,13 +108,13 @@ module GDAL
       #   raise "Invalid color entry index.  Choose betwen 0 - #{color_entry_count}."
       # end
 
-      entry = GDALColorEntry.new
+      entry = FFI::GDAL.GDALColorEntry.new
       entry[:c1] = one if one
       entry[:c2] = two if two
       entry[:c3] = three if three
       entry[:c4] = four if four
 
-      GDALSetColorEntry(@color_table_pointer, index, entry)
+      FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry)
 
       GDAL::ColorEntry.new(entry)
     end
@@ -140,7 +138,7 @@ module GDAL
     # @param end_index [Fixnum] Index to end the ramp on (0..255)
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
-      GDALCreateColorRamp(@color_table_pointer, start_index, end_index, end_color)
+      FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index, end_index, end_color)
     end
   end
 end
