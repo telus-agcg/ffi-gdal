@@ -73,5 +73,40 @@ module OGR
 
       @ogr_envelope_struct[:max_z] = new_z_max
     end
+
+    # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
+    # pixel locations of these geospatial coordinates.
+    #
+    # @param geo_transform [GDAL::GeoTransform]
+    # @param value_type [Symbol] Data type to return: :float or :integer.
+    # @return [Hash<x_origin, y_origin, x_max, y_max>]
+    def world_to_pixel(geo_transform, value_type=:float)
+      min_values = geo_transform.world_to_pixel(min_x, max_y)
+      max_values = geo_transform.world_to_pixel(max_x, min_y)
+
+      case value_type
+      when :float
+        {
+          x_origin: min_values[:x].to_f,
+          y_origin: min_values[:y].to_f,
+          x_max: max_values[:x].to_f,
+          y_max: max_values[:y].to_f
+        }
+      when :integer
+        {
+          x_origin: min_values[:x].to_i,
+          y_origin: min_values[:y].to_i,
+          x_max: max_values[:x].to_i,
+          y_max: max_values[:y].to_i
+        }
+      else
+        {
+          x_origin: min_values[:x],
+          y_origin: min_values[:y],
+          x_max: max_values[:x],
+          y_max: max_values[:y]
+        }
+      end
+    end
   end
 end

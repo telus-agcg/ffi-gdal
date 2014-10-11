@@ -201,7 +201,7 @@ module GDAL
     # @param lat [Fixnum]
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x, y>] [pixel, line]
-    def world_to_pixel(lon, lat, value_type: :float)
+    def world_to_pixel(lon, lat, value_type=:float)
       pixel = (lon - x_origin) / pixel_width
       line = (y_origin - lat) / pixel_height
 
