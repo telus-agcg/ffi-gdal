@@ -114,6 +114,12 @@ module OGR
       @geometry = OGR::Geometry.new(geometry_ptr)
     end
 
+    # @param new_geometry [OGR::Geometry]
+    def geometry=(new_geometry)
+      ogr_err = FFI::GDAL.OGR_F_SetGeometryDirectly(@feature_pointer, new_geometry.c_pointer)
+      @geometry = new_geometry
+    end
+
     # @return [Fixnum]
     def fid
       FFI::GDAL.OGR_F_GetFID(@feature_pointer)
@@ -122,12 +128,6 @@ module OGR
     # @param new_fid [Fixnum]
     def fid=(new_fid)
       ogr_err = FFI::GDAL.OGR_F_SetFID(@feature_pointer, new_fid)
-    end
-
-    # @param new_geometry [OGR::Geometry]
-    def geometry=(new_geometry)
-      ogr_err = FFI::GDAL.OGR_F_SetGeometry(@feature_pointer, new_geometry.c_pointer)
-      @geometry = new_geometry
     end
 
     # @return [Fixnum]
