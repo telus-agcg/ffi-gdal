@@ -80,9 +80,11 @@ module OGR
     # @param geo_transform [GDAL::GeoTransform]
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x_origin, y_origin, x_max, y_max>]
-    def world_to_pixel(geo_transform, value_type=:float)
+    def world_to_pixel(geo_transform, value_type=:integer)
       min_values = geo_transform.world_to_pixel(min_x, max_y)
       max_values = geo_transform.world_to_pixel(max_x, min_y)
+      pixel_count = max_values[:x] - min_values[:x]
+      line_count = max_values[:y] - min_values[:y]
 
       case value_type
       when :float
@@ -90,21 +92,27 @@ module OGR
           x_origin: min_values[:x].to_f,
           y_origin: min_values[:y].to_f,
           x_max: max_values[:x].to_f,
-          y_max: max_values[:y].to_f
+          y_max: max_values[:y].to_f,
+          pixel_count: pixel_count.to_f,
+          line_count: line_count.to_f
         }
       when :integer
         {
           x_origin: min_values[:x].to_i,
           y_origin: min_values[:y].to_i,
           x_max: max_values[:x].to_i,
-          y_max: max_values[:y].to_i
+          y_max: max_values[:y].to_i,
+          pixel_count: pixel_count.to_i,
+          line_count: line_count.to_i
         }
       else
         {
           x_origin: min_values[:x],
           y_origin: min_values[:y],
           x_max: max_values[:x],
-          y_max: max_values[:y]
+          y_max: max_values[:y],
+          pixel_count: pixel_count,
+          line_count: line_count
         }
       end
     end
