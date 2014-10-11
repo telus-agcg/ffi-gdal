@@ -1,7 +1,7 @@
 module GDAL
   # Methods not originally supplied with GDAL, but enhance it.
   module DatasetExtensions
-    
+
     # @return [Array<GDAL::RasterBand>]
     def raster_bands
       1.upto(raster_count).map do |i|
@@ -162,6 +162,24 @@ module GDAL
       log "wkt overlaps raster? #{source_geometry.overlaps?(@raster_geometry)}"
 
       @raster_geometry.contains? source_geometry
+    end
+
+    # Retrieves pixels from each raster band and converts this to an array of
+    # points per pixel.  For example:
+    #
+    #   # If the arrays for each band look like:
+    #   red_band_array = [0, 0, 0]
+    #   green_band_array = [10, 10, 10]
+    #   blue_band_array = [99, 99, 99]
+    #   alpha_band_array = [250, 250, 250]
+    #
+    #   # This array would look like:
+    #   [[0, 10, 99, 250], [0, 10, 99, 250], [0, 10, 99, 250]]
+    # @return NArray
+    def to_na
+      na = NArray.to_na(raster_bands.map { |raster_band| raster_band.to_na })
+
+      na.rot90(3)
     end
   end
 end
