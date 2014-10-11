@@ -15,7 +15,6 @@ module GDAL
   # responsible for the georeferencing transform and coordinate system
   # definition of all bands.
   class Dataset
-    include FFI::GDAL
     include MajorObject
     include GDAL::Logger
 
@@ -59,7 +58,7 @@ module GDAL
     # Close the dataset.
     def close
       @last_known_file_list = file_list
-      GDALClose(@dataset_pointer)
+      FFI::GDAL.GDALClose(@dataset_pointer)
       @open = false
     end
 
@@ -69,7 +68,7 @@ module GDAL
     # @param access_flag [String]
     # @return [Boolean]
     def reopen(access_flag)
-      @dataset_pointer = GDALOpen(@last_known_file_list.first, access_flag)
+      @dataset_pointer = FFI::GDAL.GDALOpen(@last_known_file_list.first, access_flag)
 
       @open = true unless @dataset_pointer.null?
     end
@@ -83,15 +82,15 @@ module GDAL
     def access_flag
       return nil if null?
 
-      flag = GDALGetAccess(@dataset_pointer)
+      flag = FFI::GDAL.GDALGetAccess(@dataset_pointer)
 
-      GDALAccess[flag]
+      FFI::GDAL.GDALAccess[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      driver_ptr = GDALGetDatasetDriver(@dataset_pointer)
+      driver_ptr = FFI::GDAL.GDALGetDatasetDriver(@dataset_pointer)
 
       Driver.new(driver_ptr)
     end
@@ -99,37 +98,37 @@ module GDAL
     # Fetches all files that form the dataset.
     # @return [Array<String>]
     def file_list
-      list_pointer = GDALGetFileList(c_pointer)
+      list_pointer = FFI::GDAL.GDALGetFileList(c_pointer)
       file_list = list_pointer.get_array_of_string(0)
-      CSLDestroy(list_pointer)
+      FFI::GDAL.CSLDestroy(list_pointer)
 
       file_list
     end
 
     # Flushes all write-cached data to disk.
     def flush_cache
-      GDALFlushCache(@dataset_pointer)
+      FFI::GDAL.GDALFlushCache(@dataset_pointer)
     end
 
     # @return [Fixnum]
     def raster_x_size
       return nil if null?
 
-      GDALGetRasterXSize(@dataset_pointer)
+      FFI::GDAL.GDALGetRasterXSize(@dataset_pointer)
     end
 
     # @return [Fixnum]
     def raster_y_size
       return nil if null?
 
-      GDALGetRasterYSize(@dataset_pointer)
+      FFI::GDAL.GDALGetRasterYSize(@dataset_pointer)
     end
 
     # @return [Fixnum]
     def raster_count
       return 0 if null?
 
-      GDALGetRasterCount(@dataset_pointer)
+      FFI::GDAL.GDALGetRasterCount(@dataset_pointer)
     end
 
     # @param raster_index [Fixnum]
@@ -142,7 +141,7 @@ module GDAL
         return @raster_bands[zero_index]
       end
 
-      raster_band_ptr = GDALGetRasterBand(@dataset_pointer, raster_index)
+      raster_band_ptr = FFI::GDAL.GDALGetRasterBand(@dataset_pointer, raster_index)
       @raster_bands[zero_index] = GDAL::RasterBand.new(raster_band_ptr)
       @raster_bands.compact!
 
@@ -160,7 +159,7 @@ module GDAL
     # @param options [Hash]
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
-      cpl_err = GDALAddBand(@dataset_pointer, type, options_ptr)
+      cpl_err = FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
       cpl_err.to_bool
 
       raster_band(raster_count)
@@ -168,18 +167,18 @@ module GDAL
 
     # Adds a mask band to the dataset
     def create_mask_band
-      GDALCreateDatasetMaskBand(@dataset_pointer, 0)
+      FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, 0)
     end
 
     # @return [String]
     def projection
-      GDALGetProjectionRef(@dataset_pointer)
+      FFI::GDAL.GDALGetProjectionRef(@dataset_pointer)
     end
 
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      cpl_err = GDALSetProjection(@dataset_pointer, new_projection)
+      cpl_err = FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
 
       cpl_err.to_bool
     end
@@ -199,7 +198,7 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
-      cpl_err = GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
+      cpl_err = FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
       cpl_err.to_ruby
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
@@ -209,7 +208,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = new_transform.c_pointer.dup
-      cpl_err = GDALSetGeoTransform(@dataset_pointer, new_pointer)
+      cpl_err = FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
       cpl_err.to_bool
 
       @geo_transform = GeoTransform.new(new_pointer)
@@ -219,26 +218,26 @@ module GDAL
     def gcp_count
       return 0 if null?
 
-      GDALGetGCPCount(@dataset_pointer)
+      FFI::GDAL.GDALGetGCPCount(@dataset_pointer)
     end
 
     # @return [String]
     def gcp_projection
       return '' if null?
 
-      GDALGetGCPProjection(@dataset_pointer)
+      FFI::GDAL.GDALGetGCPProjection(@dataset_pointer)
     end
 
     # @return [FFI::GDAL::GDALGCP]
     def gcps
-      return GDALGCP.new if null?
+      return FFI::GDAL.GDALGCP.new if null?
 
-      gcp_array_pointer = GDALGetGCPs(@dataset_pointer)
+      gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
-        GDALGCP.new
+        FFI::GDAL.GDALGCP.new
       else
-        GDALGCP.new(gcp_array_pointer)
+        FFI::GDAL.GDALGCP.new(gcp_array_pointer)
       end
     end
 
@@ -331,7 +330,7 @@ module GDAL
         band_count = nil
       end
 
-      cpl_err = GDALBuildOverviews(@dataset_pointer,
+      cpl_err = FFI::GDAL.GDALBuildOverviews(@dataset_pointer,
         resampling_string,
         overview_levels.size,
         overview_levels_ptr,
@@ -380,7 +379,7 @@ module GDAL
       # not allowing for now
       progress_callback_data = nil
 
-      cpl_err = GDALRasterizeGeometries(@dataset_pointer,
+      cpl_err = FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
         geometries.size,
@@ -436,7 +435,7 @@ module GDAL
       burn_values_ptr.write_array_of_double(burn_values)
       log "burn value ptr null? #{burn_values_ptr.null?}"
 
-      cpl_err = GDALRasterizeLayers(@dataset_pointer,     # hDS
+      cpl_err = FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
         band_numbers.size,                                # nBandCount
         band_numbers_ptr,                                 # panBandList
         layers.size,                                      # nLayerCount
