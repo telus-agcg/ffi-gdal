@@ -3,8 +3,6 @@ require_relative '../ffi/gdal'
 
 module GDAL
   module MajorObject
-    include FFI::GDAL
-
     # @return [Array<String>]
     def metadata_domain_list
       unless defined? FFI::GDAL.GDALGetMetadataDomainList
@@ -14,8 +12,8 @@ module GDAL
 
       # I don't quite get it, but if #GDALGetMetadataDomainList isn't called
       # twice, the last domain in the list sometimes doesn't get read.
-      GDALGetMetadataDomainList(c_pointer)
-      list_pointer = GDALGetMetadataDomainList(c_pointer)
+      FFI::GDAL.GDALGetMetadataDomainList(c_pointer)
+      list_pointer = FFI::GDAL.GDALGetMetadataDomainList(c_pointer)
       return [] if list_pointer.null?
 
       strings = list_pointer.get_array_of_string(0)
@@ -26,7 +24,7 @@ module GDAL
     # @param domain [String] Name of the domain to get metadata for.
     # @return [Hash]
     def metadata(domain='')
-      m = GDALGetMetadata(c_pointer, domain)
+      m = FFI::GDAL.GDALGetMetadata(c_pointer, domain)
       return {} if m.null?
 
       data_array = m.get_array_of_string(0)
@@ -46,7 +44,7 @@ module GDAL
     # @param domain [String]
     # @return [String]
     def metadata_item(name, domain='')
-      GDALGetMetadataItem(c_pointer, name, domain)
+      FFI::GDAL.GDALGetMetadataItem(c_pointer, name, domain)
     end
 
     # @return [Hash{domain => Array<String>}]
@@ -61,12 +59,12 @@ module GDAL
 
     # @return [String]
     def description
-      GDALGetDescription(c_pointer)
+      FFI::GDAL.GDALGetDescription(c_pointer)
     end
 
     # @param new_description [String]
     def description=(new_description)
-      GDALSetDescription(c_pointer, new_description.to_s)
+      FFI::GDAL.GDALSetDescription(c_pointer, new_description.to_s)
     end
 
     def null?
