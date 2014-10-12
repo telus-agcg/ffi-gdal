@@ -10,9 +10,6 @@ module GDAL
         return []
       end
 
-      # I don't quite get it, but if #GDALGetMetadataDomainList isn't called
-      # twice, the last domain in the list sometimes doesn't get read.
-      FFI::GDAL.GDALGetMetadataDomainList(c_pointer)
       list_pointer = FFI::GDAL.GDALGetMetadataDomainList(c_pointer)
       return [] if list_pointer.null?
 
