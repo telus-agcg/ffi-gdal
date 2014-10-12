@@ -81,6 +81,7 @@ module OGR
     # @return [OGR::Geometry]
     def clone
       new_geometry_ptr = FFI::GDAL.OGR_G_Clone(@geometry_pointer)
+      return nil if new_geometry_ptr.null?
 
       self.class.new(new_geometry_ptr)
     end
@@ -95,8 +96,8 @@ module OGR
     # @param sub_geometry_index [Fixnum]
     # @return [OGR::Geometry]
     def geometry_at(sub_geometry_index)
-      build_geometry do
-        FFI::GDAL.OGR_G_GetGeometryRef(@geometry_pointer, sub_geometry_index)
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_GetGeometryRef(ptr, sub_geometry_index)
       end
     end
 
@@ -366,23 +367,23 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def intersection(geometry)
-      build_geometry do
-        FFI::GDAL.OGR_G_Intersection(@geometry_pointer, geometry_pointer_from(geometry))
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Intersection(ptr, geometry_pointer_from(geometry))
       end
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def union(geometry)
-      build_geometry do
-        FFI::GDAL.OGR_G_Union(@geometry_pointer, geometry_pointer_from(geometry))
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Union(ptr, geometry_pointer_from(geometry))
       end
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def union_cascadded
-      build_geometry { FFI::GDAL.OGR_G_UnionCascaded(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_UnionCascaded(ptr) }
     end
 
     # Creates a polygon from a set of sparse edges.  The newly created geometry
@@ -392,14 +393,14 @@ module OGR
     #   MultiLineString or if it's impossible to reassemble due to topological
     #   inconsistencies.
     def polygonize
-      build_geometry { FFI::GDAL.OGR_G_Polygonize(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_Polygonize(ptr) }
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def difference(geometry)
-      build_geometry do
-        FFI::GDAL.OGR_G_Difference(@geometry_pointer, geometry_pointer_from(geometry))
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Difference(ptr, geometry_pointer_from(geometry))
       end
     end
     alias_method :-, :difference
@@ -407,8 +408,8 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [OGR::Geometry]
     def symmetric_difference(geometry)
-      build_geometry do
-        FFI::GDAL.OGR_G_SymDifference(@geometry_pointer, geometry_pointer_from(geometry))
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_SymDifference(ptr, geometry_pointer_from(geometry))
       end
     end
 
@@ -424,7 +425,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def point_on_surface
-      build_geometry { FFI::GDAL.OGR_G_PointOnSurface(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_PointOnSurface(ptr) }
     end
 
     # @return [OGR::SpatialReference]
@@ -486,8 +487,8 @@ module OGR
     # @param distance_tolerance [Float]
     # @return [OGR::Geometry]
     def simplify(distance_tolerance)
-      build_geometry do
-        FFI::GDAL.OGR_G_Simplify(@geometry_pointer, distance_tolerance)
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Simplify(ptr, distance_tolerance)
       end
     end
 
@@ -496,8 +497,8 @@ module OGR
     # @param distance_tolerance [Float]
     # @return [OGR::Geometry]
     def simplify_preserve_topology(distance_tolerance)
-      build_geometry do
-        FFI::GDAL.OGR_G_SimplifyPreserveTopology(@geometry_pointer, distance_tolerance)
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_SimplifyPreserveTopology(ptr, distance_tolerance)
       end
     end
 
@@ -510,7 +511,7 @@ module OGR
 
     # @return [OGR::Geometry]
     def boundary
-      build_geometry { FFI::GDAL.OGR_G_Boundary(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_Boundary(ptr) }
     end
 
     # @param distance [Float] The buffer distance to be applied.
@@ -518,14 +519,14 @@ module OGR
     #   a 90 degree (quadrant) of curvature.
     # @return [OGR::Geometry]
     def buffer(distance, quad_segments)
-      build_geometry do
-        FFI::GDAL.OGR_G_Buffer(@geometry_pointer, distance, quad_segments)
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Buffer(ptr, distance, quad_segments)
       end
     end
 
     # @return [OGR::Geometry]
     def convex_hull
-      build_geometry { FFI::GDAL.OGR_G_ConvexHull(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ConvexHull(ptr) }
     end
 
     # TODO: should this be a class method?
@@ -591,7 +592,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_polygon
-      build_geometry { FFI::GDAL.OGR_G_ForceToPolygon(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToPolygon(ptr) }
     end
 
     # Converts the current geometry to a LineString geometry.  The returned
@@ -599,7 +600,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_line_string
-      build_geometry { FFI::GDAL.OGR_G_ForceToLineString(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToLineString(ptr) }
     end
 
     # Converts the current geometry to a MultiPolygon geometry.  The returned
@@ -607,7 +608,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_polygon
-      build_geometry { FFI::GDAL.OGR_G_ForceToMultiPolygon(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiPolygon(ptr) }
     end
 
     # Converts the current geometry to a MultiPoint geometry.  The returned
@@ -615,7 +616,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_point
-      build_geometry { FFI::GDAL.OGR_G_ForceToMultiPoint(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiPoint(ptr) }
     end
 
     # Converts the current geometry to a MultiLineString geometry.  The returned
@@ -623,7 +624,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_line_string
-      build_geometry { FFI::GDAL.OGR_G_ForceToMultiLineString(@geometry_pointer) }
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiLineString(ptr) }
     end
 
     # @return [Hash]
@@ -655,10 +656,14 @@ module OGR
     private
 
     def build_geometry
-      geometry_pointer = yield
-      return nil if geometry_pointer.null?
+      geometry_ptr = yield(@geometry_pointer)
+      return nil if geometry_ptr.null?
 
-      self.class.new(geometry_pointer)
+      if geometry_ptr == @geometry_pointer
+        log 'Newly created geometry and current geometry are the same.'
+      end
+
+      self.class.new(geometry_ptr)
     end
 
     def geometry_pointer_from(geometry)
