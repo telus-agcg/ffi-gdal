@@ -253,5 +253,22 @@ module GDAL
     def to_world_file(raster_filename, world_extension)
       FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @geo_transform_pointer)
     end
+
+    # @return [Hash]
+    def as_json
+      {
+        x_origin: x_origin,
+        x_rotation: x_rotation,
+        pixel_width: pixel_width,
+        y_origin: y_origin,
+        y_rotation: y_rotation,
+        pixel_height: pixel_height
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
+    end
   end
 end

@@ -78,6 +78,25 @@ module GDAL
       FFI::GDAL.GDALRATGetTypeOfCol(@rat_pointer, index)
     end
 
+    # Get +column_name+, +column_usage+, +column_type+ as a Hash.
+    #
+    # @param index [Fixnum]
+    # @return [Hash]
+    def column(index)
+      {
+        name: column_name(index),
+        usage: column_usage(index),
+        type: column_type(index)
+      }
+    end
+
+    # @return [Array<Hash>]
+    def columns
+      0.upto(column_count - 1).map do |i|
+        column(i)
+      end
+    end
+
     # @param field_usage [GDALRATFieldUsage]
     # @return [Fixnum] The column number.
     def column_of_usage(field_usage)
@@ -173,6 +192,21 @@ module GDAL
     # @param file_path [String]
     def dump_readable(file_path = 'stdout')
       FFI::GDAL.GDALRATDumpReadable(@rat_pointer, file_path)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        column_count: column_count,
+        columns: columns,
+        linear_binning: linear_binning,
+        row_count: row_count
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
   end
 end

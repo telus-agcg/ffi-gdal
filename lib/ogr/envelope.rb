@@ -124,5 +124,26 @@ module OGR
         }
       end
     end
+
+    # @return [Hash]
+    def as_json
+      json = {
+        min_x: min_x,
+        max_x: max_x,
+        min_y: min_y,
+        max_y: max_y
+      }
+
+      if @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+        json.merge!({ min_z: min_z, max_z: max_z })
+      end
+
+      json
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
+    end
   end
 end

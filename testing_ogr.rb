@@ -8,33 +8,6 @@ data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/state
 first_layer = data_source.layer(0)
 first_feature = first_layer.feature(0)
 
-puts <<-DS
-DataSet Info
-* name: #{data_source.name}
-* layer_count: #{data_source.layer_count}
-* style_table: #{data_source.style_table}
-DS
-
-puts '-' * 40
-
-puts <<-LAYER
-Layer Info
-* name: #{first_layer.name}
-* geometry_type: #{first_layer.geometry_type}
-* spatial_filter: #{first_layer.spatial_filter}
-* first feature: #{first_feature}
-* feature_count: #{first_layer.feature_count}
-* features_read: #{first_layer.features_read}
-* definition: #{first_layer.definition}
-* extent: #{first_layer.extent}
-* fid_column: #{first_layer.fid_column}
-* geometry_column: #{first_layer.geometry_column}
-* style_table: #{first_layer.style_table}
-* spatial reference: #{first_layer.spatial_reference}
-LAYER
-
-puts '-' * 40
-
 geom = OGR::Geometry.create_from_wkt(proj)
 # puts <<-GEOM
 # Geometry Info

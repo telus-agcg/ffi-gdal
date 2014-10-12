@@ -454,8 +454,7 @@ module FFI
     attach_function :GDALComputeRasterStatistics,
       [
         :GDALRasterBandH,
-        :int,
-        :int,
+        :bool,
         :pointer,
         :pointer,
         :pointer,

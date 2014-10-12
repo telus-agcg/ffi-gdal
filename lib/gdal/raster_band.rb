@@ -1,3 +1,4 @@
+require 'json'
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr/api_h'
 require_relative 'color_table'
@@ -189,6 +190,12 @@ module GDAL
       self.class.new(overview_pointer)
     end
 
+    def overviews
+      0.upto(overview_count - 1).map do |i|
+        overview(i)
+      end
+    end
+
     # @param desired_samples [Fixnum] The returned band will have at least this
     #   many pixels.
     # @return [GDAL::RasterBand] An optimal overview or the same raster band if
@@ -284,20 +291,20 @@ module GDAL
       end
     end
 
-    def compute_statistics(approx_ok=true, &progress)
+    def statistics(approx_ok=true, &progress)
       min = FFI::MemoryPointer.new(:double)
       max = FFI::MemoryPointer.new(:double)
       mean = FFI::MemoryPointer.new(:double)
       standard_deviation = FFI::MemoryPointer.new(:double)
 
       cpl_err = FFI::GDAL.GDALComputeRasterStatistics(@raster_band_pointer,
-        approx_ok,
-        min,
-        max,
-        mean,
-        standard_deviation,
-        progress,
-        nil)
+        approx_ok,                # bApproxOK
+        min,                      # pdfMin
+        max,                      # pdfMax
+        mean,                     # pdfMean
+        standard_deviation,       # pdfStdDev
+        progress,                 # pfnProgress
+        nil)                      # pProgressData
 
       minimum = min.null? ? 0.0 : min.read_double
       maximum = max.null? ? 0.0 : max.read_double
@@ -307,10 +314,10 @@ module GDAL
       case cpl_err.to_ruby
       when :none, :debug
         {
-          minimum: min.read_double,
-          maximum: max.read_double,
-          mean: mean.read_double,
-          standard_deviation: standard_deviation.read_double
+          minimum: minimum,
+          maximum: maximum,
+          mean: mean,
+          standard_deviation: standard_deviation
         }
       when :warning then {}
       when :failure, :fatal then raise CPLErrFailure
@@ -600,7 +607,7 @@ module GDAL
     # The minimum and maximum values for this band.
     #
     # @return [Array{min => Float, max => Float}]
-    def compute_min_max
+    def min_max
       @min_max = if minimum_value[:value] && maximum_value[:value]
         min_max = FFI::MemoryPointer.new(:double, 2)
         min_max.put_array_of_double 0, [minimum_value[:value], maximum_value[:value]]
@@ -697,6 +704,41 @@ module GDAL
       cpl_err.to_ruby
 
       OGR::Layer.new(layer_ptr)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        raster_band: {
+          block_size: block_size,
+          category_names: category_names,
+          color_interpretation: color_interpretation,
+          color_table: color_table,
+          data_type: data_type,
+          default_histogram: default_histogram(true),
+          default_raster_attribute_table: default_raster_attribute_table,
+          has_arbitrary_overviews: arbitrary_overviews?,
+          mask_flags: mask_flags,
+          maximum_value: maximum_value,
+          minimum_value: minimum_value,
+          no_data_value: no_data_value,
+          number: number,
+          offset: offset,
+          overview_count: overview_count,
+          overviews: overviews,
+          scale: scale,
+          statistics: statistics,
+          unit_type: unit_type,
+          x_size: x_size,
+          y_size: y_size
+        },
+        metadata: all_metadata
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
 
     #---------------------------------------------------------------------------

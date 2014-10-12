@@ -1,3 +1,5 @@
+require 'json'
+
 module GDAL
   # Methods not originally supplied with GDAL, but enhance it.
   module DatasetExtensions
@@ -180,6 +182,27 @@ module GDAL
       na = NArray.to_na(raster_bands.map { |raster_band| raster_band.to_na })
 
       na.rot90(3)
+    end
+
+    def as_json
+      {
+        dataset: {
+          driver: driver.long_name,
+          file_list: file_list,
+          gcp_count: gcp_count,
+          gcp_projection: gcp_projection,
+          geo_transform: geo_transform.as_json,
+          projection: projection,
+          raster_count: raster_count,
+          raster_bands: raster_bands.map(&:as_json),
+          spatial_reference: spatial_reference.as_json
+        },
+        metadata: all_metadata
+      }
+    end
+
+    def to_json
+      as_json.to_json
     end
   end
 end

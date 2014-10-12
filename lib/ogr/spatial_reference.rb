@@ -1,3 +1,4 @@
+require 'json'
 require_relative '../ffi/ogr'
 
 module OGR
@@ -394,7 +395,7 @@ module OGR
     def spheroid_inverse_flattening
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
-      ogr_err = OGRErr[err_ptr.read_int]
+      ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
         warn "WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy..."
@@ -407,7 +408,7 @@ module OGR
     def semi_major
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
-      ogr_err = OGRErr[err_ptr.read_int]
+      ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
         warn "WARN: #semi_major received error _and_ a value. Something is fishy..."
@@ -434,7 +435,7 @@ module OGR
     def semi_minor
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
-      ogr_err = OGRErr[err_ptr.read_int]
+      ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
         warn "WARN: #semi_minor received error _and_ a value. Something is fishy..."
@@ -665,6 +666,32 @@ module OGR
       dest_ptr = GDAL._pointer(OGR::SpatialReference, destination_spatial_ref)
 
       FFI::GDAL.OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        angular_units: angular_units,
+        epsg_treats_as_lat_long: epsg_treats_as_lat_long?,
+        epsg_treats_as_northing_easting: epsg_treats_as_northing_easting?,
+        is_compound: compound?,
+        is_geocentric: geocentric?,
+        is_geographic: geographic?,
+        is_local: local?,
+        is_projected: projected?,
+        is_vertical: vertical?,
+        linear_units: linear_units,
+        prime_meridian: prime_meridian,
+        semi_major: semi_major,
+        semi_minor: semi_minor,
+        spheroid_inverse_flattening: spheroid_inverse_flattening,
+        utm_zone: utm_zone
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
   end
 end

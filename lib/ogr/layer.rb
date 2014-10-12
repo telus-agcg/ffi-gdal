@@ -1,3 +1,4 @@
+require 'json'
 require_relative '../ffi/ogr'
 require_relative 'envelope'
 require_relative 'geometry'
@@ -12,6 +13,7 @@ module OGR
 
     def initialize(layer)
       @ogr_layer_pointer = GDAL._pointer(OGR::Layer, layer)
+      @features = []
     end
 
     def c_pointer
@@ -152,13 +154,13 @@ module OGR
     # The schema information for this layer.
     #
     # @return [OGR::FeatureDefinition,nil]
-    def definition
-      return @definition if @definition
+    def feature_definition
+      return @feature_definition if @feature_definition
 
       feature_defn_pointer = FFI::GDAL.OGR_L_GetLayerDefn(@ogr_layer_pointer)
       return nil if feature_defn_pointer.null?
 
-      @definition = OGR::FeatureDefinition.new(feature_defn_pointer)
+      @feature_definition = OGR::FeatureDefinition.new(feature_defn_pointer)
     end
 
     # @return [OGR::SpatialReference]
@@ -225,6 +227,30 @@ module OGR
       return nil if style_table_pointer.null?
 
       @style_table = OGR::StyleTable.new(style_table_pointer)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        layer: {
+          extent: extent.as_json,
+          feature_count: feature_count,
+          feature_definition: feature_definition.as_json,
+          #features: features.map(&:as_json),
+          fid_column: fid_column,
+          geometry_column: geometry_column,
+          geometry_type: geometry_type,
+          name: name,
+          spatial_reference: spatial_reference.as_json,
+          style_table: style_table ? style_table.as_json : nil
+        },
+        metadata: nil #all_metadata
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
   end
 end

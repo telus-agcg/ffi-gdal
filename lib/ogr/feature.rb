@@ -1,3 +1,4 @@
+require 'json'
 require_relative '../ffi/ogr'
 require_relative 'feature_definition'
 require_relative 'field'
@@ -194,6 +195,24 @@ module OGR
     # @param new_style [String]
     def style_string=(new_style)
       FFI::GDAL.OGR_F_SetStyleString(@feature_pointer, new_style)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        definition: definition,
+        fid: fid,
+        field_count: field_count,
+        fields: fields.map(&:as_json),
+        geometry: geometry.as_json,
+        geometry_field_count: geometry_field_count,
+        style_string: style_string
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
 
     private

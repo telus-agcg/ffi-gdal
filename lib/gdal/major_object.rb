@@ -50,11 +50,11 @@ module GDAL
     # @return [Hash{domain => Array<String>}]
     def all_metadata
       sub_metadata = metadata_domain_list.each_with_object({}) do |subdomain, obj|
-        metadata_array = metadata_for_domain(subdomain)
+        metadata_array = metadata(subdomain)
         obj[subdomain] = metadata_array
       end
 
-      { DEFAULT: metadata_for_domain }.merge(sub_metadata)
+      { DEFAULT: metadata }.merge(sub_metadata)
     end
 
     # @return [String]

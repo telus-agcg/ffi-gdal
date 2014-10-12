@@ -1,31 +1,6 @@
 module FFI
   module GDAL
 
-    #------------------------------------------------------------------------
-    # Defines
-    #------------------------------------------------------------------------
-    CSLT_HONOURSTRINGS    = 0x0001
-    CSLT_ALLOWEMPTYTOKENS = 0x0002
-    CSLT_PRESERVEQUOTES   = 0x0004
-    CSLT_PRESERVEESCAPES  = 0x0008
-    CSLT_STRIPLEADSPACES  = 0x0010
-    CSLT_STRIPENDSPACES   = 0x0020
-
-    CPLES_BackslashQuotable = 0
-    CPLES_XML               = 1
-    CPLES_URL               = 2
-    CPLES_SQL               = 3
-    CPLES_CSV               = 4
-    CPLES_XML_BUT_QUOTES    = 5
-
-    CPL_ENC_LOCALE = ''
-    CPL_ENC_UTF8 = 'UTF-8'
-    CPL_ENC_UTF16 = 'UTF-16'
-    CPL_ENC_UCS2 = 'UCS-2'
-    CPL_ENC_UCS4 = 'UCS-4'
-    CPL_ENC_ASCII = 'ASCII'
-    CPL_ENC_ISO8859_1 = 'ISO-8859-1'
-
     typedef :string, :CPLString
 
     #------------------------------------------------------------------------

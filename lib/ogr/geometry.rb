@@ -1,3 +1,4 @@
+require 'json'
 require_relative 'envelope'
 
 module OGR
@@ -621,6 +622,32 @@ module OGR
     # @return [OGR::Geometry]
     def to_multi_line_string
       build_geometry { FFI::GDAL.OGR_G_ForceToMultiLineString(@ogr_geometry_pointer) }
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        area: area,
+        coordinate_dimension: coordinate_dimension,
+        count: count,
+        dimension: dimension,
+        is_empty: empty?,
+        is_ring: ring?,
+        is_simple: simple?,
+        is_valid: valid?,
+        length: length,
+        name: name,
+        point_count: point_count,
+        points: points_array,
+        spatial_reference: spatial_reference.as_json,
+        type: type_to_name,
+        wkb_size: wkb_size
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
 
     private

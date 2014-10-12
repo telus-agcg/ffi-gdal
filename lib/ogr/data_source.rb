@@ -1,4 +1,5 @@
 require 'uri'
+require 'json'
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
 require_relative 'exceptions'
@@ -28,6 +29,7 @@ module OGR
     def initialize(data_source_pointer)
       @data_source_pointer = data_source_pointer
       @file_name = name
+      @layers = []
 
       close_me = -> { destroy }
       ObjectSpace.define_finalizer self, close_me
@@ -77,10 +79,22 @@ module OGR
     # @param index [Fixnum] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
+      return @layers[index] if @layers.at(index)
+
       layer_pointer = FFI::GDAL.OGR_DS_GetLayer(@data_source_pointer, index)
       return nil if layer_pointer.null?
 
-      OGR::Layer.new(layer_pointer)
+      l = OGR::Layer.new(layer_pointer)
+      @layers.insert(index, l)
+
+      l
+    end
+
+    # @return [Array<OGR::Layer>]
+    def layers
+      0.upto(layer_count - 1).map do |i|
+        layer(i)
+      end
     end
 
     # @param name [String]
@@ -155,6 +169,25 @@ module OGR
       return nil if style_table_ptr.null?
 
       @style_table = OGR::StyleTable.new(style_table_ptr)
+    end
+
+    # @return [Hash]
+    def as_json
+      {
+        data_source: {
+          driver: driver.name,
+          layer_count: layer_count,
+          layers: layers.map(&:as_json),
+          name: name,
+          style_table: style_table ? style_table.as_json : nil
+        },
+        metadata: all_metadata
+      }
+    end
+
+    # @return [String]
+    def to_json
+      as_json.to_json
     end
   end
 end
