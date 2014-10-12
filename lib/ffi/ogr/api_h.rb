@@ -168,7 +168,7 @@ module FFI
     attach_function :OGR_G_Polygonize, %i[OGRGeometryH], :OGRGeometryH
     attach_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int
     attach_function :OGR_G_GetPoints,
-      %i[OGRGeometryH pointer int pointer int pointer int],
+      %i[OGRGeometryH buffer_out int buffer_out int buffer_out int],
       :int
     attach_function :OGR_G_GetX, %i[OGRGeometryH int], :double
     attach_function :OGR_G_GetY, %i[OGRGeometryH int], :double

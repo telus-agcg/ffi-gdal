@@ -241,16 +241,36 @@ module OGR
       FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
     end
 
-    def points_array
-      0.upto(point_count - 1).map do |i|
+    # @return [Array<Array>] An array of (x, y) or (x, y, z) points.
+    def points
+      x_stride = 2
+      y_stride = 2
+      z_stride = coordinate_dimension == 3 ? 1 : 0
+
+      buffer_size = FFI::Type::DOUBLE.size * 2 * point_count
+
+      x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
+      y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
+
+      z_buffer = if coordinate_dimension == 3
+        z_size = FFI::Type::DOUBLE.size * point_count
+        FFI::MemoryPointer.new(:buffer_out, z_size)
+      else
+        nil
+      end
+
+      num_points = FFI::GDAL.OGR_G_GetPoints(@geometry_pointer,
+        x_buffer,
+        x_stride,
+        y_buffer,
+        y_stride,
+        z_buffer,
+        z_stride)
+
+      0.upto(num_points - 1).map do |i|
         point(i)
       end
     end
-
-    # def points
-    #   OGR_G_GetPoints(@ogr_geometry_pointer,
-    #   )
-    # end
 
     # Computes the length for this geometry.  Computes area for Curve or
     # MultiCurve objects.
@@ -641,7 +661,7 @@ module OGR
         length: length,
         name: name,
         point_count: point_count,
-        points: points_array,
+        points: points,
         spatial_reference: spatial_reference.as_json,
         type: type_to_name,
         wkb_size: wkb_size
