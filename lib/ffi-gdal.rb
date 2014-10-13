@@ -53,6 +53,8 @@ module GDAL
 end
 
 module OGR
+  autoload :CoordinateTransformation,
+    File.expand_path('ogr/coordinate_transformation', __dir__)
   autoload :DataSource,
     File.expand_path('ogr/data_source', __dir__)
   autoload :Driver,
