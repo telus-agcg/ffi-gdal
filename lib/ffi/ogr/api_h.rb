@@ -203,7 +203,7 @@ module FFI
     attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int bool], OGRErr
 
     attach_function :OGRBuildPolygonFromEdges,
-      %i[OGRGeometryH int int double pointer],
+      %i[OGRGeometryH bool bool double pointer],
       :OGRGeometryH
 
     #~~~~~~~~~~~~~~~~~

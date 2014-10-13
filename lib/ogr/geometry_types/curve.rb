@@ -1,5 +1,3 @@
-require_relative 'point'
-
 module OGR
   module GeometryTypes
     module Curve
@@ -81,6 +79,18 @@ module OGR
       # @return [Float] 0.0 for unsupported geometry types.
       def length
         FFI::GDAL.OGR_G_Length(@geometry_pointer)
+      end
+
+      def start_point
+        point(0)
+      end
+
+      def end_point
+        point(point_count - 1)
+      end
+
+      def closed?
+        start_point == end_point
       end
     end
   end

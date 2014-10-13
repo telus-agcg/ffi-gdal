@@ -1,9 +1,5 @@
 module OGR
   class Point < Geometry
-    # def length
-    #   nil
-    # end
-
     # def area
     #   0.0
     # end

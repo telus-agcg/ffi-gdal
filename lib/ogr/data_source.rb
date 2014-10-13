@@ -79,22 +79,24 @@ module OGR
     # @param index [Fixnum] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
-      return @layers[index] if @layers.at(index)
+      @layers.fetch(index) do
+        layer_pointer = FFI::GDAL.OGR_DS_GetLayer(@data_source_pointer, index)
+        return nil if layer_pointer.null?
 
-      layer_pointer = FFI::GDAL.OGR_DS_GetLayer(@data_source_pointer, index)
-      return nil if layer_pointer.null?
+        l = OGR::Layer.new(layer_pointer)
+        @layers.insert(index, l)
 
-      l = OGR::Layer.new(layer_pointer)
-      @layers.insert(index, l)
-
-      l
+        l
+      end
     end
 
     # @return [Array<OGR::Layer>]
     def layers
-      0.upto(layer_count - 1).map do |i|
+      l = 0.upto(layer_count - 1).map do |i|
         layer(i)
       end
+
+      @layers = l
     end
 
     # @param name [String]

@@ -10,12 +10,12 @@ module OGR
         FFI::GDAL.OGR_G_Area(@geometry_pointer)
       end
 
-      # Not supported.
+      # Returns a point that's guaranteed to lie on the surface.
       #
-      # @return nil
-      # def points
-      #   nil
-      # end
+      # @return [OGR::Point]
+      def point_on_surface
+        build_geometry { |ptr| FFI::GDAL.OGR_G_PointOnSurface(ptr) }
+      end
     end
   end
 end

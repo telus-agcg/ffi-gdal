@@ -12,10 +12,15 @@ module OGR
       return nil if geometry_pointer.null?
       geometry_pointer.autorelease = false
 
-      _to_geometry_type(new(geometry_pointer))
+      _to_geometry_type(geometry_pointer)
     end
 
     def self._to_geometry_type(geometry)
+      geometry = if geometry.kind_of?(OGR::Geometry)
+        geometry
+      else
+        new(geometry)
+      end
       case geometry.type_to_name
       when 'Point' then OGR::Point.new(geometry.c_pointer)
       when 'Line String' then OGR::LineString.new(geometry.c_pointer)
@@ -55,7 +60,7 @@ module OGR
         geometry_ptr_ptr.read_pointer.nil?
 
       # Not assigning here makes tests crash when using a #let.
-      geometry = _to_geometry_type(new(geometry_ptr_ptr.read_pointer))
+      geometry = _to_geometry_type(geometry_ptr_ptr.read_pointer)
     end
 
     # @param gml_data [String]
@@ -330,7 +335,7 @@ module OGR
       new_geometry_ptr = FFI::GDAL.OGR_G_Difference(@geometry_pointer, geometry.c_pointer)
       return nil if new_geometry_ptr.null?
 
-      self.class._to_geometry_type(self.class.new(new_geometry_ptr))
+      self.class._to_geometry_type(new_geometry_ptr)
     end
     alias_method :-, :difference
 
@@ -340,7 +345,7 @@ module OGR
       new_geometry_ptr = FFI::GDAL.OGR_G_SymDifference(@geometry_pointer, geometry.c_pointer)
       return nil if new_geometry_ptr.null?
 
-      self.class._to_geometry_type(self.class.new(new_geometry_ptr))
+      self.class._to_geometry_type(new_geometry_ptr)
     end
 
     # The shortest distance between the two geometries.
@@ -349,13 +354,6 @@ module OGR
     # @return [Float] -1 if an error occurs.
     def distance_to(geometry)
       FFI::GDAL.OGR_G_Distance(@geometry_pointer, geometry.c_pointer)
-    end
-
-    # Returns a point that's guaranteed to lie on the surface.
-    #
-    # @return [OGR::Geometry]
-    def point_on_surface
-      build_geometry { |ptr| FFI::GDAL.OGR_G_PointOnSurface(ptr) }
     end
 
     # @return [OGR::SpatialReference]
@@ -597,7 +595,7 @@ module OGR
         log 'Newly created geometry and current geometry are the same.'
       end
 
-      self.class._to_geometry_type(self.class.new(geometry_ptr))
+      self.class._to_geometry_type(geometry_ptr)
     end
 
     def pointer_from(geometry)

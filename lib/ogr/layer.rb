@@ -59,17 +59,22 @@ module OGR
         feature(i)
       end
 
-      feature_list.compact
+      @features = feature_list
     end
 
     # @param index [Fixnum] The 0-based index of the feature to get.  It should
     #   be <= +feature_count+, but not checking is done to ensure.
     # @return [OGR::Feature, nil]
     def feature(index)
-      feature_pointer = FFI::GDAL.OGR_L_GetFeature(@ogr_layer_pointer, index)
-      return nil if feature_pointer.null?
+      @features.fetch(index) do
+        feature_pointer = FFI::GDAL.OGR_L_GetFeature(@ogr_layer_pointer, index)
+        return nil if feature_pointer.null?
 
-      OGR::Feature.new(feature_pointer)
+        feature = OGR::Feature.new(feature_pointer)
+        @features.insert(index, feature)
+
+        feature
+      end
     end
 
     # The next available feature in this layer.  Only features matching the
