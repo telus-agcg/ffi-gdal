@@ -69,6 +69,18 @@ module OGR
     File.expand_path('ogr/geometry', __dir__)
   autoload :Layer,
     File.expand_path('ogr/layer', __dir__)
+  autoload :LineString,
+    File.expand_path('ogr/line_string', __dir__)
+  autoload :MultiLineString,
+    File.expand_path('ogr/multi_line_string', __dir__)
+  autoload :MultiPoint,
+    File.expand_path('ogr/multi_point', __dir__)
+  autoload :MultiPolygon,
+    File.expand_path('ogr/multi_polygon', __dir__)
+  autoload :Point,
+    File.expand_path('ogr/point', __dir__)
+  autoload :Polygon,
+    File.expand_path('ogr/polygon', __dir__)
   autoload :SpatialReference,
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,

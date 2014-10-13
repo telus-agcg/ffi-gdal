@@ -1,5 +1,6 @@
 $:.unshift File.expand_path('../lib', __FILE__)
-$:.unshift File.expand_path('../spec', __FILE__)
+#$:.unshift File.expand_path('../spec', __FILE__)
+require 'ffi-gdal'
 
 Dir['./spec/support/shared_examples/**/*.rb'].sort.each { |f| require f}
 
@@ -11,3 +12,5 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = 'random'
 end
+
+OGR::Geometry.logging_enabled = true
