@@ -248,7 +248,7 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def touches?(geometry)
-      FFI::GDAL.OGR_G_Touches(@geometry_pointer, pointer_from(geometry))
+      FFI::GDAL.OGR_G_Touches(@geometry_pointer, geometry.c_pointer)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]

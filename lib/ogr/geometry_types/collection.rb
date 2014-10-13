@@ -4,7 +4,7 @@ module OGR
       def collection?
         true
       end
-      
+
       # If this geometry is a container, this fetches the geometry at the
       #   sub_geometry_index.
       #

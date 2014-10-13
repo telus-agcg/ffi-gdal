@@ -209,6 +209,8 @@ module OGR
       geometry.add_point(extent.min_x, extent.max_y)
       geometry.add_point(extent.max_x, extent.max_y)
       geometry.add_point(extent.max_x, extent.min_y)
+      geometry.add_point(extent.min_x, extent.min_y)
+      geometry.flatten_to_2d!
 
       geometry.convex_hull
     end

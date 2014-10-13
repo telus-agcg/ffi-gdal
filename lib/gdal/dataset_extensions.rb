@@ -116,7 +116,7 @@ module GDAL
           raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
         end
 
-        pixel_value_field = layer.definition.field_index(field_name)
+        pixel_value_field = layer.feature_definition.field_index(field_name)
         band.polygonize(layer, pixel_value_field: pixel_value_field)
       end
 
@@ -134,8 +134,8 @@ module GDAL
     # @param from_type [FFI::GDAL::OGRwkbGeometryType] The geometry type to use
     #   for vectorizing the raster.
     # @return [OGR::Geometry] A convex hull geometry.
-    def to_geometry(from_type: :wkbMultiLineString)
-      raster_data_source = to_vector('memory', 'Memory', geometry_type: from_type)
+    def to_geometry
+      raster_data_source = to_vector('memory', 'Memory', geometry_type: :wkbLineString)
 
       raster_data_source.layer(0).geometry_from_extent
     end
@@ -149,19 +149,15 @@ module GDAL
       @raster_geometry ||= to_geometry
 
       coordinate_transformation = OGR::CoordinateTransformation.create(source_srs,
-      @raster_geometry.spatial_reference)
+        @raster_geometry.spatial_reference)
       source_geometry.transform!(coordinate_transformation)
 
-      log "raster within wkt? #{@raster_geometry.within?(source_geometry)}"
-      log "raster contains wkt? #{@raster_geometry.contains?(source_geometry)}"
       log "raster touches wkt? #{@raster_geometry.touches?(source_geometry)}"
+      log "raster contains wkt? #{@raster_geometry.contains?(source_geometry)}"
+      log "raster within wkt? #{@raster_geometry.within?(source_geometry)}"
       log "raster crosses wkt? #{@raster_geometry.crosses?(source_geometry)}"
       log "raster overlaps wkt? #{@raster_geometry.overlaps?(source_geometry)}"
-      log "wkt within raster? #{source_geometry.within?(@raster_geometry)}"
-      log "wkt contains raster? #{source_geometry.contains?(@raster_geometry)}"
-      log "wkt touches raster? #{source_geometry.touches?(@raster_geometry)}"
-      log "wkt crosses raster? #{source_geometry.crosses?(@raster_geometry)}"
-      log "wkt overlaps raster? #{source_geometry.overlaps?(@raster_geometry)}"
+      log "raster disjoint wkt? #{@raster_geometry.disjoint?(source_geometry)}"
 
       @raster_geometry.contains? source_geometry
     end

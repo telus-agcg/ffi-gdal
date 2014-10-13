@@ -58,25 +58,11 @@ module GDAL
 
     # Close the dataset.
     def close
-      @last_known_file_list = file_list
-      FFI::GDAL.GDALClose(@dataset_pointer)
-      @open = false
-    end
-
-    # Tries to reopen the dataset using the first item from #file_list before
-    # the dataset was closed.
-    #
-    # @param access_flag [String]
-    # @return [Boolean]
-    def reopen(access_flag)
-      @dataset_pointer = FFI::GDAL.GDALOpen(@last_known_file_list.first, access_flag)
-
-      @open = true unless @dataset_pointer.null?
-    end
-
-    # @return [Boolean]
-    def open?
-      @open
+      if @dataset_pointer.null?
+        false
+      else
+        FFI::GDAL.GDALClose(@dataset_pointer)
+      end
     end
 
     # @return [Symbol]
@@ -100,7 +86,7 @@ module GDAL
     # Fetches all files that form the dataset.
     # @return [Array<String>]
     def file_list
-      list_pointer = FFI::GDAL.GDALGetFileList(c_pointer)
+      list_pointer = FFI::GDAL.GDALGetFileList(@dataset_pointer)
       file_list = list_pointer.get_array_of_string(0)
       FFI::GDAL.CSLDestroy(list_pointer)
 
@@ -203,7 +189,7 @@ module GDAL
     # @param new_transform [GDAL::GeoTransform]
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
-      new_pointer = new_transform.c_pointer.dup
+      new_pointer = FFI::Pointer.new(new_transform.c_pointer)
       cpl_err = FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
       cpl_err.to_bool
 
@@ -235,6 +221,11 @@ module GDAL
       else
         FFI::GDAL.GDALGCP.new(gcp_array_pointer)
       end
+    end
+
+    # @return [Fixnum]
+    def layer_count
+      FFI::GDAL.GDALDatasetGetLayerCount(@dataset_pointer)
     end
 
     # @param resampling [String, Symbol] One of:
@@ -300,6 +291,11 @@ module GDAL
     #   raster, suitable for heatmaps for instance.
     def rasterize_geometries!(band_numbers, geometries, burn_values,
       transformer: nil, transform_arg: nil, **options, &progress_block)
+
+      if geo_transform.nil? && gcp_count.zero?
+        raise "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
+      end
+
       gdal_options = GDAL::Options.pointer(options)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
       geometries = geometries.is_a?(Array) ? geometries : [geometries]

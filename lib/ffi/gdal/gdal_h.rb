@@ -27,7 +27,7 @@ module FFI
       :GARIO_TypeCount,  4
 
     GDALAccess = enum :GA_ReadOnly, 0,
-      :GA_update, 1
+      :GA_Update, 1
 
     GDALRWFlag = enum :GF_Read, 0,
       :GF_Write, 1

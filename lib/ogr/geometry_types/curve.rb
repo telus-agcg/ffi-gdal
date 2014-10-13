@@ -32,6 +32,15 @@ module OGR
         end
       end
 
+      # Adds a point to a LineString or Point geometry.
+      #
+      # @param x [Float]
+      # @param y [Float]
+      # @param z [Float]
+      def add_point(x, y, z=0)
+        FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
+      end
+
       def set_point(index, x, y, z=0)
         FFI::GDAL.OGR_G_SetPoint(@geometry_pointer, index, x, y, z)
       end
