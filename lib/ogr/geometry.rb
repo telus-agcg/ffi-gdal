@@ -22,13 +22,14 @@ module OGR
       else
         new(geometry)
       end
-      case geometry.type_to_name
-      when 'Point' then OGR::Point.new(geometry.c_pointer)
-      when 'Line String' then OGR::LineString.new(geometry.c_pointer)
-      when 'Polygon' then OGR::Polygon.new(geometry.c_pointer)
-      when 'Multi Point' then OGR::MultiPoint.new(geometry.c_pointer)
-      when 'Multi Line String' then OGR::MultiLineString.new(geometry.c_pointer)
-      when 'Multi Polygon' then OGR::MultiPolygon.new(geometry.c_pointer)
+      case geometry.name
+      when 'POINT' then OGR::Point.new(geometry.c_pointer)
+      when 'LINESTRING' then OGR::LineString.new(geometry.c_pointer)
+      when 'LINEARRING' then OGR::LinearRing.new(geometry.c_pointer)
+      when 'POLYGON' then OGR::Polygon.new(geometry.c_pointer)
+      when 'MULTIPOINT' then OGR::MultiPoint.new(geometry.c_pointer)
+      when 'MULTILINESTRING' then OGR::MultiLineString.new(geometry.c_pointer)
+      when 'MULTIPOLYGON' then OGR::MultiPolygon.new(geometry.c_pointer)
       else
         geometry
       end
@@ -100,11 +101,7 @@ module OGR
     end
 
     def c_pointer
-      # ptr = FFI::Pointer.new(@geometry_pointer)
-      # ptr.autorelease = false
-      #
-      # ptr
-      a = @geometry_pointer
+      @geometry_pointer
     end
 
     # If this geometry is a container, this adds +geometry+ to the container.
