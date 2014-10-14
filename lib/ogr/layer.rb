@@ -98,7 +98,7 @@ module OGR
     #
     # @return [OGR::Feature]
     def create_feature(name)
-      feature_def = OGR::FeatureDefinition.create(name)
+      feature_def = feature_definition
       feature = OGR::Feature.create(feature_def)
       ogr_err = FFI::GDAL.OGR_L_CreateFeature(@ogr_layer_pointer, feature.c_pointer)
 
