@@ -2,6 +2,7 @@ require 'uri'
 require 'json'
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
+require_relative 'data_source_extensions'
 require_relative 'exceptions'
 require_relative 'layer'
 require_relative 'style_table'
@@ -11,6 +12,7 @@ module OGR
   class DataSource
     include GDAL::MajorObject
     include GDAL::Logger
+    include DataSourceExtensions
 
     # @param path [String] Path/URL to the file to open.
     # @param access_flag [String] 'r' for read, 'w', for write.
@@ -171,25 +173,6 @@ module OGR
       return nil if style_table_ptr.null?
 
       @style_table = OGR::StyleTable.new(style_table_ptr)
-    end
-
-    # @return [Hash]
-    def as_json
-      {
-        data_source: {
-          driver: driver.name,
-          layer_count: layer_count,
-          layers: layers.map(&:as_json),
-          name: name,
-          style_table: style_table ? style_table.as_json : nil
-        },
-        metadata: all_metadata
-      }
-    end
-
-    # @return [String]
-    def to_json
-      as_json.to_json
     end
   end
 end
