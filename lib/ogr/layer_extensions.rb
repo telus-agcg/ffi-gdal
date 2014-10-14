@@ -5,7 +5,7 @@ module OGR
 
     # @return [Array<OGR::Feature>]
     def features
-      feature_list = 0.upto(feature_count).map do |i|
+      feature_list = 0.upto(feature_count - 1).map do |i|
         feature(i)
       end
 
@@ -36,7 +36,7 @@ module OGR
           extent: extent.as_json,
           feature_count: feature_count,
           feature_definition: feature_definition.as_json,
-          #features: features.map(&:as_json),
+          features: features.map(&:as_json),
           fid_column: fid_column,
           geometry_column: geometry_column,
           geometry_type: geometry_type,

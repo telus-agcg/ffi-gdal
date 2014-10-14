@@ -5,8 +5,7 @@ module OGR
 
     # @return [Hash]
     def as_json
-      {
-        area: area,
+      json = {
         coordinate_dimension: coordinate_dimension,
         count: count,
         dimension: dimension,
@@ -14,14 +13,18 @@ module OGR
         is_ring: ring?,
         is_simple: simple?,
         is_valid: valid?,
-        length: length,
         name: name,
         point_count: point_count,
-        points: points,
         spatial_reference: spatial_reference.as_json,
         type: type_to_name,
         wkb_size: wkb_size
       }
+
+      json.merge!(area: area) if respond_to? :area
+      json.merge!(length: length) if respond_to? :length
+      json.merge!(points: points) if respond_to? :points
+
+      json
     end
 
     # @return [String]

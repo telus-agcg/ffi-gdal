@@ -48,12 +48,12 @@ describe OGR::Point do
       specify { expect(subject.point_count).to eq 1 }
     end
 
-    describe '#centroid' do
-      it 'returns 0' do
-        expect(subject.centroid.point).to eq(subject.point)
-      end
-    end
-
+    # describe '#centroid' do
+    #   it 'returns 0' do
+    #     expect(subject.centroid.point).to eq(subject.point)
+    #   end
+    # end
+    #
     describe '#equals?' do
       context 'a point with same coordinates' do
         it 'returns true' do

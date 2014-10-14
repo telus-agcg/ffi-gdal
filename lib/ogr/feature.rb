@@ -93,7 +93,7 @@ module OGR
     def definition
       return @definition if @definition
 
-      feature_defn_ptr = FFI::GDAL.OGR_F_GetDefRef(@feature_pointer)
+      feature_defn_ptr = FFI::GDAL.OGR_F_GetDefnRef(@feature_pointer)
       return nil if feature_defn_ptr.null?
 
       @definition = OGR::FeatureDefinition.new(feature_defn_ptr)

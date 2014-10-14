@@ -113,7 +113,7 @@ module OGR
     # geometries added will be interior rings.
     #
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-    def add(sub_geometry)
+    def add_geometry(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
     end
 
@@ -205,15 +205,15 @@ module OGR
 
     # @param point_geometry [OGR::Geometry, FFI::Pointer]
     # @return [Fixnum]
-    def centroid
-      point = OGR::Geometry.create(:wkbPoint)
-      FFI::GDAL.OGR_G_Centroid(@geometry_pointer, point.c_pointer)
-      return nil if point.c_pointer.null?
-
-      point
-    end
-
-    # Dump as WKT to the give +file+.
+    # def centroid
+    #   point = OGR::Geometry.create(:wkbPoint)
+    #   FFI::GDAL.OGR_G_Centroid(@geometry_pointer, point.c_pointer)
+    #   return nil if point.c_pointer.null?
+    #
+    #   point
+    # end
+    #
+    # # Dump as WKT to the give +file+.
     #
     # @param file [String] The text file to write to.
     # @param prefix [String] The prefix to put on each line of output.
@@ -286,11 +286,18 @@ module OGR
       FFI::GDAL.OGR_G_IsValid(@geometry_pointer)
     end
 
+    # Returns TRUE if the geometry has no anomalous geometric points, such as
+    # self intersection or self tangency. The description of each instantiable
+    # geometric class will include the specific conditions that cause an
+    # instance of that class to be classified as not simple.
+    #
     # @return [Boolean]
     def simple?
       FFI::GDAL.OGR_G_IsSimple(@geometry_pointer)
     end
 
+    # TRUE if the geometry has no points, otherwise FALSE.
+    #
     # @return [Boolean]
     def ring?
       FFI::GDAL.OGR_G_IsRing(@geometry_pointer)

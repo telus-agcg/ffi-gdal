@@ -41,7 +41,7 @@ module OGR
         if coordinate_dimension == 3
           FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
         else
-          FFI::GDAL.OGR_G_AddPoint_2D(@geometry_pointer, x, y, z)
+          FFI::GDAL.OGR_G_AddPoint_2D(@geometry_pointer, x, y)
         end
       end
 
@@ -77,6 +77,17 @@ module OGR
 
         0.upto(num_points - 1).map do |i|
           point(i)
+        end
+      end
+
+      # @param geo_transform [GDAL::GeoTransform]
+      # @return [Array<Array>]
+      def pixels(geo_transform)
+        log "points count: #{point_count}"
+        points.map do |x_and_y|
+          result = geo_transform.world_to_pixel(*x_and_y)
+
+          [result[:x].to_i.abs, result[:y].to_i.abs]
         end
       end
 
