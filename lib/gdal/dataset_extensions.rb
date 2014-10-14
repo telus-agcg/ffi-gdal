@@ -69,6 +69,17 @@ module GDAL
       band.is_a?(GDAL::RasterBand) ? band : nil
     end
 
+    # Creates a OGR::SpatialReference object from the dataset's projection.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference
+      return @spatial_reference if @spatial_reference
+
+      return nil if projection.empty?
+
+      @spatial_reference = OGR::SpatialReference.new(projection)
+    end
+
     # Converts raster band number +band_number+ to the vector format
     # +vector_driver_name+.  Similar to gdal_polygonize.py.  If block format is
     # used, the new DataSource will be closed/flushed when the block returns. If

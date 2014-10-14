@@ -1,9 +1,10 @@
-require 'json'
 require_relative 'envelope'
+require_relative 'geometry_extensions'
 
 module OGR
   class Geometry
     include GDAL::Logger
+    include GeometryExtensions
 
     # @param type [FFI::GDAL::OGRwkbGeometryType]
     # @return [OGR::Geometry]
@@ -553,36 +554,6 @@ module OGR
     # @return [OGR::Geometry]
     def to_multi_line_string
       build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiLineString(ptr) }
-    end
-
-    # @return [Hash]
-    def as_json
-      {
-        area: area,
-        coordinate_dimension: coordinate_dimension,
-        count: count,
-        dimension: dimension,
-        is_empty: empty?,
-        is_ring: ring?,
-        is_simple: simple?,
-        is_valid: valid?,
-        length: length,
-        name: name,
-        point_count: point_count,
-        points: points,
-        spatial_reference: spatial_reference.as_json,
-        type: type_to_name,
-        wkb_size: wkb_size
-      }
-    end
-
-    # @return [String]
-    def to_json
-      as_json.to_json
-    end
-
-    def collection?
-      false
     end
 
     private

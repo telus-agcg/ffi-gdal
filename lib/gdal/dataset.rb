@@ -87,6 +87,7 @@ module GDAL
     # @return [Array<String>]
     def file_list
       list_pointer = FFI::GDAL.GDALGetFileList(@dataset_pointer)
+      return [] if list_pointer.null?
       file_list = list_pointer.get_array_of_string(0)
       FFI::GDAL.CSLDestroy(list_pointer)
 
@@ -162,17 +163,6 @@ module GDAL
       cpl_err = FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
 
       cpl_err.to_bool
-    end
-
-    # Creates a OGR::SpatialReference object from the dataset's projection.
-    #
-    # @return [OGR::SpatialReference]
-    def spatial_reference
-      return @spatial_reference if @spatial_reference
-
-      return nil if projection.empty?
-
-      @spatial_reference = OGR::SpatialReference.new(projection)
     end
 
     # @return [GDAL::GeoTransform]
