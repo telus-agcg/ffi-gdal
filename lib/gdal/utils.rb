@@ -261,21 +261,6 @@ module GDAL
         ndvi
       end
 
-      # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
-      # pixel location of a geospatial coordinate.
-      #
-      # @param geo_transform [GDAL::GeoTransform]
-      # @param x [Fixnum]
-      # @param y [Fixnum]
-      # @return [Array<Fixnum, Fixnum>] [pixel, line]
-      # TODO: Use GDAL::GeoTransform#apply_geotransform
-      def world_to_pixel(geo_transform, x, y)
-        pixel = ((x - geo_transform.x_origin) / geo_transform.pixel_width).to_i
-        line = ((geo_transform.y_origin - y) / geo_transform.pixel_width).to_i
-
-        [pixel, line]
-      end
-
       #---------------------------------------------------------------------------
       # Privates
       #---------------------------------------------------------------------------
