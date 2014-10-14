@@ -38,7 +38,11 @@ module OGR
       # @param y [Float]
       # @param z [Float]
       def add_point(x, y, z=0)
-        FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
+        if coordinate_dimension == 3
+          FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
+        else
+          FFI::GDAL.OGR_G_AddPoint_2D(@geometry_pointer, x, y, z)
+        end
       end
 
       def set_point(index, x, y, z=0)
