@@ -84,22 +84,5 @@ module OGR
     def ignore=(new_value)
       FFI::GDAL.OGR_Fld_SetIgnored(@field_pointer, new_value)
     end
-
-    # @return [Hash]
-    def as_json
-      {
-        is_ignored: ignored?,
-        justification: justification,
-        name: name,
-        precision: precision,
-        type: type,
-        width: width
-      }
-    end
-
-    # @return [String]
-    def to_json
-      as_json.to_json
-    end
   end
 end
