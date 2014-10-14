@@ -4,8 +4,10 @@ require_relative '../ogr/coordinate_transformation'
 module GDAL
   class Utils
     class << self
-    # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
-    # a GDAL::RequiredBandNotFound if one of those band types isn't found.
+      include GDAL::Logger
+
+      # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
+      # a GDAL::RequiredBandNotFound if one of those band types isn't found.
       #
       # @param source [String] Path to the dataset that contains the red and NIR
       #   bands.
@@ -40,8 +42,9 @@ module GDAL
           # create geometry from the wkt_geometry
           wkt_spatial_ref = OGR::SpatialReference.new
           wkt_spatial_ref.from_epsg(4326)
+
           destination_geometry = OGR::Geometry.create_from_wkt(clip_to_wkt, wkt_spatial_ref)
-          puts "geometry spatial reference: #{destination_geometry.spatial_reference}"
+          GDAL.log "geometry spatial reference: #{destination_geometry.spatial_reference.to_wkt}"
 
           # reproject new dataset to use projection from original dataset
           target_spatial_ref = OGR::SpatialReference.new(source_dataset.projection)
@@ -71,10 +74,10 @@ module GDAL
           y_count = ((y_max - y_min) / source_dataset.geo_transform.pixel_width).to_i + 1
           # x_count, y_count = world_to_pixel(source_dataset.geo_transform,
           #   x_max, y_min)
-          puts "x_offset: #{x_offset}"
-          puts "y_offset: #{y_offset}"
-          puts "x_count: #{x_count}"
-          puts "y_count: #{y_count}"
+          GDAL.log "x_offset: #{x_offset}"
+          GDAL.log "y_offset: #{y_offset}"
+          GDAL.log "x_count: #{x_count}"
+          GDAL.log "y_count: #{y_count}"
           # Adding these to handle the case where the WKT geometry extends
           # outside of the bounds of the source image.
           width = x_offset + x_count
@@ -87,6 +90,7 @@ module GDAL
           binding.pry
 
           driver.create_dataset(destination, width, height, bands: 1, type: :GDT_Byte) do |ndvi_dataset|
+            GDAL.log "x_offset2: #{ndvi_dataset.geo_transform.apply_geo_transform(x_min, y_max)}"
             ndvi_dataset.projection = source_dataset.projection
             ndvi_dataset.geo_transform = source_dataset.geo_transform
             # ndvi_dataset.geo_transform = GDAL::GeoTransform.new(ndvi_dataset)
@@ -97,12 +101,12 @@ module GDAL
             # ndvi_dataset.geo_transform.x_rotation = source_dataset.geo_transform.x_rotation
             # ndvi_dataset.geo_transform.y_rotation = source_dataset.geo_transform.y_rotation
 
-            puts "geo_transform x origin is now: #{ndvi_dataset.geo_transform.x_origin}"
-            puts "geo_transform y origin is now: #{ndvi_dataset.geo_transform.y_origin}"
-            puts "geo_transform pixel width is now: #{ndvi_dataset.geo_transform.pixel_width}"
-            puts "geo_transform pixel height is now: #{ndvi_dataset.geo_transform.pixel_height}"
-            puts "geo_transform x rotation is now: #{ndvi_dataset.geo_transform.x_rotation}"
-            puts "geo_transform y rotation is now: #{ndvi_dataset.geo_transform.y_rotation}"
+            GDAL.log "geo_transform x origin is now: #{ndvi_dataset.geo_transform.x_origin}"
+            GDAL.log "geo_transform y origin is now: #{ndvi_dataset.geo_transform.y_origin}"
+            GDAL.log "geo_transform pixel width is now: #{ndvi_dataset.geo_transform.pixel_width}"
+            GDAL.log "geo_transform pixel height is now: #{ndvi_dataset.geo_transform.pixel_height}"
+            GDAL.log "geo_transform x rotation is now: #{ndvi_dataset.geo_transform.x_rotation}"
+            GDAL.log "geo_transform y rotation is now: #{ndvi_dataset.geo_transform.y_rotation}"
 
             source_dataset_spatial_ref = OGR::SpatialReference.new(source_dataset.projection)
             ndvi_dataset.projection = source_dataset_spatial_ref.to_wkt
@@ -117,8 +121,8 @@ module GDAL
             red_clipped = red_array[y_offset...height, x_offset...width]
             nir_clipped = nir_array[y_offset...height, x_offset...width]
             ndvi_array = calculate_ndvi(red_clipped, nir_clipped, true)
-            puts "ndvi x size: #{ndvi_array.shape.first}"
-            puts "ndvi y size: #{ndvi_array.shape.last}"
+            GDAL.log "ndvi x size: #{ndvi_array.shape.first}"
+            GDAL.log "ndvi y size: #{ndvi_array.shape.last}"
 
             #points = destination_boundary.points_array
             # pixels = points.map do |x, y|
@@ -126,7 +130,6 @@ module GDAL
             #   puts "x_pixel: #{x_pixel}"
             #   x_pixel
             # end
-
 
             #ndvi_band.write_array(ndvi_array)
             ndvi_band.write_array(clipped_ndvi_array)
