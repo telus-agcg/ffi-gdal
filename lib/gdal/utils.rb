@@ -37,11 +37,6 @@ module GDAL
         nir_array = original_bands[:nir].to_na
 
         if clip_to_wkt
-          puts "original x_origin: #{source_dataset.geo_transform.x_origin}"
-          puts "original y_origin: #{source_dataset.geo_transform.y_origin}"
-          puts "original pixel_width: #{source_dataset.geo_transform.pixel_width}"
-          puts "original pixel_height: #{source_dataset.geo_transform.pixel_height}"
-
           # create geometry from the wkt_geometry
           wkt_spatial_ref = OGR::SpatialReference.new
           wkt_spatial_ref.from_epsg(4326)
@@ -58,14 +53,14 @@ module GDAL
           # Get geometry extent
           destination_boundary = destination_geometry.boundary.to_line_string
           #destination_points = NArray[destination_boundary.points_array]
-          x_min = destination_boundary.envelope.min_x
-          x_max = destination_boundary.envelope.max_x
-          y_min = destination_boundary.envelope.min_y
-          y_max = destination_boundary.envelope.max_y
-          puts "min x: #{x_min}"
-          puts "min y: #{y_min}"
-          puts "max x: #{x_max}"
-          puts "max y: #{y_max}"
+          x_min = destination_boundary.envelope.x_min
+          x_max = destination_boundary.envelope.x_max
+          y_min = destination_boundary.envelope.y_min
+          y_max = destination_boundary.envelope.y_max
+          GDAL.log "min x: #{x_min}"
+          GDAL.log "min y: #{y_min}"
+          GDAL.log "max x: #{x_max}"
+          GDAL.log "max y: #{y_max}"
 
           # Specify offset and rows and columns to read
           x_offset = ((x_min - source_dataset.geo_transform.x_origin) / source_dataset.geo_transform.pixel_width).to_i
@@ -84,10 +79,12 @@ module GDAL
           # outside of the bounds of the source image.
           width = x_offset + x_count
           height = y_offset + y_count
-          puts "width #{width}"
-          puts "height #{height}"
-          puts "geometry envelope x: #{destination_boundary.envelope.min_x}"
-          puts "geometry envelope y: #{destination_boundary.envelope.min_y}"
+          GDAL.log "width #{width}"
+          GDAL.log "height #{height}"
+          GDAL.log "geometry envelope x: #{destination_boundary.envelope.x_min}"
+          GDAL.log "geometry envelope y: #{destination_boundary.envelope.y_min}"
+
+          binding.pry
 
           driver.create_dataset(destination, width, height, bands: 1, type: :GDT_Byte) do |ndvi_dataset|
             ndvi_dataset.projection = source_dataset.projection

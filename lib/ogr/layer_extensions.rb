@@ -19,11 +19,11 @@ module OGR
       geometry = OGR::Geometry.create(:wkbLineString)
       geometry.spatial_reference = sr
 
-      geometry.add_point(extent.min_x, extent.min_y)
-      geometry.add_point(extent.min_x, extent.max_y)
-      geometry.add_point(extent.max_x, extent.max_y)
-      geometry.add_point(extent.max_x, extent.min_y)
-      geometry.add_point(extent.min_x, extent.min_y)
+      geometry.add_point(extent.x_min, extent.y_min)
+      geometry.add_point(extent.x_min, extent.y_max)
+      geometry.add_point(extent.x_max, extent.y_max)
+      geometry.add_point(extent.x_max, extent.y_min)
+      geometry.add_point(extent.x_min, extent.y_min)
       geometry.flatten_to_2d!
 
       geometry.convex_hull

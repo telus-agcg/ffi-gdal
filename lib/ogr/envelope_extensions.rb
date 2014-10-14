@@ -10,12 +10,12 @@ module OGR
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x_origin, y_origin, x_max, y_max>]
     def world_to_pixel(geo_transform, value_type=:integer)
-      min_values = geo_transform.world_to_pixel(min_x, max_y)
-      max_values = geo_transform.world_to_pixel(max_x, min_y)
+      min_values = geo_transform.world_to_pixel(x_min, y_max)
+      max_values = geo_transform.world_to_pixel(x_max, y_min)
       pixel_count = max_values[:x] - min_values[:x]
       line_count = max_values[:y] - min_values[:y]
-      pixel_width = (max_x - min_x) / pixel_count
-      pixel_height = (max_y - min_y) / pixel_count
+      pixel_width = (x_max - x_min) / pixel_count
+      pixel_height = (y_max - y_min) / pixel_count
 
       case value_type
       when :float
@@ -60,17 +60,17 @@ module OGR
     # @param other_envelope [OGR::Envelope]
     # @return [Boolean]
     def ==(other_envelope)
-      min_x == other_envelope.min_x && min_y == other_envelope.min_y &&
-        max_x == other_envelope.max_x && max_y == other_envelope.max_y
+      x_min == other_envelope.x_min && y_min == other_envelope.y_min &&
+        x_max == other_envelope.x_max && y_max == other_envelope.y_max
     end
 
     # @return [Hash]
     def as_json
       json = {
-        min_x: min_x,
-        max_x: max_x,
-        min_y: min_y,
-        max_y: max_y
+        x_min: x_min,
+        x_max: x_max,
+        y_min: y_min,
+        y_max: y_max
       }
 
       if @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
@@ -86,7 +86,7 @@ module OGR
     end
 
     def to_a
-      [min_x, min_y, max_x, max_y]
+      [x_min, y_min, x_max, y_max]
     end
   end
 end
