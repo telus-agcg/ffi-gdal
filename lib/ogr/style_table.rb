@@ -1,8 +1,9 @@
-require 'json'
 require_relative '../ffi/ogr'
+require_relative 'style_table_extensions'
 
 module OGR
   class StyleTable
+    include StyleTableExtensions
 
     # @param style_table [OGR::StyleTable, FFI::Pointer]
     def initialize(style_table)
@@ -11,16 +12,6 @@ module OGR
 
     def c_pointer
       @ogr_style_table_pointer
-    end
-
-    # @return [String]
-    def as_json
-      'StyleTable interface not yet wrapped with ffi-ruby'
-    end
-
-    # @return [String]
-    def to_json
-      as_json.to_json
     end
   end
 end

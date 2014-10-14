@@ -92,15 +92,6 @@ module OGR
       end
     end
 
-    # @return [Array<OGR::Layer>]
-    def layers
-      l = 0.upto(layer_count - 1).map do |i|
-        layer(i)
-      end
-
-      @layers = l
-    end
-
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)

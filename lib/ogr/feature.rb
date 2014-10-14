@@ -1,10 +1,11 @@
-require 'json'
 require_relative '../ffi/ogr'
+require_relative 'feature_extensions'
 require_relative 'feature_definition'
 require_relative 'field'
 
 module OGR
   class Feature
+    include FeatureExtensions
 
     # @param feature_definition [OGR::FeatureDefinition,FFI::Pointer]
     # @return [OGR::Feature]
@@ -81,13 +82,6 @@ module OGR
     # @return [Boolean]
     def field_set?(index)
       FFI::GDAL.OGR_F_IsFieldSet(@feature_pointer, index)
-    end
-
-    # @return [Array<OGR::Field>]
-    def fields
-      0.upto(field_count - 1).map do |i|
-        field(i)
-      end
     end
 
     # @param index [Fixnum]

@@ -1,7 +1,7 @@
 require 'json'
 
 module OGR
-  module FeatureExtensions
+  module FeatureDefinitionExtensions
 
     # @return [Array<OGR::Field>]
     def fields
@@ -10,16 +10,21 @@ module OGR
       end
     end
 
+    # @param name [String]
+    # @return [OGR::Field]
+    def field_by_name(name)
+      field(field_index(name))
+    end
+
     # @return [Hash]
     def as_json
       {
-        definition: definition,
-        fid: fid,
         field_count: field_count,
         fields: fields.map(&:as_json),
-        geometry: geometry.as_json,
         geometry_field_count: geometry_field_count,
-        style_string: style_string
+        geometry_type: geometry_type,
+        name: name,
+        is_style_ignored: style_ignored?
       }
     end
 

@@ -1,11 +1,12 @@
-require 'json'
 require_relative '../ffi/ogr'
+require_relative 'spatial_reference_extensions'
 
 module OGR
   # Represents a geographic coordinate system.  There are two primary types:
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    include SpatialReferenceExtensions
 
     # @return [Array<String>]
     def self.projection_methods
@@ -666,32 +667,6 @@ module OGR
       dest_ptr = GDAL._pointer(OGR::SpatialReference, destination_spatial_ref)
 
       FFI::GDAL.OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)
-    end
-
-    # @return [Hash]
-    def as_json
-      {
-        angular_units: angular_units,
-        epsg_treats_as_lat_long: epsg_treats_as_lat_long?,
-        epsg_treats_as_northing_easting: epsg_treats_as_northing_easting?,
-        is_compound: compound?,
-        is_geocentric: geocentric?,
-        is_geographic: geographic?,
-        is_local: local?,
-        is_projected: projected?,
-        is_vertical: vertical?,
-        linear_units: linear_units,
-        prime_meridian: prime_meridian,
-        semi_major: semi_major,
-        semi_minor: semi_minor,
-        spheroid_inverse_flattening: spheroid_inverse_flattening,
-        utm_zone: utm_zone
-      }
-    end
-
-    # @return [String]
-    def to_json
-      as_json.to_json
     end
   end
 end
