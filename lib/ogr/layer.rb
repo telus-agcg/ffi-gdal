@@ -86,10 +86,11 @@ module OGR
       FFI::GDAL.OGR_L_GetFeaturesRead(@ogr_layer_pointer)
     end
 
-    # Creates and writes a new feature to the layer.
+    # Uses the already-defined FeatureDefinition to create then write a new feature
+    # to the layer.
     #
     # @return [OGR::Feature]
-    def create_feature(name)
+    def create_feature
       feature_def = feature_definition
       feature = OGR::Feature.create(feature_def)
       ogr_err = FFI::GDAL.OGR_L_CreateFeature(@ogr_layer_pointer, feature.c_pointer)

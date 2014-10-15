@@ -16,11 +16,11 @@ module OGR
     # @option options application [String] Sets the User-Agent request header.
     #   Defaults to the GDAL version string.
     # @option options language [String] Sets the Accept-Language request
-    #   headeer.
+    #   header.
     # @option options delay [Float] Minimum delay, in seconds, between
     #   consecutive requests. Defaults to 1.0.
     # @option options query_template [String] URL template for GET requests.
-    #   Must contain one and only one occurence of %s.  If not specified, the
+    #   Must contain one and only one occurrence of %s.  If not specified, the
     #   URL template is hard-coded.
     # @option options reverse_query_template [String] Template to use for
     #   reverse geocoding.

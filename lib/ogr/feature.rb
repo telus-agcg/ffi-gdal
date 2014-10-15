@@ -60,6 +60,8 @@ module OGR
           time.min,
           time.sec,
           zone)
+      else
+        raise "Unknown field type: #{value.class.name}"
       end
     end
 
@@ -148,7 +150,7 @@ module OGR
       count_ptr = FFI::MemoryPointer.new(:int)
       list_ints = FFI::GDAL.OGR_F_GetFieldAsIntegerList(@feature_pointer, index, count_ptr)
 
-      list_inst.read_array_of_int
+      list_ints.read_array_of_int
     end
 
     # @param index [Fixnum]
@@ -163,7 +165,7 @@ module OGR
       count_ptr = FFI::MemoryPointer.new(:int)
       list_ints = FFI::GDAL.OGR_F_GetFieldAsDoubleList(@feature_pointer, index, count_ptr)
 
-      list_inst.read_array_of_double
+      list_ints.read_array_of_double
     end
 
     # @param index [Fixnum]
@@ -178,7 +180,7 @@ module OGR
       count_ptr = FFI::MemoryPointer.new(:int)
       list_ints = FFI::GDAL.OGR_F_GetFieldAsStringList(@feature_pointer, index, count_ptr)
 
-      list_inst.read_array_of_string
+      list_ints.read_array_of_string
     end
 
     # @return [String]

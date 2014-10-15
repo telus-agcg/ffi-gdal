@@ -186,7 +186,7 @@ module GDAL
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
     # @param options [Hash]
-    # @param progress [Proc] For outputing copy progress.  Conforms to the
+    # @param progress [Proc] For outputting copy progress.  Conforms to the
     #   FFI::GDAL::GDALProgressFunc signature.
     def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)

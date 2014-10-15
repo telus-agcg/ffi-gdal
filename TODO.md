@@ -1,8 +1,6 @@
-* Use autoload
+* Use autoload for C wrappers
 * Documentation
 * handle OGRErrs
-* rename "field definition" to "field"
-* add OGR::Driver
 * add more OGR::StyleTable
 * normalize c_pointer instance variable names
 * set attributes to instance variables

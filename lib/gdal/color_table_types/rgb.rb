@@ -1,7 +1,7 @@
 module GDAL
   module ColorTableTypes
     module RGB
-      def reds(index=nil)
+      def reds
         all_entries_for :c1
       end
 

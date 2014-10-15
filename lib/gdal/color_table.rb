@@ -17,7 +17,7 @@ module GDAL
 
   class ColorTable
     include ColorTableExtensions
-    
+
     # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
     # @return [GDAL::ColorTable]
     def self.create(palette_interpretation)
@@ -37,6 +37,8 @@ module GDAL
       when :GPI_RGB then extend GDAL::ColorTableTypes::RGB
       when :GPI_CMYK then extend GDAL::ColorTableTypes::CMYK
       when :GPI_HLS then extend GDAL::ColorTableTypes::HLS
+      else
+        raise "Unknown PaletteInterpretation: #{palette_interpretation}"
       end
     end
 
@@ -133,7 +135,7 @@ module GDAL
     # @param end_index [Fixnum] Index to end the ramp on (0..255)
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
-      FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index, end_index, end_color)
+      FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index, start_color, end_index, end_color)
     end
   end
 end

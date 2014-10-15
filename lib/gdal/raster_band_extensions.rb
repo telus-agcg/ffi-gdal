@@ -37,7 +37,7 @@ module GDAL
         if columns_needed > 0
           # create new empty lines at the end
           lines.map! { |line| line.push(*Array.new(columns_needed, 0.0)) }
-        elsif rows_needed < 0
+        elsif columns_needed < 0
           # remove lines from the end
           lines.pop(rows_needed.abs)
         end

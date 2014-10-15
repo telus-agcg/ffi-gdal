@@ -156,14 +156,10 @@ module GDAL
     # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
     # @return [GDAL::GeoTransform]
     def compose(other_geo_transform)
-      other_ptr = if other_geo_transform.is_a? GDAL::GeoTransform
-        other_geo_transform.c_pointer
-      else
-        other_geo_transform
-      end
+      other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
 
       new_gt_ptr = self.class.new_pointer
-      FFI::GDAL.GDALComposeGeoTransforms(@geo_transform_pointer, other_pointer, new_gt_ptr)
+      FFI::GDAL.GDALComposeGeoTransforms(@geo_transform_pointer, other_ptr, new_gt_ptr)
       return nil if new_gt_ptr.null?
 
       GDAL::GeoTransform.new(new_gt_ptr)

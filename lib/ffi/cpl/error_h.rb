@@ -5,30 +5,6 @@ module FFI
   module GDAL
 
     #------------------------------------------------------------------------
-    # Defines
-    #------------------------------------------------------------------------
-    None = 0
-    AppDefined = 1
-    OutOfMemory = 2
-    FileIO = 3
-    OpenFailed = 4
-    IllegalArg = 5
-    NotSupported = 6
-    AssertionFailed = 7
-    NoWriteAccess = 8
-    UserInterrupt = 9
-    ObjectNull = 10
-
-    def cpla_assert(exp)
-    end
-    def validate_pointer_err(ce_failure)
-    end
-    def validate_pointer0(ptr, func)
-    end
-    def validate_pointer1(ptr, func, rc)
-    end
-
-    #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
     CPLErr = enum :CE_None, 0,

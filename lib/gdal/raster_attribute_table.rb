@@ -5,7 +5,7 @@ require_relative 'raster_attribute_table_extensions'
 module GDAL
   class RasterAttributeTable
     include RasterAttributeTableExtensions
-    
+
     # @return [GDAL::RasterAttributeTable]
     def self.create
       raster_attribute_table_ptr = FFI::GDAL.GDALCreateRasterAttributeTable
@@ -57,7 +57,6 @@ module GDAL
       FFI::GDAL.GDALRATChangesAreWrittenToFile(@rat_pointer)
     end
 
-    # @param index [Fixnum] The column number.
     # @return [Fixnum]
     def column_count
       FFI::GDAL.GDALRATGetColumnCount(@rat_pointer)
@@ -84,7 +83,7 @@ module GDAL
     # @param field_usage [GDALRATFieldUsage]
     # @return [Fixnum] The column number.
     def column_of_usage(field_usage)
-      FFI::GDAL.GDALRATGetColOfUsage(@rat_pointer, index)
+      FFI::GDAL.GDALRATGetColOfUsage(@rat_pointer, field_usage)
     end
 
     # @param name [String]

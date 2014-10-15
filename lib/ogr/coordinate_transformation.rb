@@ -93,7 +93,12 @@ module OGR
       x_vals = x_ptr.read_array_of_double
       y_vals = y_ptr.read_array_of_double
       z_vals = z_ptr.read_array_of_double unless z_vertices.empty?
-      points = NArray[x_vals, y_vals, z_vals]
+
+      points = if z_vertices.empty?
+                 NArray[x_vals, y_vals]
+               else
+                 NArray[x_vals, y_vals, z_vals]
+               end
 
       points.rot90(3).to_a
     end

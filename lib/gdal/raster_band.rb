@@ -256,7 +256,7 @@ module GDAL
     #   overviews or a subset of all tiles.
     # @param force [Boolean] If +false+, stats will only be returned if the
     #   calculating can be done without rescanning the image.
-    # @return [Hash{mininum: Float, maximum: Float, mean: Float,
+    # @return [Hash{minimum: Float, maximum: Float, mean: Float,
     #   standard_deviation: Float}]
     def statistics(approx_ok=true, force=true)
       min = FFI::MemoryPointer.new(:double)
@@ -272,8 +272,6 @@ module GDAL
         mean,
         standard_deviation)
 
-      minimum = min.null? ? 0.0 : min.read_double
-
       case cpl_err.to_ruby
       when :none, :debug
         {
@@ -284,39 +282,7 @@ module GDAL
         }
       when :warning then {}
       when :failure, :fatal then raise CPLErrFailure
-      end
-    end
-
-    def statistics(approx_ok=true, &progress)
-      min = FFI::MemoryPointer.new(:double)
-      max = FFI::MemoryPointer.new(:double)
-      mean = FFI::MemoryPointer.new(:double)
-      standard_deviation = FFI::MemoryPointer.new(:double)
-
-      cpl_err = FFI::GDAL.GDALComputeRasterStatistics(@raster_band_pointer,
-        approx_ok,                # bApproxOK
-        min,                      # pdfMin
-        max,                      # pdfMax
-        mean,                     # pdfMean
-        standard_deviation,       # pdfStdDev
-        progress,                 # pfnProgress
-        nil)                      # pProgressData
-
-      minimum = min.null? ? 0.0 : min.read_double
-      maximum = max.null? ? 0.0 : max.read_double
-      mean = mean.null? ? 0.0 : mean.read_double
-      standard_deviation = standard_deviation.null? ? 0.0 : standard_deviation.read_double
-
-      case cpl_err.to_ruby
-      when :none, :debug
-        {
-          minimum: minimum,
-          maximum: maximum,
-          mean: mean,
-          standard_deviation: standard_deviation
-        }
-      when :warning then {}
-      when :failure, :fatal then raise CPLErrFailure
+      else raise CPLErrFailure
       end
     end
 
@@ -391,15 +357,14 @@ module GDAL
       rat_pointer = FFI::GDAL.GDALGetDefaultRAT(@raster_band_pointer)
       return nil if rat_pointer.null?
 
-      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(c_pointer, rat_pointer)
+      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(rat_pointer)
     end
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
       rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
       cpl_err = FFI::GDAL.GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
-      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(c_pointer,
-        rat_table_pointer)
+      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(rat_table_pointer)
 
       cpl_err.to_bool
     end
@@ -472,7 +437,7 @@ module GDAL
         histogram_pointer.get_pointer(0).read_array_of_int(buckets)
       end
 
-      formated_buckets(cpl_err, min, max, buckets, totals)
+      formatted_buckets(cpl_err, min, max, buckets, totals)
     end
 
     # Computes a histogram using the given inputs.  If you just want the default
@@ -483,7 +448,7 @@ module GDAL
     # @param buckets [Fixnum]
     # @param include_out_of_range [Boolean]
     # @param approx_ok [Boolean]
-    # @param block [Proc] No required, but can be used to output progess info
+    # @param block [Proc] No required, but can be used to output progress info
     #   during processing.
     #
     # @yieldparam completion [Float] The ration completed as a decimal.
@@ -514,7 +479,7 @@ module GDAL
         histogram_pointer.read_array_of_int(buckets)
       end
 
-      formated_buckets(cpl_err, min, max, buckets, totals)
+      formatted_buckets(cpl_err, min, max, buckets, totals)
     end
 
     # TODO: Something about the pointer allocation smells here...
@@ -671,7 +636,7 @@ module GDAL
 
     private
 
-    def formated_buckets(cpl_err, min, max, buckets, totals)
+    def formatted_buckets(cpl_err, min, max, buckets, totals)
       case cpl_err.to_ruby
       when :none
         {
@@ -682,6 +647,7 @@ module GDAL
         }
       when :warning then return nil
       when :failure then raise CPLError
+      else raise CPLError
       end
     end
   end

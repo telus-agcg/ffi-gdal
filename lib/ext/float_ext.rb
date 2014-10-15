@@ -6,7 +6,7 @@ class Float
     FFI::GDAL.GDALPackedDMSToDec(self)
   end
 
-  # Converts decimal degress int a packed DMS value (DDDMMMSSS.SS).
+  # Converts decimal degrees int a packed DMS value (DDDMMMSSS.SS).
   #
   # @return [Float]
   def to_dms

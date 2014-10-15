@@ -92,7 +92,6 @@ module OGR
       @geometry_pointer.autorelease = false
 
       close_me = -> {
-        puts "CLOSING!"
         if @geometry_pointer && !@geometry_pointer.null?
           FFI::GDAL.OGR_G_DestroyGeometry(@geometry_pointer)
         end
@@ -200,16 +199,18 @@ module OGR
       FFI::GDAL.OGR_G_GetPointCount(@geometry_pointer)
     end
 
-    # @param point_geometry [OGR::Geometry, FFI::Pointer]
     # @return [Fixnum]
-    # def centroid
-    #   point = OGR::Geometry.create(:wkbPoint)
-    #   FFI::GDAL.OGR_G_Centroid(@geometry_pointer, point.c_pointer)
-    #   return nil if point.c_pointer.null?
-    #
-    #   point
-    # end
-    #
+    # @todo This regularly crashes, so disabling it.
+    def centroid
+      raise NotImplementedError, '#centroid not yet implemented.'
+
+      point = OGR::Geometry.create(:wkbPoint)
+      FFI::GDAL.OGR_G_Centroid(@geometry_pointer, point.c_pointer)
+      return nil if point.c_pointer.null?
+
+      point
+    end
+
     # # Dump as WKT to the give +file+.
     #
     # @param file [String] The text file to write to.
@@ -302,13 +303,16 @@ module OGR
 
     # @param other_geometry [OGR::Geometry]
     # @return [OGR::Geometry]
-    # def intersection(other_geometry)
-    #   return nil unless intersects?(other_geometry)
-    #
-    #   build_geometry do |ptr|
-    #     FFI::GDAL.OGR_G_Intersection(ptr, other_geometry.c_pointer)
-    #   end
-    # end
+    # @todo This regularly crashes, so disabling it.
+    def intersection(other_geometry)
+      raise NotImplementedError, '#intersection not yet implemented.'
+
+      return nil unless intersects?(other_geometry)
+
+      build_geometry do |ptr|
+        FFI::GDAL.OGR_G_Intersection(ptr, other_geometry.c_pointer)
+      end
+    end
 
     # @param other_geometry [OGR::Geometry]
     # @return [OGR::Geometry]
@@ -372,7 +376,7 @@ module OGR
     end
 
     # Assigns a spatial reference to this geometry.  Any existing spatial
-    # refernce is replace, but this does not reproject the geometry.
+    # reference is replace, but this does not reproject the geometry.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_ref)

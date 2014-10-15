@@ -88,7 +88,7 @@ module OGR
 
       ds
     rescue GDAL::InvalidBandNumber
-      ds.close
+      ds.close if ds
       delete_data_source(file_name)
       raise
     end

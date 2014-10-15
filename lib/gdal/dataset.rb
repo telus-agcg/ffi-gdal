@@ -141,6 +141,7 @@ module GDAL
     # @param options [Hash]
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
+      options_ptr = GDAL::Options.pointer(options)
       cpl_err = FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
       cpl_err.to_bool
 
@@ -374,8 +375,12 @@ module GDAL
       cpl_err.to_bool
     end
 
+    # @todo Implement
     def simple_image_warp(destination_file, driver, band_numbers,
       transformer, transformer_arg, **options)
+      raise NotImplementedError, '#simple_image_warp not yet implemented.'
+
+      options_ptr = GDAL::Options.pointer(options)
       driver = GDAL::Driver.by_name(driver)
       destination_dataset_ptr = driver.open(destination_file, 'w')
 
@@ -398,7 +403,7 @@ module GDAL
         nil,
         options_ptr)
 
-      raise "Image warp failed!" unless success
+      raise 'Image warp failed!' unless success
 
       GDAL::Dataset.new(destination_dataset_ptr)
     end
@@ -419,7 +424,7 @@ module GDAL
         error_threshold,
         order)
 
-      log "transformer poitner: #{transformer_ptr}"
+      log "transformer pointer: #{transformer_ptr}"
       transformer_ptr
     end
   end

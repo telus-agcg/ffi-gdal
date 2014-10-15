@@ -99,7 +99,6 @@ module OGR
       # Computes the length for this geometry.  Computes area for Curve or
       # MultiCurve objects.
       #
-      # @param geometry [OGR::Geometry, FFI::Pointer]
       # @return [Float] 0.0 for unsupported geometry types.
       def length
         FFI::GDAL.OGR_G_Length(@geometry_pointer)

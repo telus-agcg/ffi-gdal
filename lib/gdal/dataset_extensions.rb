@@ -94,7 +94,7 @@ module GDAL
     # to the file.
     #
     # @param destination [String] The destination file path.
-    # @param band_nubmer [Fixnum] The number of the band that is the NIR band.
+    # @param band_number [Fixnum] The number of the band that is the NIR band.
     #   Remember that raster bands are 1-indexed, not 0-indexed.
     # @param driver_name [String] the GDAL::Driver short name to use for the
     #   new dataset.
@@ -341,8 +341,6 @@ module GDAL
     # Converts the dataset to an in-memory vector, then creates a OGR::Geometry
     # from its extent (i.e. from the boundary of the image).
     #
-    # @param from_type [FFI::GDAL::OGRwkbGeometryType] The geometry type to use
-    #   for vectorizing the raster.
     # @return [OGR::Geometry] A convex hull geometry.
     def to_geometry
       raster_data_source = to_vector('memory', 'Memory', geometry_type: :wkbLinearRing)
@@ -365,10 +363,12 @@ module GDAL
       @raster_geometry.contains? source_geometry
     end
 
-    def image_warp(destination_file, driver, band_numbers,
-      **warp_options)
+    def image_warp(destination_file, driver, band_numbers, **warp_options)
+      raise NotImplementedError, '#image_warp not yet implemented.'
+
+      options_ptr = GDAL::Options.pointer(warp_options)
       driver = GDAL::Driver.by_name(driver)
-      destination_dataset = driver.create_dataset(destination_file)
+      destination_dataset = driver.create_dataset(destination_file, raster_x_size, raster_y_size)
 
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
       log "band numbers: #{band_numbers}"
@@ -450,21 +450,6 @@ module GDAL
 
     def to_json
       as_json.to_json
-    end
-
-    private
-
-    def extract_8bit(destination, driver_name, type: :GDT_Float32, **options)
-      rows = raster_y_size
-      columns =raster_x_size
-      driver = GDAL::Driver.by_name(driver_name)
-
-      driver.create_dataset(destination, columns, rows) do |new_dataset|
-        new_dataset.geo_transform = geo_transform
-        new_dataset.projection = projection
-
-        yield new_dataset
-      end
     end
   end
 end

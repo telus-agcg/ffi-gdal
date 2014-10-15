@@ -257,7 +257,7 @@ module OGR
       self.class.new(new_spatial_ref_ptr)
     end
 
-    # Makes a duplicate of the GEOGCS node of this spatial referece.
+    # Makes a duplicate of the GEOGCS node of this spatial reference.
     #
     # @return [OGR::SpatialReference]
     def clone_geogcs
@@ -399,7 +399,8 @@ module OGR
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn "WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy..."
+        # noinspection RubyQuotedStringsInspection
+        warn 'WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy...'
       end
 
       value
@@ -412,7 +413,8 @@ module OGR
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn "WARN: #semi_major received error _and_ a value. Something is fishy..."
+        # noinspection RubyQuotedStringsInspection
+        warn 'WARN: #semi_major received error _and_ a value. Something is fishy...'
       end
 
       value
@@ -439,6 +441,7 @@ module OGR
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
+        # noinspection RubyQuotedStringsInspection
         warn "WARN: #semi_minor received error _and_ a value. Something is fishy..."
       end
 
@@ -663,7 +666,7 @@ module OGR
     end
 
     # @return [FFI::Pointer] Pointer to an OGRCreateCoordinateTransformation.
-    def create_coordinate_transfomration(destination_spatial_ref)
+    def create_coordinate_transformation(destination_spatial_ref)
       dest_ptr = GDAL._pointer(OGR::SpatialReference, destination_spatial_ref)
 
       FFI::GDAL.OGRCreateCoordinateTransformation(@ogr_spatial_ref_pointer, dest_ptr)

@@ -4,7 +4,6 @@ module OGR
 
       # Computes area for a LinearRing, Polygon, or MultiPolygon.
       #
-      # @param geometry [OGR::Geometry, FFI::Pointer]
       # @return [Float] 0.0 for unsupported geometry types.
       def area
         FFI::GDAL.OGR_G_Area(@geometry_pointer)
