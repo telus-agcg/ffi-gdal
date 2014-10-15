@@ -54,6 +54,15 @@ def files_and_dirs(in_dir, ftp)
 end
 
 
-RSpec::Core::RakeTask.new
+namespace :spec do
+  RSpec::Core::RakeTask.new(:unit) do |t|
+    t.pattern = 'spec/unit/**/*_spec.rb'
+  end
 
-task default: :spec
+  RSpec::Core::RakeTask.new(:integration) do |t|
+    t.pattern = 'spec/integration/**/*_spec.rb'
+  end
+end
+
+task spec: 'spec:unit'
+task default: 'spec:unit'
