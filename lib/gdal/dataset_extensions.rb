@@ -32,7 +32,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_a, nir.to_a)
+      the_array = calculate_ndvi(red.to_na, nir.to_na)
 
       driver = GDAL::Driver.by_name(driver_name)
       dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |ndvi_dataset|
@@ -65,7 +65,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(green.to_a, nir.to_a)
+      the_array = calculate_ndvi(green.to_na, nir.to_na)
 
       driver = GDAL::Driver.by_name(driver_name)
       driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |gndvi_dataset|
@@ -86,7 +86,7 @@ module GDAL
         nir_dataset.projection = projection
 
         nir_band = gndvi_dataset.raster_band(1)
-        nir_band.write_array(nir.to_a)
+        nir_band.write_array(nir.to_na)
       end
     end
 
@@ -109,13 +109,13 @@ module GDAL
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].to_a)
+        new_red_band.write_array(original_bands[:red].to_na)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].to_a)
+        new_green_band.write_array(original_bands[:green].to_na)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].to_a)
+        new_blue_band.write_array(original_bands[:blue].to_na)
       end
     end
 
@@ -152,10 +152,10 @@ module GDAL
     def bands_with_labels(order)
       order.each_with_object({}).each_with_index do |(band_label, obj), i|
         label = case band_label.to_s
-        when 'N' then :nir
-        when 'R' then :red
-        when 'G' then :green
-        when 'B' then :blue
+        when 'N', 'nir' then :nir
+        when 'R', 'red' then :red
+        when 'G', 'green' then :green
+        when 'B', 'blue' then :blue
         else
           band_label
         end
