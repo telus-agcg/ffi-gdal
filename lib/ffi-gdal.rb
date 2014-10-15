@@ -73,6 +73,8 @@ module OGR
     File.expand_path('ogr/layer', __dir__)
   autoload :LineString,
     File.expand_path('ogr/line_string', __dir__)
+  autoload :LinearRing,
+    File.expand_path('ogr/linear_ring', __dir__)
   autoload :MultiLineString,
     File.expand_path('ogr/multi_line_string', __dir__)
   autoload :MultiPoint,
