@@ -363,10 +363,12 @@ module OGR
 
     # @return [OGR::SpatialReference]
     def spatial_reference
+      return @spatial_reference if @spatial_reference
+
       spatial_ref_ptr = FFI::GDAL.OGR_G_GetSpatialReference(@geometry_pointer)
       return nil if spatial_ref_ptr.null?
 
-      OGR::SpatialReference.new(spatial_ref_ptr)
+      @spatial_reference = OGR::SpatialReference.new(spatial_ref_ptr)
     end
 
     # Assigns a spatial reference to this geometry.  Any existing spatial
