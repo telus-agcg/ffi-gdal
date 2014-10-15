@@ -1,3 +1,4 @@
+require 'RMagick'
 require 'tiff'
 require 'bundler/setup'
 require 'pry'
@@ -30,43 +31,143 @@ peter = GDAL::Dataset.open(peter_path, 'r')
 world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
 world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
-
+binding.pry
 
 def extract_ndvi(dataset, destination_path, wkt_geometry)
-  wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
-  geometry = OGR::Geometry.create_from_wkt(wkt_geometry,
-    wkt_spatial_ref)
-  geometry.transform_to!(dataset.spatial_reference)
-
-  # band_order = %i[nir red green blue]
   nir_band = dataset.raster_band(1)
   red_band = dataset.raster_band(2)
   nir_array = nir_band.to_na
   red_array = red_band.to_na
 
-  pixel_extent = geometry.envelope.world_to_pixel(dataset.geo_transform)
+  # Create an OGR::Geometry from the WKT and convert to dataset's projection.
+  wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
+  geometry = OGR::Geometry.create_from_wkt(wkt_geometry,
+    wkt_spatial_ref)
+  geometry.transform_to!(dataset.spatial_reference)
 
-  blah = GDAL::Driver.by_name('MEM')
-  tmp_dataset = blah.create_dataset('blah', pixel_extent[:pixel_count], pixel_extent[:line_count])
-  geo = GDAL::GeoTransform.new
+  # Create the geo_tranform for the geometry-raster, based on the original
+  # dataset's geo_transform.
+  pixel_extent = geometry.envelope.world_to_pixel(dataset.geo_transform)
+  p pixel_extent
+  pixel_height = pixel_extent[:x_max]
+  pixel_width = pixel_extent[:y_max]
+
+  y_range = pixel_extent[:y_origin]..(pixel_extent[:y_max] - 1)
+  x_range = pixel_extent[:x_origin]...(pixel_extent[:x_max] - 1)
+  red_clip_array = red_array[x_range, y_range]
+  nir_clip_array = nir_array[x_range, y_range]
+
+
+  #geo = GDAL::GeoTransform.new
+  geo = dataset.geo_transform
+  #geo.x_origin = dataset.geo_transform.x_origin + pixel_extent[:x_origin]
   geo.x_origin = pixel_extent[:x_origin]
   geo.pixel_width = pixel_extent[:pixel_width]
   geo.x_rotation = 0
 
-  geo.y_origin = pixel_extent[:y_origin]
+  #geo.y_origin = dataset.geo_transform.y_origin + pixel_extent[:y_origin]
+  #geo.y_origin = pixel_extent[:y_origin]
+  geo.y_origin = pixel_extent[:y_max].abs     # the book shows this--is it right?
   geo.pixel_height = pixel_extent[:pixel_height]
   geo.y_rotation = 0
-  tmp_dataset.geo_transform = geo
 
-  band = tmp_dataset.raster_band(1)
-  band.no_data_value = -9999
+  # Get pixels for each point of each linear ring in the geometry.
+  pixels = case geometry.type
+  when :wkbMultiPolygon
+    polygon = geometry.geometry_at(0)
+    linear_ring = polygon.geometry_at(0)
+    #linear_ring.pixels(dataset.geo_transform)
+    linear_ring.pixels(geo)
+  else
+    raise 'bleh'
+  end
 
-  tmp_dataset.rasterize_geometries!(1, geometry, 1)
 
-  # problem: there aren't any points in my geometry!
+  # Write the pixels to an array at the size of the new image
+  image = Magick::Image.new(pixel_extent[:x_max], pixel_extent[:y_max])
+  poly = Magick::Draw.new
+  poly.fill('#00ffff')
+  poly.polygon(*pixels)
+  poly.draw(image)
+  image.write('bobo.tif')
+
+  excerpted_image = image.excerpt(pixel_extent[:x_origin], pixel_extent[:y_origin],
+    pixel_extent[:pixel_count], pixel_extent[:line_count])
+  # rasterized_pixels = excerpted_image.export_pixels(0, 0,
+  #   pixel_extent[:pixel_count], pixel_extent[:line_count], 'I')
+  rasterized_pixels = image.export_pixels(pixel_extent[:x_origin], pixel_extent[:y_origin],
+    pixel_extent[:pixel_count], pixel_extent[:line_count], 'I')
+  mask = NArray[rasterized_pixels]
+  mask.reshape!(pixel_extent[:pixel_count], pixel_extent[:line_count])
+  p mask.to_a.flatten.count { |b| !b.zero? }
+  p red_clip_array.to_a.flatten.count { |b| !b.zero? }
+  p nir_clip_array.to_a.flatten.count { |b| !b.zero? }
+
+
+  i = 0
+  red_clip_array.each do |_|
+    if mask[i] == 65535
+      red_clip_array[i] = 1.0
+    end
+
+    i += 1
+  end
+
+  i = 0
+  nir_clip_array.each do |_|
+    if mask[i] == 65535
+      nir_clip_array[i] = 1.0
+    end
+
+    i += 1
+  end
+
+  p mask.flatten.to_a.count { |b| !b.zero? }
+  p red_clip_array.to_a.flatten.count { |b| !b.zero? }
+  p nir_clip_array.to_a.flatten.count { |b| !b.zero? }
+
   binding.pry
+  #ndvi_array = 1.0 * (nir_array - red_array) / nir_array + red_array + 1.0
+  ndvi_array = 1.0 * (nir_clip_array - red_clip_array) / (nir_clip_array + red_clip_array) + 1.0
+  #ndvi_array = (nir_clip_array - red_clip_array) / (nir_clip_array + red_clip_array)
+
+  driver = GDAL::Driver.by_name('GTiff')
+  ndvi_dataset = driver.create_dataset('ndvi.tif', pixel_extent[:x_max], pixel_extent[:y_max]) do |ndvi|
+    ndvi.projection = dataset.projection
+    ndvi.geo_transform = geo
+
+    ndvi_band = ndvi.raster_band(1)
+    # tmp_band.write_array(mask, x_offset: pixel_extent[:x_origin].abs,
+    #   y_offset: pixel_extent[:y_origin].abs, data_type: :GDT_Float32)
+    #ndvi_band.write_array(ndvi_array, data_type: :GDT_Float32)
+    ndvi_band.write_array(ndvi_array)
+    #ndvi_band.no_data_value = -9999
+  end
+
+  ndvi_dataset.close
+
+  # Create new dataset from the geometry
+  #tmp_dataset.rasterize_geometries!(1, linear_ring, 1000)
+
+  #binding.pry
 end
 
 
-extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
-#binding.pry
+#floyd.image_warp('meow.tif', 'GTiff', 1, cutline: floyd_geometry )
+#extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
+
+def warp_to_geometry(dataset, wkt_geometry)
+
+  # Create an OGR::Geometry from the WKT and convert to dataset's projection.
+  wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
+  geometry = OGR::Geometry.create_from_wkt(wkt_geometry, wkt_spatial_ref)
+  geometry.transform_to!(dataset.spatial_reference)
+
+  binding.pry
+  # Create a .shp from the geometry
+  shape = geometry.to_vector('geom.shp', 'ESRI Shapefile',
+    spatial_reference: dataset.spatial_reference)
+  shape.close
+end
+
+#warp_to_geometry(floyd, floyd_wkt)

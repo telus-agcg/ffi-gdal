@@ -32,7 +32,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na, nir.to_na)
+      the_array = calculate_ndvi(red.to_na, nir.to_na, 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
       dataset = driver.create_dataset(destination, raster_x_size, raster_y_size,
@@ -41,8 +41,8 @@ module GDAL
         ndvi_dataset.projection = projection
 
         ndvi_band = ndvi_dataset.raster_band(1)
-        ndvi_band.no_data_value = -9999
         ndvi_band.write_array(the_array)
+        ndvi_band.no_data_value = 0.0
       end
     end
 
@@ -75,7 +75,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(green.to_na, nir.to_na)
+      the_array = calculate_ndvi(green.to_na, nir.to_na, 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
       driver.create_dataset(destination, raster_x_size, raster_y_size,
@@ -84,8 +84,8 @@ module GDAL
         gndvi_dataset.projection = projection
 
         gndvi_band = gndvi_dataset.raster_band(1)
-        gndvi_band.no_data_value = -9999
         gndvi_band.write_array(the_array)
+        gndvi_band.no_data_value = 0.0
       end
     end
 
@@ -157,7 +157,13 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
-      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+      ndvi = 1.0 * (nir_band_array - red_band_array) / nir_band_array + red_band_array + 1.0
+      #ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+
+      # Remove NaNs
+      0.upto(ndvi.size - 1) do |i|
+        ndvi[i] = 0 if ndvi[i].nan?
+      end
 
       return ndvi unless remove_negatives
 

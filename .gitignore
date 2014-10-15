@@ -24,3 +24,4 @@ mkmf.log
 spec/support/images
 tags
 *.sqlite
+vendor/bundle
