@@ -4,6 +4,166 @@ module GDAL
   # Methods not originally supplied with GDAL, but enhance it.
   module DatasetExtensions
 
+    # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
+    # a GDAL::RequiredBandNotFound if one of those band types isn't found.
+    #
+    # @param source [String] Path to the dataset that contains the red and NIR
+    #   bands.
+    # @param destination [String] Path to output the new dataset to.
+    # @param driver_name [String] The type of dataset to create.
+    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil)
+      original_bands = if band_order
+        bands_with_labels(band_order)
+      else
+        {
+          red: red_band,
+          green: green_band,
+          blue: blue_band,
+          nir: undefined_band
+        }
+      end
+
+      red = original_bands[:red]
+      nir = original_bands[:nir]
+
+      if red.nil?
+        fail RequiredBandNotFound, 'Red band not found.'
+      elsif nir.nil?
+        fail RequiredBandNotFound, 'Near-infrared'
+      end
+
+      the_array = calculate_ndvi(red.to_a, nir.to_a)
+
+      driver = GDAL::Driver.by_name(driver_name)
+      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |ndvi_dataset|
+        ndvi_dataset.geo_transform = geo_transform
+        ndvi_dataset.projection = projection
+
+        ndvi_band = ndvi_dataset.raster_band(1)
+        ndvi_band.write_array(the_array)
+      end
+    end
+
+    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil)
+      original_bands = if band_order
+        bands_with_labels(band_order)
+      else
+        {
+          red: red_band,
+          green: green_band,
+          blue: blue_band,
+          nir: undefined_band
+        }
+      end
+
+      green = original_bands[:green]
+      nir = original_bands[:nir]
+
+      if green.nil?
+        fail RequiredBandNotFound, 'Green band not found.'
+      elsif nir.nil?
+        fail RequiredBandNotFound, 'Near-infrared'
+      end
+
+      the_array = calculate_ndvi(green.to_a, nir.to_a)
+
+      driver = GDAL::Driver.by_name(driver_name)
+      driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |gndvi_dataset|
+        gndvi_dataset.geo_transform = geo_transform
+        gndvi_dataset.projection = projection
+
+        gndvi_band = gndvi_dataset.raster_band(1)
+        gndvi_band.write_array(the_array)
+      end
+    end
+
+    def extract_nir(destination, band_number, driver_name: 'GTiff')
+      driver = GDAL::Driver.by_name(driver_name)
+      nir = raster_band(band_number)
+
+      driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |nir_dataset|
+        nir_dataset.geo_transform = geo_transform
+        nir_dataset.projection = projection
+
+        nir_band = gndvi_dataset.raster_band(1)
+        nir_band.write_array(nir.to_a)
+      end
+    end
+
+    def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil)
+      rows = raster_y_size
+      columns = raster_x_size
+      driver = GDAL::Driver.by_name(driver_name)
+
+      original_bands = if band_order
+        bands_with_labels(band_order)
+      else
+        {
+          red: red_band,
+          green: green_band,
+          blue: blue_band
+        }
+      end
+
+      driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
+        new_dataset.geo_transform = geo_transform
+        new_dataset.projection = projection
+        new_red_band = new_dataset.raster_band(1)
+        new_red_band.write_array(original_bands[:red].to_a)
+
+        new_green_band = new_dataset.raster_band(2)
+        new_green_band.write_array(original_bands[:green].to_a)
+
+        new_blue_band = new_dataset.raster_band(3)
+        new_blue_band.write_array(original_bands[:blue].to_a)
+      end
+    end
+
+    # @param red_band_array [NArray]
+    # @param nir_band_array [NArray]
+    # @param remove_negatives [Fixnum] Value to replace negative values with.
+    # @return [NArray]
+    def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
+      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+
+      return ndvi unless remove_negatives
+
+      # Zero out
+      0.upto(ndvi.size - 1) do |i|
+        ndvi[i] = remove_negatives if ndvi[i] < 0
+      end
+
+      ndvi
+    end
+
+    # Map raster bands to a label, as a hash.  Useful for when bands don't match
+    # the color_interpretation that's returned from GDAL.  This simply maps the
+    # list of labels you pass in to the raster bands.
+    #
+    # Valid labels:
+    #   * Near-infrared: 'N', :nir
+    #   * Red: 'R', :red
+    #   * Green: 'G', :green
+    #   * Blue: 'B', :blue
+    #   * Alpha: 'A', :alpha
+    #
+    # @param order [Array<Object>]
+    # @return [Hash{<Object> => GDAL::RasterBand}]
+    def bands_with_labels(order)
+      order.each_with_object({}).each_with_index do |(band_label, obj), i|
+        label = case band_label.to_s
+        when 'N' then :nir
+        when 'R' then :red
+        when 'G' then :green
+        when 'B' then :blue
+        else
+          band_label
+        end
+
+        obj[label] = raster_band(i + 1)
+      end
+    end
+
     # @return [Array<GDAL::RasterBand>]
     def raster_bands
       1.upto(raster_count).map do |i|
@@ -146,7 +306,7 @@ module GDAL
     #   for vectorizing the raster.
     # @return [OGR::Geometry] A convex hull geometry.
     def to_geometry
-      raster_data_source = to_vector('memory', 'Memory', geometry_type: :wkbLineString)
+      raster_data_source = to_vector('memory', 'Memory', geometry_type: :wkbLinearRing)
 
       raster_data_source.layer(0).geometry_from_extent
     end
@@ -163,14 +323,55 @@ module GDAL
         @raster_geometry.spatial_reference)
       source_geometry.transform!(coordinate_transformation)
 
-      log "raster touches wkt? #{@raster_geometry.touches?(source_geometry)}"
-      log "raster contains wkt? #{@raster_geometry.contains?(source_geometry)}"
-      log "raster within wkt? #{@raster_geometry.within?(source_geometry)}"
-      log "raster crosses wkt? #{@raster_geometry.crosses?(source_geometry)}"
-      log "raster overlaps wkt? #{@raster_geometry.overlaps?(source_geometry)}"
-      log "raster disjoint wkt? #{@raster_geometry.disjoint?(source_geometry)}"
-
       @raster_geometry.contains? source_geometry
+    end
+
+    def image_warp(destination_file, driver, band_numbers,
+      **warp_options)
+      driver = GDAL::Driver.by_name(driver)
+      destination_dataset = driver.create_dataset(destination_file)
+
+      band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+      log "band numbers: #{band_numbers}"
+
+      bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
+      bands_ptr.write_array_of_int(band_numbers)
+      log "band numbers ptr null? #{bands_ptr.null?}"
+
+      warp_options_struct = FFI::GDAL::GDALWarpOptions.new
+
+      warp_options.each do |k, _|
+        warp_options_struct[k] = warp_options[k]
+      end
+
+      warp_options[:source_dataset] = c_pointer
+      warp_options[:destination_dataset] = destination_dataset.c_pointer
+      warp_options[:band_count] = band_numbers.size
+      warp_options[:source_bands] = bands_ptr
+      warp_options[:transformer] = transformer
+      warp_options[:transformer_arg] = transformer_arg
+
+      log "transformer: #{transformer}"
+      error_threshold = 0.0
+      order = 0
+
+      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
+        projection,
+        destination_dataset.c_pointer,
+        destination.projection,
+        false,
+        error_threshold,
+        order)
+
+      warp_operation = GDAL::WarpOperation.new(warp_options)
+      warp_operation.chunk_and_warp_image(0, 0, raster_x_size, raster_y_size)
+      transformer.destroy!
+      warp_operation.destroy!
+
+      destination = GDAL::Dataset.new(destination_dataset_ptr)
+      destination.close
+
+      destination
     end
 
     # Retrieves pixels from each raster band and converts this to an array of
@@ -210,6 +411,21 @@ module GDAL
 
     def to_json
       as_json.to_json
+    end
+
+    private
+
+    def extract_8bit(destination, driver_name, type: :GDT_Float32, **options)
+      rows = raster_y_size
+      columns =raster_x_size
+      driver = GDAL::Driver.by_name(driver_name)
+
+      driver.create_dataset(destination, columns, rows) do |new_dataset|
+        new_dataset.geo_transform = geo_transform
+        new_dataset.projection = projection
+
+        yield new_dataset
+      end
     end
   end
 end
