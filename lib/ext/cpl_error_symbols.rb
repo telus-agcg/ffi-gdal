@@ -1,4 +1,4 @@
-require_relative '../ffi-gdal/exceptions'
+require_relative '../gdal/exceptions'
 
 
 class ::Symbol
@@ -22,6 +22,8 @@ class ::Symbol
     when :CE_Warning then warning
     when :CE_Failure then failure
     when :CE_Fatal then fatal
+    else
+      raise "Unknown CPLError type: #{self}"
     end
   end
 
@@ -32,6 +34,8 @@ class ::Symbol
     when :CE_Warning then false
     when :CE_Failure then raise GDAL::CPLErrFailure
     when :CE_Fatal then raise GDAL::CPLErrFailure
+    else
+      raise "Unknown CPLError type: #{self}"
     end
   end
 end

@@ -23,3 +23,15 @@ mkmf.log
 .idea/
 spec/support/images
 tags
+*.sqlite
+vendor/bundle
+
+*.tif
+
+*.xml
+
+*.dbf
+
+*.shx
+
+*.rb
