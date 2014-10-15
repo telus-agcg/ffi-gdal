@@ -32,6 +32,8 @@ module GDAL
     File.expand_path('gdal/raster_attribute_table', __dir__)
   autoload :Utils,
     File.expand_path('gdal/utils', __dir__)
+  autoload :WarpOperation,
+    File.expand_path('gdal/warp_operation', __dir__)
 
   # Register all drivers!
   FFI::GDAL.GDALAllRegister

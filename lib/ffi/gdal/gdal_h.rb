@@ -110,6 +110,7 @@ end
 # These requires depend on ^^^
 require_relative 'alg_h'
 require_relative 'grid_h'
+require_relative 'warper_h'
 
 module FFI
   module GDAL

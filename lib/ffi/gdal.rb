@@ -20,6 +20,8 @@ module FFI
       File.expand_path('gdal/gdal_rpc_info', __dir__)
     autoload :GDALTransformerInfo,
       File.expand_path('gdal/gdal_transformer_info', __dir__)
+    autoload :GDALWarpOptions,
+      File.expand_path('gdal/gdal_warp_options', __dir__)
 
     autoload :OGRContourWriterInfo,
       File.expand_path('ogr/ogr_contour_writer_info', __dir__)

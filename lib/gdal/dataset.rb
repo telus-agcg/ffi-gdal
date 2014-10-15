@@ -373,5 +373,54 @@ module GDAL
 
       cpl_err.to_bool
     end
+
+    def simple_image_warp(destination_file, driver, band_numbers,
+      transformer, transformer_arg, **options)
+      driver = GDAL::Driver.by_name(driver)
+      destination_dataset_ptr = driver.open(destination_file, 'w')
+
+      band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+      log "band numbers: #{band_numbers}"
+
+      bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
+      bands_ptr.write_array_of_int(band_numbers)
+      log "band numbers ptr null? #{bands_ptr.null?}"
+
+      log "transformer: #{transformer}"
+
+      success = FFI::GDAL.GDALSimpleImageWarp(@dataset_pointer,
+        destination_dataset_ptr,
+        band_numbers.size,
+        bands_ptr,
+        transformer,
+        nil,
+        nil,
+        nil,
+        options_ptr)
+
+      raise "Image warp failed!" unless success
+
+      GDAL::Dataset.new(destination_dataset_ptr)
+    end
+
+    # @return [FFI::Pointer] Pointer to be used for transformations.
+    def create_general_image_projection_transformer(destination_dataset,
+      source_projection: nil, destination_projection: nil, use_gcps: false)
+      log "destination dataset: #{destination_dataset}"
+
+      error_threshold = 0.0
+      order = 0
+
+      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
+        source_projection,
+        destination_dataset.c_pointer,
+        destination_projection,
+        use_gcps,
+        error_threshold,
+        order)
+
+      log "transformer poitner: #{transformer_ptr}"
+      transformer_ptr
+    end
   end
 end

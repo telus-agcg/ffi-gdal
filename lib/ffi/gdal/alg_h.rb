@@ -50,6 +50,9 @@ module FFI
       %i[GDALTransformerFunc pointer double],
       :pointer
     attach_function :GDALCreateGCPTransformer, %i[int pointer int int], :pointer
+    attach_function :GDALCreateGenImgProjTransformer,
+      %i[GDALDatasetH string GDALDatasetH string bool double int],
+      :pointer
     attach_function :GDALCreateGenImgProjTransformer2,
       %i[GDALDatasetH GDALDatasetH pointer],
       :pointer
