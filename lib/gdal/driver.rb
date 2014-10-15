@@ -162,11 +162,7 @@ module GDAL
     #   reopen it if you with to continue working with it.
     # @todo Implement options.
     def create_dataset(filename, x_size, y_size, bands: 1, type: :GDT_Byte, **options)
-      options_pointer = FFI::MemoryPointer.new(:pointer, 2)
-
-      options.each_with_index.map do |(k, v), i|
-        options_pointer = FFI::GDAL.CSLSetNameValue(options_pointer, k.to_s.upcase, v)
-      end
+      options_pointer = GDAL::Options.pointer(options)
 
       dataset_pointer = FFI::GDAL.GDALCreate(@driver_pointer,
         filename,
