@@ -7,11 +7,11 @@ module GDAL
     # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
     # a GDAL::RequiredBandNotFound if one of those band types isn't found.
     #
-    # @param source [String] Path to the dataset that contains the red and NIR
-    #   bands.
     # @param destination [String] Path to output the new dataset to.
     # @param driver_name [String] The type of dataset to create.
-    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil)
+    # @param band_order [Array<String>] The list of band types, i.e. ['red',
+    #   'green', 'blue'].
+    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil, type: :GDT_Float32)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -35,16 +35,26 @@ module GDAL
       the_array = calculate_ndvi(red.to_na, nir.to_na)
 
       driver = GDAL::Driver.by_name(driver_name)
-      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |ndvi_dataset|
+      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size,
+        type: type) do |ndvi_dataset|
         ndvi_dataset.geo_transform = geo_transform
         ndvi_dataset.projection = projection
 
         ndvi_band = ndvi_dataset.raster_band(1)
+        ndvi_band.no_data_value = -9999
         ndvi_band.write_array(the_array)
       end
     end
 
-    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil)
+    # Computes GNDVI from the green and near-infrared bands in the dataset.
+    # Raises a GDAL::RequiredBandNotFound if one of those band types isn't
+    # found.
+    #
+    # @param destination [String] Path to output the new dataset to.
+    # @param driver_name [String] The type of dataset to create.
+    # @param band_order [Array<String>] The list of band types, i.e. ['red',
+    #   'green', 'blue'].
+    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil, type: :GDT_Float32)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -68,28 +78,51 @@ module GDAL
       the_array = calculate_ndvi(green.to_na, nir.to_na)
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |gndvi_dataset|
+      driver.create_dataset(destination, raster_x_size, raster_y_size,
+        type: type) do |gndvi_dataset|
         gndvi_dataset.geo_transform = geo_transform
         gndvi_dataset.projection = projection
 
         gndvi_band = gndvi_dataset.raster_band(1)
+        gndvi_band.no_data_value = -9999
         gndvi_band.write_array(the_array)
       end
     end
 
-    def extract_nir(destination, band_number, driver_name: 'GTiff')
+    # Extracts the NIR band and writes to a new file.  NOTE: be sure to close
+    # the dataset object that gets returned or your data will not get written
+    # to the file.
+    #
+    # @param destination [String] The destination file path.
+    # @param band_nubmer [Fixnum] The number of the band that is the NIR band.
+    #   Remember that raster bands are 1-indexed, not 0-indexed.
+    # @param driver_name [String] the GDAL::Driver short name to use for the
+    #   new dataset.
+    # @return [GDAL::Dataset]
+    def extract_nir(destination, band_number, driver_name: 'GTiff', type: :GDT_Float32)
       driver = GDAL::Driver.by_name(driver_name)
       nir = raster_band(band_number)
 
-      driver.create_dataset(destination, raster_x_size, raster_y_size, type: :GDT_Byte) do |nir_dataset|
+      driver.create_dataset(destination, raster_x_size, raster_y_size,
+        type: type) do |nir_dataset|
         nir_dataset.geo_transform = geo_transform
         nir_dataset.projection = projection
 
-        nir_band = gndvi_dataset.raster_band(1)
+        nir_band = nir_dataset.raster_band(1)
         nir_band.write_array(nir.to_na)
       end
     end
 
+    # Extracts the RGB bands and writes to a new file.  NOTE: be sure to close
+    # the dataset object that gets returned or your data will not get written
+    # to the file.
+    #
+    # @param destination [String] The destination file path.
+    # @param driver_name [String] the GDAL::Driver short name to use for the
+    #   new dataset.
+    # @param band_order [Array<String>] The list of band types, i.e. ['red',
+    #   'green', 'blue'].
+    # @return [GDAL::Dataset]
     def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil)
       rows = raster_y_size
       columns = raster_x_size
