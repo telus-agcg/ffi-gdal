@@ -13,37 +13,20 @@ module GDAL
     #
     # @return [NArray]
     def to_na(width: nil, height: nil)
-      lines = []
-
-      readlines do |line|
-        lines << line
-      end
-
-      if height
-        rows_needed = height - lines.size
-
-        if rows_needed > 0
-          # create new empty lines at the end
-          rows_needed.times { lines << Array.new(lines.first.size, 0.0) }
-        elsif rows_needed < 0
-          # remove lines from the end
-          lines.pop(rows_needed.abs)
+      values = []
+      x_blocks = (x_size + block_size[:x] - 1) / block_size[:x]
+      y_blocks = (y_size + block_size[:y] - 1) / block_size[:y]
+      data_pointer = FFI::MemoryPointer.new(:uchar, block_size[:x] * block_size[:y])
+      (0...y_blocks).each do |y_block|
+        (0...x_blocks).each do |x_block|
+          read_block(x_block, y_block, data_pointer)
+          (0...block_size[:y]).each do |block_index|
+            pixels = data_pointer.get_array_of_uint8(block_size[:x] * block_index, block_size[:x])
+            values.push(pixels)
+          end
         end
       end
-
-      if width
-        columns_needed = width - lines.first.size
-
-        if columns_needed > 0
-          # create new empty lines at the end
-          lines.map! { |line| line.push(*Array.new(columns_needed, 0.0)) }
-        elsif columns_needed < 0
-          # remove lines from the end
-          lines.pop(rows_needed.abs)
-        end
-      end
-
-      NArray.to_na(lines)
+      NArray.to_na(values).to_type(NArray::DFLOAT)
     end
 
     # @return [Hash]
