@@ -12,21 +12,39 @@ module GDAL
     # Iterates through all lines and builds an NArray of pixels.
     #
     # @return [NArray]
-    def to_na(width: nil, height: nil)
+    def to_na(data_type=nil)
       values = []
       x_blocks = (x_size + block_size[:x] - 1) / block_size[:x]
       y_blocks = (y_size + block_size[:y] - 1) / block_size[:y]
+
       data_pointer = FFI::MemoryPointer.new(:uchar, block_size[:x] * block_size[:y])
+
       (0...y_blocks).each do |y_block|
         (0...x_blocks).each do |x_block|
           read_block(x_block, y_block, data_pointer)
+
           (0...block_size[:y]).each do |block_index|
             pixels = data_pointer.get_array_of_uint8(block_size[:x] * block_index, block_size[:x])
             values.push(pixels)
           end
         end
       end
-      NArray.to_na(values).to_type(NArray::DFLOAT)
+
+      case data_type
+      when :GDT_Byte then NArray.to_na(values).to_type(NArray::BYTE)
+      when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::SINT)
+      when :GDT_Int16 then NArray.to_na(values).to_type(NArray::SINT)
+      when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
+      when :GDT_Int32 then NArray.to_na(values).to_type(NArray::INT)
+      when :GDT_Float32 then NArray.to_na(values).to_type(NArray::SFLOAT)
+      when :GDT_Float64 then NArray.to_na(values).to_type(NArray::DFLOAT)
+      when :GDT_CInt16 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
+      when :GDT_CInt32 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
+      when :GDT_CFloat32 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
+      when :GDT_CFloat64 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
+      else
+        NArray.to_na(values)
+      end
     end
 
     # @return [Hash]

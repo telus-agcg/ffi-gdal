@@ -11,7 +11,7 @@ module GDAL
     # @param driver_name [String] The type of dataset to create.
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
-    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil, type: :GDT_Float32)
+    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Float32)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -32,17 +32,16 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na, nir.to_na, 0.0)
+      the_array = calculate_ndvi(red.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
-      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size,
-        type: type) do |ndvi_dataset|
+      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |ndvi_dataset|
         ndvi_dataset.geo_transform = geo_transform
         ndvi_dataset.projection = projection
 
         ndvi_band = ndvi_dataset.raster_band(1)
-        ndvi_band.write_array(the_array, data_type: :GDT_Float32)
-        ndvi_band.no_data_value = 0.0
+        ndvi_band.write_array(the_array, data_type: data_type)
+        ndvi_band.no_data_value = -9999.0
       end
     end
 
@@ -54,7 +53,7 @@ module GDAL
     # @param driver_name [String] The type of dataset to create.
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
-    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil, type: :GDT_Float32)
+    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Float32)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -75,17 +74,16 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(green.to_na, nir.to_na, 0.0)
+      the_array = calculate_ndvi(green.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, raster_x_size, raster_y_size,
-        type: type) do |gndvi_dataset|
+      driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |gndvi_dataset|
         gndvi_dataset.geo_transform = geo_transform
         gndvi_dataset.projection = projection
 
         gndvi_band = gndvi_dataset.raster_band(1)
-        gndvi_band.write_array(the_array)
-        gndvi_band.no_data_value = 0.0
+        gndvi_band.write_array(the_array, data_type: data_type)
+        gndvi_band.no_data_value = -9999.0
       end
     end
 
@@ -99,17 +97,16 @@ module GDAL
     # @param driver_name [String] the GDAL::Driver short name to use for the
     #   new dataset.
     # @return [GDAL::Dataset]
-    def extract_nir(destination, band_number, driver_name: 'GTiff', type: :GDT_Float32)
+    def extract_nir(destination, band_number, driver_name: 'GTiff', data_type: :GDT_Byte)
       driver = GDAL::Driver.by_name(driver_name)
       nir = raster_band(band_number)
 
-      driver.create_dataset(destination, raster_x_size, raster_y_size,
-        type: type) do |nir_dataset|
+      driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |nir_dataset|
         nir_dataset.geo_transform = geo_transform
         nir_dataset.projection = projection
 
         nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.to_na)
+        nir_band.write_array(nir.to_na(:GDT_Byte), data_type: :GDT_Byte)
       end
     end
 
@@ -141,14 +138,15 @@ module GDAL
       driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
+
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].to_na)
+        new_red_band.write_array(original_bands[:red].to_na(:GDT_Byte), data_type: :GDT_Byte)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].to_na)
+        new_green_band.write_array(original_bands[:green].to_na(:GDT_Byte), data_type: :GDT_Byte)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].to_na)
+        new_blue_band.write_array(original_bands[:blue].to_na(:GDT_Byte), data_type: :GDT_Byte)
       end
     end
 
@@ -157,12 +155,12 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
-      ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array) + 1.0
-      #ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+      #ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
 
       # Remove NaNs
       0.upto(ndvi.size - 1) do |i|
-        ndvi[i] = 0 if ndvi[i].nan?
+        ndvi[i] = 0 if ndvi[i].is_a?(Float) && ndvi[i].nan?
       end
 
       return ndvi unless remove_negatives
@@ -308,9 +306,8 @@ module GDAL
         log "Starting to polygonize raster band #{band_number}..."
 
         layer_name = "#{layer_name_prefix}-#{band_number}"
-        layer = data_source.create_layer(layer_name,
-        type: geometry_type,
-        spatial_reference: spatial_ref)
+        layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
+          spatial_reference: spatial_ref)
 
         unless layer
           raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."

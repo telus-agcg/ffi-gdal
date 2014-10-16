@@ -102,16 +102,16 @@ module OGR
     end
 
     # @param name [String] The name for the new layer.
-    # @param type [FFI::GDAL::OGRwkbGeometryType]
+    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType]
     # @param spatial_reference [OGR::SpatialReference] The coordinate system
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
-    def create_layer(name, type: :wkbUnknown, spatial_reference: nil, **options)
+    def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference)
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
-        spatial_ref_ptr, type, options_obj)
+        spatial_ref_ptr, geometry_type, options_obj)
 
       return nil if layer_ptr.null?
 

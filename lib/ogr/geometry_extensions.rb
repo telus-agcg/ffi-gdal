@@ -36,13 +36,12 @@ module OGR
       false
     end
 
-    def to_vector(file_name, driver, layer_name: 'vectorized_geometry',
-      spatial_reference: nil)
+    def to_vector(file_name, driver, layer_name: 'vectorized_geometry', spatial_reference: nil)
       driver = OGR::Driver.by_name(driver)
 
       data_source = driver.create_data_source(file_name)
       log "Creating layer #{layer_name}, type: #{type}"
-      layer = data_source.create_layer(layer_name, type: type,
+      layer = data_source.create_layer(layer_name, geometry_type: type,
       spatial_reference: spatial_reference)
 
       # field = Field.create('Name', :OFTString)
