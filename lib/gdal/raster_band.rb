@@ -536,11 +536,15 @@ module GDAL
 
       columns_to_write = x_size - x_offset
       lines_to_write = y_size - y_offset
-      scan_line = FFI::MemoryPointer.new(:float, columns_to_write)
+      scan_line = FFI::MemoryPointer.new(pointer_type(data_type), columns_to_write)
 
       (y_offset).upto(lines_to_write - 1) do |y|
         pixels = pixel_array[true, y]
-        scan_line.write_array_of_float(pixels.to_a)
+        if data_type == :GDT_Byte
+          scan_line.write_array_of_uint8(pixels.to_a)
+        else
+          scan_line.write_array_of_float(pixels.to_a)
+        end
 
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
           :GF_Write,
@@ -558,6 +562,15 @@ module GDAL
       end
 
       flush_cache
+    end
+
+    def pointer_type(data_type)
+      case data_type
+      when :GDT_Byte then :uchar
+      when :GDT_Float32 then :float
+      else
+        :float
+      end
     end
 
     # Read a block of image data, more efficiently than #read.  Doesn't
