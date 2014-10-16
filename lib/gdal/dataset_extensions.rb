@@ -32,7 +32,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na, nir.to_na, 0.0)
+      the_array = calculate_ndvi(red.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
       dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |ndvi_dataset|
@@ -74,7 +74,7 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(green.to_na, nir.to_na, 0.0)
+      the_array = calculate_ndvi(green.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
 
       driver = GDAL::Driver.by_name(driver_name)
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |gndvi_dataset|
