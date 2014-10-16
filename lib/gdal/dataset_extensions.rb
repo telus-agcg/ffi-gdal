@@ -41,7 +41,7 @@ module GDAL
         ndvi_dataset.projection = projection
 
         ndvi_band = ndvi_dataset.raster_band(1)
-        ndvi_band.write_array(the_array)
+        ndvi_band.write_array(the_array, data_type: :GDT_Float32)
         ndvi_band.no_data_value = 0.0
       end
     end
@@ -157,7 +157,7 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
-      ndvi = 1.0 * (nir_band_array - red_band_array) / nir_band_array + red_band_array + 1.0
+      ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array) + 1.0
       #ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
 
       # Remove NaNs
