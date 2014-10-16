@@ -106,7 +106,7 @@ module GDAL
         nir_dataset.projection = projection
 
         nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.to_na, data_type: data_type)
+        nir_band.write_array(nir.readlines)
       end
     end
 
@@ -139,13 +139,13 @@ module GDAL
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].to_na, data_type: :GDT_Byte)
+        new_red_band.write_array(original_bands[:red].readlines)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].to_na, data_type: :GDT_Byte)
+        new_green_band.write_array(original_bands[:green].readlines)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].to_na, data_type: :GDT_Byte)
+        new_blue_band.write_array(original_bands[:blue].readlines)
       end
     end
 
@@ -154,7 +154,8 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
-      ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array) + 1.0
+      #ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
 
       # Remove NaNs
       0.upto(ndvi.size - 1) do |i|

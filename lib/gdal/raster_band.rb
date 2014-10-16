@@ -482,8 +482,12 @@ module GDAL
       formatted_buckets(cpl_err, min, max, buckets, totals)
     end
 
-    # TODO: Something about the pointer allocation smells here...
-    #def read(x_offset: 0, y_offset: 0, x_size: x_size, y_size: 1, pixel_space: 0, line_space: 0)
+    # Reads the raster line-by-line and returns as an NArray.  Will yield each
+    # line and the line number if a block is given.
+    #
+    # @yieldparam pixel_line [Array]
+    # @yieldparam line_number [Fixnum]
+    # @return [NArray]
     def readlines
       x_offset = 0
       line_size = 1
@@ -491,7 +495,7 @@ module GDAL
       line_space = 0
       scan_line = FFI::MemoryPointer.new(:float, x_size)
 
-      0.upto(y_size - 1) do |y|
+      the_array = 0.upto(y_size - 1).map do |y|
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
           :GF_Read,
           x_offset,
@@ -506,8 +510,13 @@ module GDAL
           line_space
         )
 
-        yield(scan_line.read_array_of_float(x_size).dup, y)
+        line_array = scan_line.read_array_of_float(x_size)
+        yield(line_array, y) if block_given?
+
+        line_array
       end
+
+      NArray.to_na(the_array)
     end
 
     # @param pixel_array [NArray] The NArray of pixels.
