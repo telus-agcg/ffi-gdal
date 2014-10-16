@@ -41,7 +41,7 @@ module GDAL
 
         ndvi_band = ndvi_dataset.raster_band(1)
         ndvi_band.write_array(the_array, data_type: data_type)
-        ndvi_band.no_data_value = 0.0
+        ndvi_band.no_data_value = -9999.0
       end
     end
 
@@ -83,7 +83,7 @@ module GDAL
 
         gndvi_band = gndvi_dataset.raster_band(1)
         gndvi_band.write_array(the_array, data_type: data_type)
-        gndvi_band.no_data_value = 0.0
+        gndvi_band.no_data_value = -9999.0
       end
     end
 
@@ -106,7 +106,7 @@ module GDAL
         nir_dataset.projection = projection
 
         nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.readlines)
+        nir_band.write_array(nir.to_na(:GDT_Byte), data_type: :GDT_Byte)
       end
     end
 
@@ -138,14 +138,15 @@ module GDAL
       driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
+
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].readlines)
+        new_red_band.write_array(original_bands[:red].to_na(:GDT_Byte), data_type: :GDT_Byte)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].readlines)
+        new_green_band.write_array(original_bands[:green].to_na(:GDT_Byte), data_type: :GDT_Byte)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].readlines)
+        new_blue_band.write_array(original_bands[:blue].to_na(:GDT_Byte), data_type: :GDT_Byte)
       end
     end
 
