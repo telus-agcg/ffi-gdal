@@ -523,7 +523,6 @@ module OGR
       ogr_err = FFI::GDAL.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
         units_ptr, prj_params_ptr)
 
-      binding.pry
       {
         projection: proj_ptr.read_pointer.read_string,
         units: units_ptr.read_pointer.read_string,
