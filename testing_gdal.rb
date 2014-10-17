@@ -1,9 +1,7 @@
 require 'RMagick'
-require 'tiff'
 require 'bundler/setup'
 require 'pry'
 require 'ffi-gdal'
-require 'gdal/utils'
 
 GDAL::Logger.logging_enabled = true
 
@@ -24,9 +22,6 @@ floyd_geometry = OGR::Geometry.create_from_wkt(floyd_wkt, spatial_ref)
 
 usg_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/osgeo/geotiff/usgs/c41078a1.tif'
 usg = GDAL::Dataset.open(usg_path, 'r')
-
-peter_path = '~/Downloads/ABCTURF_NEWFARM_15-5_2014-09-14.tif'
-peter = GDAL::Dataset.open(peter_path, 'r')
 
 world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
 world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')

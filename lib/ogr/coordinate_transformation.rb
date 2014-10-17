@@ -31,7 +31,9 @@ module OGR
     # @param proj4_source [String]
     # @return [String]
     def self.proj4_normalize(proj4_source)
-      FFI::GDAL.OCTProj4Normalize(proj4_source)
+      if GDAL._supported?(:OCTProj4Normalize)
+        FFI::GDAL.OCTProj4Normalize(proj4_source)
+      end
     end
 
     # @return [OGR::SpatialReference]

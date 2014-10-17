@@ -52,6 +52,15 @@ module GDAL
       nil
     end
   end
+
+  # Check to see if the function is supported in the version of GDAL that we're
+  # using.
+  #
+  # @param function_name [Symbol]
+  # @return [Boolean]
+  def self._supported?(function_name)
+    !FFI::GDAL.unsupported_gdal_functions.include?(function_name)
+  end
 end
 
 module OGR

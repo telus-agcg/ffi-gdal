@@ -216,7 +216,9 @@ module GDAL
 
     # @return [Fixnum]
     def layer_count
-      FFI::GDAL.GDALDatasetGetLayerCount(@dataset_pointer)
+      if GDAL._supported?(:GDALDatasetGetLayerCount)
+        FFI::GDAL.GDALDatasetGetLayerCount(@dataset_pointer)
+      end
     end
 
     # @param resampling [String, Symbol] One of:
