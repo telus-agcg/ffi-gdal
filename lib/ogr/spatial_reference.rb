@@ -466,7 +466,9 @@ module OGR
     #
     # @param name [String]
     def well_known_geoccs=(name)
-      ogr_err = FFI::GDAL.OSRSetWellKnownGeocCS(@ogr_spatial_ref_pointer, name)
+      if GDAL._supported? :OSRSetWellKnownGeocCS
+        ogr_err = FFI::GDAL.OSRSetWellKnownGeocCS(@ogr_spatial_ref_pointer, name)
+      end
     end
 
     # Set the user-visible PROJCS name.

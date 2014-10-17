@@ -187,9 +187,10 @@ module FFI
     attach_function :OSRSetGnomonic,
       %i[OGRSpatialReferenceH double double double double],
       OGRErr
-    # attach_function :OSRSetOM,
-    #   %i[OGRSpatialReferenceH double double double double double double double],
-    #   OGRErr
+    attach_function :OSRSetOM,
+      %i[OGRSpatialReferenceH double double double double double double double],
+      OGRErr
+      OGRErr
     attach_function :OSRSetHOM,
       %i[OGRSpatialReferenceH double double double double double double double],
       OGRErr
@@ -265,9 +266,9 @@ module FFI
     attach_function :OSRSetVDG,
       %i[OGRSpatialReferenceH double double double],
       OGRErr
-    # attach_function :OSRSetWagner,
-    #   %i[OGRSpatialReferenceH int double double],
-    #   OGRErr
+    attach_function :OSRSetWagner,
+      %i[OGRSpatialReferenceH int double double],
+      OGRErr
 
     attach_function :OSRIsGeographic, %i[OGRSpatialReferenceH], :bool
     attach_function :OSRIsLocal, %i[OGRSpatialReferenceH], :bool
@@ -282,7 +283,7 @@ module FFI
     attach_function :OSRSetLocalCS, %i[OGRSpatialReferenceH string], OGRErr
     attach_function :OSRSetProjCS, %i[OGRSpatialReferenceH string], OGRErr
     attach_function :OSRSetGeocCS, %i[OGRSpatialReferenceH string], OGRErr
-    # attach_function :OSRSetWellKnownGeocCS, %i[OGRSpatialReferenceH string], OGRErr
+    attach_function :OSRSetWellKnownGeocCS, %i[OGRSpatialReferenceH string], OGRErr
     attach_function :OSRSetFromUserInput, %i[OGRSpatialReferenceH string], OGRErr
     attach_function :OSRCopyGeogCSFrom, %i[OGRSpatialReferenceH OGRSpatialReferenceH], OGRErr
     attach_function :OSRSetTOWGS84,

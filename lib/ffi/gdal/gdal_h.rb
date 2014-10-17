@@ -105,6 +105,7 @@ module FFI
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
   end
+
 end
 
 # These requires depend on ^^^
@@ -119,8 +120,8 @@ module FFI
     # functions
     #-----------------------------------------------------------------
     # AsyncStatus
-    #attach_function :GDALGetAsyncStatusTypeName, [GDALAsyncStatusType], :string
-    #attach_function :GDALGetAsyncStatusTypeByName, [:string], GDALAsyncStatusType
+    attach_function :GDALGetAsyncStatusTypeName, [GDALAsyncStatusType], :string
+    attach_function :GDALGetAsyncStatusTypeByName, [:string], GDALAsyncStatusType
 
     #~~~~~~~~~~~~~~~~~~~~
     # ColorInterpretation
@@ -132,61 +133,62 @@ module FFI
     # Driver
     #~~~~~~~~~~~~~~~~~~~~
     attach_function :GDALAllRegister, [], :void
+
+    # Class-level functions
+    attach_function :GDALGetDriver, [:int], :GDALDriverH
+    attach_function :GDALGetDriverCount, [], :int
+    attach_function :GDALIdentifyDriver, %i[string pointer], :GDALDriverH
+    attach_function :GDALGetDriverByName, [:string], :GDALDriverH
+    attach_function :GDALDestroyDriverManager, [:void], :void
+
+    # Instance-level functions
     attach_function :GDALCreate,
       [:GDALDriverH, :string, :int, :int, :int, GDALDataType, :pointer],
       :GDALDatasetH
     attach_function :GDALCreateCopy,
       %i[GDALDriverH string GDALDatasetH bool pointer GDALProgressFunc pointer],
       :GDALDatasetH
-    attach_function :GDALIdentifyDriver,
-      [:string, :pointer],
-      :GDALDriverH
-    attach_function :GDALValidateCreationOptions,
-      [:GDALDriverH, :pointer],
-      CPLErr
+    attach_function :GDALValidateCreationOptions, %i[GDALDriverH pointer], CPLErr
     attach_function :GDALGetDriverShortName, [:GDALDriverH], :string
     attach_function :GDALGetDriverLongName, [:GDALDriverH], :string
     attach_function :GDALGetDriverHelpTopic, [:GDALDriverH], :string
     attach_function :GDALGetDriverCreationOptionList, [:GDALDriverH], :string
 
-    attach_function :GDALGetDriverByName, [:string], :GDALDriverH
-    attach_function :GDALGetDriverCount, [], :int
-    attach_function :GDALGetDriver, [:int], :GDALDriverH
     attach_function :GDALDestroyDriver, [:GDALDriverH], :void
     attach_function :GDALRegisterDriver, [:GDALDriverH], :int
     attach_function :GDALDeregisterDriver, [:GDALDriverH], :void
-    attach_function :GDALDestroyDriverManager, [:void], :void
+    attach_function :GDALDeleteDataset, [:GDALDriverH, :string], CPLErr
+    attach_function :GDALRenameDataset,
+      %i[GDALDriverH string string],
+      CPLErr
+    attach_function :GDALCopyDatasetFiles,
+      %i[GDALDriverH string string],
+      CPLErr
 
     #~~~~~~~~~~~~~~~~~~~~
     # Dataset
     #~~~~~~~~~~~~~~~~~~~~
+    # Class-level functions
     attach_function :GDALOpen, [:string, GDALAccess], :GDALDatasetH
     attach_function :GDALOpenShared,
       [:string, GDALAccess],
       :GDALDatasetH
-    #attach_function :GDALOpenEx,
-      #[:string, :uint, :string, :string, :string],
-      #:GDALDatasetH
+    attach_function :GDALOpenEx,
+      %i[string uint string string string],
+      :GDALDatasetH
+    attach_function :GDALDumpOpenDatasets, [:pointer], :int
+    attach_function :GDALGetOpenDatasets, [:pointer, :pointer], :void
+
+    # Instance-level functions
     attach_function :GDALClose, [:GDALDatasetH], :void
-    #attach_function :GDALDestroy, [], :void
     attach_function :GDALGetDatasetDriver, [:GDALDatasetH], :GDALDriverH
     attach_function :GDALGetFileList, [:GDALDatasetH], :pointer
     attach_function :GDALGetInternalHandle, [:GDALDatasetH, :string], :pointer
     attach_function :GDALReferenceDataset, [:GDALDatasetH], :int
     attach_function :GDALDereferenceDataset, [:GDALDatasetH], :int
 
-    attach_function :GDALDumpOpenDatasets, [:pointer], :int
-    attach_function :GDALGetOpenDatasets, [:pointer, :pointer], :void
     attach_function :GDALGetAccess, [:GDALDatasetH], :int
     attach_function :GDALFlushCache, [:GDALDatasetH], :void
-
-    attach_function :GDALDeleteDataset, [:GDALDriverH, :string], CPLErr
-    attach_function :GDALRenameDataset,
-      [:GDALDriverH, :string, :string],
-      CPLErr
-    attach_function :GDALCopyDatasetFiles,
-      [:GDALDriverH, :string, :string],
-      CPLErr
 
     attach_function :GDALGetRasterXSize, [:GDALDatasetH], :int
     attach_function :GDALGetRasterYSize, [:GDALDatasetH], :int
@@ -195,28 +197,28 @@ module FFI
     attach_function :GDALAddBand,
       [:GDALDatasetH, GDALDataType, :pointer],
       CPLErr
-    #attach_function :GDALBeginAsyncReader,
-    #  [
-    #    :GDALDatasetH,
-    #    GDALRWFlag,
-    #    :int,
-    #    :int,
-    #    :int,
-    #    :int,
-    #    :pointer,
-    #    :int,
-    #    :int,
-    #    GDALDataType,
-    #    :int,
-    #    :pointer,
-    #    :int,
-    #    :int,
-    #    :int
-    #], :GDALAsyncReaderH
+    attach_function :GDALBeginAsyncReader,
+      [
+        :GDALDatasetH,
+        GDALRWFlag,
+        :int,
+        :int,
+        :int,
+        :int,
+        :pointer,
+        :int,
+        :int,
+        GDALDataType,
+        :int,
+        :pointer,
+        :int,
+        :int,
+        :int
+      ], :GDALAsyncReaderH
 
-    #attach_function :GDALEndAsyncReader,
-    #  [:GDALDatasetH, :GDALAsyncReaderH],
-    #  :void
+    attach_function :GDALEndAsyncReader,
+      [:GDALDatasetH, :GDALAsyncReaderH],
+      :void
 
     attach_function :GDALDatasetRasterIO,
       [
@@ -285,77 +287,73 @@ module FFI
       ], CPLErr
 
     # OGR datasets.  Not found in v1.11.1
-    # attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
-    # attach_function :GDALDatasetGetLayer, [:GDALDatasetH, :int], :OGRLayerH
-    # attach_function :GDALDatasetGetLayerByName, [:GDALDatasetH, :string], :OGRLayerH
-    # attach_function :GDALDatasetDeleteLayer, [:GDALDatasetH, :int], OGRErr
-    # attach_function :GDALDatasetCreateLayer,
-    #   [:GDALDatasetH, :string, :OGRSpatialReferenceH, OGRwkbGeometryType, :pointer],
-    #   :OGRLayerH
-    # attach_function :GDALDatasetCopyLayer,
-    #   %i[GDALDatasetH OGRLayerH string pointer],
-    #   :OGRLayerH
-    # attach_function :GDALDatasetTestCapability, [:GDALDatasetH, :string], :int
-    # attach_function :GDALDatasetExecuteSQL,
-    #  [:GDALDatasetH, :string, :OGRGeometryH, :string],
-    #  :OGRLayerH
-    # attach_function :GDALDatasetReleaseResultSet,
-    #   %i[GDALDatasetH OGRLayerH],
-    #   :void
-    # attach_function :GDALDatasetGetStyleTable, [:GDALDatasetH], :OGRStyleTableH
-    # attach_function :GDALDatasetSetStyleTableDirectly,
-    #   %i[GDALDatasetH OGRStyleTableH],
-    #   :void
-    # attach_function :GDALDatasetSetStyleTable,
-    #   %i[GDALDatasetH OGRStyleTableH],
-    #   :void
+    attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
+    attach_function :GDALDatasetGetLayer, [:GDALDatasetH, :int], :OGRLayerH
+    attach_function :GDALDatasetGetLayerByName, [:GDALDatasetH, :string], :OGRLayerH
+    attach_function :GDALDatasetDeleteLayer, [:GDALDatasetH, :int], OGRErr
+    attach_function :GDALDatasetCreateLayer,
+      [:GDALDatasetH, :string, :OGRSpatialReferenceH, OGRwkbGeometryType, :pointer],
+      :OGRLayerH
+    attach_function :GDALDatasetCopyLayer,
+      %i[GDALDatasetH OGRLayerH string pointer],
+      :OGRLayerH
+    attach_function :GDALDatasetTestCapability, [:GDALDatasetH, :string], :int
+    attach_function :GDALDatasetExecuteSQL,
+      [:GDALDatasetH, :string, :OGRGeometryH, :string],
+      :OGRLayerH
+    attach_function :GDALDatasetReleaseResultSet,
+      %i[GDALDatasetH OGRLayerH],
+      :void
+    attach_function :GDALDatasetGetStyleTable, [:GDALDatasetH], :OGRStyleTableH
+    attach_function :GDALDatasetSetStyleTableDirectly,
+      %i[GDALDatasetH OGRStyleTableH],
+      :void
+    attach_function :GDALDatasetSetStyleTable,
+      %i[GDALDatasetH OGRStyleTableH],
+      :void
 
     attach_function :GDALCreateDatasetMaskBand, [:GDALDatasetH, :int], CPLErr
     attach_function :GDALDatasetCopyWholeRaster,
-      [:GDALDatasetH, :GDALDatasetH, :pointer, :GDALProgressFunc, :pointer],
+      %i[GDALDatasetH GDALDatasetH pointer GDALProgressFunc pointer],
       CPLErr
 
     #~~~~~~~~~~~~~~~~~~~~
     # MajorObject
     #~~~~~~~~~~~~~~~~~~~~
     attach_function :GDALGetMetadataDomainList, [:GDALMajorObjectH], :pointer
-    attach_function :GDALGetMetadata, [:GDALMajorObjectH, :string], :pointer
-    attach_function :GDALSetMetadata,
-      [:GDALMajorObjectH, :pointer, :string],
-      CPLErr
+    attach_function :GDALGetMetadata, %i[GDALMajorObjectH string], :pointer
+    attach_function :GDALSetMetadata, %i[GDALMajorObjectH pointer string], CPLErr
     attach_function :GDALGetMetadataItem,
-      [:GDALMajorObjectH, :string, :string],
+      %i[GDALMajorObjectH string string],
       :string
     attach_function :GDALSetMetadataItem,
-      [:GDALMajorObjectH, :string, :string, :string],
+      %i[GDALMajorObjectH string string string],
       CPLErr
     attach_function :GDALGetDescription, [:GDALMajorObjectH], :string
-    attach_function :GDALSetDescription, [:GDALMajorObjectH, :string], :void
+    attach_function :GDALSetDescription, %i[GDALMajorObjectH string], :void
 
     #~~~~~~~~~~~~~~~~~~~~
     # GeoTransform
     #~~~~~~~~~~~~~~~~~~~~
-    attach_function :GDALInvGeoTransform,
-      [:pointer, :pointer],
-      :int
+    attach_function :GDALInvGeoTransform, %i[pointer pointer], :int
     attach_function :GDALApplyGeoTransform,
-      [:pointer, :double, :double, :pointer, :pointer],
+      %i[pointer double double pointer pointer],
       :void
     attach_function :GDALComposeGeoTransforms,
-     [:pointer, :pointer, :pointer],
-     :void
+      %i[pointer pointer pointer],
+      :void
 
     #-----------------
     # Raster functions
     #-----------------
-    #attach_function :GDALRasterBandCopyWholeRaster,
-    #  [
-    #    :GDALRasterBandH,
-    #    :GDALRasterBandH,
-    #    :pointer,
-    #    :GDALProgressFunc,
-    #    :pointer
-    #  ], CPLErr
+    attach_function :GDALRasterBandCopyWholeRaster,
+      [
+        :GDALRasterBandH,
+        :GDALRasterBandH,
+        :pointer,
+        :GDALProgressFunc,
+        :pointer
+      ], CPLErr
     attach_function :GDALRegenerateOverviews,
       [
         :GDALRasterBandH,
@@ -532,11 +530,14 @@ module FFI
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Raster Attribute Table functions
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Class-level functions
     attach_function :GDALCreateRasterAttributeTable,
       [],
       :GDALRasterAttributeTableH
+
+    # Instance-level functions
     attach_function :GDALDestroyRasterAttributeTable,
-      %i[GDALRasterAttributeTableH],
+      [:GDALRasterAttributeTableH],
       :void
     attach_function :GDALRATChangesAreWrittenToFile,
       [:GDALRasterAttributeTableH],
@@ -622,13 +623,13 @@ module FFI
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # ColorTable functions
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    attach_function :GDALCreateColorTable,
-      [GDALPaletteInterp],
-      :GDALColorTableH
+    # Class-level functions
+    attach_function :GDALCreateColorTable, [GDALPaletteInterp], :GDALColorTableH
+
+    # Instance-level functions
     attach_function :GDALDestroyColorTable, [:GDALColorTableH], :void
     attach_function :GDALCloneColorTable, [:GDALColorTableH], :GDALColorTableH
 
-    attach_function :GDALGetPaletteInterpretationName, [GDALPaletteInterp], :string
     attach_function :GDALGetPaletteInterpretation, [:GDALColorTableH], GDALPaletteInterp
     attach_function :GDALGetColorEntryCount, [:GDALColorTableH], :int
     attach_function :GDALGetColorEntry, [:GDALColorTableH, :int], GDALColorEntry.ptr
@@ -638,6 +639,11 @@ module FFI
     attach_function :GDALCreateColorRamp,
       [:GDALColorTableH, :int, GDALColorEntry.ptr, :int, GDALColorEntry.ptr],
       :void
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # PaletteInterp functions
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    attach_function :GDALGetPaletteInterpretationName, [GDALPaletteInterp], :string
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # General stuff
@@ -661,7 +667,7 @@ module FFI
     attach_function :GDALWriteWorldFile, %i[string string pointer], :bool
 
     attach_function :GDALPackedDMSToDec, %i[double], :double
-     attach_function :GDALDecToPackedDMS, %i[double], :double
+    attach_function :GDALDecToPackedDMS, %i[double], :double
 
     attach_function :GDALGeneralCmdLineProcessor, %i[int pointer int], :int
     attach_function :GDALSwapWords,
@@ -673,8 +679,5 @@ module FFI
     attach_function :GDALCopyBits,
       %i[pointer int int pointer int int int int],
       :void
-
-    attach_function :GDALVersionInfo, %i[string], :string
-    attach_function :GDALCheckVersion, %i[int int string], :bool
   end
 end

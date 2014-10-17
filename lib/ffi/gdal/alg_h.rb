@@ -87,6 +87,10 @@ module FFI
     attach_function :GDALGenImgProjTransform,
       %i[pointer int int pointer pointer pointer pointer],
       :bool
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Dataset-related
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     attach_function :GDALGridCreate,
       [GDALGridAlgorithm, :pointer, :GUInt32, :pointer, :pointer, :pointer,
         :double, :double, :double, :double, :GUInt32, :GUInt32, GDALDataType,
