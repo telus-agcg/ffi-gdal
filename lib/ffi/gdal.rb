@@ -1,6 +1,22 @@
 require 'ffi'
 
 module FFI
+  module Library
+    alias_method :old_attach_function, :attach_function
+
+    def attach_function(*args)
+      old_attach_function(*args)
+    rescue FFI::NotFoundError
+      @unsupported_gdal_functions ||= []
+      warn "Function '#{args.first}' is not available in this build of GDAL/OGR v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')}"
+      @unsupported_gdal_functions << args.first
+    end
+
+    def unsupported_gdal_functions
+      @unsupported_gdal_functions ||= []
+    end
+  end
+
   module GDAL
     extend ::FFI::Library
 
@@ -65,6 +81,9 @@ module FFI
     end
 
     ffi_lib(gdal_library_path)
+
+    attach_function :GDALVersionInfo, %i[string], :string
+    attach_function :GDALCheckVersion, %i[int int string], :bool
   end
 end
 
