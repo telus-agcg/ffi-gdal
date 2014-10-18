@@ -94,8 +94,11 @@ module OGR
     end
 
     # @param file_name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_data_source(file_name)
       ogr_err = FFI::GDAL.OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
+
+      ogr_err.to_ruby
     end
 
     # @param source_data_source [OGR::DataSource, FFI::Pointer]

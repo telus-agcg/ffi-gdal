@@ -134,8 +134,11 @@ module OGR
     end
 
     # @param index [Fixnum]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
       ogr_err = FFI::GDAL.OGR_DS_DeleteLayer(@data_source_pointer, index)
+
+      ogr_err.to_ruby
     end
 
     # @param command [String] The SQL to execute.

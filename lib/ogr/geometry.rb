@@ -109,19 +109,28 @@ module OGR
     # geometries added will be interior rings.
     #
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def add_geometry(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
+
+      ogr_err.to_ruby
     end
 
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def add_directly(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@geometry_pointer, pointer_from(sub_geometry))
+
+      ogr_err.to_ruby
     end
 
     # @param geometry_index [Fixnum]
     # @param delete [Boolean]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def remove!(geometry_index, delete=true)
       ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
+
+      ogr_err.to_ruby
     end
 
     # Clears all information from the geometry.
@@ -403,6 +412,8 @@ module OGR
       return if coord_trans_ptr.nil? or coord_trans_ptr.null?
 
       ogr_err = FFI::GDAL.OGR_G_Transform(@geometry_pointer, coord_trans_ptr)
+
+      ogr_err.to_ruby
     end
 
     # Similar to +#transform+, but this only works if the geometry already has an
@@ -416,6 +427,8 @@ module OGR
       return nil if new_spatial_ref_ptr.null?
 
       ogr_err = FFI::GDAL.OGR_G_TransformTo(@geometry_pointer, new_spatial_ref_ptr)
+
+      ogr_err.to_ruby
     end
 
     # Computes and returns a new, simplified geometry.
@@ -470,8 +483,11 @@ module OGR
 
     # TODO: should this be a class method?
     # @param wkb_data [String] Binary WKB data.
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def from_wkb(wkb_data)
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkb(@geometry_pointer, wkb_data, wkb_data.length)
+
+      ogr_err.to_ruby
     end
 
     # The exact number of bytes required to hold the WKB of this object.
@@ -485,6 +501,7 @@ module OGR
     def to_wkb(byte_order=:wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkb(@geometry_pointer, byte_order, output)
+      ogr_err.to_ruby
 
       output.read_bytes(wkb_size)
     end
@@ -495,14 +512,16 @@ module OGR
       wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
-
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkt(@geometry_pointer, wkt_pointer_pointer)
+
+      ogr_err.to_ruby
     end
 
     # @return [String]
     def to_wkt
       output = FFI::MemoryPointer.new(:string)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkt(@geometry_pointer, output)
+      ogr_err.to_ruby
 
       output.read_pointer.read_string
     end
