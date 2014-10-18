@@ -22,8 +22,17 @@ class ::Symbol
     when :CE_Warning then warning
     when :CE_Failure then failure
     when :CE_Fatal then fatal
+    when :OGRERR_NONE then none
+    when :OGRERR_NOT_ENOUGH_DATA then fail(OGR::NotEnoughData)
+    when :OGRERR_NOT_ENOUGH_MEMORY then fail(OGR::NotEnoughMemory)
+    when :OGRERR_UNSUPPORTED_GEOMETRY_TYPE then fail(OGR::UnsupportedGeometryType)
+    when :OGRERR_UNSUPPORTED_OPERATION then fail(OGR::UnsupportedOperation)
+    when :OGRERR_CORRUPT_DATA then fail(OGR::CorruptData)
+    when :OGRERR_FAILURE then fail(OGR::Failure)
+    when :OGRERR_UNSUPPORTED_SRS then fail(OGR::UnsupportedSRS)
+    when :OGRERR_INVALID_HANDLE then fail(OGR::InvalidHandle)
     else
-      raise "Unknown CPLError type: #{self}"
+      raise "Unknown CPLErr/OGRErr type: #{self}"
     end
   end
 
@@ -34,6 +43,15 @@ class ::Symbol
     when :CE_Warning then false
     when :CE_Failure then raise GDAL::CPLErrFailure
     when :CE_Fatal then raise GDAL::CPLErrFailure
+    when :OGRERR_NONE then true
+    when :OGRERR_NOT_ENOUGH_DATA then fail(OGR::NotEnoughData)
+    when :OGRERR_NOT_ENOUGH_MEMORY then fail(OGR::NotEnoughMemory)
+    when :OGRERR_UNSUPPORTED_GEOMETRY_TYPE then fail(OGR::UnsupportedGeometryType)
+    when :OGRERR_UNSUPPORTED_OPERATION then fail(OGR::UnsupportedOperation)
+    when :OGRERR_CORRUPT_DATA then fail(OGR::CorruptData)
+    when :OGRERR_FAILURE then fail(OGR::Failure)
+    when :OGRERR_UNSUPPORTED_SRS then fail(OGR::UnsupportedSRS)
+    when :OGRERR_INVALID_HANDLE then fail(OGR::InvalidHandle)
     else
       raise "Unknown CPLError type: #{self}"
     end

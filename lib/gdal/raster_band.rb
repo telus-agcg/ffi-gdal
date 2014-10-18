@@ -80,8 +80,11 @@ module GDAL
       FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
     end
 
+    # @return [Boolean]
     def color_interpretation=(new_color_interp)
-      FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer, new_color_interp).to_ruby
+      cpl_err = FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer, new_color_interp).to_ruby
+
+      cpl_err.to_bool
     end
 
     # @return [GDAL::ColorTable]
@@ -165,6 +168,7 @@ module GDAL
     # Sets the no data value for this band.
     #
     # @param value [Float]
+    # @return [Boolean]
     def no_data_value=(value)
       cpl_err = FFI::GDAL.GDALSetRasterNoDataValue(@raster_band_pointer, value)
 
@@ -305,9 +309,11 @@ module GDAL
     end
 
     # @param new_scale [Float]
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def scale=(new_scale)
-      FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
+      cpl_err = FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
+
+      cpl_err.to_bool
     end
 
     # This value (in combination with the GetScale() value) is used to
@@ -329,9 +335,11 @@ module GDAL
     end
 
     # @param new_offset [Float]
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def offset=(new_offset)
-      FFI::GDAL.GDALSetRasterOffset(@raster_band_pointer, new_offset)
+      cpl_err = FFI::GDAL.GDALSetRasterOffset(@raster_band_pointer, new_offset)
+
+      cpl_err.to_bool
     end
 
     # @return [String]
@@ -341,10 +349,12 @@ module GDAL
 
     # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"
     #   is feet; other non-standard values are allowed.
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def unit_type=(new_unit_type)
       if defined? FFI::GDAL::GDALSetRasterUnitType
-        FFI::GDAL.GDALSetRasterUnitType(@raster_band_pointer, new_unit_type)
+        cpl_err = FFI::GDAL.GDALSetRasterUnitType(@raster_band_pointer, new_unit_type)
+
+        cpl_err.to_bool
       else
         warn "GDALSetRasterUnitType is not defined.  Can't call RasterBand#unit_type="
       end
@@ -482,18 +492,43 @@ module GDAL
       formatted_buckets(cpl_err, min, max, buckets, totals)
     end
 
+    # Copies the contents of one raster to another similarly configure band.
+    # The two bands must have the same width and height but do not have to be
+    # the same data type.
+    #
+    # Options:
+    #   * :compressed
+    #     * 'YES': forces alignment on the destination_band to acheive the best
+    #       compression.
+    #
+    # @param destination_band [GDAL::RasterBand]
+    # @param options [Hash]
+    # @option options compress [String] Only 'YES' is supported.
+    # @return [Boolean]
+    def copy_whole_raster(destination_band, **options, &progress)
+      destination_pointer = GDAL._pointer(GDAL::RasterBand, destination_band)
+      options_ptr = GDAL::Options.pointer(options)
+      cpl_err = FFI::GDAL.GDALRasterBandCopyWholeRaster(@raster_band_pointer,
+        destination_pointer,
+        options_ptr,
+        progress,
+        nil)
+
+      cpl_err.to_bool
+    end
+
     # Reads the raster line-by-line and returns as an NArray.  Will yield each
     # line and the line number if a block is given.
     #
     # @yieldparam pixel_line [Array]
     # @yieldparam line_number [Fixnum]
     # @return [NArray]
-    def readlines
+    def readlines(data_type: :GDT_Byte)
       x_offset = 0
       line_size = 1
       pixel_space = 0
       line_space = 0
-      scan_line = FFI::MemoryPointer.new(:float, x_size)
+      scan_line = GDAL._pointer_from_data_type(data_type, x_size)
 
       the_array = 0.upto(y_size - 1).map do |y|
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
@@ -510,7 +545,12 @@ module GDAL
           line_space
         )
 
-        line_array = scan_line.read_array_of_float(x_size)
+        line_array = if data_type == :GDT_Byte
+          scan_line.read_array_of_uint8(x_size)
+        else
+          scan_line.read_array_of_float(x_size)
+        end
+
         yield(line_array, y) if block_given?
 
         line_array
@@ -536,7 +576,7 @@ module GDAL
 
       columns_to_write = x_size - x_offset
       lines_to_write = y_size - y_offset
-      scan_line = FFI::MemoryPointer.new(pointer_type(data_type), columns_to_write)
+      scan_line = GDAL._pointer_from_data_type(data_type, columns_to_write)
 
       (y_offset).upto(lines_to_write - 1) do |y|
         pixels = pixel_array[true, y]
@@ -562,15 +602,6 @@ module GDAL
       end
 
       flush_cache
-    end
-
-    def pointer_type(data_type)
-      case data_type
-      when :GDT_Byte then :uchar
-      when :GDT_Float32 then :float
-      else
-        :float
-      end
     end
 
     # Read a block of image data, more efficiently than #read.  Doesn't

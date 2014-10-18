@@ -112,9 +112,12 @@ module OGR
     end
 
     # @param new_geometry [OGR::Geometry]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def geometry=(new_geometry)
       ogr_err = FFI::GDAL.OGR_F_SetGeometryDirectly(@feature_pointer, new_geometry.c_pointer)
       @geometry = new_geometry
+
+      ogr_err.to_ruby
     end
 
     # @return [Fixnum]
@@ -123,8 +126,11 @@ module OGR
     end
 
     # @param new_fid [Fixnum]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def fid=(new_fid)
       ogr_err = FFI::GDAL.OGR_F_SetFID(@feature_pointer, new_fid)
+
+      ogr_err.to_ruby
     end
 
     # @return [Fixnum]

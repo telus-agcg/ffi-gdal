@@ -94,6 +94,7 @@ module OGR
       feature_def = feature_definition
       feature = OGR::Feature.create(feature_def)
       ogr_err = FFI::GDAL.OGR_L_CreateFeature(@ogr_layer_pointer, feature.c_pointer)
+      ogr_err.to_ruby
 
       feature
     end
@@ -101,8 +102,11 @@ module OGR
     # Deletes the feature from the layer.
     #
     # TODO: Use OGR_L_TestCapability before trying to delete.
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_feature(feature_id)
       ogr_err = FFI::GDAL.OGR_L_DeleteFeature(@ogr_layer_pointer, feature_id)
+
+      ogr_err.to_ruby
     end
 
     # Creates and writes a new field to the layer.
@@ -115,6 +119,7 @@ module OGR
     def create_field(name, type, approx_ok=false)
       field = OGR::Field.create(name, type)
       ogr_err = FFI::GDAL.OGR_L_CreateField(@ogr_layer_pointer, field.c_pointer, approx_ok)
+      ogr_err.to_ruby
 
       field
     end
@@ -122,16 +127,22 @@ module OGR
     # @param field [OGR::Field, FFI::Pointer]
     # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
     #   different form, depending on the limitations of the format driver.
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def add_field(field, approx_ok=false)
       field_ptr = GDAL._pointer(OGR::Field, field)
       ogr_err = FFI::GDAL.OGR_L_CreateField(@ogr_layer_pointer, field_ptr, approx_ok)
+
+      ogr_err.to_ruby
     end
 
     # Deletes the field definition from the layer.
     #
     # TODO: Use OGR_L_TestCapability before trying to delete.
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_field(field_id)
       ogr_err = FFI::GDAL.OGR_L_DeleteField(@ogr_layer_pointer, field_id)
+
+      ogr_err.to_ruby
     end
 
     # # Creates and writes a new geometry to the layer.

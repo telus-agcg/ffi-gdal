@@ -1,4 +1,4 @@
-require_relative '../../ext/cpl_error_symbols'
+require_relative '../../ext/error_symbols'
 
 
 module FFI

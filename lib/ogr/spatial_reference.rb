@@ -214,6 +214,7 @@ module OGR
     def self.build_spatial_ref(spatial_reference_or_wkt=nil)
       object = new(spatial_reference_or_wkt)
       ogr_err = yield object
+      ogr_err.to_ruby
 
       object
     end
@@ -266,20 +267,32 @@ module OGR
       self.class.new(new_spatial_ref_ptr)
     end
 
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def validate
       ogr_err = FFI::GDAL.OSRValidate(@ogr_spatial_ref_pointer)
+
+      ogr_err.to_ruby
     end
 
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
       ogr_err = FFI::GDAL.OSRFixupOrdering(@ogr_spatial_ref_pointer)
+
+      ogr_err.to_ruby
     end
 
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
       ogr_err = FFI::GDAL.OSRFixup(@ogr_spatial_ref_pointer)
+
+      ogr_err.to_ruby
     end
 
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
       ogr_err = FFI::GDAL.OSRStripCTParms(@ogr_spatial_ref_pointer)
+
+      ogr_err.to_ruby
     end
 
     # @param name [String] The case-insensitive tree node to look for.
@@ -335,13 +348,20 @@ module OGR
     end
 
     # @param projection_name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def projection=(projection_name)
       ogr_err = FFI::GDAL.OSRSetProjection(@ogr_spatial_ref_pointer, projection_name)
+
+      ogr_err.to_ruby
     end
 
     # Sets the EPSG authority info if possible.
+    #
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def auto_identify_epsg!
       ogr_err = FFI::GDAL.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
+
+      ogr_err.to_ruby
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as
@@ -360,6 +380,7 @@ module OGR
     def towgs84
       coefficients = FFI::MemoryPointer.new(:double, 7)
       ogr_err = FFI::GDAL.OSRGetTOWGS84(@ogr_spatial_ref_pointer, coefficients, 7)
+      ogr_err.to_ruby
 
       coefficients.read_array_of_double(0)
     end
@@ -403,6 +424,8 @@ module OGR
         warn 'WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy...'
       end
 
+      ogr_err.to_ruby
+
       value
     end
 
@@ -416,6 +439,8 @@ module OGR
         # noinspection RubyQuotedStringsInspection
         warn 'WARN: #semi_major received error _and_ a value. Something is fishy...'
       end
+
+      ogr_err.to_ruby
 
       value
     end
@@ -445,37 +470,51 @@ module OGR
         warn "WARN: #semi_minor received error _and_ a value. Something is fishy..."
       end
 
+      ogr_err.to_ruby
+
       value
     end
 
     # Set the user-visible LOCAL_CS name.
     #
     # @param name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def local_cs=(name)
       ogr_err = FFI::GDAL.OSRSetLocalCS(@ogr_spatial_ref_pointer, name)
+
+      ogr_err.to_ruby
     end
 
     # Set the user-visible GEOCCS name.
     #
     # @param name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def geoccs=(name)
       ogr_err = FFI::GDAL.OSRSetGeocCS(@ogr_spatial_ref_pointer, name)
+
+      ogr_err.to_ruby
     end
 
     # Set the GEOCCS based on a well-knon name.
     #
     # @param name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def well_known_geoccs=(name)
       if GDAL._supported? :OSRSetWellKnownGeocCS
         ogr_err = FFI::GDAL.OSRSetWellKnownGeocCS(@ogr_spatial_ref_pointer, name)
+
+        ogr_err.to_ruby
       end
     end
 
     # Set the user-visible PROJCS name.
     #
     # @param name [String]
+    # @return +true+ if successful, otherwise raises an OGR exception.
     def projcs=(name)
       ogr_err = FFI::GDAL.OSRSetProjCS(@ogr_spatial_ref_pointer, name)
+
+      ogr_err.to_ruby
     end
 
     # @return [Hash]
@@ -486,6 +525,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToERM(@ogr_spatial_ref_pointer, projection_name,
         datum_name, units)
+      ogr_err.to_ruby
 
       {
         projection_name: projection_name.read_string,
@@ -502,6 +542,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToMICoordSys(@ogr_spatial_ref_pointer,
         return_ptr_ptr)
+      ogr_err.to_ruby
 
       return_ptr_ptr.get_array_of_string(0)
     end
@@ -522,6 +563,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
         units_ptr, prj_params_ptr)
+      ogr_err.to_ruby
 
       {
         projection: proj_ptr.read_pointer.read_string,
@@ -537,6 +579,7 @@ module OGR
       proj4_ptr.write_pointer(proj4)
 
       ogr_err = FFI::GDAL.OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
+      ogr_err.to_ruby
 
       proj4_ptr.read_pointer.read_string
     end
@@ -552,6 +595,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToUSGS(@ogr_spatial_ref_pointer, proj_sys,
         zone, prj_params_ptr, datum)
+      ogr_err.to_ruby
 
       {
         projection_system_code: proj_sys.read_long,
@@ -568,6 +612,7 @@ module OGR
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
       ogr_err = FFI::GDAL.OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
+      ogr_err.to_ruby
 
       wkt_ptr_ptr.read_pointer.read_string
     end
@@ -581,6 +626,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToPrettyWkt(@ogr_spatial_ref_pointer,
         wkt_ptr_ptr, simplify)
+      ogr_err.to_ruby
 
       wkt_ptr_ptr.read_pointer.read_string
     end
@@ -594,6 +640,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToXML(@ogr_spatial_ref_pointer, xml_ptr_ptr,
         dialect)
+      ogr_err.to_ruby
 
       {
         dialect: dialect.read_string,
