@@ -488,12 +488,12 @@ module GDAL
     # @yieldparam pixel_line [Array]
     # @yieldparam line_number [Fixnum]
     # @return [NArray]
-    def readlines
+    def readlines(data_type: :GDT_Byte)
       x_offset = 0
       line_size = 1
       pixel_space = 0
       line_space = 0
-      scan_line = FFI::MemoryPointer.new(:float, x_size)
+      scan_line = FFI::MemoryPointer.new(pointer_type(data_type), x_size)
 
       the_array = 0.upto(y_size - 1).map do |y|
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
@@ -510,7 +510,12 @@ module GDAL
           line_space
         )
 
-        line_array = scan_line.read_array_of_float(x_size)
+        line_array = if data_type == :GDT_Byte
+          scan_line.read_array_of_uint8(x_size)
+        else
+          scan_line.read_array_of_float(x_size)
+        end
+
         yield(line_array, y) if block_given?
 
         line_array
@@ -539,6 +544,7 @@ module GDAL
       scan_line = FFI::MemoryPointer.new(pointer_type(data_type), columns_to_write)
 
       (y_offset).upto(lines_to_write - 1) do |y|
+        puts "line #{y}"
         pixels = pixel_array[true, y]
         if data_type == :GDT_Byte
           scan_line.write_array_of_uint8(pixels.to_a)

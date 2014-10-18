@@ -106,7 +106,7 @@ module GDAL
         nir_dataset.projection = projection
 
         nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.to_na(:GDT_Byte), data_type: :GDT_Byte)
+        nir_band.write_array(nir.readlines)
       end
     end
 
@@ -140,13 +140,13 @@ module GDAL
         new_dataset.projection = projection
 
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].to_na(:GDT_Byte), data_type: :GDT_Byte)
+        new_red_band.write_array(original_bands[:red].readlines)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].to_na(:GDT_Byte), data_type: :GDT_Byte)
+        new_green_band.write_array(original_bands[:green].readlines)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].to_na(:GDT_Byte), data_type: :GDT_Byte)
+        new_blue_band.write_array(original_bands[:blue].readlines)
       end
     end
 
