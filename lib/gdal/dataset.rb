@@ -149,8 +149,12 @@ module GDAL
     end
 
     # Adds a mask band to the dataset
+    #
+    # @return [Boolean]
     def create_mask_band
-      FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, 0)
+      cpl_err = FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, 0)
+
+      cpl_err.to_bool
     end
 
     # @return [String]

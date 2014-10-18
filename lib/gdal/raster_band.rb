@@ -80,8 +80,11 @@ module GDAL
       FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
     end
 
+    # @return [Boolean]
     def color_interpretation=(new_color_interp)
-      FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer, new_color_interp).to_ruby
+      cpl_err = FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer, new_color_interp).to_ruby
+
+      cpl_err.to_bool
     end
 
     # @return [GDAL::ColorTable]
@@ -165,6 +168,7 @@ module GDAL
     # Sets the no data value for this band.
     #
     # @param value [Float]
+    # @return [Boolean]
     def no_data_value=(value)
       cpl_err = FFI::GDAL.GDALSetRasterNoDataValue(@raster_band_pointer, value)
 
@@ -305,9 +309,11 @@ module GDAL
     end
 
     # @param new_scale [Float]
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def scale=(new_scale)
-      FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
+      cpl_err = FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
+
+      cpl_err.to_bool
     end
 
     # This value (in combination with the GetScale() value) is used to
@@ -329,9 +335,11 @@ module GDAL
     end
 
     # @param new_offset [Float]
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def offset=(new_offset)
-      FFI::GDAL.GDALSetRasterOffset(@raster_band_pointer, new_offset)
+      cpl_err = FFI::GDAL.GDALSetRasterOffset(@raster_band_pointer, new_offset)
+
+      cpl_err.to_bool
     end
 
     # @return [String]
@@ -341,10 +349,12 @@ module GDAL
 
     # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"
     #   is feet; other non-standard values are allowed.
-    # @return [FFI::GDAL::CPLErr]
+    # @return [Boolean]
     def unit_type=(new_unit_type)
       if defined? FFI::GDAL::GDALSetRasterUnitType
-        FFI::GDAL.GDALSetRasterUnitType(@raster_band_pointer, new_unit_type)
+        cpl_err = FFI::GDAL.GDALSetRasterUnitType(@raster_band_pointer, new_unit_type)
+
+        cpl_err.to_bool
       else
         warn "GDALSetRasterUnitType is not defined.  Can't call RasterBand#unit_type="
       end
