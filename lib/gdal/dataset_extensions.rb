@@ -99,14 +99,14 @@ module GDAL
     # @return [GDAL::Dataset]
     def extract_nir(destination, band_number, driver_name: 'GTiff', data_type: :GDT_Byte)
       driver = GDAL::Driver.by_name(driver_name)
-      nir = raster_band(band_number)
+      original_nir_band = raster_band(band_number)
 
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |nir_dataset|
         nir_dataset.geo_transform = geo_transform
         nir_dataset.projection = projection
 
         nir_band = nir_dataset.raster_band(1)
-        nir_band.write_array(nir.readlines)
+        original_nir_band.copy_whole_raster(nir_band)
       end
     end
 
@@ -140,13 +140,13 @@ module GDAL
         new_dataset.projection = projection
 
         new_red_band = new_dataset.raster_band(1)
-        new_red_band.write_array(original_bands[:red].readlines)
+        original_bands[:red].copy_whole_raster(new_red_band)
 
         new_green_band = new_dataset.raster_band(2)
-        new_green_band.write_array(original_bands[:green].readlines)
+        original_bands[:green].copy_whole_raster(new_green_band)
 
         new_blue_band = new_dataset.raster_band(3)
-        new_blue_band.write_array(original_bands[:blue].readlines)
+        original_bands[:blue].copy_whole_raster(new_blue_band)
       end
     end
 

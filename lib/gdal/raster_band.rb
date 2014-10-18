@@ -482,6 +482,31 @@ module GDAL
       formatted_buckets(cpl_err, min, max, buckets, totals)
     end
 
+    # Copies the contents of one raster to another similarly configure band.
+    # The two bands must have the same width and height but do not have to be
+    # the same data type.
+    #
+    # Options:
+    #   * :compressed
+    #     * 'YES': forces alignment on the destination_band to acheive the best
+    #       compression.
+    #
+    # @param destination_band [GDAL::RasterBand]
+    # @param options [Hash]
+    # @option options compress [String] Only 'YES' is supported.
+    # @return [Boolean]
+    def copy_whole_raster(destination_band, **options, &progress)
+      destination_pointer = GDAL._pointer(GDAL::RasterBand, destination_band)
+      options_ptr = GDAL::Options.pointer(options)
+      cpl_err = FFI::GDAL.GDALRasterBandCopyWholeRaster(@raster_band_pointer,
+        destination_pointer,
+        options_ptr,
+        progress,
+        nil)
+
+      cpl_err.to_bool
+    end
+
     # Reads the raster line-by-line and returns as an NArray.  Will yield each
     # line and the line number if a block is given.
     #
