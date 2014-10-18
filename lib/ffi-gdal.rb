@@ -1,4 +1,5 @@
 require 'log_switch'
+require_relative 'ext/narray_ext'
 require_relative 'gdal/version_info'
 require_relative 'gdal/environment_methods'
 
@@ -50,6 +51,35 @@ module GDAL
       Logger.log "<#{name}._pointer> Called at: #{caller(1, 1).first}"
     else
       nil
+    end
+  end
+
+  # @param data_type [FFI::GDAL::GDALDataType]
+  # @return [Symbol] The FFI Symbol that represents a data type.
+  def self._pointer_from_data_type(data_type, size=nil)
+    pointer_type = _gdal_data_type_to_ffi(data_type)
+
+    if size
+      FFI::MemoryPointer.new(pointer_type, size)
+    else
+      FFI::MemoryPointer.new(pointer_type)
+    end
+  end
+
+  # Maps GDAL DataTypes to FFI types.
+  #
+  # @param data_type [FFI::GDAL::GDALDataType]
+  def self._gdal_data_type_to_ffi(data_type)
+    case data_type
+    when :GDT_Byte then :uchar
+    when :GDT_UInt16 then :uint16
+    when :GDT_Int16 then :int16
+    when :GDT_UInt32 then :uint32
+    when :GDT_Int32 then :int32
+    when :GDT_Float32 then :float
+    when :GDT_Float64 then :double
+    else
+      :float
     end
   end
 

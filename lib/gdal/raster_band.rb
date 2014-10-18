@@ -579,7 +579,6 @@ module GDAL
       scan_line = FFI::MemoryPointer.new(pointer_type(data_type), columns_to_write)
 
       (y_offset).upto(lines_to_write - 1) do |y|
-        puts "line #{y}"
         pixels = pixel_array[true, y]
         if data_type == :GDT_Byte
           scan_line.write_array_of_uint8(pixels.to_a)
