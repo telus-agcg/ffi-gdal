@@ -19,7 +19,7 @@ module GDAL
     # @return [GDAL::RasterAttributeTable]
     def self.from_color_table(color_table)
       color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
-      rat_ptr = FFI::MemoryPointer.new(:GDALRasterAttributeTableH)
+      rat_ptr = FFI::GDAL.GDALCreateRasterAttributeTable
       cpl_err = FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
       cpl_err.to_bool
 
@@ -64,7 +64,7 @@ module GDAL
 
     # @param index [Fixnum] The column number.
     # @return [String]
-    def columnn_name(index)
+    def column_name(index)
       FFI::GDAL.GDALRATGetNameOfCol(@rat_pointer, index)
     end
 
@@ -173,8 +173,13 @@ module GDAL
     end
 
     # @param file_path [String]
-    def dump_readable(file_path = 'stdout')
-      FFI::GDAL.GDALRATDumpReadable(@rat_pointer, file_path)
+    def dump_readable(file_path=nil)
+      file = if file_path
+        File.open(file_path, 'r')
+      else
+        file_path
+      end
+      FFI::GDAL.GDALRATDumpReadable(@rat_pointer, file)
     end
   end
 end
