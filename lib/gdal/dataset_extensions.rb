@@ -11,7 +11,8 @@ module GDAL
     # @param driver_name [String] The type of dataset to create.
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
-    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Float32)
+    def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil,
+      data_type: :GDT_Float32, remove_negatives: false, **options)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -32,10 +33,13 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
+      the_array = calculate_ndvi(red.to_na(data_type), nir.to_na(data_type),
+        remove_negatives, data_type)
 
       driver = GDAL::Driver.by_name(driver_name)
-      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |ndvi_dataset|
+      dataset = driver.create_dataset(destination, raster_x_size, raster_y_size,
+        data_type: data_type, **options) do |ndvi_dataset|
+
         ndvi_dataset.geo_transform = geo_transform
         ndvi_dataset.projection = projection
 
@@ -53,7 +57,8 @@ module GDAL
     # @param driver_name [String] The type of dataset to create.
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
-    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Float32)
+    def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil,
+      data_type: :GDT_Float32, remove_negatives: false, **options)
       original_bands = if band_order
         bands_with_labels(band_order)
       else
@@ -74,10 +79,13 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(green.to_na(:GDT_Float32), nir.to_na(:GDT_Float32), 0.0)
+      the_array = calculate_ndvi(green.to_na(data_type), nir.to_na(data_type),
+        remove_negatives, data_type)
 
       driver = GDAL::Driver.by_name(driver_name)
-      driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |gndvi_dataset|
+      driver.create_dataset(destination, raster_x_size, raster_y_size,
+        data_type: data_type, **options) do |gndvi_dataset|
+
         gndvi_dataset.geo_transform = geo_transform
         gndvi_dataset.projection = projection
 
@@ -154,23 +162,32 @@ module GDAL
     # @param nir_band_array [NArray]
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
-    def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=nil)
-      #ndvi = 1.0 * (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
-      ndvi = (nir_band_array - red_band_array) / (nir_band_array + red_band_array)
+    def calculate_ndvi(red_band_array, nir_band_array, remove_negatives=false,
+        data_type=nil)
+
+      # convert based on data type
+      if data_type != :GDT_Float32
+        nir_band_array = nir_band_array.to_type(NArray::DFLOAT)
+        red_band_array = red_band_array.to_type(NArray::DFLOAT)
+      end
+
+      numerator = nir_band_array - red_band_array
+      denominator = (nir_band_array + red_band_array)
+      ndvi = numerator / denominator
 
       # Remove NaNs
       0.upto(ndvi.size - 1) do |i|
         ndvi[i] = 0 if ndvi[i].is_a?(Float) && ndvi[i].nan?
       end
 
-      return ndvi unless remove_negatives
-
-      # Zero out
-      0.upto(ndvi.size - 1) do |i|
-        ndvi[i] = remove_negatives if ndvi[i] < 0
+      case data_type
+      when :GDT_Byte
+        calculate_ndvi_byte(ndvi)
+      when :GDT_UInt16
+        calculate_ndvi_uint16(ndvi)
+      else
+        ndvi
       end
-
-      ndvi
     end
 
     # Map raster bands to a label, as a hash.  Useful for when bands don't match
@@ -447,6 +464,22 @@ module GDAL
 
     def to_json
       as_json.to_json
+    end
+
+    private
+
+    # @param numerator [NArray]
+    # @param denominator [NArray]
+    # @return [NArray]
+    def calculate_ndvi_byte(ndvi)
+      (ndvi + 1) * (127.5)
+    end
+
+    # @param numerator [NArray]
+    # @param denominator [NArray]
+    # @return [NArray]
+    def calculate_ndvi_uint16(ndvi)
+      (ndvi + 1) * (2**15 - 1)
     end
   end
 end

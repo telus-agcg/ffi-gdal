@@ -29,7 +29,7 @@ module GDAL
 
     # @param color_table
     def initialize(color_table)
-      @color_table_pointer = GDAL._pointer(color_table)
+      @color_table_pointer = GDAL._pointer(self.class, color_table)
       @color_entries = []
 
       case palette_interpretation
@@ -112,8 +112,8 @@ module GDAL
     # @param four [Fixnum] The `c4` value of the GDAL::ColorEntry
     #   struct to set.
     # @return [GDAL::ColorEntry]
-    def add_color_entry(index, one: nil, two: nil, three: nil, four: nil)
-      entry = FFI::GDAL.GDALColorEntry.new
+    def add_color_entry(index, one=nil, two=nil, three=nil, four=nil)
+      entry = FFI::GDAL::GDALColorEntry.new
       entry[:c1] = one if one
       entry[:c2] = two if two
       entry[:c3] = three if three
@@ -134,8 +134,14 @@ module GDAL
     # @param start_color [GDAL::ColorEntry] Value to start the ramp.
     # @param end_index [Fixnum] Index to end the ramp on (0..255)
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
+    # @return [Fixnum] The total number of entries.  -1 on error.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
-      FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index, start_color, end_index, end_color)
+      start_color_ptr = GDAL._pointer(GDAL::ColorEntry, start_color)
+      end_color_ptr = GDAL._pointer(GDAL::ColorEntry, end_color)
+      FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index,
+        start_color_ptr,
+        end_index,
+        end_color_ptr)
     end
   end
 end

@@ -617,7 +617,7 @@ module FFI
       CPLErr
 
     attach_function :GDALRATDumpReadable,
-      %i[GDALRasterAttributeTableH string],
+      %i[GDALRasterAttributeTableH pointer],
       :void
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
