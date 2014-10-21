@@ -2,15 +2,15 @@ module GDAL
   module ColorTableTypes
     module HLS
       def hues
-        all_entries_for :c1
+        color_entries_for(1)
       end
 
       def lightnesses
-        all_entries_for :c2
+        color_entries_for(2)
       end
 
       def saturations
-        all_entries_for :c3
+        color_entries_for(3)
       end
 
       def to_a

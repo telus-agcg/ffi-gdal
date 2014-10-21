@@ -134,6 +134,32 @@ module GDAL
       self.color_table = table
     end
 
+
+    # Gets the colors from the associated ColorTable and returns an Array of
+    # those, where each ColorEntry is [R, G, B, A].
+    #
+    # @return [Array<Array<Fixnum>>]
+    def colors_as_rgb
+      return [] unless color_table
+
+      color_table.color_entries_as_rgb.map do |color_entry|
+        color_entry.to_a
+      end
+    end
+
+    # Gets the colors from the associated ColorTable and returns an Array of
+    # Strings, where the RGB color for each ColorEntry has been converted to
+    # Hex.
+    #
+    # @return [Array<String>]
+    def colors_as_hex
+      colors_as_rgb.map do |rgba|
+        rgb = rgba.to_a[0..2]
+
+        "##{rgb[0].to_s(16)}#{rgb[1].to_s(16)}#{rgb[2].to_s(16)}"
+      end
+    end
+
     # @param [String]
     def hex_to_rgb(hex)
       hex.sub!(/^#/, '')
