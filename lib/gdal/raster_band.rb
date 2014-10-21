@@ -82,7 +82,8 @@ module GDAL
 
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
-      cpl_err = FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer, new_color_interp).to_ruby
+      cpl_err = FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer,
+        new_color_interp)
 
       cpl_err.to_bool
     end
@@ -580,11 +581,9 @@ module GDAL
 
       (y_offset).upto(lines_to_write - 1) do |y|
         pixels = pixel_array[true, y]
-        if data_type == :GDT_Byte
-          scan_line.write_array_of_uint8(pixels.to_a)
-        else
-          scan_line.write_array_of_float(pixels.to_a)
-        end
+        ffi_type = GDAL._gdal_data_type_to_ffi(data_type)
+        meth = "write_array_of_#{ffi_type}".to_sym
+        scan_line.send(meth, pixels.to_a)
 
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
           :GF_Write,
