@@ -14,7 +14,7 @@ module GDAL
       end
 
       def to_a
-        NArray[hues, lightnesses, saturations].rot90(3).to_a
+        NMatrix[hues, lightnesses, saturations].transpose.to_a
       end
     end
   end

@@ -18,7 +18,7 @@ module GDAL
       end
 
       def to_a
-        NArray[reds, greens, blues, alphas].rot90(3).to_a
+        NMatrix[reds, greens, blues, alphas].transpose.to_a
       end
     end
   end

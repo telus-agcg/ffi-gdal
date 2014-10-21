@@ -434,15 +434,15 @@ module GDAL
     #   red_band_array = [0, 0, 0]
     #   green_band_array = [10, 10, 10]
     #   blue_band_array = [99, 99, 99]
-    #   alpha_band_array = [250, 250, 250]
+    #   alpha_band_array = [250, 150, 2]
     #
     #   # This array would look like:
-    #   [[0, 10, 99, 250], [0, 10, 99, 250], [0, 10, 99, 250]]
+    #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
     # @return NArray
     def to_na
-      na = NArray.to_na(raster_bands.map { |raster_band| raster_band.to_na })
+      na = NMatrix.to_na(raster_bands.map { |raster_band| raster_band.to_na })
 
-      na.rot90(3)
+      NArray[*na.transpose]
     end
 
     def as_json
