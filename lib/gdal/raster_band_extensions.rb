@@ -111,7 +111,10 @@ module GDAL
       self.color_interpretation = :GCI_PaletteIndex
       bin_size = (color_entry_index_count / colors.size).to_i
       remainder = color_entry_index_count % colors.size
-      offset = 0
+      
+      # Add entry for no-data values
+      table.add_color_entry(0, 255, 255, 255, 255)
+      offset = 1
 
       colors.each_with_index do |color_array, i|
         color_array = hex_to_rgb(color_array) unless color_array.is_a?(Array)
