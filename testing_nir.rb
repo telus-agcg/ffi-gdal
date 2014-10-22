@@ -1,4 +1,3 @@
-require 'tiff'
 require 'bundler/setup'
 require 'pry'
 require 'ffi-gdal'
@@ -72,5 +71,7 @@ g_byte_dataset.close
 g_byte_dataset = GDAL::Dataset.open('gndvi_byte.tif', 'w')
 g_byte_band = g_byte_dataset.raster_band(1)
 g_byte_band.colorize!(*colors)
+binding.pry
 g_byte_dataset.close
+
 # floyd.extract_natural_color('nc.tif', band_order: %i[nir red green blue])
