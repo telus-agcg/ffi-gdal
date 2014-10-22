@@ -469,15 +469,13 @@ module GDAL
 
     private
 
-    # @param numerator [NArray]
-    # @param denominator [NArray]
+    # @param ndvi [NArray]
     # @return [NArray]
     def calculate_ndvi_byte(ndvi)
       (ndvi + 1) * (127.5)
     end
 
-    # @param numerator [NArray]
-    # @param denominator [NArray]
+    # @param ndvi [NArray]
     # @return [NArray]
     def calculate_ndvi_uint16(ndvi)
       (ndvi + 1) * (2**15 - 1)
