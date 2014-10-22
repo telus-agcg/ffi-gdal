@@ -12,6 +12,11 @@ module GDAL
     include GDAL::Logger
     include RasterBandExtensions
 
+    ALL_VALID = 0x01
+    PER_DATASET = 0x02
+    ALPHA = 0x04
+    NODATA = 0x08
+
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band=nil)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
@@ -237,8 +242,8 @@ module GDAL
     end
 
     # @return [Boolean]
-    def create_mask_band
-      cpl_err = FFI::GDAL.GDALCreateMaskBand(@raster_band_pointer)
+    def create_mask_band(flags)
+      cpl_err = FFI::GDAL.GDALCreateMaskBand(@raster_band_pointer, flags)
 
       cpl_err.to_bool
     end
