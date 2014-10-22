@@ -110,7 +110,6 @@ module GDAL
 
       self.color_interpretation = :GCI_PaletteIndex
       bin_size = (color_entry_index_count / colors.size).to_i
-      remainder = color_entry_index_count % colors.size
 
       # Add entry for no-data values
       table.add_color_entry(0, 0, 0, 0, 255)
@@ -163,7 +162,7 @@ module GDAL
       end
     end
 
-    # @param [String]
+    # @param hex [String]
     def hex_to_rgb(hex)
       hex.sub!(/^#/, '')
       matches = hex.match(/(?<red>[a-zA-Z0-9]{2})(?<green>[a-zA-Z0-9]{2})(?<blue>[a-zA-Z0-9]{2})/)
