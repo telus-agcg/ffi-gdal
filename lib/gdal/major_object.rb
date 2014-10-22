@@ -44,6 +44,12 @@ module GDAL
       FFI::GDAL.GDALGetMetadataItem(c_pointer, name, domain)
     end
 
+    def set_metadata_item(name, value, domain='')
+      cpl_err = FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
+
+      cpl_err.to_bool
+    end
+
     # @return [Hash{domain => Array<String>}]
     def all_metadata
       sub_metadata = metadata_domain_list.each_with_object({}) do |subdomain, obj|
