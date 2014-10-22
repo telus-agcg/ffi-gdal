@@ -443,6 +443,7 @@ module GDAL
         nil
       )
 
+      cpl_err.to_bool
       min = min_pointer.read_double
       max = max_pointer.read_double
       buckets = buckets_pointer.read_int
@@ -488,6 +489,8 @@ module GDAL
         approx_ok,
         progress_proc,
         'doing things')
+
+      cpl_err.to_bool
 
       totals = if buckets.zero?
         []
