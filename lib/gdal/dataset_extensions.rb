@@ -179,7 +179,7 @@ module GDAL
         ndvi[i] = no_data_value if ndvi[i].is_a?(Float) && ndvi[i].nan?
       end
 
-      case data_type
+      final_array = case data_type
       when :GDT_Byte
         calculate_ndvi_byte(ndvi)
       when :GDT_UInt16
@@ -187,6 +187,8 @@ module GDAL
       else
         ndvi
       end
+
+      remove_negatives ? remove_negatives_from(final_array) : final_array
     end
 
     # Map raster bands to a label, as a hash.  Useful for when bands don't match
@@ -479,6 +481,18 @@ module GDAL
     # @return [NArray]
     def calculate_ndvi_uint16(ndvi)
       (ndvi + 1) * (2**15 - 1)
+    end
+
+    # Sets any negative values in the NArray to 0.
+    #
+    # @param narray [NArray]
+    # @return [NArray]
+    def remove_negatives_from(narray, replace_with=0)
+      0.upto(narray.size - 1) do |i|
+        narray[i] = replace_with if narray[i] < 0
+      end
+
+      narray
     end
   end
 end
