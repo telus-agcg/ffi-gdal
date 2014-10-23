@@ -2,7 +2,7 @@ module GDAL
   module ColorTableTypes
     module Gray
       def grays
-        all_entries_for :c1
+        color_entries_for(1)
       end
     end
   end

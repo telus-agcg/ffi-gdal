@@ -97,12 +97,12 @@ module OGR
       z_vals = z_ptr.read_array_of_double unless z_vertices.empty?
 
       points = if z_vertices.empty?
-                 NArray[x_vals, y_vals]
+                 NMatrix[x_vals, y_vals]
                else
-                 NArray[x_vals, y_vals, z_vals]
+                 NMatrix[x_vals, y_vals, z_vals]
                end
 
-      points.rot90(3).to_a
+      points.transpose.to_a
     end
   end
 end

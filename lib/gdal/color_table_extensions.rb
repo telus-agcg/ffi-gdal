@@ -3,13 +3,13 @@ require 'json'
 module GDAL
   module ColorTableExtensions
 
-    def color_entries_for(color_entry_c)
-      unless %i[c1 c2 c3 c4].include? color_entry_c
-        raise "Invalid ColorEntry attribute '#{color_entry_c}'"
+    def color_entries_for(color_number)
+      unless (1..4).to_a.include? color_number
+        raise "Invalid ColorEntry number 'color#{color_number}'"
       end
 
       0.upto(color_entry_count - 1).map do |i|
-        color_entry(i)[color_entry_c]
+        color_entry(i).send("color#{color_number}".to_sym)
       end
     end
 
@@ -17,6 +17,16 @@ module GDAL
     def color_entries
       0.upto(color_entry_count - 1).map do |i|
         color_entry(i)
+      end
+    end
+
+    # Does the same as #color_entries, but calls #color_entry_as_rgb() instead
+    # of #color_entry().
+    #
+    # @return [Array<GDAL::ColorEntry>]
+    def color_entries_as_rgb
+      0.upto(color_entry_count - 1).map do |i|
+        color_entry_as_rgb(i)
       end
     end
 

@@ -2,23 +2,23 @@ module GDAL
   module ColorTableTypes
     module RGB
       def reds
-        all_entries_for :c1
+        color_entries_for(1)
       end
 
       def greens
-        all_entries_for :c2
+        color_entries_for(2)
       end
 
       def blues
-        all_entries_for :c3
+        color_entries_for(3)
       end
 
       def alphas
-        all_entries_for :c4
+        color_entries_for(4)
       end
 
       def to_a
-        NArray[reds, greens, blues, alphas].rot90(3).to_a
+        NMatrix[reds, greens, blues, alphas].transpose.to_a
       end
     end
   end
