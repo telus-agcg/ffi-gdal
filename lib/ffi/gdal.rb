@@ -8,7 +8,7 @@ module FFI
       old_attach_function(*args)
     rescue FFI::NotFoundError
       @unsupported_gdal_functions ||= []
-      warn "Function '#{args.first}' is not available in this build of GDAL/OGR v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')}"
+      warn "Warning: function '#{args.first}' is not available in this build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
       @unsupported_gdal_functions << args.first
     end
 
