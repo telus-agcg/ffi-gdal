@@ -8,7 +8,7 @@ GDAL::Logger.logging_enabled = true
 # http://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer
 
 # Get a Layer's Extent
-data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
+data_source = OGR::DataSource.open('../spec/support/shapefiles/states_21basic/states.shp', 'r')
 layer = data_source.layer(0)
 extent = layer.extent
 
