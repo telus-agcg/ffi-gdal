@@ -71,7 +71,7 @@ module GDAL
 
       flag = FFI::GDAL.GDALGetAccess(@dataset_pointer)
 
-      FFI::GDAL.GDALAccess[flag]
+      FFI::GDAL::GDALAccess[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this

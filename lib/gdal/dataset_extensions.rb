@@ -472,13 +472,13 @@ module GDAL
     # @param ndvi [NArray]
     # @return [NArray]
     def calculate_ndvi_byte(ndvi)
-      (ndvi + 1) * (127.5)
+      (ndvi + 1) * (255.0 / 2)
     end
 
     # @param ndvi [NArray]
     # @return [NArray]
     def calculate_ndvi_uint16(ndvi)
-      (ndvi + 1) * (2**15 - 1)
+      (ndvi + 1) * (65535.0 / 2)
     end
 
     # Sets any negative values in the NArray to 0.
