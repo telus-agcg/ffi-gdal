@@ -43,21 +43,9 @@ multi_polygon = OGR::Geometry.create_from_wkt(multi_polygon_wkt)
 # boundary: #{boundary}
 # POINT
 #
-def things(geometry)
-  geometry = geometry.clone
-  ls = geometry.to_line_string
-  mls = geometry.to_multi_line_string
-  #mpoint = geometry.to_multi_point
-  #mpolygon = geometry.to_multi_polygon
-  polygon = geometry.to_polygon
 
-  {
-    line_string_points: ls ? ls.point_count : nil,
-    multi_line_string_points: mls ? mls.point_count : nil,
-    #multi_point_points: mpoint ? mpoint.point_count : nil,
-    #multi_polygon_points: mpolygon ? mpolygon.point_count : nil,
-    #polygon_points: polygon ? polygon.point_count : nil
-  }
-end
+geometry = geometry.clone
+ls = geometry.to_line_string
+mls = geometry.to_multi_line_string
 
 binding.pry

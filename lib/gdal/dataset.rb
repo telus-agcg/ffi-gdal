@@ -71,7 +71,7 @@ module GDAL
 
       flag = FFI::GDAL.GDALGetAccess(@dataset_pointer)
 
-      FFI::GDAL.GDALAccess[flag]
+      FFI::GDAL::GDALAccess[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
@@ -148,11 +148,12 @@ module GDAL
       raster_band(raster_count)
     end
 
-    # Adds a mask band to the dataset
+    # Adds a mask band to the dataset.
     #
+    # @param flags [Fixnum] Any of of the GDAL::RasterBand flags.
     # @return [Boolean]
-    def create_mask_band
-      cpl_err = FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, 0)
+    def create_mask_band(flags)
+      cpl_err = FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, flags)
 
       cpl_err.to_bool
     end

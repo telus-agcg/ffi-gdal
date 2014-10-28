@@ -85,6 +85,7 @@ module GDAL
       FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
     end
 
+    # @param new_color_interp [FFI::GDAL::GDALColorInterp]
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
       cpl_err = FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer,

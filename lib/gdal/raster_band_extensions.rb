@@ -110,17 +110,17 @@ module GDAL
         raise "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
       end
 
-      self.color_interpretation = :GCI_PaletteIndex
+      self.color_interpretation ||= :GCI_PaletteIndex
       table.add_color_entry(0, 0, 0, 0, 255)
-      bin_count = (color_entry_index_count / colors.size).to_f
+      bin_count = color_entry_index_count / colors.size.to_f
 
       1.upto(color_entry_index_count - 1) do |color_entry_index|
-        color_number = (color_entry_index / bin_count.to_f).to_i
+        color_number = (color_entry_index / bin_count).to_i
 
         color = colors[color_number]
-        color_array = hex_to_rgb(color) unless color.is_a?(Array)
+        rgb_array = hex_to_rgb(color) unless color.is_a?(Array)
         table.add_color_entry(color_entry_index,
-          color_array[0], color_array[1], color_array[2], 255)
+          rgb_array[0], rgb_array[1], rgb_array[2], 255)
       end
 
       self.color_table = table

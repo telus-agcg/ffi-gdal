@@ -22,6 +22,7 @@ module OGR
       else
         new(geometry)
       end
+
       case geometry.name
       when 'POINT' then OGR::Point.new(geometry.c_pointer)
       when 'LINESTRING' then OGR::LineString.new(geometry.c_pointer)

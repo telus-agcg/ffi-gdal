@@ -14,9 +14,9 @@ module FFI
     attach_function :GDALGridInverseDistanceToAPower,
       %i[pointer GUInt32 pointer pointer pointer double double pointer pointer],
       CPLErr
-    # attach_function :GDALGridInverseDistanceToAPointerNoSearch,
-    #   %i[pointer GUInt32 pointer pointer pointer double double pointer pointer],
-    #   CPLErr
+    attach_function :GDALGridInverseDistanceToAPointerNoSearch,
+      %i[pointer GUInt32 pointer pointer pointer double double pointer pointer],
+      CPLErr
 
     attach_function :GDALGridMovingAverage,
       %i[pointer GUInt32 pointer pointer pointer double double pointer pointer],
