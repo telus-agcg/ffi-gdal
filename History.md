@@ -1,3 +1,9 @@
+### 1.0.0.beta3 / 2014-11-11
+
+* Bug fixes
+    * `ogr/exceptions` wasn't being required for `ext/error_symbols.rb`, thus
+      any use of an OGR exception was causing a `NameError`.
+
 ### 1.0.0.beta2 / 2014-10-23
 
 * Improvements
