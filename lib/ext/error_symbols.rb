@@ -1,4 +1,5 @@
 require_relative '../gdal/exceptions'
+require_relative '../ogr/exceptions'
 
 
 class ::Symbol
