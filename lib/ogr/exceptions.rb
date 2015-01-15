@@ -32,4 +32,19 @@ module OGR
 
   class InvalidHandle < RuntimeError
   end
+
+  class DriverNotFound < RuntimeError
+    def initialize(driver, msg=nil)
+      message =
+        if msg
+          msg
+        elsif driver.is_a? String
+          "Driver not found with name '#{driver}'."
+        elsif driver.is_a? Fixnum
+          "Driver at index #{driver} not found."
+        end
+
+      super(message)
+    end
+  end
 end
