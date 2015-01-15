@@ -40,7 +40,7 @@ module OGR
           geometry_column: geometry_column,
           geometry_type: geometry_type,
           name: name,
-          spatial_reference: spatial_reference.as_json,
+          spatial_reference: spatial_reference ? spatial_reference.as_json : nil,
           style_table: style_table ? style_table.as_json : nil
         },
         metadata: nil #all_metadata
