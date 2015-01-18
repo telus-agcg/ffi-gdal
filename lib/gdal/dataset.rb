@@ -270,6 +270,60 @@ module GDAL
       cpl_err.to_bool
     end
 
+    # @param access_flag [String] 'r' or 'w'
+    # @param data_ptr [FFI::MemoryPointer] The pointer to the data to write to
+    #   the dataset.
+    # @param x_size [Fixnum] If not given, uses #raster_x_size.
+    # @param y_size [Fixnum] If not given, uses #raster_y_size.
+    # @param data_type [FFI::GDAL::GDALDataType]
+    # @param band_count [Fixnum] The number of bands to create in the raster.
+    # @param pixel_space
+    def raster_io(access_flag, data_ptr,
+                  x_size: nil,
+                  y_size: nil,
+                  x_offset: 0,
+                  y_offset: 0,
+                  data_type: :GDT_Byte,
+                  band_count: 1,
+                  pixel_space: 0,
+                  line_space: 0,
+                  band_space: 0
+                  )
+
+      x_size ||= raster_x_size
+      y_size ||= raster_y_size
+
+      gdal_access_flag =
+        case access_flag
+        when 'r' then :GF_Read
+        when 'w' then :GF_Write
+        else fail "Invalid access flag: #{access_flag}"
+        end
+
+      x_buffer_size = x_size
+      y_buffer_size = y_size
+
+      cpl_err = FFI::GDAL::GDALDatasetRasterIO(
+        @dataset_pointer,                     # hDS
+        gdal_access_flag,                     # eRWFlag
+        x_offset,                             # nXOff
+        y_offset,                             # nYOff
+        x_size,                               # nXSize
+        y_size,                               # nYSize
+        data_ptr,                             # pData
+        x_buffer_size,                        # nBufXSize
+        y_buffer_size,                        # nBufYSize
+        data_type,                            # eBufType
+        band_count,                           # nBandCount
+        nil,                                  # panBandMap (WTH is this?)
+        pixel_space,                          # nPixelSpace
+        line_space,                           # nLineSpace
+        band_space                            # nBandSpace
+      )
+
+      cpl_err.to_bool
+    end
+
     # Rasterizes the geometric objects +geometries+ into this raster dataset.
     # +transformer+ can be nil as long as the +geometries+ are within the
     # georeferenced coordinates of this raster's dataset.
