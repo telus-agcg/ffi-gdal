@@ -35,6 +35,11 @@ module GDAL
         self.class.new_pointer
       end
 
+      self.pixel_width = 1.0
+      self.pixel_height = 1.0
+      self.x_rotation = 0.0
+      self.y_rotation = 0.0
+
       to_a
     end
 
@@ -150,7 +155,7 @@ module GDAL
       { longitude: geo_x_ptr.read_double, latitude: geo_y_ptr.read_double }
     end
 
-    # Composes this and the give geo_transform.  The result is equivalent to
+    # Composes this and the given geo_transform.  The result is equivalent to
     # applying both geotransforms to a point.
     #
     # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
