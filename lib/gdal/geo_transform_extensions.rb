@@ -21,14 +21,6 @@ module GDAL
       apply_geo_transform(x_pixel, y_pixel)[:y_location]
     end
 
-    # The algorithm per http://www.gdal.org/gdal_datamodel.html.
-    def pixel_to_world(pixel, line)
-      x_geo = x_origin + (pixel * pixel_width) + (line * x_rotation)
-      y_geo = y_origin + (pixel * pixel_height) + (line * y_rotation)
-
-      { longitude: y_geo, latitude: x_geo }
-    end
-
     # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
     # pixel location of a geospatial coordinate.
     #
