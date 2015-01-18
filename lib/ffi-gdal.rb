@@ -25,6 +25,8 @@ module GDAL
     File.expand_path('gdal/driver', __dir__)
   autoload :GeoTransform,
     File.expand_path('gdal/geo_transform', __dir__)
+  autoload :Grid,
+    File.expand_path('gdal/grid', __dir__)
   autoload :MajorObject,
     File.expand_path('gdal/major_object', __dir__)
   autoload :Options,

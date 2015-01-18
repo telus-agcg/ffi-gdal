@@ -9,15 +9,15 @@ module FFI
     #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
-    GDALGridAlgorithm = enum :GCA_InverseDistanceToAPower,
-      :GCA_MovingAverage,
-      :GCA_NearestNeighbor,
-      :GCA_MetricMinimum,
-      :GCA_MetricMaximum,
-      :GCA_MetricRange,
-      :GCA_MetricCount,
-      :GCA_MetricAverageDistance,
-      :GCA_MetricAverageDistancePts
+    GDALGridAlgorithm = enum :GGA_InverseDistanceToAPower, 1,
+      :GGA_MovingAverage, 2,
+      :GGA_NearestNeighbor, 3,
+      :GGA_MetricMinimum, 4,
+      :GGA_MetricMaximum, 5,
+      :GGA_MetricRange, 6,
+      :GGA_MetricCount, 7,
+      :GGA_MetricAverageDistance, 8,
+      :GGA_MetricAverageDistancePts, 9
 
     #------------------------------------------------------------------------
     # Typedefs
