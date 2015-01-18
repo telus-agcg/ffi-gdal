@@ -160,6 +160,25 @@ module GDAL
       [matches[:red].to_i(16), matches[:green].to_i(16), matches[:blue].to_i(16)]
     end
 
+    # Each pixel of the raster projected using the dataset's geo_transform.
+    #
+    # @return [NArray]
+    def projected_points
+      point_count = (y_size) * (x_size)
+      narray = NArray.object(2, point_count)
+
+      0.upto(y_size - 1).each do |lat_point|
+        0.upto(x_size - 1).each do |lon_point|
+          hash = dataset.geo_transform.apply_geo_transform(lat_point, lon_point)
+          point_number = lat_point * lon_point
+          narray[0, point_number] = hash[:latitude] || 0
+          narray[1, point_number] = hash[:longitude] || 0
+        end
+      end
+
+      narray
+    end
+
     # @return [Hash]
     def as_json
       {
