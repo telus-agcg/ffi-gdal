@@ -156,19 +156,18 @@ module GDAL
     # @param filename [String]
     # @param x_size [Fixnum] Width of created raster in pixels.
     # @param y_size [Fixnum] Height of created raster in pixels.
-    # @param bands [Fixnum]
+    # @param band_count [Fixnum]
     # @param data_type [FFI::GDAL::GDALDataType]
     # @return [GDAL::Dataset] Returns the *closed* dataset.  You'll need to
     #   reopen it if you with to continue working with it.
-    # @todo Implement options.
-    def create_dataset(filename, x_size, y_size, bands: 1, data_type: :GDT_Byte, **options)
+    def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
       dataset_pointer = FFI::GDAL.GDALCreate(@driver_pointer,
         filename,
         x_size,
         y_size,
-        bands,
+        band_count,
         data_type,
         options_pointer
       )
