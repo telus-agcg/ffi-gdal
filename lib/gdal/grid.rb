@@ -6,13 +6,20 @@ module GDAL
   class Grid
     include GDAL::Logger
 
+    # @return [GDAL::GridTypes]
     attr_reader :gridder
+
+    # @return [NArray]
     attr_accessor :points
 
     # @return [GDAL::GeoTransform]
-    attr_accessor :geo_transform
+    attr_reader :geo_transform
+
+    # @return [FFI::GDAL::GDALDataType]
+    attr_accessor :data_type
 
     # @param algorithm [Symbol]
+    # @param data_type [FFI::GDAL::GDALDataType]
     def initialize(algorithm, data_type: :GDT_Byte)
       @data_type = data_type
       @gridder = init_gridder(algorithm)
@@ -20,7 +27,9 @@ module GDAL
       @geo_transform = GDAL::GeoTransform.new
     end
 
+    # @return [FFI::MemoryPointer] Pointer to the grid data.
     def create(&progress_block)
+      update_geo_transform
       options_ptr = GDAL::Options.pointer(@gridder.options)
 
       log "number of points: #{point_count}"
@@ -32,7 +41,6 @@ module GDAL
       if @points.shape.first == 3
         z_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
         z_coordinates_ptr.write_array_of_float(@points[2, true].to_a)
-        log "z coordinates: #{z_coordinates_ptr.read_array_of_float(point_count)}"
       else
         z_coordinates_ptr = nil
       end
@@ -43,7 +51,14 @@ module GDAL
       log "y_max: #{y_max}"
       log "x_size: #{x_size}"
       log "y_size: #{y_size}"
+      log "pixel_width: #{@geo_transform.pixel_width}"
+      log "pixel_height: #{@geo_transform.pixel_height}"
       data_ptr = FFI::MemoryPointer.new(:buffer_inout, x_size * y_size)
+
+      x_end = (x_max - @geo_transform.x_size(x_max)) / 2
+      y_end = (y_min - @geo_transform.y_size(y_max)) / 2
+      log "corner x1 (gdal_grid.cpp): #{x_end}"
+      log "corner y1 (gdal_grid.cpp): #{y_end}"
 
       cpl_err = FFI::GDAL::GDALGridCreate(
         @gridder.algorithm,                             # eAlgorithm
@@ -83,7 +98,7 @@ module GDAL
     end
 
     def x_size
-      @geo_transform.x_size(x_max, x_min)
+      @points.nil? ? nil : (x_max - x_min)
     end
 
     def y_min
@@ -95,7 +110,7 @@ module GDAL
     end
 
     def y_size
-      @geo_transform.y_size(y_max, y_min)
+      @points.nil? ? nil : (y_max - y_min)
     end
 
     private
@@ -111,6 +126,15 @@ module GDAL
       else
         raise GDAL::UnknownGridAlgorithm.new(algorithm)
       end
+    end
+
+    def update_geo_transform
+      return if @points.nil?
+
+      @geo_transform.x_origin = x_min
+      @geo_transform.y_origin = y_max
+      @geo_transform.pixel_width = (x_max - x_min) / x_size
+      @geo_transform.pixel_height = (y_max - y_min) / y_size
     end
 
     # def metric_minimum
