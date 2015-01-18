@@ -37,8 +37,8 @@ module GDAL
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x, y>] [pixel, line]
     def world_to_pixel(lon, lat, value_type=:float)
-      pixel = (lon - x_origin) / pixel_width
-      line = (y_origin - lat) / pixel_height
+      pixel = x_size(lon, x_origin)
+      line = y_size(y_origin, lat)
 
       case value_type
       when :float
@@ -48,6 +48,22 @@ module GDAL
       else
         { x: pixel, y: line }
       end
+    end
+
+    # Calculates the size of an X/longitude pixel.
+    #
+    # @param x_max [Number]
+    # @param x_min [Number]
+    def x_size(x_max, x_min)
+      ((x_max - x_min) / pixel_width).round.to_i
+    end
+
+    # Calculates the size of an Y/latitude pixel.
+    #
+    # @param y_max [Number]
+    # @param y_min [Number]
+    def y_size(y_max, y_min)
+      ((y_max - y_min) / pixel_height).round.to_i
     end
 
     # All attributes as an Array, in the order:
