@@ -2,6 +2,30 @@ require 'json'
 
 module GDAL
   module GeoTransformExtensions
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+
+      # Calculates the size of an X/longitude pixel.
+      #
+      # @param x_max [Number]
+      # @param x_min [Number]
+      # @param pixel_width [Number]
+      def x_size(x_max, x_min, pixel_width)
+        (x_max - x_min) / pixel_width
+      end
+
+      # Calculates the size of an Y/latitude pixel.
+      #
+      # @param y_max [Number]
+      # @param y_min [Number]
+      # @param pixel_height [Number]
+      def y_size(y_max, y_min, pixel_height)
+        ((y_max - y_min) / pixel_height)
+      end
+    end
 
     # The calculated UTM easting of the pixel on the map.
     #
@@ -29,8 +53,8 @@ module GDAL
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x, y>] [pixel, line]
     def world_to_pixel(lon, lat, value_type=:float)
-      pixel = x_size(lon, x_origin)
-      line = y_size(y_origin, lat)
+      pixel = self.class.x_size(lon, x_origin, pixel_width)
+      line = self.class.y_size(y_origin, lat, pixel_height)
 
       case value_type
       when :float
@@ -42,20 +66,22 @@ module GDAL
       end
     end
 
-    # Calculates the size of an X/longitude pixel.
+    # Calculates the size of an X/longitude pixel using the geotransform's
+    # x_origin and pixel_width.
     #
     # @param x_max [Number]
     # @param x_min [Number]
-    def x_size(x_max, x_min)
-      ((x_max - x_min) / pixel_width).round.to_i
+    def x_size(x_max)
+      self.class.x_size(x_max, x_origin, pixel_width)
     end
 
-    # Calculates the size of an Y/latitude pixel.
+    # Calculates the size of an Y/latitude pixel using the geotransform's
+    # y_origin and pixel_height.
     #
     # @param y_max [Number]
     # @param y_min [Number]
-    def y_size(y_max, y_min)
-      ((y_max - y_min) / pixel_height).round.to_i
+    def y_size(y_max)
+      self.class.y_size(y_max, y_origin, pixel_height)
     end
 
     # All attributes as an Array, in the order:
