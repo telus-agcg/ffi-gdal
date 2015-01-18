@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'ext/error_symbols'
 
-describe Symbol do
+RSpec.describe Symbol do
   describe '#to_ruby' do
     context ':CE_None' do
       subject { :CE_None }

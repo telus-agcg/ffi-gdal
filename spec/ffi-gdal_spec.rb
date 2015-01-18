@@ -2,5 +2,5 @@ require 'spec_helper'
 require 'ffi-gdal'
 
 
-describe GDAL do
+RSpec.describe GDAL do
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GDAL::Dataset do
+RSpec.describe GDAL::Dataset do
   let(:file_path) do
     File.expand_path('../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__)
   end

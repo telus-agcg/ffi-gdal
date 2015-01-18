@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-
-describe GDAL::ColorTable do
+RSpec.describe GDAL::ColorTable do
   describe '.create' do
     context 'with a valid PaletteInterpretation' do
       it 'creates a new ColorTable' do

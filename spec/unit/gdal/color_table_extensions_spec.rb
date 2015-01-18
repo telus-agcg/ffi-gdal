@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-
-describe GDAL::ColorTable do
+RSpec.describe GDAL::ColorTable do
   subject do
     described_class.create(:GPI_RGB)
   end

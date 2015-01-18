@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-
-describe OGR::Point do
+RSpec.describe OGR::Point do
   subject { described_class.create_from_wkt(wkt) }
   let(:wkt) { 'POINT (1 2)' }
 

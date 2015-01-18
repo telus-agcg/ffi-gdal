@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe OGR::LinearRing do
+RSpec.describe OGR::LinearRing do
   let(:linear_ring) do
     g = OGR::Geometry.create(:wkbLinearRing)
     g.add_point(0, 0)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GDAL::DataType do
+RSpec.describe GDAL::DataType do
   describe '.size' do
     context 'with valid data type' do
       it 'returns the size' do
