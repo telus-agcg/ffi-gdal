@@ -119,10 +119,14 @@ module GDAL
       case algorithm
       when :inverse_distance_to_a_power
         GDAL::GridTypes::InverseDistanceToAPower.new
-      when :moving_average
-        GDAL::GridTypes::MovingAverage.new
-      when :nearest_neighbor
-        GDAL::GridTypes::NearestNeighbor.new
+      when :moving_average then GDAL::GridTypes::MovingAverage.new
+      when :nearest_neighbor then GDAL::GridTypes::NearestNeighbor.new
+      when :metric_average_distance then GDAL::GridTypes::MetricAverageDistance.new
+      when :metric_average_distance_pts then GDAL::GridTypes::MetricAverageDistancePts.new
+      when :metric_count then GDAL::GridTypes::MetricCount.new
+      when :metric_maximum then GDAL::GridTypes::MetricMaximum.new
+      when :metric_minimum then GDAL::GridTypes::MetricMinimum.new
+      when :metric_range then GDAL::GridTypes::MetricRange.new
       else
         raise GDAL::UnknownGridAlgorithm.new(algorithm)
       end
@@ -136,29 +140,5 @@ module GDAL
       @geo_transform.pixel_width = (x_max - x_min) / x_size
       @geo_transform.pixel_height = (y_max - y_min) / y_size
     end
-
-    # def metric_minimum
-    #   create_grid(:GGA_MetricMinimum)
-    # end
-    #
-    # def metric_maximum
-    #   create_grid(:GGA_MetricMaximum)
-    # end
-    #
-    # def metric_range
-    #   create_grid(:GGA_MetricRange)
-    # end
-    #
-    # def metric_count
-    #   create_grid(:GGA_MetricCount)
-    # end
-    #
-    # def metric_average_distance
-    #   create_grid(:GGA_MetricAverageDistance)
-    # end
-    #
-    # def metric_average_distance_pts
-    #   create_grid(:GGA_MetricAverageDistancePts)
-    # end
   end
 end
