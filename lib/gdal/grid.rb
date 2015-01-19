@@ -1,13 +1,13 @@
+require 'forwardable'
 require 'narray'
 require_relative 'grid_types'
 require_relative 'geo_transform'
 
 module GDAL
+  # Wrapper for GDAL's [Grid API](http://www.gdal.org/grid_tutorial.html).
   class Grid
+    extend Forwardable
     include GDAL::Logger
-
-    # @return [GDAL::GridTypes]
-    attr_reader :gridder
 
     # @return [NArray]
     attr_accessor :points
@@ -17,6 +17,8 @@ module GDAL
 
     # @return [FFI::GDAL::GDALDataType]
     attr_accessor :data_type
+
+    def_delegator :@gridder, :options, :options
 
     # @param algorithm [Symbol]
     # @param data_type [FFI::GDAL::GDALDataType]
@@ -30,9 +32,8 @@ module GDAL
     # @return [FFI::MemoryPointer] Pointer to the grid data.
     def create(&progress_block)
       update_geo_transform
-      options_ptr = GDAL::Options.pointer(@gridder.options)
 
-      log "number of points: #{point_count}"
+      log "Number of points: #{point_count}"
       x_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
       y_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
       x_coordinates_ptr.write_array_of_float(@points[0, true].to_a)
@@ -45,24 +46,23 @@ module GDAL
         z_coordinates_ptr = nil
       end
 
-      log "x_min: #{x_min}"
-      log "x_max: #{x_max}"
-      log "y_min: #{y_min}"
-      log "y_max: #{y_max}"
-      log "x_size: #{x_size}"
-      log "y_size: #{y_size}"
+      log "x_min, y_min: #{x_min}, #{y_min}"
+      log "x_max, y_max: #{x_max}, #{y_max}"
+      log "x_size, y_size: #{x_size}, #{y_size}"
       log "pixel_width: #{@geo_transform.pixel_width}"
       log "pixel_height: #{@geo_transform.pixel_height}"
       data_ptr = FFI::MemoryPointer.new(:buffer_inout, x_size * y_size)
 
-      x_end = (x_max - @geo_transform.x_size(x_max)) / 2
-      y_end = (y_min - @geo_transform.y_size(y_max)) / 2
+      # gdal_grid.cpp lists this as the corner coordinates, which ends up being
+      # larger than my x_max/y_min test values. That seems odd.
+      x_end = x_max + (@geo_transform.x_size(x_max) / 2)
+      y_end = y_min - (@geo_transform.y_size(y_max) / 2)
       log "corner x1 (gdal_grid.cpp): #{x_end}"
       log "corner y1 (gdal_grid.cpp): #{y_end}"
 
       cpl_err = FFI::GDAL::GDALGridCreate(
         @gridder.algorithm,                             # eAlgorithm
-        options_ptr,                                    # poOptions
+        @gridder.options.to_ptr,                        # poOptions
         point_count,                                    # nPoints
         x_coordinates_ptr,                              # padfX
         y_coordinates_ptr,                              # padfY
@@ -117,8 +117,7 @@ module GDAL
 
     def init_gridder(algorithm)
       case algorithm
-      when :inverse_distance_to_a_power
-        GDAL::GridTypes::InverseDistanceToAPower.new
+      when :inverse_distance_to_a_power then GDAL::GridTypes::InverseDistanceToAPower.new
       when :moving_average then GDAL::GridTypes::MovingAverage.new
       when :nearest_neighbor then GDAL::GridTypes::NearestNeighbor.new
       when :metric_average_distance then GDAL::GridTypes::MetricAverageDistance.new

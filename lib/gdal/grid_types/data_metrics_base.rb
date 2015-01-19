@@ -1,12 +1,13 @@
-require_relative 'base'
+require_relative '../../ffi/gdal/gdal_grid_data_metrics_options'
 
 module GDAL
   module GridTypes
-    class DataMetricsBase < Base
-      attr_option :min_points
-      
+    class DataMetricsBase
+      # @return [FFI::GDAL::GDALGridDataMetricsOptions]
+      attr_reader :options
+
       def initialize
-        super
+        @options = FFI::GDAL::GDALGridDataMetricsOptions.new
       end
     end
   end

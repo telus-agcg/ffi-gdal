@@ -1,12 +1,13 @@
-require_relative 'base'
+require_relative '../../ffi/gdal/gdal_grid_moving_average_options'
 
 module GDAL
   module GridTypes
-    class MovingAverage < Base
-      attr_option :min_points
+    class MovingAverage
+      # @return [FFI::GDAL::GDALGridMovingAverageOptions]
+      attr_reader :options
 
       def initialize
-        super
+        @options = FFI::GDAL::GDALGridMovingAverageOptions.new
       end
 
       def algorithm
