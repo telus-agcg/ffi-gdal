@@ -641,7 +641,10 @@ module GDAL
       end
     end
 
-    # @return [Hash{value => Float, it_tight => Boolean}]
+    # The minimum value in the band, no counting NODATA values.
+    #
+    # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
+    #   tells whether the minimum is a tight minimum.
     def minimum_value
       is_tight = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL.GDALGetRasterMinimum(@raster_band_pointer, is_tight)
@@ -649,9 +652,12 @@ module GDAL
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
     end
 
-    # @return [Hash{value => Float, it_tight => Boolean}]
+    # The maximum value in the band, no counting NODATA values.
+    #
+    # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
+    #   tells whether the maximum is a tight maximum.
     def maximum_value
-      is_tight = FFI::MemoryPointer.new(:double)
+      is_tight = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL.GDALGetRasterMaximum(@raster_band_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
