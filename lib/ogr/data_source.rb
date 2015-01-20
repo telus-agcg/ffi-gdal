@@ -115,7 +115,9 @@ module OGR
 
       return nil if layer_ptr.null?
 
-      OGR::Layer.new(layer_ptr)
+      @layers << OGR::Layer.new(layer_ptr)
+
+      @layers.last
     end
 
     # @param source_layer [OGR::Layer, FFI::Pointer]
