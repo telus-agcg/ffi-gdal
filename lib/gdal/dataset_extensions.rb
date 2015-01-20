@@ -316,26 +316,27 @@ module GDAL
     #   bands from this dataset to vectorize.  Can be a single Fixnum or array
     #   of Fixnums.
     # @return [OGR::DataSource]
-    def to_vector(file_name, vector_driver_name, geometry_type: :wkbPolygon,
+    def to_vector(file_name, vector_driver_name, geometry_type: :wkbUnknown,
       layer_name_prefix: 'band_number', band_numbers: [1],
-      field_name_prefix: 'field')
+      field_name_prefix: 'field', use_band_masks: true)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-
       ogr_driver = OGR::Driver.by_name(vector_driver_name)
-      spatial_ref = OGR::SpatialReference.new(projection)
-      spatial_ref.auto_identify_epsg!
+
+      if projection.empty?
+        spatial_ref = nil
+      else
+        spatial_ref = OGR::SpatialReference.new(projection)
+        spatial_ref.auto_identify_epsg!
+      end
 
       data_source = ogr_driver.create_data_source(file_name)
+
       band_numbers.each_with_index do |band_number, i|
         log "Starting to polygonize raster band #{band_number}..."
 
         layer_name = "#{layer_name_prefix}-#{band_number}"
         layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
           spatial_reference: spatial_ref)
-
-        unless layer
-          raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
-        end
 
         field_name = "#{field_name_prefix}#{i}"
         layer.create_field(field_name, :OFTInteger)
@@ -348,7 +349,9 @@ module GDAL
         end
 
         pixel_value_field = layer.feature_definition.field_index(field_name)
-        band.polygonize(layer, pixel_value_field: pixel_value_field)
+        options = { pixel_value_field: pixel_value_field }
+        options.merge!(mask_band: band.mask_band) if use_band_masks
+        band.polygonize(layer, options)
       end
 
       if block_given?
