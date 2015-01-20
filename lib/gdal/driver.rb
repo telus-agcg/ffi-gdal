@@ -180,14 +180,14 @@ module GDAL
       dataset
     end
 
-    # @param filename [String] The name for the new dataset file.
     # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
+    # @param destination_path [String] The name for the new dataset file.
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
     # @param options [Hash]
     # @param progress [Proc] For outputting copy progress.  Conforms to the
     #   FFI::GDAL::GDALProgressFunc signature.
-    def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
+    def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
 
       source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
@@ -201,7 +201,7 @@ module GDAL
       raise "Source dataset couldn't be read" if source_dataset_ptr.null?
 
       destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@driver_pointer,
-        filename,
+        destination_path,
         source_dataset_ptr,
         strict,
         options_ptr,
