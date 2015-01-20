@@ -108,6 +108,10 @@ module GDAL
       driver = GDAL::Driver.by_name(driver_name)
       original_nir_band = raster_band(band_number)
 
+      if original_nir_band.nil?
+        fail InvalidBandNumber, "Band #{band_number} found but was nil."
+      end
+
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |nir_dataset|
         nir_dataset.geo_transform = geo_transform
         nir_dataset.projection = projection
