@@ -34,12 +34,14 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na(data_type), nir.to_na(data_type),
-        no_data_value, remove_negatives, data_type)
+      the_array = calculate_ndvi(red.to_na(data_type),
+        nir.to_na(data_type),
+        no_data_value,
+        remove_negatives,
+        data_type)
       driver = GDAL::Driver.by_name(driver_name)
 
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type, **options) do |ndvi_dataset|
-
         ndvi_dataset.geo_transform = geo_transform
         ndvi_dataset.projection = projection
 
@@ -131,7 +133,7 @@ module GDAL
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
     # @return [GDAL::Dataset]
-    def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil)
+    def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Byte)
       rows = raster_y_size
       columns = raster_x_size
       driver = GDAL::Driver.by_name(driver_name)
@@ -146,7 +148,7 @@ module GDAL
         }
       end
 
-      driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, band_count: 3, data_type: data_type) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 
