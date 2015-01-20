@@ -113,7 +113,9 @@ module OGR
       layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
         spatial_ref_ptr, geometry_type, options_obj)
 
-      return nil if layer_ptr.null?
+      unless layer_ptr
+        raise OGR::InvalidLayer, "Unable to create layer '#{name}'."
+      end
 
       @layers << OGR::Layer.new(layer_ptr)
 
