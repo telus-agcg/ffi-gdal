@@ -44,6 +44,8 @@ module GDAL
             read_offset = block_size[:x] * block_index
             pixels = if data_type == :GDT_Byte
               data_pointer.get_array_of_uint8(read_offset, block_size[:x])
+            elsif data_type == :GDT_UInt16
+              data_pointer.get_array_of_uint16(read_offset, block_size[:x])
             else
               data_pointer.get_array_of_float(read_offset, block_size[:x])
             end
