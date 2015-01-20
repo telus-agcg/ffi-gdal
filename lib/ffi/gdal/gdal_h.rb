@@ -471,7 +471,7 @@ module FFI
     attach_function :GDALGetRasterScale, [:GDALRasterBandH, :pointer], :double
     attach_function :GDALSetRasterScale, [:GDALRasterBandH, :double], CPLErr
     attach_function :GDALComputeRasterMinMax,
-      [:GDALRasterBandH, :int, :pointer],
+      [:GDALRasterBandH, :bool, :pointer],
       :void
     attach_function :GDALFlushRasterCache, [:GDALRasterBandH], CPLErr
     attach_function :GDALGetRasterHistogram,

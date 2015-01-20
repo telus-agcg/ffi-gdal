@@ -628,17 +628,12 @@ module GDAL
 
     # The minimum and maximum values for this band.
     #
-    # @return [Array{min => Float, max => Float}]
-    def min_max
-      @min_max = if minimum_value[:value] && maximum_value[:value]
-        min_max = FFI::MemoryPointer.new(:double, 2)
-        min_max.put_array_of_double 0, [minimum_value[:value], maximum_value[:value]]
-        FFI::GDAL.GDALComputeRasterMinMax(@raster_band_pointer, 1, min_max)
+    # @return [Hash{min => Float, max => Float}]
+    def min_max(approx_ok: false)
+      min_max = FFI::MemoryPointer.new(:double, 2)
+      FFI::GDAL.GDALComputeRasterMinMax(@raster_band_pointer, approx_ok, min_max)
 
-        [min_max[0].read_double, min_max[1].read_double]
-      else
-        [0.0, 0.0]
-      end
+      { min: min_max[0].read_double, max: min_max[1].read_double }
     end
 
     # The minimum value in the band, no counting NODATA values.
