@@ -15,7 +15,7 @@ module OGR
         is_valid: valid?,
         name: name,
         point_count: point_count,
-        spatial_reference: spatial_reference.as_json,
+        spatial_reference: spatial_reference.nil? ? nil : spatial_reference.as_json,
         type: type_to_name,
         wkb_size: wkb_size
       }
