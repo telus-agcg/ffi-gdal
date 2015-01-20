@@ -143,7 +143,7 @@ module GDAL
     # @param old_name [String]
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
-    def copy_dataset_files(new_name, old_name)
+    def copy_dataset_files(old_name, new_name)
       cpl_err = FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
 
       cpl_err.to_bool
