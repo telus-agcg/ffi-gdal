@@ -48,10 +48,12 @@ module GDAL
       variable.c_pointer
     elsif variable.kind_of? FFI::Pointer
       variable
-    elsif warn_on_nil
-      Logger.log "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
-      Logger.log "<#{name}._pointer> Called at: #{caller(1, 1).first}"
     else
+      if warn_on_nil
+        Logger.logger.debug "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
+        Logger.logger.debug "<#{name}._pointer> Called at: #{caller(1, 1).first}"
+      end
+
       nil
     end
   end
