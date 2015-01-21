@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 RSpec.describe OGR::Point do
-  subject { described_class.create_from_wkt(wkt) }
+  subject { OGR::Geometry.create_from_wkt(wkt) }
   let(:wkt) { 'POINT (1 2)' }
 
   let(:another_point) do
-    a = described_class.create_from_wkt('POINT (2 3)')
+    a = OGR::Geometry.create_from_wkt('POINT (2 3)')
   end
 
   let(:same_point) do
-    described_class.create_from_wkt(wkt)
+    OGR::Geometry.create_from_wkt(wkt)
   end
 
   describe '#dimension' do
@@ -47,12 +47,6 @@ RSpec.describe OGR::Point do
       specify { expect(subject.point_count).to eq 1 }
     end
 
-    # describe '#centroid' do
-    #   it 'returns 0' do
-    #     expect(subject.centroid.point).to eq(subject.point)
-    #   end
-    # end
-    #
     describe '#equals?' do
       context 'a point with same coordinates' do
         it 'returns true' do

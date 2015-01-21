@@ -45,8 +45,10 @@ module GDAL
   # be either of +klass+ class or a type of FFI::Pointer.
   def self._pointer(klass, variable, warn_on_nil=true)
     if variable.kind_of?(klass)
+      variable.c_pointer.autorelease = true
       variable.c_pointer
     elsif variable.kind_of? FFI::Pointer
+      variable.autorelease = true
       variable
     else
       if warn_on_nil
@@ -126,6 +128,8 @@ module OGR
     File.expand_path('ogr/multi_point', __dir__)
   autoload :MultiPolygon,
     File.expand_path('ogr/multi_polygon', __dir__)
+  autoload :NoneGeometry,
+    File.expand_path('ogr/none_geometry', __dir__)
   autoload :Point,
     File.expand_path('ogr/point', __dir__)
   autoload :Polygon,
@@ -134,6 +138,8 @@ module OGR
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,
     File.expand_path('ogr/style_table', __dir__)
+  autoload :UnknownGeometry,
+    File.expand_path('ogr/unknown_geometry', __dir__)
 
   FFI::GDAL.OGRRegisterAll
 

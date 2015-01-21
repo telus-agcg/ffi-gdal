@@ -24,15 +24,15 @@ module FFI
       :wkbMultiLineString,        5,
       :wkbMultiPolygon,           6,
       :wkbGeometryCollection,     7,
-      :wkbNone,                   100,
-      :wkbLinearRing,             101,
-      :wkbPoint25D,               0x80000001,
-      :wkbLineString25D,          0x80000002,
-      :wkbPolygon25D,             0x80000003,
-      :wkbMultiPoint25D,          0x80000004,
-      :wkbMultiLineString25D,     0x80000005,
-      :wkbMultiPolygon25D,        0x80000006,
-      :wkbGeometryCollection25D,  0x80000007
+      :wkbNone,                   100,    # non-standard, for pure attribute records
+      :wkbLinearRing,             101,    # non-standard, just for createGeometry
+      :wkbPoint25D,               -2147483647,
+      :wkbLineString25D,          -2147483646,
+      :wkbPolygon25D,             -2147483645,
+      :wkbMultiPoint25D,          -2147483644,
+      :wkbMultiLineString25D,     -2147483643,
+      :wkbMultiPolygon25D,        -2147483642,
+      :wkbGeometryCollection25D,  -2147483641
 
     OGRwkbVariant = enum :wkbVariantOgc, :wkbVariantIso
     OGRwkbByteOrder = enum :wkbXDR, 0,

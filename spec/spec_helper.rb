@@ -93,4 +93,4 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-OGR::Geometry.logging_enabled = true
+GDAL::Logger.logging_enabled = true

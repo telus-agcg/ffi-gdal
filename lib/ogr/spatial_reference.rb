@@ -6,6 +6,7 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    include GDAL::Logger
     include SpatialReferenceExtensions
 
     # @return [Array<String>]
@@ -86,16 +87,16 @@ module OGR
     # @param code [Fixnum]
     # @return [OGR::SpatialReference]
     def self.new_from_epsg(code)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromEPSG(spatial_ref.c_pointer, code)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromEPSG(spatial_ref_ptr, code)
       end
     end
 
     # @param code [Fixnum]
     # @return [OGR::SpatialReference]
     def self.new_from_epsga(code)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromEPSGA(spatial_ref.c_pointer, code)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromEPSGA(spatial_ref_ptr, code)
       end
     end
 
@@ -104,8 +105,8 @@ module OGR
     # @param linear_unit_name [String] Plural form of linear units, i.e. "FEET".
     # @return [OGR::SpatialReference]
     def self.new_from_erm(projection_name, datum_name, linear_unit_name)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromERM(spatial_ref.c_pointer, projection_name,
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromERM(spatial_ref_ptr, projection_name,
           datum_name, linear_unit_name)
       end
     end
@@ -113,20 +114,20 @@ module OGR
     # @param prj_text [Array<String>]
     # @return [OGR::SpatialReference]
     def self.new_from_esri(prj_text)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         prj_ptr = FFI::MemoryPointer.new(:string, prj_text.size)
         prj_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         prj_ptr_ptr.write_pointer(prj_ptr)
 
-        FFI::GDAL.OSRImportFromESRI(spatial_ref.c_pointer, prj_ptr_ptr)
+        FFI::GDAL.OSRImportFromESRI(spatial_ref_ptr, prj_ptr_ptr)
       end
     end
 
     # @param coord_sys [String] The Mapinfo style CoordSys definition string.
     # @return [OGR::SpatialReference]
     def self.new_from_mapinfo(coord_sys)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromMICoordSys(spatial_ref.c_pointer, coord_sys)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromMICoordSys(spatial_ref_ptr, coord_sys)
       end
     end
 
@@ -135,7 +136,7 @@ module OGR
     # @param proj_params [Array<String>]
     # @return [OGR::SpatialReference]
     def self.new_from_pci(proj, units, *proj_params)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         if proj_params.empty?
           proj_ptr = nil
         else
@@ -143,36 +144,36 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        FFI::GDAL.OSRImportFromPCI(spatial_ref.c_pointer, proj, units, proj_ptr)
+        FFI::GDAL.OSRImportFromPCI(spatial_ref_ptr, proj, units, proj_ptr)
       end
     end
 
     # @param proj4 [String]
     # @return [OGR::SpatialReference]
     def self.new_from_proj4(proj4)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromProj4(spatial_ref.c_pointer, proj4)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromProj4(spatial_ref_ptr, proj4)
       end
     end
 
     # @param url [String] URL to fetch the spatial reference from.
     # @return [OGR::SpatialReference]
     def self.new_from_url(url)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromUrl(spatial_ref.c_pointer, url)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromUrl(spatial_ref_ptr, url)
       end
     end
 
     def self.new_from_user_input(definition)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRSetFromUserInput(spatial_ref.c_pointer, definition)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRSetFromUserInput(spatial_ref_ptr, definition)
       end
     end
 
     # @param projection_system_code
     # @return [OGR::SpatialReference]
     def self.new_from_usgs(projection_system_code, zone, datum, *proj_params)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         if proj_params.empty?
           proj_ptr = nil
         else
@@ -180,7 +181,7 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        FFI::GDAL.OSRImportFromUSGS(spatial_ref.c_pointer,
+        FFI::GDAL.OSRImportFromUSGS(spatial_ref_ptr,
           projection_system_code, zone, proj_ptr, datum)
       end
     end
@@ -191,12 +192,12 @@ module OGR
     # @param wkt [String]
     # @return [OGR::SpatialReference]
     def self.new_from_wkt(wkt)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         wkt_ptr = FFI::MemoryPointer.from_string(wkt)
         wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-        FFI::GDAL.OSRImportFromWkt(spatial_ref.c_pointer, wkt_ptr_ptr)
+        FFI::GDAL.OSRImportFromWkt(spatial_ref_ptr, wkt_ptr_ptr)
       end
     end
 
@@ -205,15 +206,15 @@ module OGR
     # @param xml [String]
     # @return [OGR::SpatialReference]
     def self.new_from_xml(xml)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromXML(spatial_ref.c_pointer, xml)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromXML(spatial_ref_ptr, xml)
       end
     end
 
     # @return [OGR::SpatialReference]
     def self.build_spatial_ref(spatial_reference_or_wkt=nil)
       object = new(spatial_reference_or_wkt)
-      ogr_err = yield object
+      ogr_err = yield object.c_pointer
       ogr_err.to_ruby
 
       object
@@ -238,9 +239,8 @@ module OGR
       else
         FFI::GDAL.OSRNewSpatialReference(nil)
       end
-
-      close_me = -> { destroy! }
-      ObjectSpace.define_finalizer self, close_me
+      @ogr_spatial_ref_pointer.autorelease = true
+      log "ogr spatial ref pointer autorelease? #{@ogr_spatial_ref_pointer.autorelease?}"
     end
 
     def c_pointer
@@ -271,28 +271,28 @@ module OGR
     def validate
       ogr_err = FFI::GDAL.OSRValidate(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
       ogr_err = FFI::GDAL.OSRFixupOrdering(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
       ogr_err = FFI::GDAL.OSRFixup(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
       ogr_err = FFI::GDAL.OSRStripCTParms(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @param name [String] The case-insensitive tree node to look for.

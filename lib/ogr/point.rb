@@ -1,8 +1,15 @@
+require_relative 'geometry'
+require_relative 'point_extensions'
+
 module OGR
-  class Point < Geometry
-    # def area
-    #   0.0
-    # end
+  class Point
+    include Geometry
+    include PointExtensions
+
+    def initialize(geometry_ptr=nil)
+      geometry_ptr ||= OGR::Geometry.create(:wkbPoint)
+      initialize_from_pointer(geometry_ptr)
+    end
 
     # @return [Float]
     def x
@@ -53,37 +60,6 @@ module OGR
     # @param z [Float]
     def add_point(x, y, z=0)
       FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
-    end
-
-    # @return [Array<Array>] An array of (x, y) or (x, y, z) points.
-    def points
-      return [[]] if empty?
-
-      x_stride = 2
-      y_stride = 2
-      z_stride = coordinate_dimension == 3 ? 1 : 0
-
-      buffer_size = FFI::Type::DOUBLE.size * 2 * point_count
-
-      x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-      y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-
-      z_buffer = if coordinate_dimension == 3
-        z_size = FFI::Type::DOUBLE.size * point_count
-        FFI::MemoryPointer.new(:buffer_out, z_size)
-      else
-        nil
-      end
-
-      num_points = FFI::GDAL.OGR_G_GetPoints(@geometry_pointer,
-        x_buffer,
-        x_stride,
-        y_buffer,
-        y_stride,
-        z_buffer,
-        z_stride)
-
-      [point]
     end
   end
 end

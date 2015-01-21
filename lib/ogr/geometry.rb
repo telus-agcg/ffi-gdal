@@ -2,106 +2,125 @@ require_relative 'envelope'
 require_relative 'geometry_extensions'
 
 module OGR
-  class Geometry
-    include GDAL::Logger
-    include GeometryExtensions
+  module Geometry
 
-    # @param type [FFI::GDAL::OGRwkbGeometryType]
-    # @return [OGR::Geometry]
-    def self.create(type)
-      geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
-      return nil if geometry_pointer.null?
-      geometry_pointer.autorelease = false
+    module ClassMethods
+      def create(type)
+        geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
+        return nil if geometry_pointer.null?
+        geometry_pointer.autorelease = false
 
-      _to_geometry_type(geometry_pointer)
-    end
-
-    def self._to_geometry_type(geometry)
-      geometry = if geometry.kind_of?(OGR::Geometry)
-        geometry
-      else
-        new(geometry)
+        _to_geometry_type(geometry_pointer)
       end
 
-      case geometry.name
-      when 'POINT' then OGR::Point.new(geometry.c_pointer)
-      when 'LINESTRING' then OGR::LineString.new(geometry.c_pointer)
-      when 'LINEARRING' then OGR::LinearRing.new(geometry.c_pointer)
-      when 'POLYGON' then OGR::Polygon.new(geometry.c_pointer)
-      when 'MULTIPOINT' then OGR::MultiPoint.new(geometry.c_pointer)
-      when 'MULTILINESTRING' then OGR::MultiLineString.new(geometry.c_pointer)
-      when 'MULTIPOLYGON' then OGR::MultiPolygon.new(geometry.c_pointer)
-      else
-        geometry
+      def _to_geometry_type(geometry)
+        geometry = if geometry.kind_of?(OGR::Geometry)
+          geometry
+        else
+          OGR::UnknownGeometry.new(geometry)
+        end
+        puts "geometry type: #{geometry.type}"
+
+        # TODO: Add GeometryCollection
+        _ = case geometry.type
+        when :wkbPoint, :wkbPoint25D
+          OGR::Point.new(geometry.c_pointer)
+        when :wkbLineString, :wkbLineString25D
+          OGR::LineString.new(geometry.c_pointer)
+        when :wkbLinearRing
+          OGR::LinearRing.new(geometry.c_pointer)
+        when :wkbPolygon, :wkbPolygon25D
+          OGR::Polygon.new(geometry.c_pointer)
+        when :wkbMultiPoint, :wkbMultiPoint25D
+          OGR::MultiPoint.new(geometry.c_pointer)
+        when :wkbMultiLineString, :wkbMultiLineString25D
+          OGR::MultiLineString.new(geometry.c_pointer)
+        when :wkbMultiPolygon, :wkbMultiPolygon25D
+          OGR::MultiPolygon.new(geometry.c_pointer)
+        else
+          geometry
+        end
       end
-    end
 
-    # @param wkt_data [String]
-    # @param spatial_reference [FFI::Pointer] Optional spatial reference
-    #   to assign to the new geometry.
-    # @return [OGR::Geometry]
-    def self.create_from_wkt(wkt_data, spatial_reference=nil)
-      wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
-      wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
-      wkt_pointer_pointer.write_pointer(wkt_data_pointer)
-
-      spatial_ref_pointer = if spatial_reference
-        GDAL._pointer(OGR::SpatialReference, spatial_reference)
-      else
-        FFI::MemoryPointer.new(:pointer)
+      def base
+        @base ||= nil
       end
 
-      geometry_ptr = FFI::MemoryPointer.new(:pointer)
-      geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-      geometry_ptr_ptr.write_pointer(geometry_ptr)
+      # @param type [FFI::GDAL::OGRwkbGeometryType]
+      # @return [OGR::Geometry]
+      # @param wkt_data [String]
+      # @param spatial_reference [FFI::Pointer] Optional spatial reference
+      #   to assign to the new geometry.
+      # @return [OGR::Geometry]
+      def create_from_wkt(wkt_data, spatial_reference=nil)
+        wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
+        wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
+        wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-      FFI::GDAL.OGR_G_CreateFromWkt(wkt_pointer_pointer,
-        spatial_ref_pointer, geometry_ptr_ptr)
+        spatial_ref_pointer = if spatial_reference
+          GDAL._pointer(OGR::SpatialReference, spatial_reference)
+        else
+          FFI::MemoryPointer.new(:pointer)
+        end
 
-      return nil if geometry_ptr_ptr.null? ||
+        geometry_ptr = FFI::MemoryPointer.new(:pointer)
+        geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
+        geometry_ptr_ptr.write_pointer(geometry_ptr)
+
+        FFI::GDAL.OGR_G_CreateFromWkt(wkt_pointer_pointer,
+          spatial_ref_pointer, geometry_ptr_ptr)
+
+        return nil if geometry_ptr_ptr.null? ||
         geometry_ptr_ptr.read_pointer.null?
         geometry_ptr_ptr.read_pointer.nil?
 
-      # Not assigning here makes tests crash when using a #let.
-      geometry = _to_geometry_type(geometry_ptr_ptr.read_pointer)
+        # Not assigning here makes tests crash when using a #let.
+        _ = _to_geometry_type(geometry_ptr_ptr.read_pointer)
+      end
+
+      # @param gml_data [String]
+      # @return [OGR::Geometry]
+      def create_from_gml(gml_data)
+        geometry_pointer = FFI::GDAL.OGR_G_CreateFromGML(gml_data)
+
+        _ = _to_geometry_type(geometry_pointer)
+      end
+
+      # @param json_data [String]
+      # @return [OGR::Geometry]
+      def create_from_json(json_data)
+        geometry_pointer = FFI::GDAL.OGR_G_CreateGeometryFromJson(json_data)
+
+        _to_geometry_type(geometry_pointer)
+      end
+
+      # @return [String]
+      def type_to_name(type)
+        FFI::GDAL.OGRGeometryTypeToName(type)
+      end
     end
 
-    # @param gml_data [String]
-    # @return [OGR::Geometry]
-    def self.create_from_gml(gml_data)
-      geometry_pointer = FFI::GDAL.OGR_G_CreateFromGML(gml_data)
+    extend ClassMethods
 
-      new(geometry_pointer)
+    def self.included(base)
+      @base = base
+      base.send(:include, GDAL::Logger)
+      base.send(:include, GeometryExtensions)
     end
 
-    # @param json_data [String]
-    # @return [OGR::Geometry]
-    def self.create_from_json(json_data)
-      geometry_pointer = FFI::GDAL.OGR_G_CreateGeometryFromJson(json_data)
+    #--------------------------------------------------------------------------
+    # Instance Methods
+    #--------------------------------------------------------------------------
 
-      new(geometry_pointer)
-    end
-
-    # @return [String]
-    def self.type_to_name(type)
-      FFI::GDAL.OGRGeometryTypeToName(type)
-    end
-
-    # @param geometry [OGR::Geometry, FFI::Pointer]
-    def initialize(geometry)
-      @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry)
-      @geometry_pointer.autorelease = false
-
-      close_me = -> {
-        if @geometry_pointer && !@geometry_pointer.null?
-          FFI::GDAL.OGR_G_DestroyGeometry(@geometry_pointer)
-        end
-      }
-      ObjectSpace.define_finalizer self, close_me
-    end
-
+    # @return [FFI::Pointer]
     def c_pointer
       @geometry_pointer
+    end
+
+    def destroy!
+      FFI::GDAL.OGR_G_DestroyGeometry(@geometry_pointer)
+      binding.pry
+      @geometry_pointer = nil
     end
 
     # If this geometry is a container, this adds +geometry+ to the container.
@@ -114,7 +133,7 @@ module OGR
     def add_geometry(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
@@ -122,7 +141,7 @@ module OGR
     def add_directly(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@geometry_pointer, pointer_from(sub_geometry))
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # @param geometry_index [Fixnum]
@@ -131,10 +150,12 @@ module OGR
     def remove!(geometry_index, delete=true)
       ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool
     end
 
     # Clears all information from the geometry.
+    #
+    # @return nil
     def empty!
       FFI::GDAL.OGR_G_Empty(@geometry_pointer)
     end
@@ -383,15 +404,17 @@ module OGR
       return nil if spatial_ref_ptr.null?
 
       @spatial_reference = OGR::SpatialReference.new(spatial_ref_ptr)
+      OGR::SpatialReference.new(spatial_ref_ptr)
     end
 
     # Assigns a spatial reference to this geometry.  Any existing spatial
-    # reference is replace, but this does not reproject the geometry.
+    # reference is replaced, but this does not reproject the geometry.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
 
+      @spatial_reference = new_spatial_ref
       FFI::GDAL.OGR_G_AssignSpatialReference(@geometry_pointer, new_spatial_ref_ptr)
     end
 
@@ -482,10 +505,9 @@ module OGR
       build_geometry { |ptr| FFI::GDAL.OGR_G_ConvexHull(ptr) }
     end
 
-    # TODO: should this be a class method?
     # @param wkb_data [String] Binary WKB data.
     # @return +true+ if successful, otherwise raises an OGR exception.
-    def from_wkb(wkb_data)
+    def import_from_wkb(wkb_data)
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkb(@geometry_pointer, wkb_data, wkb_data.length)
 
       ogr_err.to_ruby
@@ -507,9 +529,8 @@ module OGR
       output.read_bytes(wkb_size)
     end
 
-    # TODO: should this be a class method?
     # @param wkt_data [String]
-    def from_wkt(wkt_data)
+    def import_from_wkt(wkt_data)
       wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
@@ -529,9 +550,21 @@ module OGR
 
     # This geometry expressed as GML in GML basic data types.
     #
+    # @param [Hash] options
+    # @option options [String] :format "GML3" is really the only "option" here,
+    #   since without passing this in, GDAL defaults to "GML2.1.2" (as of 1.8.0).
+    # @option options [String] :gml3_linestring_element "curve" is the only
+    #   option here, which only pertains a) to LineString geometries, and b)
+    #   when +:format+ is set to GML3.
+    # @option options [String] :gml3_longsrs Defaults to "YES", which prefixes
+    #   the EPSG authority with "urn:ogc:def:crs:EPSG::".  If "NO", the EPSG
+    #   authority is prefixed with "EPSG:".
+    # @option options [String] :gmlid Use this to write a gml:id attribute at
+    #   the top level of the geometry.
     # @return [String]
-    def to_gml
-      FFI::GDAL.OGR_G_ExportToGML(@geometry_pointer)
+    def to_gml(**options)
+      options_ptr = GDAL::Options.pointer(options)
+      FFI::GDAL.OGR_G_ExportToGMLEx(@geometry_pointer, options_ptr)
     end
 
     # @param altitude_mode [String] Value to write in the +altitudeMode+
@@ -546,28 +579,12 @@ module OGR
       FFI::GDAL.OGR_G_ExportToJson(@geometry_pointer)
     end
 
-    # Converts the current geometry to a Polygon geometry.  The returned object
-    # is a new OGR::Geometry instance.
-    #
-    # @return [OGR::Geometry]
-    def to_polygon
-      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToPolygon(ptr) }
-    end
-
     # Converts the current geometry to a LineString geometry.  The returned
     # object is a new OGR::Geometry instance.
     #
     # @return [OGR::Geometry]
     def to_line_string
       build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToLineString(ptr) }
-    end
-
-    # Converts the current geometry to a MultiPolygon geometry.  The returned
-    # object is a new OGR::Geometry instance.
-    #
-    # @return [OGR::Geometry]
-    def to_multi_polygon
-      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiPolygon(ptr) }
     end
 
     # Converts the current geometry to a MultiPoint geometry.  The returned
@@ -588,15 +605,24 @@ module OGR
 
     private
 
-    def build_geometry
-      geometry_ptr = yield(@geometry_pointer)
-      return nil if geometry_ptr.null?
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    def initialize_from_pointer(geometry_ptr)
+      @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
+      @envelope = nil
+      @spatial_reference = nil
+    end
 
-      if geometry_ptr == @geometry_pointer
+    def build_geometry
+      new_geometry_ptr = yield(@geometry_pointer)
+      return nil if new_geometry_ptr.nil? || new_geometry_ptr.null?
+
+      if new_geometry_ptr == @geometry_pointer
         log 'Newly created geometry and current geometry are the same.'
+        return nil
       end
 
-      self.class._to_geometry_type(geometry_ptr)
+      # self.class._to_geometry_type(new_geometry_ptr)
+      OGR::Geometry._to_geometry_type(new_geometry_ptr)
     end
 
     def pointer_from(geometry)

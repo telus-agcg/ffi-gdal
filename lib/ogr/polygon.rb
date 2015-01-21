@@ -1,9 +1,13 @@
 require_relative 'geometry_types/surface'
-require_relative 'geometry_types/collection'
 
 module OGR
-  class Polygon < Geometry
+  class Polygon
+    include Geometry
     include GeometryTypes::Surface
-    include GeometryTypes::Collection
+
+    def initialize(geometry_ptr=nil)
+      geometry_ptr ||= OGR::Geometry.create(:wkbPolygon)
+      initialize_from_pointer(geometry_ptr)
+    end
   end
 end
