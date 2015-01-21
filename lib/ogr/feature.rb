@@ -23,6 +23,9 @@ module OGR
 
       close_me = -> { FFI::GDAL.OGR_F_Destroy(@feature_pointer) }
       ObjectSpace.define_finalizer self, close_me
+
+      @geometry = nil
+      @definition = nil
     end
 
     def c_pointer

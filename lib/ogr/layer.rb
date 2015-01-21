@@ -15,6 +15,10 @@ module OGR
     def initialize(layer)
       @ogr_layer_pointer = GDAL._pointer(OGR::Layer, layer)
       @features = []
+      @spatial_reference = nil
+      @envelope = nil
+      @feature_definition = nil
+      @style_table = nil
     end
 
     def c_pointer
