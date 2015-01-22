@@ -625,7 +625,7 @@ module OGR
     def initialize_from_pointer(geometry_ptr)
       @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
       @envelope = nil
-      @spatial_reference = nil
+      @spatial_reference = OGR::SpatialReference.new
     end
 
     def build_geometry

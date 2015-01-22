@@ -239,7 +239,6 @@ module OGR
       else
         FFI::GDAL.OSRNewSpatialReference(nil)
       end
-      @ogr_spatial_ref_pointer.autorelease = true
     end
 
     def c_pointer
