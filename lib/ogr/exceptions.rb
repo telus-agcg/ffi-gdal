@@ -12,9 +12,6 @@ module OGR
   class NotEnoughData < RuntimeError
   end
 
-  class NotEnoughMemory < RuntimeError
-  end
-
   class UnsupportedGeometryType < RuntimeError
   end
 

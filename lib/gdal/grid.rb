@@ -60,7 +60,7 @@ module GDAL
       log "corner x1 (gdal_grid.cpp): #{x_end}"
       log "corner y1 (gdal_grid.cpp): #{y_end}"
 
-      cpl_err = FFI::GDAL::GDALGridCreate(
+      FFI::GDAL::GDALGridCreate(
         @gridder.algorithm,                             # eAlgorithm
         @gridder.options.to_ptr,                        # poOptions
         point_count,                                    # nPoints
@@ -78,8 +78,6 @@ module GDAL
         progress_block,                                 # pfnProgress
         nil                                             # pProgressArg
       )
-
-      cpl_err.to_bool
 
       data_ptr
     end

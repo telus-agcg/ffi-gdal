@@ -2,8 +2,6 @@ require_relative '../ffi/gdal'
 require_relative 'major_object'
 require_relative 'driver_extensions'
 require 'multi_xml'
-require 'log_switch'
-
 
 module GDAL
   class Driver
@@ -144,9 +142,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def copy_dataset_files(old_name, new_name)
-      cpl_err = FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -225,9 +221,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      cpl_err = FFI::GDAL.GDALDeleteDataset(@driver_pointer, file_name)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALDeleteDataset(@driver_pointer, file_name)
     end
 
     # @param new_name [String]
@@ -235,9 +229,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      cpl_err = FFI::GDAL.GDALRenameDataset(@driver_pointer, new_name, old_name)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALRenameDataset(@driver_pointer, new_name, old_name)
     end
   end
 end

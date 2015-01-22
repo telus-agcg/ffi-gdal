@@ -45,9 +45,7 @@ module GDAL
     end
 
     def set_metadata_item(name, value, domain='')
-      cpl_err = FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
     end
 
     # @return [Hash{domain => Array<String>}]

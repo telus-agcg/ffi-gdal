@@ -97,6 +97,10 @@ module GDAL
   def self._supported?(function_name)
     !FFI::GDAL.unsupported_gdal_functions.include?(function_name)
   end
+
+  require_relative 'gdal/cpl_error_handler'
+  FFIGDALErrorHandler = GDAL::CPLErrorHandler.handle_error
+  FFI::GDAL.CPLSetErrorHandler(FFIGDALErrorHandler)
 end
 
 module OGR

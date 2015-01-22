@@ -20,8 +20,7 @@ module GDAL
     def self.from_color_table(color_table)
       color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
       rat_ptr = FFI::GDAL.GDALCreateRasterAttributeTable
-      cpl_err = FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
-      cpl_err.to_bool
+      FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
 
       new(rat_ptr)
     end
@@ -91,9 +90,7 @@ module GDAL
     # @param usage [FFI::GDALRATFieldUsage]
     # @return [Boolean]
     def create_column(name, type, usage)
-      cpl_err = FFI::GDAL.GDALRATCreateColumn(@rat_pointer, name, type, usage)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALRATCreateColumn(@rat_pointer, name, type, usage)
     end
 
     # @return [Fixnum] The number of rows.

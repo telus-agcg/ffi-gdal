@@ -120,7 +120,7 @@ module OGR
       ogr_err = FFI::GDAL.OGR_F_SetGeometryDirectly(@feature_pointer, new_geometry.c_pointer)
       @geometry = new_geometry
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return [Fixnum]
@@ -133,7 +133,7 @@ module OGR
     def fid=(new_fid)
       ogr_err = FFI::GDAL.OGR_F_SetFID(@feature_pointer, new_fid)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return [Fixnum]

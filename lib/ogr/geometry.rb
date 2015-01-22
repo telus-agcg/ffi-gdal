@@ -133,7 +133,7 @@ module OGR
     def add_geometry(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
 
-      ogr_err.to_bool "Unable to add geometry: #{sub_geometry}"
+      ogr_err.handle_result "Unable to add geometry: #{sub_geometry}"
     end
 
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
@@ -141,7 +141,7 @@ module OGR
     def add_directly(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@geometry_pointer, pointer_from(sub_geometry))
 
-      ogr_err.to_bool
+      ogr_err.handle_result
     end
 
     # @param geometry_index [Fixnum]
@@ -150,7 +150,7 @@ module OGR
     def remove_geometry!(geometry_index, delete=true)
       ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
 
-      ogr_err.to_bool
+      ogr_err.handle_result
     end
 
     # Clears all information from the geometry.
@@ -437,7 +437,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OGR_G_Transform(@geometry_pointer, coord_trans_ptr)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # Similar to +#transform+, but this only works if the geometry already has an
@@ -452,7 +452,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OGR_G_TransformTo(@geometry_pointer, new_spatial_ref_ptr)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # Computes and returns a new, simplified geometry.
@@ -510,7 +510,7 @@ module OGR
     def import_from_wkb(wkb_data)
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkb(@geometry_pointer, wkb_data, wkb_data.length)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # The exact number of bytes required to hold the WKB of this object.
@@ -524,7 +524,7 @@ module OGR
     def to_wkb(byte_order=:wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkb(@geometry_pointer, byte_order, output)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       output.read_bytes(wkb_size)
     end
@@ -536,14 +536,14 @@ module OGR
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkt(@geometry_pointer, wkt_pointer_pointer)
 
-      ogr_err.to_bool "Unable to import: #{wkt_data}"
+      ogr_err.handle_result "Unable to import: #{wkt_data}"
     end
 
     # @return [String]
     def to_wkt
       output = FFI::MemoryPointer.new(:string)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkt(@geometry_pointer, output)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       output.read_pointer.read_string
     end

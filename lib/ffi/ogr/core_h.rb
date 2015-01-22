@@ -6,6 +6,7 @@ module FFI
     #------------------------------------------------------------------------
     # The C API defines :OGRErr as a function that returns constants.  I'm
     # taking the liberty to turn this into an enum.
+    # https://trac.osgeo.org/gdal/ticket/3153
     OGRErr = enum :OGRERR_NONE,
       :OGRERR_NOT_ENOUGH_DATA,
       :OGRERR_NOT_ENOUGH_MEMORY,

@@ -18,6 +18,15 @@ module GDAL
   class InvalidBandNumber < StandardError
   end
 
+  class UnsupportedOperation < StandardError
+  end
+
+  class NoWriteAccess < StandardError
+  end
+
+  class NullObject < TypeError
+  end
+
   class UnknownGridAlgorithm < StandardError
     def initialize(algorithm, msg=nil)
       message = msg || "Unknown Grid algorithm type '#{algorithm}'."

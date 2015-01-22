@@ -149,8 +149,7 @@ module GDAL
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
       options_ptr = GDAL::Options.pointer(options)
-      cpl_err = FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
-      cpl_err.to_bool
+      FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
 
       raster_band(raster_count)
     end
@@ -160,9 +159,7 @@ module GDAL
     # @param flags [Fixnum] Any of of the GDAL::RasterBand flags.
     # @return [Boolean]
     def create_mask_band(flags)
-      cpl_err = FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, flags)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, flags)
     end
 
     # @return [String]
@@ -173,9 +170,7 @@ module GDAL
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      cpl_err = FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
     end
 
     # @return [GDAL::GeoTransform]
@@ -183,8 +178,7 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
-      cpl_err = FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
-      cpl_err.to_ruby
+      FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
     end
@@ -193,8 +187,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = FFI::Pointer.new(new_transform.c_pointer)
-      cpl_err = FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
-      cpl_err.to_bool
+      FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
 
       @geo_transform = GeoTransform.new(new_pointer)
     end
@@ -264,7 +257,7 @@ module GDAL
         band_count = nil
       end
 
-      cpl_err = FFI::GDAL.GDALBuildOverviews(@dataset_pointer,
+      !!FFI::GDAL.GDALBuildOverviews(@dataset_pointer,
         resampling_string,
         overview_levels.size,
         overview_levels_ptr,
@@ -273,8 +266,6 @@ module GDAL
         progress,
         nil
       )
-
-      cpl_err.to_bool
     end
 
     # @param access_flag [String] 'r' or 'w'
@@ -310,7 +301,7 @@ module GDAL
       x_buffer_size = x_size
       y_buffer_size = y_size
 
-      cpl_err = FFI::GDAL::GDALDatasetRasterIO(
+      !!FFI::GDAL::GDALDatasetRasterIO(
         @dataset_pointer,                     # hDS
         gdal_access_flag,                     # eRWFlag
         x_offset,                             # nXOff
@@ -327,8 +318,6 @@ module GDAL
         line_space,                           # nLineSpace
         band_space                            # nBandSpace
       )
-
-      cpl_err.to_bool
     end
 
     # Rasterizes the geometric objects +geometries+ into this raster dataset.
@@ -372,7 +361,7 @@ module GDAL
       # not allowing for now
       progress_callback_data = nil
 
-      cpl_err = FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
+      !!FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
         geometries.size,
@@ -383,8 +372,6 @@ module GDAL
         gdal_options,
         progress_block,
         progress_callback_data)
-
-      cpl_err.to_bool
     end
 
     # @param band_numbers [Array<Fixnum>, Fixnum]
@@ -428,7 +415,7 @@ module GDAL
       burn_values_ptr.write_array_of_double(burn_values)
       log "burn value ptr null? #{burn_values_ptr.null?}"
 
-      cpl_err = FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
+      !!FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
         band_numbers.size,                                # nBandCount
         band_numbers_ptr,                                 # panBandList
         layers.size,                                      # nLayerCount
@@ -439,8 +426,6 @@ module GDAL
         gdal_options,                                     # papszOptions
         progress_block,                                   # pfnProgress
         nil)                                              # pProgressArg
-
-      cpl_err.to_bool
     end
 
     # @todo Implement

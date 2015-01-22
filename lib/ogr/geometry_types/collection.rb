@@ -34,7 +34,7 @@ module OGR
 
         ogrerr_int = ogrerr_ptr.read_int
         ogrerr = FFI::GDAL::OGRErr[ogrerr_int]
-        ogrerr.to_bool "Couldn't create polygon"
+        ogrerr.handle_result "Couldn't create polygon"
 
         OGR::Geometry._to_geometry_type(new_geometry_ptr)
       end

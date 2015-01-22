@@ -55,7 +55,7 @@ module FFI
     attach_function :CPLPushErrorHandlerEx,
       [:CPLErrorHandler, :pointer],
       :void
-    attach_function :CPLPopErrorHandler, [:void], :void
+    attach_function :CPLPopErrorHandler, [], :void
 
     attach_function :CPLDebug, [:string, :string], :void
     attach_function :_CPLAssert, [:string, :string, :int], :void

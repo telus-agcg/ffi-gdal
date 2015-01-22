@@ -99,7 +99,7 @@ module OGR
     def delete_data_source(file_name)
       ogr_err = FFI::GDAL.OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @param source_data_source [OGR::DataSource, FFI::Pointer]
