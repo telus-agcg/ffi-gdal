@@ -283,27 +283,24 @@ TIF_FILES.each do |file|
         end
       end
 
-      describe '#compute_min_max' do
-        it 'returns a 2-element Array of Floats' do
-          expect(subject.compute_min_max).to be_a Array
-          expect(subject.compute_min_max.size).to eq 2
-          expect(subject.compute_min_max.first).to be_a Float
-          expect(subject.compute_min_max.last).to be_a Float
+      describe '#min_max' do
+        it 'returns a Hash with :min and :max keys' do
+          expect(subject.min_max).to be_a Hash
+          expect(subject.min_max.size).to eq 2
+          expect(subject.min_max[:min]).to be_a Float
+          expect(subject.min_max[:max]).to be_a Float
         end
 
         it 'has a min that is < its max' do
-          min, max = subject.compute_min_max
-          expect(min).to be < max
+          expect(subject.min_max[:min]).to be < subject.min_max[:max]
         end
 
         it 'has a min that == statistics[:minimum]' do
-          min, _ = subject.compute_min_max
-          expect(min).to eq subject.statistics[:minimum]
+          expect(subject.min_max[:min]).to eq subject.statistics[:minimum]
         end
 
         it 'has a min that == minimum_value[:value]' do
-          min, _ = subject.compute_min_max
-          expect(min).to eq subject.minimum_value[:value]
+          expect(subject.min_max[:min]).to eq subject.minimum_value[:value]
         end
       end
 
