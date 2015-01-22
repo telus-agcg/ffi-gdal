@@ -19,7 +19,6 @@ module OGR
         else
           OGR::UnknownGeometry.new(geometry)
         end
-        puts "geometry type: #{geometry.type}"
 
         # TODO: Add GeometryCollection
         _ = case geometry.type
@@ -133,7 +132,7 @@ module OGR
     def add_geometry(sub_geometry)
       ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
 
-      ogr_err.to_bool
+      ogr_err.to_bool "Unable to add geometry: #{sub_geometry}"
     end
 
     # @param sub_geometry [OGR::Geometry, FFI::Pointer]
@@ -536,7 +535,7 @@ module OGR
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
       ogr_err = FFI::GDAL.OGR_G_ImportFromWkt(@geometry_pointer, wkt_pointer_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.to_bool "Unable to import: #{wkt_data}"
     end
 
     # @return [String]
