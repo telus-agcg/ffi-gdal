@@ -20,7 +20,6 @@ module OGR
           OGR::UnknownGeometry.new(geometry)
         end
 
-        # TODO: Add GeometryCollection
         _ = case geometry.type
         when :wkbPoint, :wkbPoint25D
           OGR::Point.new(geometry.c_pointer)
@@ -36,6 +35,8 @@ module OGR
           OGR::MultiLineString.new(geometry.c_pointer)
         when :wkbMultiPolygon, :wkbMultiPolygon25D
           OGR::MultiPolygon.new(geometry.c_pointer)
+        when :wkbGeometryCollection
+          OGR::GeometryCollection.new(geometry.c_pointer)
         else
           geometry
         end
@@ -146,7 +147,7 @@ module OGR
     # @param geometry_index [Fixnum]
     # @param delete [Boolean]
     # @return +true+ if successful, otherwise raises an OGR exception.
-    def remove!(geometry_index, delete=true)
+    def remove_geometry!(geometry_index, delete=true)
       ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
 
       ogr_err.to_bool
@@ -586,6 +587,14 @@ module OGR
       build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToLineString(ptr) }
     end
 
+    # Converts the current geometry to a Polygon geometry.  The returned object
+    # is a new OGR::Geometry instance.
+    #
+    # @return [OGR::Geometry]
+    def to_polygon
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToPolygon(ptr) }
+    end
+
     # Converts the current geometry to a MultiPoint geometry.  The returned
     # object is a new OGR::Geometry instance.
     #
@@ -600,6 +609,14 @@ module OGR
     # @return [OGR::Geometry]
     def to_multi_line_string
       build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiLineString(ptr) }
+    end
+
+    # Converts the current geometry to a MultiPolygon geometry.  The returned
+    # object is a new OGR::Geometry instance.
+    #
+    # @return [OGR::MultiPolygon]
+    def to_multi_polygon
+      build_geometry { |ptr| FFI::GDAL.OGR_G_ForceToMultiPolygon(ptr) }
     end
 
     private

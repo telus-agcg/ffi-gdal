@@ -6,7 +6,7 @@ module OGR
       end
 
       # If this geometry is a container, this fetches the geometry at the
-      #   sub_geometry_index.
+      # sub_geometry_index.
       #
       # @param sub_geometry_index [Fixnum]
       # @return [OGR::Geometry]
@@ -16,12 +16,13 @@ module OGR
         end
       end
 
-      # Build a ring from a bunch of arcs.
+      # Build a ring from a bunch of arcs.  The collection must be
+      # a MultiLineString or GeometryCollection.
       #
       # @param tolerance [Float]
       # @param auto_close [Boolean]
       # @return [OGR::Geometry]
-      def polygon_from_edges(tolerance, auto_close)
+      def polygon_from_edges(tolerance, auto_close: false)
         best_effort = false
         ogrerr_ptr = FFI::MemoryPointer.new(:pointer)
 
@@ -33,12 +34,9 @@ module OGR
 
         ogrerr_int = ogrerr_ptr.read_int
         ogrerr = FFI::GDAL::OGRErr[ogrerr_int]
+        ogrerr.to_bool "Couldn't create polygon"
 
-        if ogrerr == :OGRERR_FAILURE
-          raise "Couldn't create polygon"
-        end
-
-        self.class._to_geometry_type(new_geometry_ptr)
+        OGR::Geometry._to_geometry_type(new_geometry_ptr)
       end
     end
   end

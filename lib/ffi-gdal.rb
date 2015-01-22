@@ -116,6 +116,8 @@ module OGR
     File.expand_path('ogr/geocoding_session', __dir__)
   autoload :Geometry,
     File.expand_path('ogr/geometry', __dir__)
+  autoload :GeometryCollection,
+    File.expand_path('ogr/geometry_collection', __dir__)
   autoload :Layer,
     File.expand_path('ogr/layer', __dir__)
   autoload :LineString,
