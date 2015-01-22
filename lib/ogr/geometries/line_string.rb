@@ -1,10 +1,8 @@
-require_relative 'geometry'
-require_relative 'geometry_types/curve'
+require_relative '../geometry_types/curve'
 
 module OGR
-  # A LineString is a type of Curve Geometry.
   class LineString
-    include Geometry
+    include OGR::Geometry
     include GeometryTypes::Curve
 
     def self.approximate_arc_angles(center_x,

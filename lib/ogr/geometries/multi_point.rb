@@ -1,9 +1,8 @@
-require_relative 'geometry'
-require_relative 'geometry_types/collection'
+require_relative '../geometry_types/collection'
 
 module OGR
   class MultiPoint
-    include Geometry
+    include OGR::Geometry
     include GeometryTypes::Collection
 
     def initialize(geometry_ptr=nil)

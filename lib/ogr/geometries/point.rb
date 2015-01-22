@@ -1,9 +1,8 @@
-require_relative 'geometry'
 require_relative 'point_extensions'
 
 module OGR
   class Point
-    include Geometry
+    include OGR::Geometry
     include PointExtensions
 
     def initialize(geometry_ptr=nil)

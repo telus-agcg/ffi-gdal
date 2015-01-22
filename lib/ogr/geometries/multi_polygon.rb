@@ -1,10 +1,9 @@
-require_relative 'geometry'
-require_relative 'geometry_types/collection'
-require_relative 'geometry_types/surface'
+require_relative '../geometry_types/collection'
+require_relative '../geometry_types/surface'
 
 module OGR
   class MultiPolygon
-    include Geometry
+    include OGR::Geometry
     include GeometryTypes::Collection
     include GeometryTypes::Surface
 

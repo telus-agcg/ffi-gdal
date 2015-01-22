@@ -135,7 +135,7 @@ RSpec.describe GDAL::ColorTable do
     context 'color entries that exist' do
       it 'returns nil' do
         entry0 = subject.add_color_entry(0, 0, 0, 0, 0)
-        entry1 = subject.add_color_entry(1, 10, 10, 10, 10)
+        _entry1 = subject.add_color_entry(1, 10, 10, 10, 10)
         entry2 = subject.add_color_entry(2, 100, 100, 100, 100)
 
         expect(subject.create_color_ramp!(0, entry0, 2, entry2)).to be_nil

@@ -1,5 +1,3 @@
-require_relative 'geometry'
-
 module OGR
   class UnknownGeometry
     include OGR::Geometry

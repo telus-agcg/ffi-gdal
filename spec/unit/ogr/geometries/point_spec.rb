@@ -5,7 +5,7 @@ RSpec.describe OGR::Point do
   let(:wkt) { 'POINT (1 2)' }
 
   let(:another_point) do
-    a = OGR::Geometry.create_from_wkt('POINT (2 3)')
+    OGR::Geometry.create_from_wkt('POINT (2 3)')
   end
 
   let(:same_point) do

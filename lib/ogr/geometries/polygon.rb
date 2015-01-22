@@ -1,8 +1,8 @@
-require_relative 'geometry_types/surface'
+require_relative '../geometry_types/surface'
 
 module OGR
   class Polygon
-    include Geometry
+    include OGR::Geometry
     include GeometryTypes::Surface
 
     def initialize(geometry_ptr=nil)

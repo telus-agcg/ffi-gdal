@@ -1,10 +1,9 @@
-require_relative 'geometry'
-require_relative 'geometry_types/curve'
-require_relative 'geometry_types/collection'
+require_relative '../geometry_types/curve'
+require_relative '../geometry_types/collection'
 
 module OGR
   class MultiLineString
-    include Geometry
+    include OGR::Geometry
     include GeometryTypes::Curve
     include GeometryTypes::Collection
 

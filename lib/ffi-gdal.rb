@@ -117,31 +117,31 @@ module OGR
   autoload :Geometry,
     File.expand_path('ogr/geometry', __dir__)
   autoload :GeometryCollection,
-    File.expand_path('ogr/geometry_collection', __dir__)
+    File.expand_path('ogr/geometries/geometry_collection', __dir__)
   autoload :Layer,
     File.expand_path('ogr/layer', __dir__)
   autoload :LineString,
-    File.expand_path('ogr/line_string', __dir__)
+    File.expand_path('ogr/geometries/line_string', __dir__)
   autoload :LinearRing,
-    File.expand_path('ogr/linear_ring', __dir__)
+    File.expand_path('ogr/geometries/linear_ring', __dir__)
   autoload :MultiLineString,
-    File.expand_path('ogr/multi_line_string', __dir__)
+    File.expand_path('ogr/geometries/multi_line_string', __dir__)
   autoload :MultiPoint,
-    File.expand_path('ogr/multi_point', __dir__)
+    File.expand_path('ogr/geometries/multi_point', __dir__)
   autoload :MultiPolygon,
-    File.expand_path('ogr/multi_polygon', __dir__)
+    File.expand_path('ogr/geometries/multi_polygon', __dir__)
   autoload :NoneGeometry,
-    File.expand_path('ogr/none_geometry', __dir__)
+    File.expand_path('ogr/geometries/none_geometry', __dir__)
   autoload :Point,
-    File.expand_path('ogr/point', __dir__)
+    File.expand_path('ogr/geometries/point', __dir__)
   autoload :Polygon,
-    File.expand_path('ogr/polygon', __dir__)
+    File.expand_path('ogr/geometries/polygon', __dir__)
   autoload :SpatialReference,
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,
     File.expand_path('ogr/style_table', __dir__)
   autoload :UnknownGeometry,
-    File.expand_path('ogr/unknown_geometry', __dir__)
+    File.expand_path('ogr/geometries/unknown_geometry', __dir__)
 
   FFI::GDAL.OGRRegisterAll
 
