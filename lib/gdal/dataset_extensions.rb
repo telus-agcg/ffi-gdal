@@ -256,8 +256,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def red_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_RedBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_RedBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -265,8 +265,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def green_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_GreenBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_GreenBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -274,8 +274,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def blue_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_BlueBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_BlueBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -283,8 +283,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def undefined_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_Undefined
+      band = find_band do |b|
+        b.color_interpretation == :GCI_Undefined
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -390,7 +390,7 @@ module GDAL
     def image_warp(destination_file, driver, band_numbers, **warp_options)
       raise NotImplementedError, '#image_warp not yet implemented.'
 
-      options_ptr = GDAL::Options.pointer(warp_options)
+      _options_ptr = GDAL::Options.pointer(warp_options)
       driver = GDAL::Driver.by_name(driver)
       destination_dataset = driver.create_dataset(destination_file, raster_x_size, raster_y_size)
 
@@ -418,7 +418,7 @@ module GDAL
       error_threshold = 0.0
       order = 0
 
-      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
+      _transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
         projection,
         destination_dataset.c_pointer,
         destination.projection,

@@ -50,6 +50,9 @@ module GDAL
       @dataset_pointer = dataset_pointer
       @last_known_file_list = []
       @open = true
+      @driver = nil
+      @geo_transform = nil
+      
       close_me = -> { self.close }
       ObjectSpace.define_finalizer self, close_me
     end

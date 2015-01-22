@@ -297,6 +297,37 @@ module GDAL
       end
     end
 
+    # @param approx_ok [Boolean] If +true+, allows for some approximating,
+    #   which may speed up calculations.
+    # @return [Hash{minimum => Float, maximum => Float, mean => Float,
+    #   standard_deviation => Float}]
+    def compute_statistics(approx_ok: false, &progress_block)
+      min_ptr = FFI::MemoryPointer.new(:double)
+      max_ptr = FFI::MemoryPointer.new(:double)
+      mean_ptr = FFI::MemoryPointer.new(:double)
+      standard_deviation_ptr = FFI::MemoryPointer.new(:double)
+
+      cpl_err = FFI::GDAL::GDALComputeRasterStatistics(
+        @raster_band_pointer,                           # hBand
+        approx_ok,                                      # bApproxOK
+        min_ptr,                                        # pdfMin
+        max_ptr,                                        # pdfMax
+        mean_ptr,                                       # pdfMean
+        standard_deviation_ptr,                         # pdfStdDev
+        progress_block,                                 # pfnProgress
+        nil                                             # pProgressData
+      )
+
+      cpl_err.to_bool
+
+      {
+        minimum: min_ptr.read_double,
+        maximum: max_ptr.read_double,
+        mean: mean_ptr.read_double,
+        standard_deviation: standard_deviation_ptr.read_double
+      }
+    end
+
     # The raster value scale.  This value (in combination with the #offset
     # value) is used to transform raw pixel values into the units returned by
     # #units. For example this might be used to store elevations in GUInt16
@@ -656,37 +687,6 @@ module GDAL
       value = FFI::GDAL.GDALGetRasterMaximum(@raster_band_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
-    end
-
-    # @param approx_ok [Boolean] If +true+, allows for some approximating,
-    #   which may speed up calculations.
-    # @return [Hash{minimum => Float, maximum => Float, mean => Float,
-    #   standard_deviation => Float}]
-    def statistics(approx_ok: false, &progress_block)
-      min_ptr = FFI::MemoryPointer.new(:double)
-      max_ptr = FFI::MemoryPointer.new(:double)
-      mean_ptr = FFI::MemoryPointer.new(:double)
-      standard_deviation_ptr = FFI::MemoryPointer.new(:double)
-
-      cpl_err = FFI::GDAL::GDALComputeRasterStatistics(
-        @raster_band_pointer,                           # hBand
-        approx_ok,                                      # bApproxOK
-        min_ptr,                                        # pdfMin
-        max_ptr,                                        # pdfMax
-        mean_ptr,                                       # pdfMean
-        standard_deviation_ptr,                         # pdfStdDev
-        progress_block,                                 # pfnProgress
-        nil                                             # pProgressData
-      )
-
-      cpl_err.to_bool
-
-      {
-        minimum: min_ptr.read_double,
-        maximum: max_ptr.read_double,
-        mean: mean_ptr.read_double,
-        standard_deviation: standard_deviation_ptr.read_double
-      }
     end
 
     # Creates vector polygons for all connected regions of pixels in the raster
