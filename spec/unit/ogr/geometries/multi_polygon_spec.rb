@@ -1,12 +1,22 @@
 require 'spec_helper'
 
 RSpec.describe OGR::MultiPolygon do
-  subject { OGR::Geometry.create_from_wkt(wkt) }
-  let(:wkt) do
-    'MULTIPOLYGON(((0 0,0 1,1 1,0 0)),((0 0,1 1,1 0,0 0)))'
+  it_behaves_like 'a geometry' do
+    let(:geometry) { described_class.new }
   end
 
+  it_behaves_like 'a container geometry' do
+    let(:child_geometry) { OGR::Polygon.new }
+  end
+
+
   describe '#to_polygon' do
+    subject { OGR::Geometry.create_from_wkt(wkt) }
+
+    let(:wkt) do
+      'MULTIPOLYGON(((0 0,0 1,1 1,0 0)),((0 0,1 1,1 0,0 0)))'
+    end
+
     it 'returns a Polygon' do
       expect(subject.to_polygon).to be_a OGR::Polygon
     end

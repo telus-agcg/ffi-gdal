@@ -1,7 +1,16 @@
 require 'spec_helper'
 
-RSpec.describe OGR::LinearRing do
-  let(:linear_ring) do
+RSpec.describe OGR::LineString do
+  let(:open_line_string) do
+    g = described_class.new
+    g.add_point(0, 0)
+    g.add_point(0, 10)
+    g.add_point(10, 10)
+
+    g
+  end
+
+  let(:closed_line_string) do
     g = described_class.new
     g.add_point(0, 0)
     g.add_point(0, 10)
@@ -13,27 +22,33 @@ RSpec.describe OGR::LinearRing do
   end
 
   it_behaves_like 'a geometry' do
-    let(:geometry) { linear_ring }
+    let(:geometry) { open_line_string }
   end
 
   it_behaves_like 'a line string' do
-    let(:geometry) { linear_ring }
+    let(:geometry) { open_line_string }
   end
 
-  subject { linear_ring }
-
   describe '#closed' do
-    it { is_expected.to be_closed }
+    context 'geometry is closed' do
+      subject { closed_line_string }
+      it { is_expected.to be_closed }
+    end
+
+    context 'geometry is not closed' do
+      subject { open_line_string }
+      it { is_expected.to_not be_closed }
+    end
   end
 
   describe '#name' do
-    subject { linear_ring.name }
-    it { is_expected.to eq 'LINEARRING' }
+    subject { open_line_string.name }
+    it { is_expected.to eq 'LINESTRING' }
   end
 
   describe '#point_count' do
-    subject { linear_ring.point_count }
-    it { is_expected.to eq 5  }
+    subject { open_line_string.point_count }
+    it { is_expected.to eq 3  }
   end
 
   describe '#intersects?' do
@@ -43,8 +58,8 @@ RSpec.describe OGR::LinearRing do
           OGR::Geometry.create_from_wkt('POINT (0 1)')
         end
 
-        subject { linear_ring.intersects?(other_geometry) }
-        it { is_expected.to eq false }
+        subject { open_line_string.intersects?(other_geometry) }
+        it { is_expected.to eq true }
       end
 
       context 'on a vertex of the ring' do
@@ -52,8 +67,8 @@ RSpec.describe OGR::LinearRing do
           OGR::Geometry.create_from_wkt('POINT (0 0)')
         end
 
-        subject { linear_ring.intersects?(other_geometry) }
-        it { is_expected.to eq false }
+        subject { open_line_string.intersects?(other_geometry) }
+        it { is_expected.to eq true }
       end
     end
 
@@ -63,7 +78,7 @@ RSpec.describe OGR::LinearRing do
           OGR::Geometry.create_from_wkt('LINESTRING (100 100, 200 200)')
         end
 
-        subject { linear_ring.intersects?(other_geometry) }
+        subject { open_line_string.intersects?(other_geometry) }
         it { is_expected.to eq false }
       end
 
@@ -72,8 +87,8 @@ RSpec.describe OGR::LinearRing do
           OGR::Geometry.create_from_wkt('LINESTRING (50 50, 0 0)')
         end
 
-        subject { linear_ring.intersects?(other_geometry) }
-        it { is_expected.to eq false }
+        subject { open_line_string.intersects?(other_geometry) }
+        it { is_expected.to eq true }
       end
 
       context 'passes across the boundary' do
@@ -81,7 +96,7 @@ RSpec.describe OGR::LinearRing do
           OGR::Geometry.create_from_wkt('LINESTRING (15 5, 5 5)')
         end
 
-        subject { linear_ring.intersects?(other_geometry) }
+        subject { open_line_string.intersects?(other_geometry) }
         it { is_expected.to eq false }
       end
     end
