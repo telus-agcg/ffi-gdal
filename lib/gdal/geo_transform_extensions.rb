@@ -7,7 +7,6 @@ module GDAL
     end
 
     module ClassMethods
-
       # Calculates the size of an X/longitude pixel.
       #
       # @param x_max [Number]
@@ -52,7 +51,7 @@ module GDAL
     # @param lat [Fixnum]
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x, y>] [pixel, line]
-    def world_to_pixel(lon, lat, value_type=:float)
+    def world_to_pixel(lon, lat, value_type = :float)
       pixel = self.class.x_size(lon, x_origin, pixel_width)
       line = self.class.y_size(y_origin, lat, pixel_height)
 
@@ -115,7 +114,7 @@ module GDAL
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
   end

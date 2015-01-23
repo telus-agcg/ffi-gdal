@@ -7,7 +7,7 @@ module OGR
     include GeometryTypes::Container
     include GeometryTypes::Surface
 
-    def initialize(geometry_ptr=nil)
+    def initialize(geometry_ptr = nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbMultiPolygon)
       initialize_from_pointer(geometry_ptr)
     end

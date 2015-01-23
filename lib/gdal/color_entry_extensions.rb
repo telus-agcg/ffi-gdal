@@ -2,11 +2,10 @@ require 'json'
 
 module GDAL
   module ColorEntryExtensions
-
     # @param include_fourth [Boolean] Turn off in case you don't want the fourth
     #   color in the array.
     # @return [Array]
-    def to_a(include_fourth=true)
+    def to_a(include_fourth = true)
       if include_fourth
         [color1, color2, color3, color4]
       else
@@ -23,7 +22,8 @@ module GDAL
       }
     end
 
-    def to_json
+    # @return [String]
+    def to_json(_)
       as_json.to_json
     end
   end

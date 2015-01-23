@@ -1,7 +1,6 @@
 require_relative 'error_h'
 require_relative 'vsi_h'
 
-
 module FFI
   module GDAL
     def CPLFree(pointer)

@@ -62,9 +62,9 @@ RSpec.describe GDAL::Dataset do
     it 'raises a GDAL::CPLErrFailure' do
       skip 'Figure out why this causes a segfault'
 
-      expect {
+      expect do
         subject.add_band(:GDT_Byte)
-      }.to raise_exception(GDAL::CPLErrFailure)
+      end.to raise_exception(GDAL::CPLErrFailure)
     end
   end
 

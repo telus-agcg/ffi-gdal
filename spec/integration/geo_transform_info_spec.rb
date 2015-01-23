@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'support/integration_help'
 require 'ffi-gdal'
 
-
 TIF_FILES.each do |file|
   dataset =  GDAL::Dataset.open(file, 'r')
 

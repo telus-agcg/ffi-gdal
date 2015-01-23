@@ -1,6 +1,6 @@
 module OGR
   class OpenFailure < RuntimeError
-    def initialize(file, msg=nil)
+    def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
     end
@@ -31,7 +31,7 @@ module OGR
   end
 
   class DriverNotFound < RuntimeError
-    def initialize(driver, msg=nil)
+    def initialize(driver, msg = nil)
       message =
         if msg
           msg

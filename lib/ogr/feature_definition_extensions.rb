@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module FeatureDefinitionExtensions
-
     # @return [Array<OGR::Field>]
     def fields
       0.upto(field_count - 1).map do |i|
@@ -29,7 +28,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
   end

@@ -22,7 +22,7 @@ module OGR
     # @return [OGR::Driver]
     def self.at_index(index)
       if index > count
-        raise "index must be between 0 and #{count - 1}."
+        fail "index must be between 0 and #{count - 1}."
       end
 
       driver_ptr = FFI::GDAL.OGRGetDriver(index)

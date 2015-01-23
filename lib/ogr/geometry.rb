@@ -18,10 +18,10 @@ module OGR
       # @param [OGR::Geometry, FFI::Pointer]
       # @return [OGR::Geometry]
       def factory(geometry)
-        geometry = if geometry.kind_of?(OGR::Geometry)
-          geometry
-        else
-          OGR::UnknownGeometry.new(geometry)
+        geometry = if geometry.is_a?(OGR::Geometry)
+                     geometry
+                   else
+                     OGR::UnknownGeometry.new(geometry)
         end
 
         _ = case geometry.type
@@ -55,15 +55,15 @@ module OGR
       # @param spatial_reference [FFI::Pointer] Optional spatial reference
       #   to assign to the new geometry.
       # @return [OGR::Geometry]
-      def create_from_wkt(wkt_data, spatial_reference=nil)
+      def create_from_wkt(wkt_data, spatial_reference = nil)
         wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
         spatial_ref_pointer = if spatial_reference
-          GDAL._pointer(OGR::SpatialReference, spatial_reference)
-        else
-          FFI::MemoryPointer.new(:pointer)
+                                GDAL._pointer(OGR::SpatialReference, spatial_reference)
+                              else
+                                FFI::MemoryPointer.new(:pointer)
         end
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
@@ -76,7 +76,7 @@ module OGR
           spatial_ref_pointer, geometry_ptr_ptr)
 
         return nil if geometry_ptr_ptr.null? ||
-        geometry_ptr_ptr.read_pointer.null?
+                      geometry_ptr_ptr.read_pointer.null?
         geometry_ptr_ptr.read_pointer.nil?
 
         # Not assigning here makes tests crash when using a #let.
@@ -149,7 +149,7 @@ module OGR
     # @param new_coordinate_dimension [Fixnum]
     def coordinate_dimension=(new_coordinate_dimension)
       unless [2, 3].include?(new_coordinate_dimension)
-        raise "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
+        fail "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
       end
 
       FFI::GDAL.OGR_G_SetCoordinateDimension(@geometry_pointer, new_coordinate_dimension)
@@ -169,7 +169,7 @@ module OGR
       when 0
         return nil
       else
-        raise 'Unknown envelope dimension.'
+        fail 'Unknown envelope dimension.'
       end
 
       return nil if envelope.null?
@@ -207,7 +207,7 @@ module OGR
     # @return [Fixnum]
     # @todo This regularly crashes, so disabling it.
     def centroid
-      raise NotImplementedError, '#centroid not yet implemented.'
+      fail NotImplementedError, '#centroid not yet implemented.'
 
       point = OGR::Geometry.create(:wkbPoint)
       FFI::GDAL.OGR_G_Centroid(@geometry_pointer, point.c_pointer)
@@ -221,7 +221,7 @@ module OGR
     # @param file [String] The text file to write to.
     # @param prefix [String] The prefix to put on each line of output.
     # @return [String]
-    def dump_readable(file, prefix=nil)
+    def dump_readable(file, prefix = nil)
       FFI::GDAL.OGR_G_DumpReadable(@geometry_pointer, file, prefix)
     end
 
@@ -317,7 +317,7 @@ module OGR
     # @return [OGR::Geometry]
     # @todo This regularly crashes, so disabling it.
     def intersection(other_geometry)
-      raise NotImplementedError, '#intersection not yet implemented.'
+      fail NotImplementedError, '#intersection not yet implemented.'
 
       return nil unless intersects?(other_geometry)
 
@@ -414,7 +414,7 @@ module OGR
       coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
         coordinate_transformation)
 
-      return if coord_trans_ptr.nil? or coord_trans_ptr.null?
+      return if coord_trans_ptr.nil? || coord_trans_ptr.null?
 
       ogr_err = FFI::GDAL.OGR_G_Transform(@geometry_pointer, coord_trans_ptr)
 
@@ -497,7 +497,7 @@ module OGR
     end
 
     # @return [String]
-    def to_wkb(byte_order=:wkbXDR)
+    def to_wkb(byte_order = :wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkb(@geometry_pointer, byte_order, output)
       ogr_err.handle_result
@@ -546,7 +546,7 @@ module OGR
     # @param altitude_mode [String] Value to write in the +altitudeMode+
     #   element.
     # @return [String]
-    def to_kml(altitude_mode=nil)
+    def to_kml(altitude_mode = nil)
       FFI::GDAL.OGR_G_ExportToKML(@geometry_pointer, altitude_mode)
     end
 

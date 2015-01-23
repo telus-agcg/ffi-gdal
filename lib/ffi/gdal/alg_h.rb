@@ -37,14 +37,14 @@ module FFI
       :int
     attach_function :GDALComputeMedianCutPCT,
       %i[GDALRasterBandH GDALRasterBandH GDALRasterBandH pointer
-        int GDALColorTableH GDALProgressFunc pointer],
+         int GDALColorTableH GDALProgressFunc pointer],
       :int
     attach_function :GDALComputeProximity,
       %i[GDALRasterBandH GDALRasterBandH pointer GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALContourGenerate,
       %i[GDALRasterBandH double double int pointer int double pointer
-        int int GDALProgressFunc pointer],
+         int int GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALCreateApproxTransformer,
       %i[GDALTransformerFunc pointer double],
@@ -72,14 +72,14 @@ module FFI
 
     attach_function :GDALDitherRGB2PCT,
       %i[GDALRasterBandH GDALRasterBandH GDALRasterBandH GDALRasterBandH
-        GDALColorTableH GDALProgressFunc pointer],
+         GDALColorTableH GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALPolygonize,
       %i[GDALRasterBandH GDALRasterBandH OGRLayerH int pointer GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALFPolygonize,
       %i[GDALRasterBandH GDALRasterBandH OGRLayerH int pointer
-        GDALProgressFunc pointer],
+         GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALGCPTransform,
       %i[pointer int int pointer pointer pointer pointer],
@@ -93,16 +93,16 @@ module FFI
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     attach_function :GDALGridCreate,
       [GDALGridAlgorithm, :pointer, :GUInt32, :pointer, :pointer, :pointer,
-        :double, :double, :double, :double, :GUInt32, :GUInt32, GDALDataType,
-        :pointer, :GDALProgressFunc, :pointer],
+       :double, :double, :double, :double, :GUInt32, :GUInt32, GDALDataType,
+       :pointer, :GDALProgressFunc, :pointer],
       CPLErr
     attach_function :GDALRasterizeGeometries,
       %i[GDALDatasetH int pointer int pointer GDALTransformerFunc
-        pointer pointer pointer GDALProgressFunc pointer],
+         pointer pointer pointer GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALRasterizeLayers,
       %i[GDALDatasetH int pointer int pointer GDALTransformerFunc
-        pointer pointer pointer GDALProgressFunc pointer],
+         pointer pointer pointer GDALProgressFunc pointer],
       CPLErr
     attach_function :GDALRasterizeLayersBuf,
       [:pointer, :int, :int, GDALDataType, :int, :int, :int, :pointer, :string,
@@ -118,7 +118,7 @@ module FFI
       :void
     attach_function :GDALSimpleImageWarp,
       %i[GDALDatasetH GDALDatasetH int pointer GDALTransformerFunc pointer
-        GDALProgressFunc pointer pointer],
+         GDALProgressFunc pointer pointer],
       :bool
     attach_function :GDALSuggestedWarpOutput,
       %i[GDALDatasetH GDALTransformerFunc pointer pointer pointer pointer],

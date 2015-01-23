@@ -1,6 +1,6 @@
 module GDAL
   class OpenFailure < StandardError
-    def initialize(file, msg=nil)
+    def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
     end
@@ -28,7 +28,7 @@ module GDAL
   end
 
   class UnknownGridAlgorithm < StandardError
-    def initialize(algorithm, msg=nil)
+    def initialize(algorithm, msg = nil)
       message = msg || "Unknown Grid algorithm type '#{algorithm}'."
       super(message)
     end

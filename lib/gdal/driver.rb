@@ -66,7 +66,7 @@ module GDAL
     # @return [GDAL::Driver]
     def self.at_index(index)
       if index > count
-        raise "index must be between 0 and #{count - 1}."
+        fail "index must be between 0 and #{count - 1}."
       end
 
       driver_ptr = FFI::GDAL.GDALGetDriver(index)
@@ -127,9 +127,9 @@ module GDAL
     # @return [Boolean]
     def validate_creation_options(options)
       options_pointer = if options.is_a? GDAL::Options
-        options.c_pointer
-      else
-        GDAL::Options.pointer(options)
+                          options.c_pointer
+                        else
+                          GDAL::Options.pointer(options)
       end
 
       FFI::GDAL.GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
@@ -168,7 +168,7 @@ module GDAL
         options_pointer
       )
 
-      raise CreateFail if dataset_pointer.null?
+      fail CreateFail if dataset_pointer.null?
 
       dataset = Dataset.new(dataset_pointer)
       yield(dataset) if block_given?
@@ -187,14 +187,14 @@ module GDAL
       options_ptr = GDAL::Options.pointer(options)
 
       source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
-        source_dataset.c_pointer
-      elsif source_dataset.is_a? String
-        GDAL::Dataset.open(source_dataset, 'r').c_pointer
-      else
-        source_dataset
+                             source_dataset.c_pointer
+                           elsif source_dataset.is_a? String
+                             GDAL::Dataset.open(source_dataset, 'r').c_pointer
+                           else
+                             source_dataset
       end
 
-      raise "Source dataset couldn't be read" if source_dataset_ptr.null?
+      fail "Source dataset couldn't be read" if source_dataset_ptr.null?
 
       destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@driver_pointer,
         destination_path,
@@ -205,7 +205,7 @@ module GDAL
         nil
       )
 
-      raise CreateFail if destination_dataset_ptr.null?
+      fail CreateFail if destination_dataset_ptr.null?
 
       dataset = Dataset.new(destination_dataset_ptr)
       yield(dataset) if block_given?

@@ -45,14 +45,14 @@ module OGR
         FFI::GDAL.OGR_F_SetFieldInteger(@feature_pointer, index, value)
       when 'Float'
         FFI::GDAL.OGR_F_SetFieldDouble(@feature_pointer, index, value)
-      when ('Date' or 'Time' or 'DateTime')
+      when ('Date' || 'Time' || 'DateTime')
         time = value.to_time
         zone = if time.zone =~ /GMT/
-          100
-        elsif time.zone
-          1
-        else
-          0
+                 100
+               elsif time.zone
+                 1
+               else
+                 0
         end
 
         FFI::GDAL.OGR_F_SetFieldDateTime(@feature_pointer, index,
@@ -64,7 +64,7 @@ module OGR
           time.sec,
           zone)
       else
-        raise "Unknown field type: #{value.class.name}"
+        fail "Unknown field type: #{value.class.name}"
       end
     end
 
@@ -207,7 +207,7 @@ module OGR
     def feature_pointer_from(feature)
       if feature.is_a? OGR::Feature
         feature.c_pointer
-      elsif feature.kind_of? FFI::Pointer
+      elsif feature.is_a? FFI::Pointer
         feature
       end
     end

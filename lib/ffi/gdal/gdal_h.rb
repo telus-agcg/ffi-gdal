@@ -2,7 +2,6 @@ require 'ffi'
 
 module FFI
   module GDAL
-
     #-----------------------------------------------------------------
     # Enums
     #-----------------------------------------------------------------
@@ -105,7 +104,6 @@ module FFI
       [:pointer, :int, :pointer, :int, :int, GDALDataType, GDALDataType, :int, :int],
       :int
   end
-
 end
 
 # These requires depend on ^^^
@@ -115,7 +113,6 @@ require_relative 'warper_h'
 
 module FFI
   module GDAL
-
     #-----------------------------------------------------------------
     # functions
     #-----------------------------------------------------------------

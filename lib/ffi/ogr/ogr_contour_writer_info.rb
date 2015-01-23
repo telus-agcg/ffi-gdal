@@ -1,6 +1,5 @@
 require 'ffi'
 
-
 module FFI
   module GDAL
     class OGRContourWriterInfo < FFI::Struct

@@ -4,7 +4,7 @@ require_relative 'field_extensions'
 module OGR
   class Field
     include FieldExtensions
-    
+
     # @param name [String]
     # @param type [FFI::GDAL::OGRFieldType]
     # @return [OGR::Field]

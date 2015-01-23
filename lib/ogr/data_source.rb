@@ -7,7 +7,6 @@ require_relative 'exceptions'
 require_relative 'layer'
 require_relative 'style_table'
 
-
 module OGR
   class DataSource
     include GDAL::MajorObject
@@ -22,7 +21,7 @@ module OGR
       file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
 
       pointer = FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
-      raise OGR::OpenFailure.new(file_path) if pointer.null?
+      fail OGR::OpenFailure.new(file_path) if pointer.null?
 
       new(pointer)
     end
@@ -43,7 +42,7 @@ module OGR
 
     def reopen(access_flag)
       if driver.name == 'Memory'
-        raise "Can't reopen DataSources that were created and closed using the 'Memory' driver."
+        fail "Can't reopen DataSources that were created and closed using the 'Memory' driver."
       end
 
       @data_source_pointer = FFI::GDAL.OGROpen(@file_path,
@@ -114,7 +113,7 @@ module OGR
         spatial_ref_ptr, geometry_type, options_obj)
 
       unless layer_ptr
-        raise OGR::InvalidLayer, "Unable to create layer '#{name}'."
+        fail OGR::InvalidLayer, "Unable to create layer '#{name}'."
       end
 
       @layers << OGR::Layer.new(layer_ptr)
@@ -152,7 +151,7 @@ module OGR
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
     # TODO: not sure how to handle the call to OGR_DS_ReleaseResultSet here...
-    def execute_sql(command, spatial_filter=nil, dialect=nil)
+    def execute_sql(command, spatial_filter = nil, dialect = nil)
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter)
 
       layer_ptr = FFI::GDAL.OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,

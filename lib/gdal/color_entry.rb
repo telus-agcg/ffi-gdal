@@ -3,8 +3,8 @@ require_relative 'color_entry_extensions'
 module GDAL
   class ColorEntry
     include ColorEntryExtensions
-    
-    def initialize(color_entry=nil)
+
+    def initialize(color_entry = nil)
       @color_entry_struct = color_entry || FFI::GDAL::GDALColorEntry.new
     end
 

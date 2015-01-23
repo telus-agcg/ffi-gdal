@@ -2,7 +2,6 @@ require 'bundler/setup'
 require 'pry'
 require 'ffi-gdal'
 
-
 GDAL::Logger.logging_enabled = true
 
 test_points_file = File.expand_path('points.txt', __dir__)
@@ -76,7 +75,7 @@ def make_file(file_name, grid, data)
   )
 
   dataset.geo_transform = grid.geo_transform
-  dataset.projection = OGR::SpatialReference.new_from_epsg(32632).to_wkt
+  dataset.projection = OGR::SpatialReference.new_from_epsg(32_632).to_wkt
 
   dataset.raster_io('w', data, data_type: grid.data_type)
   if grid.options[:no_data_value]

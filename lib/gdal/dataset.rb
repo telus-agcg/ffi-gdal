@@ -8,9 +8,7 @@ require_relative 'major_object'
 require_relative 'dataset_extensions'
 require_relative '../ogr/spatial_reference'
 
-
 module GDAL
-
   # A set of associated raster bands and info common to them all.  It's also
   # responsible for the georeferencing transform and coordinate system
   # definition of all bands.
@@ -36,7 +34,7 @@ module GDAL
       end
 
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-      raise OpenFailure.new(file_path) if pointer.null?
+      fail OpenFailure.new(file_path) if pointer.null?
 
       new(pointer)
     end
@@ -52,8 +50,8 @@ module GDAL
       @open = true
       @driver = nil
       @geo_transform = nil
-      
-      close_me = -> { self.close }
+
+      close_me = -> { close }
       ObjectSpace.define_finalizer self, close_me
     end
 
@@ -238,11 +236,11 @@ module GDAL
     #   factors to build.
     # @param band_numbers [Array<Fixnum>] The numbers of the bands to build
     #   overviews from.
-    def build_overviews(resampling, overview_levels, band_numbers=nil, &progress)
+    def build_overviews(resampling, overview_levels, band_numbers = nil, &progress)
       resampling_string = if resampling.is_a? String
-        resampling.upcase
-      elsif resampling.is_a? Symbol
-        resampling.to_s.upcase
+                            resampling.upcase
+                          elsif resampling.is_a? Symbol
+                            resampling.to_s.upcase
       end
 
       overview_levels_ptr = FFI::MemoryPointer.new(:int, overview_levels.size)
@@ -341,7 +339,7 @@ module GDAL
       transformer: nil, transform_arg: nil, **options, &progress_block)
 
       if geo_transform.nil? && gcp_count.zero?
-        raise "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
+        fail "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
       end
 
       gdal_options = GDAL::Options.pointer(options)
@@ -430,8 +428,8 @@ module GDAL
 
     # @todo Implement
     def simple_image_warp(destination_file, driver, band_numbers,
-      transformer, transformer_arg, **options)
-      raise NotImplementedError, '#simple_image_warp not yet implemented.'
+      transformer, _transformer_arg, **options)
+      fail NotImplementedError, '#simple_image_warp not yet implemented.'
 
       options_ptr = GDAL::Options.pointer(options)
       driver = GDAL::Driver.by_name(driver)
@@ -456,7 +454,7 @@ module GDAL
         nil,
         options_ptr)
 
-      raise 'Image warp failed!' unless success
+      fail 'Image warp failed!' unless success
 
       GDAL::Dataset.new(destination_dataset_ptr)
     end

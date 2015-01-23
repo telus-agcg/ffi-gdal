@@ -43,7 +43,7 @@ module GDAL
 
   # Internal factory method for returning a pointer from +variable+, which could
   # be either of +klass+ class or a type of FFI::Pointer.
-  def self._pointer(klass, variable, warn_on_nil=true)
+  def self._pointer(klass, variable, warn_on_nil = true)
     if variable.kind_of?(klass)
       variable.c_pointer.autorelease = true
       variable.c_pointer
@@ -62,7 +62,7 @@ module GDAL
 
   # @param data_type [FFI::GDAL::GDALDataType]
   # @return [Symbol] The FFI Symbol that represents a data type.
-  def self._pointer_from_data_type(data_type, size=nil)
+  def self._pointer_from_data_type(data_type, size = nil)
     pointer_type = _gdal_data_type_to_ffi(data_type)
 
     if size
@@ -153,7 +153,7 @@ module OGR
     case flag
     when 'w' then true
     when 'r' then false
-    else raise "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
+    else fail "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
     end
   end
 end

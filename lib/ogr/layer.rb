@@ -54,7 +54,7 @@ module OGR
     # @param force [Boolean] Force the calculation even if it's
     #   expensive.
     # @return [Fixnum]
-    def feature_count(force=true)
+    def feature_count(force = true)
       FFI::GDAL.OGR_L_GetFeatureCount(@ogr_layer_pointer, force)
     end
 
@@ -120,7 +120,7 @@ module OGR
     # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
     #   different form, depending on the limitations of the format driver.
     # @return [OGR::Field]
-    def create_field(name, type, approx_ok=false)
+    def create_field(name, type, approx_ok = false)
       field = OGR::Field.create(name, type)
       ogr_err = FFI::GDAL.OGR_L_CreateField(@ogr_layer_pointer, field.c_pointer, approx_ok)
       ogr_err.handle_result
@@ -132,7 +132,7 @@ module OGR
     # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
     #   different form, depending on the limitations of the format driver.
     # @return +true+ if successful, otherwise raises an OGR exception.
-    def add_field(field, approx_ok=false)
+    def add_field(field, approx_ok = false)
       field_ptr = GDAL._pointer(OGR::Field, field)
       ogr_err = FFI::GDAL.OGR_L_CreateField(@ogr_layer_pointer, field_ptr, approx_ok)
 
@@ -187,7 +187,7 @@ module OGR
     end
 
     # @return [OGR::Envelope]
-    def extent(force=true)
+    def extent(force = true)
       return @envelope if @envelope
 
       envelope = FFI::GDAL::OGREnvelope.new
@@ -198,7 +198,7 @@ module OGR
     end
 
     # @return [OGR::Envelope]
-    def extent_by_geometry(geometry_field_index, force=true)
+    def extent_by_geometry(geometry_field_index, force = true)
       envelope = FFI::GDAL::OGREnvelope.new
       FFI::GDAL.OGR_L_GetExtentEx(@ogr_layer_pointer, geometry_field_index, envelope, force)
       return nil if envelope.null?

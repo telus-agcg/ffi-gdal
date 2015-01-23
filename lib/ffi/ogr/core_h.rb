@@ -1,6 +1,5 @@
 module FFI
   module GDAL
-
     #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
@@ -27,13 +26,13 @@ module FFI
       :wkbGeometryCollection,     7,
       :wkbNone,                   100,    # non-standard, for pure attribute records
       :wkbLinearRing,             101,    # non-standard, just for createGeometry
-      :wkbPoint25D,               -2147483647,
-      :wkbLineString25D,          -2147483646,
-      :wkbPolygon25D,             -2147483645,
-      :wkbMultiPoint25D,          -2147483644,
-      :wkbMultiLineString25D,     -2147483643,
-      :wkbMultiPolygon25D,        -2147483642,
-      :wkbGeometryCollection25D,  -2147483641
+      :wkbPoint25D,               -2_147_483_647,
+      :wkbLineString25D,          -2_147_483_646,
+      :wkbPolygon25D,             -2_147_483_645,
+      :wkbMultiPoint25D,          -2_147_483_644,
+      :wkbMultiLineString25D,     -2_147_483_643,
+      :wkbMultiPolygon25D,        -2_147_483_642,
+      :wkbGeometryCollection25D,  -2_147_483_641
 
     OGRwkbVariant = enum :wkbVariantOgc, :wkbVariantIso
     OGRwkbByteOrder = enum :wkbXDR, 0,

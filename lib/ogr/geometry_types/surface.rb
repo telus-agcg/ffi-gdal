@@ -1,7 +1,6 @@
 module OGR
   module GeometryTypes
     module Surface
-
       # Computes area for a LinearRing, Polygon, or MultiPolygon.
       #
       # @return [Float] 0.0 for unsupported geometry types.

@@ -125,7 +125,7 @@ module GDAL
       when :metric_minimum then GDAL::GridTypes::MetricMinimum.new
       when :metric_range then GDAL::GridTypes::MetricRange.new
       else
-        raise GDAL::UnknownGridAlgorithm.new(algorithm)
+        fail GDAL::UnknownGridAlgorithm.new(algorithm)
       end
     end
 

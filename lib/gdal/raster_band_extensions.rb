@@ -30,7 +30,7 @@ module GDAL
     # @return [Enumerator, nil] Returns an Enumerable if no block is given,
     #   allowing to chain with other Enumerable methods.  Returns nil if a
     #   block is given.
-    def each_by_block(to_data_type=nil)
+    def each_by_block(to_data_type = nil)
       return enum_for(:each_by_block) unless block_given?
 
       data_type = to_data_type || self.data_type
@@ -43,11 +43,11 @@ module GDAL
           0.upto(block_size[:y] - 1).each do |block_index|
             read_offset = block_size[:x] * block_index
             pixels = if data_type == :GDT_Byte
-              data_pointer.get_array_of_uint8(read_offset, block_size[:x])
-            elsif data_type == :GDT_UInt16
-              data_pointer.get_array_of_uint16(read_offset, block_size[:x])
-            else
-              data_pointer.get_array_of_float(read_offset, block_size[:x])
+                       data_pointer.get_array_of_uint8(read_offset, block_size[:x])
+                     elsif data_type == :GDT_UInt16
+                       data_pointer.get_array_of_uint16(read_offset, block_size[:x])
+                     else
+                       data_pointer.get_array_of_float(read_offset, block_size[:x])
             end
 
             yield(pixels)
@@ -59,7 +59,7 @@ module GDAL
     # Iterates through all lines and builds an NArray of pixels.
     #
     # @return [NArray]
-    def to_na(to_data_type=nil)
+    def to_na(to_data_type = nil)
       data_type = to_data_type || self.data_type
 
       values = each_by_block(to_data_type).map do |pixels|
@@ -105,11 +105,11 @@ module GDAL
       table = GDAL::ColorTable.create(:GPI_RGB)
 
       color_entry_index_count = if data_type == :GDT_Byte
-        256
-      elsif data_type == :GDT_UInt16
-        65536
-      else
-        raise "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
+                                  256
+                                elsif data_type == :GDT_UInt16
+                                  65_536
+                                else
+                                  fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
       end
 
       self.color_interpretation ||= :GCI_PaletteIndex
@@ -129,7 +129,6 @@ module GDAL
       self.color_table = table
     end
 
-
     # Gets the colors from the associated ColorTable and returns an Array of
     # those, where each ColorEntry is [R, G, B, A].
     #
@@ -137,9 +136,7 @@ module GDAL
     def colors_as_rgb
       return [] unless color_table
 
-      color_table.color_entries_as_rgb.map do |color_entry|
-        color_entry.to_a
-      end
+      color_table.color_entries_as_rgb.map(&:to_a)
     end
 
     # Gets the colors from the associated ColorTable and returns an Array of
@@ -199,7 +196,7 @@ module GDAL
       narray = to_na.dup
 
       0.upto(narray.size - 1) do |pixel_number|
-        next if narray[pixel_number] == self.no_data_value[:value]
+        next if narray[pixel_number] == no_data_value[:value]
 
         ranges.each do |range|
           if range[:range].member?(narray[pixel_number])
@@ -242,7 +239,7 @@ module GDAL
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
   end

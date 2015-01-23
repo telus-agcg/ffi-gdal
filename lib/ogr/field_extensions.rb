@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module FieldExtensions
-
     # @return [Hash]
     def as_json
       {
@@ -16,7 +15,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
   end

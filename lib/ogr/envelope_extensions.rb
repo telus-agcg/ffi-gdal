@@ -2,14 +2,13 @@ require 'json'
 
 module OGR
   module EnvelopeExtensions
-
     # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
     # pixel locations of these geospatial coordinates.
     #
     # @param geo_transform [GDAL::GeoTransform]
     # @param value_type [Symbol] Data type to return: :float or :integer.
     # @return [Hash<x_origin, y_origin, x_max, y_max>]
-    def world_to_pixel(geo_transform, value_type=:integer)
+    def world_to_pixel(geo_transform, value_type = :integer)
       min_values = geo_transform.world_to_pixel(x_min, y_max)
       max_values = geo_transform.world_to_pixel(x_max, y_min)
       pixel_count = max_values[:x] - min_values[:x]
@@ -81,7 +80,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
 

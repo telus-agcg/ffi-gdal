@@ -11,13 +11,13 @@ module GDAL
 
     # @param filename [String]
     # @return [GDAL::GeoTransform]
-    def self.from_world_file(filename, extension=nil)
+    def self.from_world_file(filename, extension = nil)
       gt_ptr = new_pointer
 
       result = if extension
-        FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
-      else
-        FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
+                 FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
+               else
+                 FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
       end
 
       return nil unless result
@@ -26,13 +26,13 @@ module GDAL
     end
 
     # @param geo_transform [FFI::Pointer]
-    def initialize(geo_transform=nil)
+    def initialize(geo_transform = nil)
       @geo_transform_pointer = if geo_transform.is_a? GDAL::GeoTransform
-        geo_transform.c_pointer
-      elsif geo_transform
-        geo_transform
-      else
-        self.class.new_pointer
+                                 geo_transform.c_pointer
+                               elsif geo_transform
+                                 geo_transform
+                               else
+                                 self.class.new_pointer
       end
 
       self.pixel_width = 1.0

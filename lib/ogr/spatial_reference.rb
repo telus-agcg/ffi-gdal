@@ -36,9 +36,9 @@ module OGR
       pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
 
       name = if name_ptr_ptr.read_pointer.null?
-        nil
-      else
-        name_ptr_ptr.read_pointer.read_string
+               nil
+             else
+               name_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -65,14 +65,14 @@ module OGR
 
       name = if name_ptr_ptr.read_pointer.null?
                nil
-      else
-        name_ptr_ptr.read_pointer.read_string
+             else
+               name_ptr_ptr.read_pointer.read_string
       end
 
       type = if type_ptr_ptr.read_pointer.null?
-        nil
-      else
-        type_ptr_ptr.read_pointer.read_string
+               nil
+             else
+               type_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -210,7 +210,7 @@ module OGR
     end
 
     # @return [OGR::SpatialReference]
-    def self.build_spatial_ref(spatial_reference_or_wkt=nil)
+    def self.build_spatial_ref(spatial_reference_or_wkt = nil)
       object = new(spatial_reference_or_wkt)
       ogr_err = yield object.c_pointer
       ogr_err.handle_result
@@ -227,15 +227,15 @@ module OGR
     #
     # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
     #   String]
-    def initialize(spatial_reference_or_wkt=nil)
+    def initialize(spatial_reference_or_wkt = nil)
       @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
-        spatial_reference_or_wkt.c_pointer
-      elsif spatial_reference_or_wkt.is_a? String
-        FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
-      elsif spatial_reference_or_wkt.is_a? FFI::Pointer
-        spatial_reference_or_wkt
-      else
-        FFI::GDAL.OSRNewSpatialReference(nil)
+                                   spatial_reference_or_wkt.c_pointer
+                                 elsif spatial_reference_or_wkt.is_a? String
+                                   FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
+                                 elsif spatial_reference_or_wkt.is_a? FFI::Pointer
+                                   spatial_reference_or_wkt
+                                 else
+                                   FFI::GDAL.OSRNewSpatialReference(nil)
       end
     end
 
@@ -294,7 +294,7 @@ module OGR
     # @param name [String] The case-insensitive tree node to look for.
     # @param child [Fixnum] The child of the node to fetch.
     # @return [String, nil]
-    def attribute_value(name, child=0)
+    def attribute_value(name, child = 0)
       FFI::GDAL.OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
     end
 
@@ -385,7 +385,7 @@ module OGR
     #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
     #   search at the root element.
     # @return [String, nil]
-    def authority_code(target_key=nil)
+    def authority_code(target_key = nil)
       FFI::GDAL.OSRGetAuthorityCode(@ogr_spatial_ref_pointer, target_key)
     end
 
@@ -393,14 +393,14 @@ module OGR
     #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
     #   search at the root element.
     # @return [String, nil]
-    def authority_name(target_key=nil)
+    def authority_name(target_key = nil)
       FFI::GDAL.OSRGetAuthorityName(@ogr_spatial_ref_pointer, target_key)
     end
 
     # @param axis_number [Fixnum] The Axis to query (0 or 1.)
     # @param target_key [String]
     # @return [String, nil]
-    def axis(axis_number, target_key=nil)
+    def axis(axis_number, target_key = nil)
       axis_orientation_ptr = FFI::MemoryPointer.new(:int)
 
       name = FFI::GDAL.OSRGetAxis(@ogr_spatial_ref_pointer, target_key, axis_number, axis_orientation_ptr)
@@ -441,11 +441,11 @@ module OGR
 
     # @param hemisphere [Symbol] :north or :south.
     # @return [Fixnum] The zone, or 0 if this isn't a UTM definition.
-    def utm_zone(hemisphere=:north)
+    def utm_zone(hemisphere = :north)
       north = case hemisphere
       when :north then 1
       when :south then 0
-      else raise "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
+      else fail "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
       end
       north_ptr = FFI::MemoryPointer.new(:bool)
       north_ptr.write_bytes(north.to_s)
@@ -612,7 +612,7 @@ module OGR
 
     # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
     #   +EXTENSION+ nodes.
-    def to_pretty_wkt(simplify=false)
+    def to_pretty_wkt(simplify = false)
       wkt_ptr = FFI::MemoryPointer.new(:string)
       wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       wkt_ptr_ptr.write_pointer(wkt_ptr)

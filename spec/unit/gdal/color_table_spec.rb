@@ -10,9 +10,9 @@ RSpec.describe GDAL::ColorTable do
 
     context 'with an invalid PaletteInterpretation' do
       it 'raises an ArgumentError' do
-        expect {
+        expect do
           described_class.create(:MEOW)
-        }.to raise_exception(ArgumentError)
+        end.to raise_exception(ArgumentError)
       end
     end
   end

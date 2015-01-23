@@ -9,7 +9,6 @@ RSpec.describe OGR::MultiPolygon do
     let(:child_geometry) { OGR::Polygon.new }
   end
 
-
   describe '#to_polygon' do
     subject { OGR::Geometry.create_from_wkt(wkt) }
 

@@ -125,7 +125,7 @@ RSpec.describe OGR::Geometry do
               [1.0, 1.0], [5.0, 1.0], [5.0, 5.0], [1.0, 5.0], [1.0, 1.0]
             ]
           ]
-        }.to_json 
+        }.to_json
       end
 
       it { is_expected.to be_a OGR::Polygon }
@@ -140,7 +140,7 @@ RSpec.describe OGR::Geometry do
               [1.0, 1.0, 1.0], [5.0, 1.0, 1.0], [5.0, 5.0, 1.0], [1.0, 5.0, 1.0], [1.0, 1.0]
             ]
           ]
-        }.to_json 
+        }.to_json
       end
 
       it { is_expected.to be_a OGR::Polygon }
@@ -225,7 +225,7 @@ RSpec.describe OGR::Geometry do
               ]
             ]
           ]
-        }.to_json 
+        }.to_json
       end
 
       it { is_expected.to be_a OGR::MultiPolygon }
@@ -250,13 +250,13 @@ RSpec.describe OGR::Geometry do
               ]
             ]
           ]
-        }.to_json 
+        }.to_json
       end
 
       it { is_expected.to be_a OGR::MultiPolygon }
     end
   end
-    
+
   describe '.create_from_gml' do
     subject { OGR::Geometry.create_from_gml(gml) }
 
@@ -527,12 +527,12 @@ RSpec.describe OGR::Geometry do
       subject { described_class.type_to_name(:wkbGeometryCollection) }
       it { is_expected.to eq 'Geometry Collection' }
     end
-    
+
     context 'wkbNone' do
       subject { described_class.type_to_name(:wkbNone) }
       it { is_expected.to eq 'None' }
     end
-    
+
     context 'wkbLinearRing' do
       subject { described_class.type_to_name(:wkbLinearRing) }
       it { is_expected.to eq 'Unrecognised: 101' }

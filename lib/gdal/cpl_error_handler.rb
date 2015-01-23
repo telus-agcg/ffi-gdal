@@ -9,7 +9,7 @@ module GDAL
   class CPLErrorHandler
     include GDAL::Logger
 
-    CPLE_MAP = [ 
+    CPLE_MAP = [
       { cple: :CPLE_None, exception: nil },
       { cple: :CPLE_AppDefined, exception: nil },
       { cple: :CPLE_OutOfMemory, exception: ::NoMemoryError },
@@ -41,13 +41,13 @@ module GDAL
 
     # @return [Proc]
     attr_accessor :on_debug
-    
+
     # @return [Proc]
     attr_accessor :on_warning
-    
+
     # @return [Proc]
     attr_accessor :on_failure
-    
+
     # @return [Proc]
     attr_accessor :on_fatal
 
@@ -62,7 +62,7 @@ module GDAL
     # It looks up the error class then calls the appropriate +on_+ proc, thus
     # handling various error/non-error scenarios.  More info here:
     # http://www.gdal.org/cpl__error_8h.html#a74d0e649d58180e621540bf73b58e4a2.
-    #  
+    #
     # @return [Proc] A lambda that adheres to the CPL Error interface.
     def handler_lambda
       _dont_crash_ffi = lambda do |error_class, error_number, message|

@@ -13,7 +13,7 @@ module OGR
   # Symbol to a variable, then call #handle_result to get that
   # Symbol-to-Exception mapping to take place.
   module ErrorHandling
-    def handle_result(msg=nil)
+    def handle_result(msg = nil)
       error_class_map(self).call(msg)
     end
 

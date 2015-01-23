@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module GeometryExtensions
-
     # @return [Hash]
     def as_json
       json = {
@@ -28,7 +27,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
 
@@ -42,13 +41,13 @@ module OGR
       data_source = driver.create_data_source(file_name)
       log "Creating layer #{layer_name}, type: #{type}"
       layer = data_source.create_layer(layer_name, geometry_type: type,
-      spatial_reference: spatial_reference)
+                                                   spatial_reference: spatial_reference)
 
       # field = Field.create('Name', :OFTString)
       # field.width = 32
 
       unless layer
-        raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
+        fail OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
       end
 
       feature = layer.create_feature(layer_name)

@@ -26,11 +26,10 @@ world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
 binding.pry
 
-#floyd.image_warp('meow.tif', 'GTiff', 1, cutline: floyd_geometry )
-#extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
+# floyd.image_warp('meow.tif', 'GTiff', 1, cutline: floyd_geometry )
+# extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
 
 def warp_to_geometry(dataset, wkt_geometry)
-
   # Create an OGR::Geometry from the WKT and convert to dataset's projection.
   wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
   geometry = OGR::Geometry.create_from_wkt(wkt_geometry, wkt_spatial_ref)
@@ -43,4 +42,4 @@ def warp_to_geometry(dataset, wkt_geometry)
   shape.close
 end
 
-#warp_to_geometry(floyd, floyd_wkt)
+# warp_to_geometry(floyd, floyd_wkt)

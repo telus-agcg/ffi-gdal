@@ -3,7 +3,6 @@ require 'json'
 module GDAL
   # Methods not originally supplied with GDAL, but enhance it.
   module DatasetExtensions
-
     # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
     # a GDAL::RequiredBandNotFound if one of those band types isn't found.
     #
@@ -14,16 +13,17 @@ module GDAL
     def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil,
       data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
       **options)
-      original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band,
-          nir: undefined_band
-        }
-      end
+      original_bands =
+        if band_order
+          bands_with_labels(band_order)
+        else
+          {
+            red: red_band,
+            green: green_band,
+            blue: blue_band,
+            nir: undefined_band
+          }
+        end
 
       red = original_bands[:red]
       nir = original_bands[:nir]
@@ -62,16 +62,17 @@ module GDAL
     def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil,
       data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
       **options)
-      original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band,
-          nir: undefined_band
-        }
-      end
+      original_bands =
+        if band_order
+          bands_with_labels(band_order)
+        else
+          {
+            red: red_band,
+            green: green_band,
+            blue: blue_band,
+            nir: undefined_band
+          }
+        end
 
       green = original_bands[:green]
       nir = original_bands[:nir]
@@ -139,14 +140,14 @@ module GDAL
       driver = GDAL::Driver.by_name(driver_name)
 
       original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band
-        }
-      end
+                         bands_with_labels(band_order)
+                       else
+                         {
+                           red: red_band,
+                           green: green_band,
+                           blue: blue_band
+                         }
+                       end
 
       driver.create_dataset(destination, columns, rows, band_count: 3, data_type: data_type) do |new_dataset|
         new_dataset.geo_transform = geo_transform
@@ -168,7 +169,7 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, no_data_value,
-      remove_negatives=false, data_type=nil)
+      remove_negatives = false, data_type = nil)
 
       # convert based on data type
       if data_type != :GDT_Float32
@@ -336,7 +337,7 @@ module GDAL
 
         layer_name = "#{layer_name_prefix}-#{band_number}"
         layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
-          spatial_reference: spatial_ref)
+                                                     spatial_reference: spatial_ref)
 
         field_name = "#{field_name_prefix}#{i}"
         layer.create_field(field_name, :OFTInteger)
@@ -345,7 +346,7 @@ module GDAL
         band.no_data_value = -9999
 
         unless band
-          raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+          fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
         end
 
         pixel_value_field = layer.feature_definition.field_index(field_name)
@@ -375,7 +376,7 @@ module GDAL
     # @param wkt_geometry_string [String]
     # @param wkt_srid [Fixnum]
     # @return [Boolean]
-    def contains_geometry?(wkt_geometry_string, wkt_srid=4326)
+    def contains_geometry?(wkt_geometry_string, wkt_srid = 4326)
       source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
       source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
       @raster_geometry ||= to_geometry
@@ -388,7 +389,7 @@ module GDAL
     end
 
     def image_warp(destination_file, driver, band_numbers, **warp_options)
-      raise NotImplementedError, '#image_warp not yet implemented.'
+      fail NotImplementedError, '#image_warp not yet implemented.'
 
       _options_ptr = GDAL::Options.pointer(warp_options)
       driver = GDAL::Driver.by_name(driver)
@@ -472,7 +473,8 @@ module GDAL
       }
     end
 
-    def to_json
+    # @return [String]
+    def to_json(_)
       as_json.to_json
     end
 
@@ -494,7 +496,7 @@ module GDAL
     #
     # @param narray [NArray]
     # @return [NArray]
-    def remove_negatives_from(narray, replace_with=0)
+    def remove_negatives_from(narray, replace_with = 0)
       0.upto(narray.size - 1) do |i|
         narray[i] = replace_with if narray[i] < 0
       end

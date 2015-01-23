@@ -3,7 +3,6 @@ require_relative '../ffi/ogr'
 
 module OGR
   class CoordinateTransformation
-
     # @param source_srs [OGR::SpatialReference, FFI::Pointer]
     # @param destination_srs [OGR::SpatialReference, FFI::Pointer]
     # @return [OGR::CoordinateTransformation]
@@ -14,15 +13,15 @@ module OGR
       return nil if ct_ptr.null?
 
       source = if source_srs.is_a?(OGR::SpatialReference)
-        source_srs
-      else
-        OGR::SpatialReference.new(source_srs)
+                 source_srs
+               else
+                 OGR::SpatialReference.new(source_srs)
       end
 
       destination = if destination_srs.is_a?(OGR::SpatialReference)
-        destination_srs
-      else
-        OGR::SpatialReference.new(destination_srs)
+                      destination_srs
+                    else
+                      OGR::SpatialReference.new(destination_srs)
       end
 
       new(ct_ptr, source, destination)
@@ -71,7 +70,7 @@ module OGR
     # @param z_vertices [Array<Float>]
     # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, y1], [x2,
     #   y2], etc]
-    def transform(x_vertices, y_vertices, z_vertices=[])
+    def transform(x_vertices, y_vertices, z_vertices = [])
       x_ptr = FFI::MemoryPointer.new(:pointer, x_vertices.size)
       x_ptr.write_array_of_double(x_vertices)
       y_ptr = FFI::MemoryPointer.new(:pointer, y_vertices.size)

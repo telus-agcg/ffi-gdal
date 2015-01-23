@@ -5,7 +5,7 @@ module OGR
     include OGR::Geometry
     include PointExtensions
 
-    def initialize(geometry_ptr=nil)
+    def initialize(geometry_ptr = nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbPoint)
       initialize_from_pointer(geometry_ptr)
     end
@@ -48,7 +48,7 @@ module OGR
       end
     end
 
-    def set_point(x, y, z=0)
+    def set_point(x, y, z = 0)
       FFI::GDAL.OGR_G_SetPoint(@geometry_pointer, 0, x, y, z)
     end
 
@@ -57,7 +57,7 @@ module OGR
     # @param x [Float]
     # @param y [Float]
     # @param z [Float]
-    def add_point(x, y, z=0)
+    def add_point(x, y, z = 0)
       FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
     end
   end

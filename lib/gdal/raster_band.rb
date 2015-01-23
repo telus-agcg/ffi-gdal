@@ -18,7 +18,7 @@ module GDAL
     NODATA = 0x08
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
-    def initialize(raster_band=nil)
+    def initialize(raster_band = nil)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
     end
 
@@ -197,7 +197,7 @@ module GDAL
     #   many pixels.
     # @return [GDAL::RasterBand] An optimal overview or the same raster band if
     #   the raster band has no overviews.
-    def raster_sample_overview(desired_samples=0)
+    def raster_sample_overview(desired_samples = 0)
       band_pointer = FFI::GDAL.GDALGetRasterSampleOverview(@raster_band_pointer, desired_samples)
       return nil if band_pointer.null?
 
@@ -242,7 +242,7 @@ module GDAL
     #
     # @param real_value [Float]
     # @param imaginary_value [Float]
-    def fill(real_value, imaginary_value=0)
+    def fill(real_value, imaginary_value = 0)
       !!FFI::GDAL.GDALFillRaster(@raster_band_pointer, real_value, imaginary_value)
     end
 
@@ -255,7 +255,7 @@ module GDAL
     #   calculating can be done without rescanning the image.
     # @return [Hash{minimum: Float, maximum: Float, mean: Float,
     #   standard_deviation: Float}]
-    def statistics(approx_ok=true, force=true)
+    def statistics(approx_ok = true, force = true)
       min = FFI::MemoryPointer.new(:double)
       max = FFI::MemoryPointer.new(:double)
       mean = FFI::MemoryPointer.new(:double)
@@ -434,7 +434,7 @@ module GDAL
     # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
     #   totals => Array<Fixnum>}] Returns +nil+ if no default histogram is
     #   available.
-    def default_histogram(force=false, &block)
+    def default_histogram(force = false, &block)
       min_pointer = FFI::MemoryPointer.new(:double)
       max_pointer = FFI::MemoryPointer.new(:double)
       buckets_pointer = FFI::MemoryPointer.new(:int)
@@ -449,9 +449,9 @@ module GDAL
         buckets = buckets_pointer.read_int
 
         totals = if buckets.zero?
-          []
-        else
-          histogram_pointer.get_pointer(0).read_array_of_int(buckets)
+                   []
+                 else
+                   histogram_pointer.get_pointer(0).read_array_of_int(buckets)
         end
 
         {
@@ -502,9 +502,9 @@ module GDAL
       handler.on_warning = proc { nil }
       handler.on_none = proc do
         totals = if buckets.zero?
-          []
-        else
-          histogram_pointer.read_array_of_int(buckets)
+                   []
+                 else
+                   histogram_pointer.read_array_of_int(buckets)
         end
 
         {
@@ -581,9 +581,9 @@ module GDAL
         )
 
         line_array = if data_type == :GDT_Byte
-          scan_line.read_array_of_uint8(x_size)
-        else
-          scan_line.read_array_of_float(x_size)
+                       scan_line.read_array_of_uint8(x_size)
+                     else
+                       scan_line.read_array_of_float(x_size)
         end
 
         yield(line_array, y) if block_given?
@@ -645,7 +645,7 @@ module GDAL
     # @param y_offset [Fixnum] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
     # @return [FFI::MemoryPointer] The image buffer.
-    def read_block(x_offset, y_offset, image_buffer=nil)
+    def read_block(x_offset, y_offset, image_buffer = nil)
       image_buffer ||= FFI::MemoryPointer.new(:void)
 
       FFI::GDAL.GDALReadBlock(@raster_band_pointer, x_offset, y_offset, image_buffer)
@@ -702,7 +702,7 @@ module GDAL
       mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
 
       layer_ptr = GDAL._pointer(OGR::Layer, layer)
-      raise "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+      fail "Invalid layer: #{layer.inspect}" if layer_ptr.null?
 
       options_ptr = GDAL::Options.pointer(options)
 

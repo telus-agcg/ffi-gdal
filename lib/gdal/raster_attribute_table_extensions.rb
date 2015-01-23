@@ -2,7 +2,6 @@ require 'json'
 
 module GDAL
   module RasterAttributeTableExtensions
-
     # Get +column_name+, +column_usage+, +column_type+ as a Hash.
     #
     # @param index [Fixnum]
@@ -33,7 +32,7 @@ module GDAL
     end
 
     # @return [String]
-    def to_json
+    def to_json(_)
       as_json.to_json
     end
   end

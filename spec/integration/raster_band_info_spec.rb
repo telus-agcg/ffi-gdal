@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'support/integration_help'
 require 'ffi-gdal'
 
-
 TIF_FILES.each do |file|
   dataset = GDAL::Dataset.open(file, 'r')
 
@@ -158,8 +157,8 @@ TIF_FILES.each do |file|
 
         it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
           min = subject.statistics[:minimum]
-          unless min == -32768.0
-            expect(subject.statistics[:minimum]).to((be >= 0.0) || (eq -32768.0))
+          unless min == -32_768.0
+            expect(subject.statistics[:minimum]).to((be >= 0.0) || (eq -32_768.0))
             expect(subject.statistics[:minimum]).to be <= 255.0
           end
         end
@@ -268,7 +267,7 @@ TIF_FILES.each do |file|
           if histogram
             expect(histogram[:totals]).to be_an Array
             expect(histogram[:totals].size).to eq 256
-            expect(histogram[:totals].all? { |t| t.class == Fixnum}).to eq true
+            expect(histogram[:totals].all? { |t| t.class == Fixnum }).to eq true
           end
         end
       end
@@ -315,7 +314,7 @@ TIF_FILES.each do |file|
         end
 
         it 'has a :is_tight that is nil (since the examples are geotiffs)' do
-          #expect(subject.minimum_value[:is_tight]).to eq nil
+          # expect(subject.minimum_value[:is_tight]).to eq nil
         end
       end
 
@@ -330,7 +329,7 @@ TIF_FILES.each do |file|
         end
 
         it 'has a :is_tight that is nil (since the examples are geotiffs)' do
-          #expect(subject.maximum_value[:is_tight]).to eq nil
+          # expect(subject.maximum_value[:is_tight]).to eq nil
         end
       end
     end
