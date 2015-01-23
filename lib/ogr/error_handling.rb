@@ -24,15 +24,23 @@ module OGR
     def error_class_map(error_class)
       {
         OGRERR_NONE: ->(_) { true },
-        OGRERR_NOT_ENOUGH_DATA: ->(msg) { fail OGR::NotEnoughData, msg },
-        OGRERR_NOT_ENOUGH_MEMORY: ->(msg) { fail ::NoMemoryError, msg },
-        OGRERR_UNSUPPORTED_GEOMETRY_TYPE: ->(msg) { fail OGR::UnsupportedGeometryType, msg },
-        OGRERR_UNSUPPORTED_OPERATION: ->(msg) { fail OGR::UnsupportedOperation, msg },
-        OGRERR_CORRUPT_DATA: ->(msg) { fail OGR::CorruptData, msg },
-        OGRERR_FAILURE: ->(msg) { fail OGR::Failure, msg },
-        OGRERR_UNSUPPORTED_SRS: ->(msg) { fail OGR::UnsupportedSRS, msg },
-        OGRERR_INVALID_HANDLE: ->(msg) { fail OGR::InvalidHandle, msg }
+        OGRERR_NOT_ENOUGH_DATA: ->(msg) { raise_exception(OGR::NotEnoughData, msg) },
+        OGRERR_NOT_ENOUGH_MEMORY: ->(msg) { raise_exception(::NoMemoryError, msg) },
+        OGRERR_UNSUPPORTED_GEOMETRY_TYPE: ->(msg) { raise_exception(OGR::UnsupportedGeometryType, msg) },
+        OGRERR_UNSUPPORTED_OPERATION: ->(msg) { raise_exception(OGR::UnsupportedOperation, msg) },
+        OGRERR_CORRUPT_DATA: ->(msg) { raise_exception(OGR::CorruptData, msg) },
+        OGRERR_FAILURE: ->(msg) { raise_exception(OGR::Failure, msg) },
+        OGRERR_UNSUPPORTED_SRS: ->(msg) { raise_exception(OGR::UnsupportedSRS, msg) },
+        OGRERR_INVALID_HANDLE: ->(msg) { raise_exception(OGR::InvalidHandle, msg) }
       }.fetch(error_class) { fail "Unknown OGRERR type: #{self}" }
+    end
+
+    # Exists solely to strip off the top 4 lines of the backtrace so it doesn't
+    # look like the problem is coming from here.
+    def raise_exception(exception, message)
+      e = exception.new(message)
+      e.set_backtrace(caller(4))
+      fail(e)
     end
   end
 end
