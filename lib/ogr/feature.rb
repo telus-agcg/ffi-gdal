@@ -111,7 +111,7 @@ module OGR
       geometry_ptr = FFI::GDAL.OGR_F_GetGeometryRef(@feature_pointer)
       return nil if geometry_ptr.null?
 
-      @geometry = OGR::Geometry._to_geometry_type(geometry_ptr)
+      @geometry = OGR::Geometry.factory(geometry_ptr)
     end
 
     # @param new_geometry [OGR::Geometry]

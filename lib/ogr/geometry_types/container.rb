@@ -68,7 +68,7 @@ module OGR
         ogrerr = FFI::GDAL::OGRErr[ogrerr_int]
         ogrerr.handle_result "Couldn't create polygon"
 
-        OGR::Geometry._to_geometry_type(new_geometry_ptr)
+        OGR::Geometry.factory(new_geometry_ptr)
       end
     end
   end

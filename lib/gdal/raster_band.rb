@@ -397,7 +397,7 @@ module GDAL
     # metadata about the histogram can be returned.  Example:
     #
     #   {
-    #     :mininum => -0.9,
+    #     :minimum => -0.9,
     #     :maximum => 255.9,
     #     :buckets => 256,
     #     :totals => [
@@ -425,7 +425,7 @@ module GDAL
     #
     # @param force [Boolean] Forces the computation of the histogram.  If
     #   +false+ and the default histogram isn't available, this returns nil.
-    # @param block [Proc] No required, but can be used to output progess info
+    # @param block [Proc] No required, but can be used to output progress info
     #   during processing.
     #
     # @yieldparam completion [Float] The ration completed as a decimal.
@@ -534,7 +534,7 @@ module GDAL
     #
     # Options:
     #   * :compressed
-    #     * 'YES': forces alignment on the destination_band to acheive the best
+    #     * 'YES': forces alignment on the destination_band to achieve the best
     #       compression.
     #
     # @param destination_band [GDAL::RasterBand]
@@ -647,7 +647,7 @@ module GDAL
     # @return [FFI::MemoryPointer] The image buffer.
     def read_block(x_offset, y_offset, image_buffer=nil)
       image_buffer ||= FFI::MemoryPointer.new(:void)
-      
+
       FFI::GDAL.GDALReadBlock(@raster_band_pointer, x_offset, y_offset, image_buffer)
 
       image_buffer

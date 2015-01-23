@@ -14,9 +14,9 @@ line_string =  OGR::Geometry.create_from_wkt(line_string_wkt)
 other_line_string_wkt = 'LINESTRING (10 10, 0 30, 40 10)'
 other_line_string =  OGR::Geometry.create_from_wkt(other_line_string_wkt)
 
-polygon_wkt = "POLYGON ((0 0,4 0,4 4,0 4,0 0), (1 1, 2 1, 2 2, 1 1))"
+polygon_wkt = 'POLYGON ((0 0,4 0,4 4,0 4,0 0), (1 1, 2 1, 2 2, 1 1))'
 polygon = OGR::Geometry.create_from_wkt(polygon_wkt)
-other_polygon_wkt = "POLYGON ((1 1,5 1,5 5,1 5,1 1), (10 10, 20 10, 20 20, 10 10))"
+other_polygon_wkt = 'POLYGON ((1 1,5 1,5 5,1 5,1 1), (10 10, 20 10, 20 20, 10 10))'
 other_polygon = OGR::Geometry.create_from_wkt(other_polygon_wkt)
 
 multi_point_wkt = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))'

@@ -7,7 +7,7 @@ TIF_FILES.each do |file|
   dataset = GDAL::Dataset.open(file, 'r')
 
   dataset.each_band do |band_under_test|
-    describe "Raster Band Info" do
+    RSpec.describe 'Raster Band Info' do
       after :suite do
         dataset.close
       end
@@ -245,14 +245,14 @@ TIF_FILES.each do |file|
       describe '#default_histogram' do
         let!(:histogram) { subject.default_histogram }
 
-        it 'returns a Hash with :mininum, :maximum, :buckets, and :totals' do
+        it 'returns a Hash with :minimum, :maximum, :buckets, and :totals' do
           if histogram
             expect(histogram).to be_a Hash
             expect(histogram.keys).to eq %i[minimum maximum buckets totals]
           end
         end
 
-        it 'has :mimimum as a Float' do
+        it 'has :minimum as a Float' do
           expect(histogram[:minimum]).to be_a Float if histogram
         end
 

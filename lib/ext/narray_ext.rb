@@ -11,6 +11,8 @@ class NArray
     when 6 then :scomplex
     when 7 then :complex
     when 8 then :object
+    else
+      fail "Unknown typecode: #{typecode}"
     end
   end
 end

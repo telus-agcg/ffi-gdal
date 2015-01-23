@@ -11,8 +11,6 @@ module OGR
 
     # @return [Array<String>]
     def self.projection_methods
-      return @projection_methods if @projection_methods
-
       methods_ptr_ptr = FFI::GDAL.OPTGetProjectionMethods
       count = FFI::GDAL.CSLCount(methods_ptr_ptr)
 
@@ -37,10 +35,10 @@ module OGR
       # For some reason #get_array_of_string leaves off the first 6.
       pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
 
-      name = if !name_ptr_ptr.read_pointer.null?
-        name_ptr_ptr.read_pointer.read_string
-      else
+      name = if name_ptr_ptr.read_pointer.null?
         nil
+      else
+        name_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -65,16 +63,16 @@ module OGR
 
       return {} unless result
 
-      name = if !name_ptr_ptr.read_pointer.null?
-        name_ptr_ptr.read_pointer.read_string
+      name = if name_ptr_ptr.read_pointer.null?
+               nil
       else
-        nil
+        name_ptr_ptr.read_pointer.read_string
       end
 
-      type = if !type_ptr_ptr.read_pointer.null?
-        type_ptr_ptr.read_pointer.read_string
-      else
+      type = if type_ptr_ptr.read_pointer.null?
         nil
+      else
+        type_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -462,7 +460,7 @@ module OGR
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
 
       if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn "WARN: #semi_minor received error _and_ a value. Something is fishy..."
+        warn 'WARN: #semi_minor received error _and_ a value. Something is fishy...'
       end
 
       ogr_err.handle_result

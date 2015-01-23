@@ -3,17 +3,17 @@ require 'support/integration_help'
 require 'ffi-gdal'
 
 TIF_FILES.each do |file|
-  describe 'Driver Info' do
+  RSpec.describe 'Driver Info' do
     subject do
-      GDAL::Driver.open_by_file(file)
+      GDAL::Dataset.open(file, 'r').driver
     end
 
     it_behaves_like 'a major object'
 
-    describe '.driver_count' do
+    describe '.count' do
       it 'is a non-zero Integer' do
-        expect(GDAL::Driver.driver_count).to be_a Fixnum
-        expect(GDAL::Driver.driver_count).to be > 0
+        expect(GDAL::Driver.count).to be_a Fixnum
+        expect(GDAL::Driver.count).to be > 0
       end
     end
 

@@ -108,10 +108,10 @@ module OGR
       geometry_field_definition(geometry_field_index(name))
     end
 
-    # @param other_feature_defintion [OGR::Feature, FFI::Pointer]
+    # @param other_feature_definition [OGR::Feature, FFI::Pointer]
     # @return [Boolean]
-    def same?(other_feature_defintion)
-      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_defintion)
+    def same?(other_feature_definition)
+      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_definition)
 
       FFI::GDAL.OGR_FD_IsSame(@feature_definition_pointer, fd_ptr)
     end

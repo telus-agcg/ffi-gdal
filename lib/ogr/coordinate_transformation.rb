@@ -94,7 +94,7 @@ module OGR
 
       x_vals = x_ptr.read_array_of_double
       y_vals = y_ptr.read_array_of_double
-      z_vals = z_ptr.read_array_of_double unless z_vertices.empty?
+      z_vals = z_vertices.empty? ? nil : z_ptr.read_array_of_double
 
       points = if z_vertices.empty?
                  NMatrix[x_vals, y_vals]

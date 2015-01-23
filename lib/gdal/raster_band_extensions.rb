@@ -120,6 +120,7 @@ module GDAL
         color_number = (color_entry_index / bin_count).to_i
 
         color = colors[color_number]
+        # TODO: Fix possible uninitialized rgb_array
         rgb_array = hex_to_rgb(color) unless color.is_a?(Array)
         table.add_color_entry(color_entry_index,
           rgb_array[0], rgb_array[1], rgb_array[2], 255)

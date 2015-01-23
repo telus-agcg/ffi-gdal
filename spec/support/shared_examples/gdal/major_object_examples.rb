@@ -9,10 +9,10 @@ RSpec.shared_examples 'a major object' do
     end
   end
 
-  describe '#metadata_for_domain' do
+  describe '#metadata' do
     context 'default domain' do
       it 'is a Hash' do
-        expect(subject.metadata_for_domain).to be_a Hash
+        expect(subject.metadata).to be_a Hash
       end
     end
   end
@@ -21,8 +21,8 @@ RSpec.shared_examples 'a major object' do
     context 'default domain' do
       context 'first item in metadata list' do
         it 'is a String' do
-          unless subject.metadata_for_domain.empty?
-            key = subject.metadata_for_domain.keys.first
+          unless subject.metadata.empty?
+            key = subject.metadata.keys.first
 
             expect(subject.metadata_item(key)).to be_a String
           end
@@ -37,7 +37,7 @@ RSpec.shared_examples 'a major object' do
     end
 
     it 'has a DEFAULT key' do
-      expect(subject.all_metadata[:DEFAULT]).to eq subject.metadata_for_domain
+      expect(subject.all_metadata[:DEFAULT]).to eq subject.metadata
     end
   end
 

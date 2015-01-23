@@ -99,8 +99,8 @@ module GDAL
   end
 
   require_relative 'gdal/cpl_error_handler'
-  FFIGDALErrorHandler = GDAL::CPLErrorHandler.handle_error
-  FFI::GDAL.CPLSetErrorHandler(FFIGDALErrorHandler)
+  FFI_GDAL_ERROR_HANDLER = GDAL::CPLErrorHandler.handle_error
+  FFI::GDAL.CPLSetErrorHandler(FFI_GDAL_ERROR_HANDLER)
 end
 
 module OGR

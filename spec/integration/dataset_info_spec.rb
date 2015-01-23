@@ -3,7 +3,7 @@ require 'support/integration_help'
 require 'ffi-gdal'
 
 TIF_FILES.each do |file|
-  describe 'Dataset Info' do
+  RSpec.describe 'Dataset Info' do
     subject do
       GDAL::Dataset.open(file, 'r')
     end

@@ -45,7 +45,7 @@ module OGR
       filter_pointer = FFI::GDAL.OGR_L_GetSpatialFilter(@ogr_layer_pointer)
       return nil if filter_pointer.null?
 
-      @spatial_filter = OGR::Geometry.new(filter_pointer)
+      @spatial_filter = OGR::Geometry.factory(filter_pointer)
     end
 
     # The number of features in this layer.  If +force+ is false and it would be

@@ -3,17 +3,21 @@ require_relative 'geometry_extensions'
 
 module OGR
   module Geometry
-
     module ClassMethods
       def create(type)
         geometry_pointer = FFI::GDAL.OGR_G_CreateGeometry(type)
         return nil if geometry_pointer.null?
         geometry_pointer.autorelease = false
 
-        _to_geometry_type(geometry_pointer)
+        factory(geometry_pointer)
       end
 
-      def _to_geometry_type(geometry)
+      # Creates a new Geometry using the class of the geometry that the type
+      # represents.
+      #
+      # @param [OGR::Geometry, FFI::Pointer]
+      # @return [OGR::Geometry]
+      def factory(geometry)
         geometry = if geometry.kind_of?(OGR::Geometry)
           geometry
         else
@@ -46,7 +50,6 @@ module OGR
         @base ||= nil
       end
 
-      # @param type [FFI::GDAL::OGRwkbGeometryType]
       # @return [OGR::Geometry]
       # @param wkt_data [String]
       # @param spatial_reference [FFI::Pointer] Optional spatial reference
@@ -77,7 +80,7 @@ module OGR
         geometry_ptr_ptr.read_pointer.nil?
 
         # Not assigning here makes tests crash when using a #let.
-        _ = _to_geometry_type(geometry_ptr_ptr.read_pointer)
+        _ = factory(geometry_ptr_ptr.read_pointer)
       end
 
       # @param gml_data [String]
@@ -85,7 +88,7 @@ module OGR
       def create_from_gml(gml_data)
         geometry_pointer = FFI::GDAL.OGR_G_CreateFromGML(gml_data)
 
-        _ = _to_geometry_type(geometry_pointer)
+        _ = factory(geometry_pointer)
       end
 
       # @param json_data [String]
@@ -93,7 +96,7 @@ module OGR
       def create_from_json(json_data)
         geometry_pointer = FFI::GDAL.OGR_G_CreateGeometryFromJson(json_data)
 
-        _to_geometry_type(geometry_pointer)
+        factory(geometry_pointer)
       end
 
       # @return [String]
@@ -353,7 +356,7 @@ module OGR
       new_geometry_ptr = FFI::GDAL.OGR_G_Difference(@geometry_pointer, geometry.c_pointer)
       return nil if new_geometry_ptr.null?
 
-      self.class._to_geometry_type(new_geometry_ptr)
+      self.class.factory(new_geometry_ptr)
     end
     alias_method :-, :difference
 
@@ -363,7 +366,7 @@ module OGR
       new_geometry_ptr = FFI::GDAL.OGR_G_SymDifference(@geometry_pointer, geometry.c_pointer)
       return nil if new_geometry_ptr.null?
 
-      self.class._to_geometry_type(new_geometry_ptr)
+      self.class.factory(new_geometry_ptr)
     end
 
     # The shortest distance between the two geometries.
@@ -594,7 +597,7 @@ module OGR
 
     private
 
-    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
     def initialize_from_pointer(geometry_ptr)
       @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
       @envelope = nil
@@ -610,8 +613,8 @@ module OGR
         return nil
       end
 
-      # self.class._to_geometry_type(new_geometry_ptr)
-      OGR::Geometry._to_geometry_type(new_geometry_ptr)
+      # self.class.factory(new_geometry_ptr)
+      OGR::Geometry.factory(new_geometry_ptr)
     end
   end
 end

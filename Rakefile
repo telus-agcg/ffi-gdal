@@ -2,7 +2,7 @@ require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
 desc 'Download files for running integration tests against'
-task :get_tifs do
+task :get_tiffs do
   require 'net/ftp'
   require 'fileutils'
 

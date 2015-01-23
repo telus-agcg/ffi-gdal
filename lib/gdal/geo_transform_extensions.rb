@@ -70,7 +70,6 @@ module GDAL
     # x_origin and pixel_width.
     #
     # @param x_max [Number]
-    # @param x_min [Number]
     def x_size(x_max)
       self.class.x_size(x_max, x_origin, pixel_width)
     end
@@ -79,7 +78,6 @@ module GDAL
     # y_origin and pixel_height.
     #
     # @param y_max [Number]
-    # @param y_min [Number]
     def y_size(y_max)
       self.class.y_size(y_max, y_origin, pixel_height)
     end
