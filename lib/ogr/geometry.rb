@@ -188,7 +188,7 @@ module OGR
     end
 
     # @return [Fixnum]
-    def count
+    def geometry_count
       FFI::GDAL.OGR_G_GetGeometryCount(@geometry_pointer)
     end
 
@@ -458,10 +458,13 @@ module OGR
       build_geometry { |ptr| FFI::GDAL.OGR_G_Boundary(ptr) }
     end
 
+    # Computes the buffer of the geometry by building a new geometry that
+    # contains the buffer region around the geometry that this was called on.
+    #
     # @param distance [Float] The buffer distance to be applied.
     # @param quad_segments [Fixnum] The number of segments to use to approximate
     #   a 90 degree (quadrant) of curvature.
-    # @return [OGR::Geometry]
+    # @return [OGR::Polygon]
     def buffer(distance, quad_segments)
       build_geometry do |ptr|
         FFI::GDAL.OGR_G_Buffer(ptr, distance, quad_segments)
