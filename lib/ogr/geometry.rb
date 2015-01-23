@@ -433,24 +433,16 @@ module OGR
 
     # Computes and returns a new, simplified geometry.
     #
-    # NOTE: this relies on GDAL having been built against GEOS.  If it wasn't,
-    # this will fail.
-    #
     # @param distance_tolerance [Float]
+    # @param preserve_topology [Boolean]
     # @return [OGR::Geometry]
-    def simplify(distance_tolerance)
+    def simplify(distance_tolerance, preserve_topology: false)
       build_geometry do |ptr|
-        FFI::GDAL.OGR_G_Simplify(ptr, distance_tolerance)
-      end
-    end
-
-    # Like +#simplify+, but preserves the geometry's topology.
-    #
-    # @param distance_tolerance [Float]
-    # @return [OGR::Geometry]
-    def simplify_preserve_topology(distance_tolerance)
-      build_geometry do |ptr|
-        FFI::GDAL.OGR_G_SimplifyPreserveTopology(ptr, distance_tolerance)
+        if preserve_topology
+          FFI::GDAL.OGR_G_SimplifyPreserveTopology(ptr, distance_tolerance)
+        else
+          FFI::GDAL.OGR_G_Simplify(ptr, distance_tolerance)
+        end
       end
     end
 
