@@ -10,10 +10,6 @@ TIF_FILES.each do |file|
 
     it_behaves_like 'a major object'
 
-    describe '#open?' do
-      it { is_expected.to be_open }
-    end
-
     describe '#driver' do
       it 'is a GDAL::Driver' do
         expect(subject.driver).to be_a GDAL::Driver

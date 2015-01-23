@@ -51,14 +51,14 @@ TIF_FILES.each do |file|
     end
 
     describe '#x_projection' do
-      it 'is a Float' do
-        expect(subject.x_projection(0, 0)).to be_a Float
+      it 'is a Float or nil' do
+        expect(subject.x_projection(0, 0)).to be_a(Float).or be_nil
       end
     end
 
     describe '#y_projection' do
-      it 'is a Float' do
-        expect(subject.y_projection(0, 0)).to be_a Float
+      it 'is a Float or nil' do
+        expect(subject.y_projection(0, 0)).to be_a(Float).or be_nil
       end
     end
   end

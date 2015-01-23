@@ -136,7 +136,7 @@ module FFI
     attach_function :GDALGetDriverCount, [], :int
     attach_function :GDALIdentifyDriver, %i[string pointer], :GDALDriverH
     attach_function :GDALGetDriverByName, [:string], :GDALDriverH
-    attach_function :GDALDestroyDriverManager, [:void], :void
+    attach_function :GDALDestroyDriverManager, [], :void
 
     # Instance-level functions
     attach_function :GDALCreate,

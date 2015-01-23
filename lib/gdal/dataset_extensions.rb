@@ -451,7 +451,7 @@ module GDAL
     #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
     # @return NArray
     def to_na
-      na = NMatrix.to_na(raster_bands.map { |raster_band| raster_band.to_na })
+      na = NMatrix.to_na(raster_bands.map(&:to_na))
 
       NArray[*na.transpose]
     end

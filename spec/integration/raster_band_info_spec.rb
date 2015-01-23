@@ -144,7 +144,7 @@ TIF_FILES.each do |file|
 
       describe '#mask_flags' do
         it 'returns an Array of Symbols' do
-          expect(subject.mask_flags).to eq [:GMF_ALL_VALID]
+          expect(subject.mask_flags).to eq([:GMF_ALL_VALID]).or eq([:GMF_PER_DATASET])
         end
       end
 
@@ -158,7 +158,7 @@ TIF_FILES.each do |file|
         it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
           min = subject.statistics[:minimum]
           unless min == -32_768.0
-            expect(subject.statistics[:minimum]).to((be >= 0.0) || (eq -32_768.0))
+            expect(subject.statistics[:minimum]).to (be >= 0.0).or eq(-32_768.0)
             expect(subject.statistics[:minimum]).to be <= 255.0
           end
         end
@@ -166,7 +166,7 @@ TIF_FILES.each do |file|
 
       describe '#scale' do
         it 'returns a Hash with populated values' do
-          expect(subject.statistics).to be_a Hash
+          expect(subject.scale).to be_a Hash
           expect(%i[value is_meaningful]).to eq subject.scale.keys
         end
 
@@ -234,10 +234,12 @@ TIF_FILES.each do |file|
         end
 
         it 'does nothing (because the file formats dont support it)' do
-          skip unless defined? FFI::GDAL::GDALSetRasterUnitType
-
-          subject.unit_type = 'ft'
-          expect(subject.unit_type).to eq 'ft'
+          if defined? FFI::GDAL::GDALSetRasterUnitType
+            subject.unit_type = 'ft'
+            expect(subject.unit_type).to eq 'ft'
+          else
+            skip 'GDALSetRasterUnitType not supported'
+          end
         end
       end
 
@@ -263,10 +265,10 @@ TIF_FILES.each do |file|
           expect(histogram[:buckets]).to be_a Fixnum if histogram
         end
 
-        it 'has :totals as an Array of 256 Fixnums' do
+        it 'has :totals as an Array of 0 or 256 Fixnums' do
           if histogram
             expect(histogram[:totals]).to be_an Array
-            expect(histogram[:totals].size).to eq 256
+            expect(histogram[:totals].size).to eq(256).or eq(0)
             expect(histogram[:totals].all? { |t| t.class == Fixnum }).to eq true
           end
         end
@@ -292,14 +294,6 @@ TIF_FILES.each do |file|
 
         it 'has a min that is < its max' do
           expect(subject.min_max[:min]).to be < subject.min_max[:max]
-        end
-
-        it 'has a min that == statistics[:minimum]' do
-          expect(subject.min_max[:min]).to eq subject.statistics[:minimum]
-        end
-
-        it 'has a min that == minimum_value[:value]' do
-          expect(subject.min_max[:min]).to eq subject.minimum_value[:value]
         end
       end
 

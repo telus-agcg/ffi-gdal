@@ -206,14 +206,14 @@ module GDAL
 
     # @return [FFI::GDAL::GDALGCP]
     def gcps
-      return FFI::GDAL.GDALGCP.new if null?
+      return FFI::GDAL::GDALGCP.new if null?
 
       gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
-        FFI::GDAL.GDALGCP.new
+        FFI::GDAL::GDALGCP.new
       else
-        FFI::GDAL.GDALGCP.new(gcp_array_pointer)
+        FFI::GDAL::GDALGCP.new(gcp_array_pointer)
       end
     end
 

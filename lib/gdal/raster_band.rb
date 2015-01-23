@@ -20,6 +20,8 @@ module GDAL
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band = nil)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
+      @default_raster_attribute_table = nil
+      @color_table = nil
     end
 
     def c_pointer
@@ -261,7 +263,7 @@ module GDAL
       mean = FFI::MemoryPointer.new(:double)
       standard_deviation = FFI::MemoryPointer.new(:double)
 
-      handler = GDAL::ErrorHandler.new
+      handler = GDAL::CPLErrorHandler.new
       handler.on_warning = proc { Hash.new }
       handler.on_none = proc do
         {
@@ -441,7 +443,7 @@ module GDAL
       histogram_pointer = FFI::MemoryPointer.new(:pointer)
       progress_proc = block || nil
 
-      handler = GDAL::ErrorHandler.new
+      handler = GDAL::CPLErrorHandler.new
       handler.on_warning = proc { nil }
       handler.on_none = proc do
         min = min_pointer.read_double
@@ -452,7 +454,7 @@ module GDAL
                    []
                  else
                    histogram_pointer.get_pointer(0).read_array_of_int(buckets)
-        end
+                 end
 
         {
           minimum: min,
@@ -498,7 +500,7 @@ module GDAL
       histogram_pointer = FFI::MemoryPointer.new(:pointer, buckets)
       progress_proc = block || nil
 
-      handler = GDAL::ErrorHandler.new
+      handler = GDAL::CPLErrorHandler.new
       handler.on_warning = proc { nil }
       handler.on_none = proc do
         totals = if buckets.zero?

@@ -36,23 +36,23 @@ TIF_FILES.each do |file|
       it 'returns a FFI::GDAL::GDALColorEntry' do
         next if subject.nil?
 
-        expect(subject.color_entry(0)).to be_a FFI::GDAL::GDALColorEntry
+        expect(subject.color_entry(0)).to be_a GDAL::ColorEntry
       end
 
       it 'has 4 Fixnum values, >= 0' do
         next if subject.nil?
 
-        expect(subject.color_entry(0)[:c1]).to be_a Fixnum
-        expect(subject.color_entry(0)[:c1]).to be >= 0
+        expect(subject.color_entry(0).color1).to be_a Fixnum
+        expect(subject.color_entry(0).color1).to be >= 0
 
-        expect(subject.color_entry(0)[:c2]).to be_a Fixnum
-        expect(subject.color_entry(0)[:c2]).to be >= 0
+        expect(subject.color_entry(0).color2).to be_a Fixnum
+        expect(subject.color_entry(0).color2).to be >= 0
 
-        expect(subject.color_entry(0)[:c3]).to be_a Fixnum
-        expect(subject.color_entry(0)[:c3]).to be >= 0
+        expect(subject.color_entry(0).color3).to be_a Fixnum
+        expect(subject.color_entry(0).color3).to be >= 0
 
-        expect(subject.color_entry(0)[:c4]).to be_a Fixnum
-        expect(subject.color_entry(0)[:c4]).to be >= 0
+        expect(subject.color_entry(0).color4).to be_a Fixnum
+        expect(subject.color_entry(0).color4).to be >= 0
       end
     end
   end
