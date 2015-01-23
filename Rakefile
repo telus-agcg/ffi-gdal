@@ -8,6 +8,11 @@ task :get_tiffs do
 
   base_dest_dir = 'spec/support/images/osgeo/geotiff'
 
+  if Dir.exist? base_dest_dir
+    puts 'Tiff dir already exists.  Exiting.'
+    exit
+  end
+
   Net::FTP.open('downloads.osgeo.org') do |ftp|
     ftp.login
     ftp.binary = true
