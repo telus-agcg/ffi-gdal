@@ -119,38 +119,7 @@ module OGR
 
     def destroy!
       FFI::GDAL.OGR_G_DestroyGeometry(@geometry_pointer)
-      binding.pry
       @geometry_pointer = nil
-    end
-
-    # If this geometry is a container, this adds +geometry+ to the container.
-    # If this is a Polygon, +geometry+ must be a LinearRing.  If the Polygon is
-    # empty, the first added +geometry+ will be the exterior ring.  Subsequent
-    # geometries added will be interior rings.
-    #
-    # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-    # @return +true+ if successful, otherwise raises an OGR exception.
-    def add_geometry(sub_geometry)
-      ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, pointer_from(sub_geometry))
-
-      ogr_err.handle_result "Unable to add geometry: #{sub_geometry}"
-    end
-
-    # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-    # @return +true+ if successful, otherwise raises an OGR exception.
-    def add_directly(sub_geometry)
-      ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@geometry_pointer, pointer_from(sub_geometry))
-
-      ogr_err.handle_result
-    end
-
-    # @param geometry_index [Fixnum]
-    # @param delete [Boolean]
-    # @return +true+ if successful, otherwise raises an OGR exception.
-    def remove_geometry!(geometry_index, delete=true)
-      ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
-
-      ogr_err.handle_result
     end
 
     # Clears all information from the geometry.
