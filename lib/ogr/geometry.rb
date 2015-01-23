@@ -64,6 +64,8 @@ module OGR
         end
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
+        geometry_ptr.autorelease = true
+
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr.write_pointer(geometry_ptr)
 
