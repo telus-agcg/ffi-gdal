@@ -1,10 +1,10 @@
-require_relative '../geometry_types/collection'
+require_relative '../geometry_types/container'
 require_relative '../geometry_types/surface'
 
 module OGR
   class MultiPolygon
     include OGR::Geometry
-    include GeometryTypes::Collection
+    include GeometryTypes::Container
     include GeometryTypes::Surface
 
     def initialize(geometry_ptr=nil)
