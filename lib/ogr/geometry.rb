@@ -259,20 +259,23 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def intersects?(geometry)
-      FFI::GDAL.OGR_G_Intersects(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Intersects(@geometry_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def equals?(geometry)
-      FFI::GDAL.OGR_G_Equals(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Equals(@geometry_pointer, geometry_ptr)
     end
     alias_method :==, :equals?
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def disjoint?(geometry)
-      FFI::GDAL.OGR_G_Disjoint(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Disjoint(@geometry_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
@@ -284,25 +287,29 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def crosses?(geometry)
-      FFI::GDAL.OGR_G_Crosses(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Crosses(@geometry_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def within?(geometry)
-      FFI::GDAL.OGR_G_Within(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Within(@geometry_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def contains?(geometry)
-      FFI::GDAL.OGR_G_Contains(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Contains(@geometry_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def overlaps?(geometry)
-      FFI::GDAL.OGR_G_Overlaps(@geometry_pointer, pointer_from(geometry))
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      FFI::GDAL.OGR_G_Overlaps(@geometry_pointer, geometry_ptr)
     end
 
     # @return [Boolean]
@@ -639,22 +646,6 @@ module OGR
 
       # self.class._to_geometry_type(new_geometry_ptr)
       OGR::Geometry._to_geometry_type(new_geometry_ptr)
-    end
-
-    def pointer_from(geometry)
-      if geometry.is_a? OGR::Geometry
-        geometry.c_pointer
-      elsif geometry.kind_of? FFI::Pointer
-        geometry
-      end
-    end
-
-    def object_from(geometry)
-      if geometry.is_a? OGR::Geometry
-        geometry
-      elsif geometry.kind_of? FFI::Pointer
-        geometry.c_pointer
-      end
     end
   end
 end
