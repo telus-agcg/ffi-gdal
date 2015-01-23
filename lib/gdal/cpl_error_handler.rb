@@ -59,14 +59,14 @@ module GDAL
       @on_fatal = FAIL_PROC
     end
 
-    # It looks up the error class then calls the appropriate +on_+ proc, thus
+    # Looks up the error class then calls the appropriate +on_+ proc, thus
     # handling various error/non-error scenarios.  More info here:
     # http://www.gdal.org/cpl__error_8h.html#a74d0e649d58180e621540bf73b58e4a2.
     #
     # @return [Proc] A lambda that adheres to the CPL Error interface.
     def handler_lambda
-      _dont_crash_ffi = lambda do |error_class, error_number, message|
-        error_class_map(error_class).call(CPLE_MAP[error_number][:exception], message)
+      @handler_lambda ||= lambda do |error_class, error_number, message|
+        result(error_class, error_number, message)
       end
     end
 
@@ -85,13 +85,21 @@ module GDAL
     # After this code gets called, error handling will return to normal.
     def custom_handle
       FFI::GDAL.CPLPushErrorHandler(handler_lambda)
-      result = yield
+      yield
       FFI::GDAL.CPLPopErrorHandler
 
-      result
+      result(FFI::GDAL.CPLGetLastErrorType,
+             FFI::GDAL.CPLGetLastErrorNo,
+             FFI::GDAL.CPLGetLastErrorMsg
+      )
     end
 
     private
+
+    # @return Whatever the Proc evaluates.
+    def result(error_class, error_number, message)
+      error_class_map(error_class).call(CPLE_MAP[error_number][:exception], message)
+    end
 
     def error_class_map(error_class)
       {

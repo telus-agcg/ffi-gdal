@@ -18,18 +18,18 @@ module FFI
     #------------------------------------------------------------------------
     attach_function :CPLError, [CPLErr, :int, :string], :void
     attach_function :CPLErrorV, [CPLErr, :int, :string, :pointer], :void
-    attach_function :CPLEmergencyError, [:void], :void
-    attach_function :CPLErrorReset, [:void], :void
+    attach_function :CPLEmergencyError, [], :void
+    attach_function :CPLErrorReset, [], :void
 
-    attach_function :CPLGetLastErrorNo, [:void], :int
-    attach_function :CPLGetLastErrorType, [:void], CPLErr
-    attach_function :CPLGetLastErrorMsg, [:void], :string
+    attach_function :CPLGetLastErrorNo, [], :int
+    attach_function :CPLGetLastErrorType, [], CPLErr
+    attach_function :CPLGetLastErrorMsg, [], :string
 
-    attach_function :CPLGetErrorHandlerUserData, [:void], :pointer
+    attach_function :CPLGetErrorHandlerUserData, [], :pointer
     attach_function :CPLErrorSetState,
       [CPLErr, :int, :string],
       :void
-    attach_function :CPLCleanupErrorMutex, [:void], :void
+    attach_function :CPLCleanupErrorMutex, [], :void
     attach_function :CPLLoggingErrorHandler,
       [CPLErr, :int, :string],
       :void
