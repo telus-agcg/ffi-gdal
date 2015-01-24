@@ -6,6 +6,9 @@ module GDAL
     end
   end
 
+  class Error < ::RuntimeError
+  end
+
   class CPLErrFailure < StandardError
   end
 

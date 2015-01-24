@@ -12,6 +12,9 @@ module OGR
   class InvalidLayer < RuntimeError
   end
 
+  class InvalidDataSource < RuntimeError
+  end
+
   class NotEnoughData < RuntimeError
   end
 
