@@ -47,7 +47,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json(_)
+    def to_json(_ = nil)
       as_json.to_json
     end
   end
