@@ -47,9 +47,11 @@ module OGR
     end
 
     # @param name [String]
-    # @return [Fixnum] -1 if no match found
+    # @return [Fixnum] nil if no match found
     def field_index(name)
-      FFI::GDAL.OGR_FD_GetFieldIndex(@feature_definition_pointer, name)
+      result = FFI::GDAL.OGR_FD_GetFieldIndex(@feature_definition_pointer, name)
+
+      result < 0 ? nil : result
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
@@ -68,7 +70,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_geometry!(ignore)
+    def ignore_geometry!(ignore = true)
       FFI::GDAL.OGR_FD_SetGeometryIgnored(@feature_definition_pointer, ignore)
     end
 
@@ -78,7 +80,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_style!(ignore)
+    def ignore_style!(ignore = true)
       FFI::GDAL.OGR_FD_SetStyleIgnored(@feature_definition_pointer, ignore)
     end
 
@@ -99,13 +101,9 @@ module OGR
     # @param name [String]
     # @return [Fixnum]
     def geometry_field_index(name)
-      FFI::GDAL.OGR_FD_GetGeomFieldIndex(@feature_definition_pointer, name)
-    end
+      result = FFI::GDAL.OGR_FD_GetGeomFieldIndex(@feature_definition_pointer, name)
 
-    # @param name [String]
-    # @return [OGR::Field]
-    def geometry_field_by_name(name)
-      geometry_field_definition(geometry_field_index(name))
+      result < 0 ? nil : result
     end
 
     # @param other_feature_definition [OGR::Feature, FFI::Pointer]
@@ -115,6 +113,5 @@ module OGR
 
       FFI::GDAL.OGR_FD_IsSame(@feature_definition_pointer, fd_ptr)
     end
-    alias_method :==, :same?
   end
 end

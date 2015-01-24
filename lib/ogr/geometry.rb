@@ -18,11 +18,12 @@ module OGR
       # @param [OGR::Geometry, FFI::Pointer]
       # @return [OGR::Geometry]
       def factory(geometry)
-        geometry = if geometry.is_a?(OGR::Geometry)
-                     geometry
-                   else
-                     OGR::UnknownGeometry.new(geometry)
-        end
+        geometry =
+          if geometry.is_a?(OGR::Geometry)
+            geometry
+          else
+            OGR::UnknownGeometry.new(geometry)
+          end
 
         _ = case geometry.type
         when :wkbPoint, :wkbPoint25D
