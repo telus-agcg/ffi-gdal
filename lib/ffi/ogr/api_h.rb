@@ -524,9 +524,9 @@ module FFI
     #~~~~~~~~~~~~~~~~~
     attach_function :OGR_STBL_Create, [], :OGRStyleTableH
     attach_function :OGR_STBL_Destroy, %i[OGRStyleTableH], :void
-    attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :int
-    attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :int
-    attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :int
+    attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :bool
+    attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :bool
+    attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :bool
     attach_function :OGR_STBL_Find, %i[OGRStyleTableH string], :string
     attach_function :OGR_STBL_ResetStyleStringReading, %i[OGRStyleTableH], :void
     attach_function :OGR_STBL_GetNextStyle, %i[OGRStyleTableH], :string
