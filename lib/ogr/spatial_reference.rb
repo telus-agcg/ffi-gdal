@@ -694,7 +694,6 @@ module OGR
 
       FFI::GDAL.OSRIsSame(@ogr_spatial_ref_pointer, spatial_ref_ptr)
     end
-    alias_method :==, :same?
 
     # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     # @return [Boolean]

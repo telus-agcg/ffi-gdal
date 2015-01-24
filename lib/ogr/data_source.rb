@@ -4,8 +4,6 @@ require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
 require_relative 'data_source_extensions'
 require_relative 'exceptions'
-require_relative 'layer'
-require_relative 'style_table'
 
 module OGR
   class DataSource
@@ -31,8 +29,9 @@ module OGR
       @data_source_pointer = data_source_pointer
       @file_name = name
       @layers = []
+      @driver = nil
 
-      close_me = -> { destroy }
+      close_me = -> { destroy! }
       ObjectSpace.define_finalizer self, close_me
     end
 
@@ -50,10 +49,11 @@ module OGR
     end
 
     # Closes opened data source and releases allocated resources.
-    def destroy
+    def destroy!
       FFI::GDAL.OGR_DS_Destroy(@data_source_pointer)
+      @data_source_pointer = nil
     end
-    alias_method :close, :destroy
+    alias_method :close, :destroy!
 
     # Name of the file represented by this object.
     #
@@ -102,7 +102,7 @@ module OGR
 
     # @param name [String] The name for the new layer.
     # @param geometry_type [FFI::GDAL::OGRwkbGeometryType]
-    # @param spatial_reference [OGR::SpatialReference] The coordinate system
+    # @param spatial_reference [FFI::Pointer, OGR::SpatialReference] The coordinate system
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
@@ -141,7 +141,7 @@ module OGR
     def delete_layer(index)
       ogr_err = FFI::GDAL.OGR_DS_DeleteLayer(@data_source_pointer, index)
 
-      ogr_err.handle_result
+      ogr_err.handle_result "Unable to delete layer #{index}"
     end
 
     # @param command [String] The SQL to execute.
@@ -150,7 +150,6 @@ module OGR
     #   default OGRSQL dialect.
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
-    # TODO: not sure how to handle the call to OGR_DS_ReleaseResultSet here...
     def execute_sql(command, spatial_filter = nil, dialect = nil)
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter)
 
@@ -162,6 +161,14 @@ module OGR
       OGR::Layer.new(layer_ptr)
     end
 
+    # Use to release the resulting data pointer from #execute_sql.
+    #
+    # @param layer [OGR::Layer, FFI::Pointer]
+    def release_result_set(layer)
+      layer_ptr = GDAL._pointer(OGR::Layer, layer)
+      FFI::GDAL.OGR_DS_ReleaseResultSet(@data_source_pointer, layer_ptr)
+    end
+
     # @return [OGR::StyleTable, nil]
     def style_table
       return @style_table if @style_table
@@ -170,6 +177,35 @@ module OGR
       return nil if style_table_ptr.null?
 
       @style_table = OGR::StyleTable.new(style_table_ptr)
+    end
+
+    # @param new_style_table [OGR::StyleTable, FFI::Pointer]
+    def style_table=(new_style_table)
+      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
+
+      FFI::GDAL.OGR_DS_SetStyleTable(@data_source_pointer, new_style_table_ptr)
+
+      @style_table =
+        if new_style_table.instance_of? OGR::StyleTable
+          new_style_table
+        else
+          OGR::StyleTable.new(new_style_table_ptr)
+        end
+    end
+
+    # @param capability [String] Must be one of: ODsCCreateLayer,
+    #   ODsCDeleteLayer, ODsCCreateGeomFieldAfterCreateLayer,
+    #   ODsCCurveGeometries.
+    # @return [Boolean]
+    def test_capability(capability)
+      FFI::GDAL.OGR_DS_TestCapability(@data_source_pointer, capability)
+    end
+
+    # @return [Boolean]
+    def sync_to_disk
+      ogr_err = FFI::GDAL.OGR_DS_SyncToDisk(@data_source_pointer)
+
+      ogr_err.handle_result
     end
   end
 end

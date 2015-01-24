@@ -5,8 +5,8 @@ module OGR
   class StyleTable
     include StyleTableExtensions
 
-    def initialize
-      @style_table_pointer = FFI::GDAL.OGR_STBL_Create
+    def initialize(c_pointer = nil)
+      @style_table_pointer = c_pointer ? c_pointer : FFI::GDAL.OGR_STBL_Create
 
       if @style_table_pointer.null?
         fail "Unable to create StyleTable using class #{style_table_class}"
