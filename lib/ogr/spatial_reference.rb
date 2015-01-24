@@ -228,14 +228,20 @@ module OGR
     # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
     #   String]
     def initialize(spatial_reference_or_wkt = nil)
-      @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
-                                   spatial_reference_or_wkt.c_pointer
-                                 elsif spatial_reference_or_wkt.is_a? String
-                                   FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
-                                 elsif spatial_reference_or_wkt.is_a? FFI::Pointer
-                                   spatial_reference_or_wkt
-                                 else
-                                   FFI::GDAL.OSRNewSpatialReference(nil)
+      @ogr_spatial_ref_pointer =
+        case spatial_reference_or_wkt.class.name
+        when 'OGR::SpatialReference'
+          spatial_reference_or_wkt.c_pointer
+        when 'String', 'NilClass'
+          FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
+        when 'FFI::Pointer', 'FFI::MemoryPointer'
+          spatial_reference_or_wkt
+        else
+          log "Dunno what to do with #{spatial_reference_or_wkt}"
+        end
+
+      if @ogr_spatial_ref_pointer.nil? || @ogr_spatial_ref_pointer.null?
+        fail OGR::CreateFailure, "Unable to create SpatialReference."
       end
     end
 
