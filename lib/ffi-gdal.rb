@@ -122,6 +122,8 @@ module OGR
     File.expand_path('ogr/geometry', __dir__)
   autoload :GeometryCollection,
     File.expand_path('ogr/geometries/geometry_collection', __dir__)
+  autoload :GeometryFieldDefinition,
+    File.expand_path('ogr/geometry_field_definition', __dir__)
   autoload :Layer,
     File.expand_path('ogr/layer', __dir__)
   autoload :LineString,
@@ -144,6 +146,8 @@ module OGR
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,
     File.expand_path('ogr/style_table', __dir__)
+  autoload :StyleTool,
+    File.expand_path('ogr/style_tool', __dir__)
   autoload :UnknownGeometry,
     File.expand_path('ogr/geometries/unknown_geometry', __dir__)
 
