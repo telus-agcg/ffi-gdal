@@ -517,7 +517,7 @@ module FFI
     attach_function :OGR_ST_GetStyleString, %i[OGRStyleToolH], :string
     attach_function :OGR_ST_GetRGBFromString,
       %i[OGRStyleToolH string pointer pointer pointer pointer],
-      :int
+      :bool
 
     #~~~~~~~~~~~~~~~~~
     # Style Table-related

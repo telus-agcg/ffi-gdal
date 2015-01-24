@@ -6,6 +6,9 @@ module OGR
     end
   end
 
+  class CreateFailure < StandardError
+  end
+
   class InvalidLayer < RuntimeError
   end
 
