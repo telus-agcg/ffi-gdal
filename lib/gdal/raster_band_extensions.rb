@@ -167,12 +167,12 @@ module GDAL
       point_count = (y_size) * (x_size)
       narray = NArray.object(2, point_count)
 
-      0.upto(y_size - 1).each do |lat_point|
-        0.upto(x_size - 1).each do |lon_point|
-          hash = dataset.geo_transform.apply_geo_transform(lat_point, lon_point)
-          point_number = lat_point * lon_point
-          narray[0, point_number] = hash[:latitude] || 0
-          narray[1, point_number] = hash[:longitude] || 0
+      0.upto(y_size - 1).each do |y_point|
+        0.upto(x_size - 1).each do |x_point|
+          hash = dataset.geo_transform.apply_geo_transform(y_point, x_point)
+          point_number = y_point * x_point
+          narray[0, point_number] = hash[:y_geo] || 0
+          narray[1, point_number] = hash[:x_geo] || 0
         end
       end
 

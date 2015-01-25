@@ -55,8 +55,11 @@ module GDAL
 
       # gdal_grid.cpp lists this as the corner coordinates, which ends up being
       # larger than my x_max/y_min test values. That seems odd.
-      x_end = x_max + (@geo_transform.x_size(x_max) / 2)
-      y_end = y_min - (@geo_transform.y_size(y_max) / 2)
+      # x_end = x_max + (@geo_transform.x_size(x_max) / 2)
+      # y_end = y_min - (@geo_transform.y_size(y_max) / 2)
+      max_pixel = @geo_transform.world_to_pixel(x_max, y_max)
+      x_end = x_max + (max_pixel[:pixel] / 2)
+      y_end = y_min - (max_pixel[:line] / 2)
       log "corner x1 (gdal_grid.cpp): #{x_end}"
       log "corner y1 (gdal_grid.cpp): #{y_end}"
 

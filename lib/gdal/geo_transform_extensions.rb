@@ -2,86 +2,20 @@ require 'json'
 
 module GDAL
   module GeoTransformExtensions
-    def self.included(base)
-      base.extend(ClassMethods)
-    end
-
-    module ClassMethods
-      # Calculates the size of an X/longitude pixel.
-      #
-      # @param x_max [Number]
-      # @param x_min [Number]
-      # @param pixel_width [Number]
-      def x_size(x_max, x_min, pixel_width)
-        (x_max - x_min) / pixel_width
-      end
-
-      # Calculates the size of an Y/latitude pixel.
-      #
-      # @param y_max [Number]
-      # @param y_min [Number]
-      # @param pixel_height [Number]
-      def y_size(y_max, y_min, pixel_height)
-        ((y_max - y_min) / pixel_height)
-      end
-    end
-
-    # The calculated UTM easting of the pixel on the map.
+    # Calculates the pixel and line location of a geospatial coordinate.  Used
+    # for converting from world coordinates to to image pixels.
     #
-    # @return [Float]
-    def x_projection(x_pixel, y_pixel)
-      return nil if null?
+    # @param x_geo [Fixnum]
+    # @param y_geo [Fixnum]
+    # @return [Hash{pixel => Fixnum, line Fixnum}]
+    def world_to_pixel(x_geo, y_geo)
+      pixel = (x_geo - x_origin) / pixel_width
+      line = (y_origin - y_geo) / pixel_height
 
-      apply_geo_transform(x_pixel, y_pixel)[:x_location]
+      { pixel: pixel.to_i, line: line.to_i }
     end
 
-    # The calculated UTM northing of the pixel on the map.
-    #
-    # @return [Float]
-    def y_projection(x_pixel, y_pixel)
-      return nil if null?
-
-      apply_geo_transform(x_pixel, y_pixel)[:y_location]
-    end
-
-    # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
-    # pixel location of a geospatial coordinate.
-    #
-    # @param lon [Fixnum]
-    # @param lat [Fixnum]
-    # @param value_type [Symbol] Data type to return: :float or :integer.
-    # @return [Hash<x, y>] [pixel, line]
-    def world_to_pixel(lon, lat, value_type = :float)
-      pixel = self.class.x_size(lon, x_origin, pixel_width)
-      line = self.class.y_size(y_origin, lat, pixel_height)
-
-      case value_type
-      when :float
-        { x: pixel.to_f, y: line.to_f }
-      when :integer
-        { x: pixel.to_i, y: line.to_i }
-      else
-        { x: pixel, y: line }
-      end
-    end
-
-    # Calculates the size of an X/longitude pixel using the geotransform's
-    # x_origin and pixel_width.
-    #
-    # @param x_max [Number]
-    def x_size(x_max)
-      self.class.x_size(x_max, x_origin, pixel_width)
-    end
-
-    # Calculates the size of an Y/latitude pixel using the geotransform's
-    # y_origin and pixel_height.
-    #
-    # @param y_max [Number]
-    def y_size(y_max)
-      self.class.y_size(y_max, y_origin, pixel_height)
-    end
-
-    # All attributes as an Array, in the order:
+    # All attributes as an Array, in the order the C-Struct describes them:
     #   * x_origin
     #   * pixel_width
     #   * x_rotation

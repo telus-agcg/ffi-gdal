@@ -86,7 +86,7 @@ module OGR
         points.map do |x_and_y|
           result = geo_transform.world_to_pixel(*x_and_y)
 
-          [result[:x].to_i.abs, result[:y].to_i.abs]
+          [result[:pixel].to_i.abs, result[:line].to_i.abs]
         end
       end
 
