@@ -249,6 +249,7 @@ module FFI
       %i[OGRGeomFieldDefnH OGRSpatialReferenceH],
       :void
     attach_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
+    attach_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
 
     #~~~~~~~~~~~~~~~~~
     # Feature Definition-related

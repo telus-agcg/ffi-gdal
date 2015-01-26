@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe OGR::GeometryFieldDefinition do
-  subject(:geometry_field_definition) { described_class.new('test gfld') }
+  subject(:geometry_field_definition) { described_class.create('test gfld') }
 
   describe '#destroy!' do
     it 'sets the c_pointer to nil' do
@@ -56,5 +56,30 @@ RSpec.describe OGR::GeometryFieldDefinition do
     context 'default' do
       it { is_expected.to_not be_ignored }
     end
+  end
+
+  describe '#ignore=' do
+    context 'setting to true' do
+      it 'sets the value to true' do
+        subject.ignore = true
+        expect(subject).to be_ignored
+      end
+    end
+  end
+
+  describe '#as_json' do
+    it 'returns a Hash of attributes' do
+      expect(subject.as_json). to eq(
+        is_ignored: false,
+        name: 'test gfld',
+        spatial_reference: nil,
+        type: :wkbUnknown
+      )
+    end
+  end
+
+  describe '#to_json' do
+    subject { geometry_field_definition.to_json }
+    it { is_expected.to be_a String }
   end
 end

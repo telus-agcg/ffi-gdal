@@ -1,9 +1,20 @@
+require_relative 'geometry_field_definition_extensions'
+
 module OGR
   class GeometryFieldDefinition
+    include GeometryFieldDefinitionExtensions
+
     # @param name [String]
     # @param type [FFI::GDAL::OGRwkbGeometryType]
-    def initialize(name, type = :wkbUnknown)
-      @geometry_field_definition_pointer = FFI::GDAL.OGR_GFld_Create(name, type)
+    def self.create(name, type = :wkbUnknown)
+      geometry_field_definition_pointer = FFI::GDAL.OGR_GFld_Create(name, type)
+      new(geometry_field_definition_pointer)
+    end
+
+    # @param [OGR::GeometryFieldDefinition, FFI::Pointer]
+    def initialize(geometry_field_definition)
+      @geometry_field_definition_pointer =
+        GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_definition)
       @spatial_reference = nil
     end
 
@@ -68,6 +79,11 @@ module OGR
     # @return [Boolean]
     def ignored?
       FFI::GDAL.OGR_GFld_IsIgnored(@geometry_field_definition_pointer)
+    end
+
+    # @param value [Boolean]
+    def ignore=(value)
+      FFI::GDAL.OGR_GFld_SetIgnored(@geometry_field_definition_pointer, value)
     end
   end
 end
