@@ -6,7 +6,7 @@ module OGR
     def as_json
       json = {
         coordinate_dimension: coordinate_dimension,
-        count: count,
+        geometry_count: geometry_count,
         dimension: dimension,
         is_empty: empty?,
         is_ring: ring?,

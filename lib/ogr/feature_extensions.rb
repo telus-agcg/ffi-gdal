@@ -12,7 +12,7 @@ module OGR
     # @return [Hash]
     def as_json
       {
-        definition: definition,
+        definition: definition.as_json,
         fid: fid,
         field_count: field_count,
         fields: fields.map(&:as_json),

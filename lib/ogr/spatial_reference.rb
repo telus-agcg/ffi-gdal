@@ -415,63 +415,61 @@ module OGR
       { name: name, orientation: OGRAxisOrientation[ao_value] }
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_INVFLATTENING+ (298.257223563)
+    #   if no semi-major is found.  If set to +true+, this will return that
+    #   value if the semi-major isn't found.
     # @return [Float]
-    def spheroid_inverse_flattening
+    def spheroid_inverse_flattening(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn 'WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy...'
-      end
-
-      ogr_err.handle_result
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+    #   semi-major is found.  If set to +true+, this will return that value if
+    #   the semi-major isn't found.
     # @return [Float]
-    def semi_major
+    def semi_major(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn 'WARN: #semi_major received error _and_ a value. Something is fishy...'
-      end
-
-      ogr_err.handle_result
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
     # @param hemisphere [Symbol] :north or :south.
     # @return [Fixnum] The zone, or 0 if this isn't a UTM definition.
     def utm_zone(hemisphere = :north)
-      north = case hemisphere
-      when :north then 1
-      when :south then 0
-      else fail "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
-      end
+      north =
+        case hemisphere
+        when :north then 1
+        when :south then 0
+        else fail "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
+        end
       north_ptr = FFI::MemoryPointer.new(:bool)
       north_ptr.write_bytes(north.to_s)
 
       FFI::GDAL.OSRGetUTMZone(@ogr_spatial_ref_pointer, north_ptr)
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+    #   semi-major is found.  If set to +true+, this will return that value if
+    #   the semi-major isn't found.
     # @return [Float]
-    def semi_minor
+    def semi_minor(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        warn 'WARN: #semi_minor received error _and_ a value. Something is fishy...'
-      end
-
-      ogr_err.handle_result
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
     # Set the user-visible LOCAL_CS name.
