@@ -12,7 +12,7 @@ module GDAL
       pixel = (x_geo - x_origin) / pixel_width
       line = (y_origin - y_geo) / pixel_height
 
-      { pixel: pixel.to_i, line: line.to_i }
+      { pixel: pixel.round.to_i, line: line.round.to_i }
     end
 
     # All attributes as an Array, in the order the C-Struct describes them:
