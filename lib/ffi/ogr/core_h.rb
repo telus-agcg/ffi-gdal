@@ -52,6 +52,11 @@ module FFI
       :OFTDateTime,        11,
       :OFTMaxType,         11
 
+    OGRFieldSubType = enum :OFSTNone,
+      :OFSTBoolean,
+      :OFSTInt16,
+      :OFSTFloat32
+
     OGRJustification = enum :OJUndefined, 0,
       :OJLeft,   1,
       :OJRight,  2
