@@ -128,6 +128,15 @@ module OGR
       @geometry_pointer = nil
     end
 
+    # @param value [Boolean]
+    def read_only=(value)
+      @read_only = value
+    end
+
+    def read_only?
+      @read_only
+    end
+
     # Clears all information from the geometry.
     #
     # @return nil
@@ -603,6 +612,7 @@ module OGR
       @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
       @envelope = nil
       @spatial_reference = OGR::SpatialReference.new
+      @read_only = false
     end
 
     def build_geometry

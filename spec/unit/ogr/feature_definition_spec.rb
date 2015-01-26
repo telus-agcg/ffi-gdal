@@ -20,6 +20,14 @@ RSpec.describe OGR::FeatureDefinition do
       subject { feature_definition.field_count }
       it { is_expected.to be_zero }
     end
+
+    context 'with fields' do
+      before { feature_definition.add_field_definition(field) }
+
+      it 'returns the number of fields that have been added' do
+        expect(subject.field_count).to eq 1
+      end
+    end
   end
 
   describe '#field_definition' do

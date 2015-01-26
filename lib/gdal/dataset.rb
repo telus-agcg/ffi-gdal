@@ -241,7 +241,7 @@ module GDAL
                             resampling.upcase
                           elsif resampling.is_a? Symbol
                             resampling.to_s.upcase
-      end
+                          end
 
       overview_levels_ptr = FFI::MemoryPointer.new(:int, overview_levels.size)
       overview_levels_ptr.write_array_of_int(overview_levels)

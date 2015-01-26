@@ -26,13 +26,22 @@ module OGR
   class InvalidDataSource < StandardError
   end
 
+  class InvalidFeatureDefinition < StandardError
+  end
+
   class InvalidField < StandardError
+  end
+
+  class InvalidGeometryFieldDefinition < StandardError
   end
 
   class InvalidHandle < RuntimeError
   end
 
   class InvalidLayer < StandardError
+  end
+
+  class InvalidStyleTable < StandardError
   end
 
   class NotEnoughData < RuntimeError
@@ -42,6 +51,12 @@ module OGR
     def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
+    end
+  end
+
+  class ReadOnlyObject < StandardError
+    def initialize(msg = nil)
+      message = msg || "The object you're accessing is read-only.  Probably because it's internally managed by OGR."
     end
   end
 
