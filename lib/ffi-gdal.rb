@@ -116,6 +116,8 @@ module OGR
     File.expand_path('ogr/feature', __dir__)
   autoload :FeatureDefinition,
     File.expand_path('ogr/feature_definition', __dir__)
+  autoload :Field,
+    File.expand_path('ogr/field', __dir__)
   autoload :GeocodingSession,
     File.expand_path('ogr/geocoding_session', __dir__)
   autoload :Geometry,
