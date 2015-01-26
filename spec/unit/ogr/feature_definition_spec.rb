@@ -1,17 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe OGR::FeatureDefinition do
-  describe '.create' do
-    it 'returns a new FeatureDefinition' do
-      expect(described_class.create('stuff')).to be_a described_class
-    end
-  end
-
   subject(:feature_definition) do
     fd = described_class.create('spec feature definition')
     fd.geometry_type = :wkbMultiPolygon
     fd
   end
+
+  let(:field) { OGR::Field.create('test field', :OFTString) }
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -26,18 +22,76 @@ RSpec.describe OGR::FeatureDefinition do
     end
   end
 
-  describe '#field' do
-    context 'no fields' do
+  describe '#field_definition' do
+    context 'field definition at the given index does not exist' do
       it 'raises a RuntimeError' do
-        expect { subject.field(0) }.to raise_exception RuntimeError
+        expect { subject.field_definition(0) }.to raise_exception RuntimeError
+      end
+    end
+
+    context 'field definition at the given index exists' do
+      before { subject.add_field_definition(field) }
+
+      it 'returns the Field' do
+        expect(subject.field_definition(0)).to be_a OGR::Field
+      end
+    end
+  end
+
+  describe '#add_field_definition + #field_definition' do
+    context 'param is not a Field' do
+      it 'raises' do
+        expect do
+          subject.add_field_definition('bobo')
+        end.to raise_exception OGR::InvalidField
+      end
+    end
+
+    context 'param is a Field' do
+      let(:field) { OGR::Field.create('test field', :OFTString) }
+
+      it 'adds the field' do
+        subject.add_field_definition(field)
+        expect(subject.field_definition(0)).to be_a OGR::Field
+      end
+    end
+  end
+
+  describe '#delete_field_definition' do
+    context 'no fields' do
+      it 'raises an OGR::Failure' do
+        expect do
+          subject.delete_field_definition(0)
+        end.to raise_exception OGR::Failure
+      end
+    end
+
+    context 'valid field' do
+      before { subject.add_field_definition(field) }
+
+      it 'deletes the field' do
+        subject.delete_field_definition(0)
+
+        expect do
+          subject.delete_field_definition(0)
+        end.to raise_exception OGR::Failure
       end
     end
   end
 
   describe '#field_index' do
-    context 'no fields' do
-      it 'raises a RuntimeError' do
+    context 'field with requested name does not exist' do
+      it 'returns nil' do
         expect(subject.field_index('things')).to be_nil
+      end
+    end
+
+    context 'field with requested name exists' do
+      let(:field) { OGR::Field.create('test field', :OFTString) }
+      before { subject.add_field_definition(field) }
+
+      it "returns the Field's index" do
+        expect(subject.field_index('test field')).to be_zero
       end
     end
   end
@@ -126,7 +180,49 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#geometry_field_definition' do
     context 'default, at 0' do
       it 'returns an OGR::Field' do
-        expect(subject.geometry_field_definition(0)).to be_a OGR::Field
+        expect(subject.geometry_field_definition(0)).
+          to be_a OGR::GeometryFieldDefinition
+      end
+
+      it 'has a type that is the same as the feature' do
+        gfd = subject.geometry_field_definition(0)
+        expect(subject.geometry_type).to eq gfd.type
+      end
+    end
+  end
+
+  describe '#add_geometry_field_definition + #geometry_field_definition' do
+    let(:geometry_field_definition) do
+      OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+    end
+
+    it 'adds the geometry_field_definition' do
+      expect do
+        subject.add_geometry_field_definition geometry_field_definition
+      end.to change { subject.geometry_field_count }.by 1
+    end
+  end
+
+  describe '#delete_geometry_field_definition' do
+    context 'no geometry field definition at given index' do
+      it 'raises an OGR::Failure' do
+        expect do
+          subject.delete_geometry_field_definition(123)
+        end.to raise_exception OGR::Failure
+      end
+    end
+
+    context 'geometry field definition exists at given index' do
+      let(:geometry_field_definition) do
+        OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+      end
+
+      before { subject.add_geometry_field_definition(geometry_field_definition) }
+
+      it 'deletes the gfld' do
+        expect do
+          subject.delete_geometry_field_definition(1)
+        end.to change { subject.geometry_field_count }.by -1
       end
     end
   end
@@ -155,10 +251,10 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'field with name exists' do
-      it do
-        p subject.geometry_field_definition(0).as_json
+      it 'returns the OGR::GeometryFieldDefinition' do
         name = subject.geometry_field_definition(0).name
-        expect(subject.geometry_field_by_name(name)).to be_a OGR::Field
+        expect(subject.geometry_field_by_name(name)).
+          to be_a OGR::GeometryFieldDefinition
       end
     end
   end

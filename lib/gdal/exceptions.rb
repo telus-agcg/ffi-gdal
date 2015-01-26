@@ -1,4 +1,10 @@
 module GDAL
+  class CreateFail < StandardError
+  end
+
+  class Error < ::RuntimeError
+  end
+
   class OpenFailure < StandardError
     def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
@@ -6,28 +12,16 @@ module GDAL
     end
   end
 
-  class Error < ::RuntimeError
-  end
-
-  class CPLErrFailure < StandardError
-  end
-
-  class CreateFail < StandardError
-  end
-
-  class RequiredBandNotFound < StandardError
-  end
-
   class InvalidBandNumber < StandardError
   end
 
-  class UnsupportedOperation < StandardError
-  end
-
-  class NoWriteAccess < StandardError
+  class NoWriteAccess < RuntimeError
   end
 
   class NullObject < TypeError
+  end
+
+  class RequiredBandNotFound < StandardError
   end
 
   class UnknownGridAlgorithm < StandardError
@@ -35,5 +29,8 @@ module GDAL
       message = msg || "Unknown Grid algorithm type '#{algorithm}'."
       super(message)
     end
+  end
+
+  class UnsupportedOperation < StandardError
   end
 end

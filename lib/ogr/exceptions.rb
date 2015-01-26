@@ -1,39 +1,8 @@
 module OGR
-  class OpenFailure < RuntimeError
-    def initialize(file, msg = nil)
-      message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
-      super(message)
-    end
-  end
-
-  class CreateFailure < StandardError
-  end
-
-  class InvalidLayer < RuntimeError
-  end
-
-  class InvalidDataSource < RuntimeError
-  end
-
-  class NotEnoughData < RuntimeError
-  end
-
-  class UnsupportedGeometryType < RuntimeError
-  end
-
-  class UnsupportedOperation < RuntimeError
-  end
-
   class CorruptData < RuntimeError
   end
 
-  class Failure < RuntimeError
-  end
-
-  class UnsupportedSRS < RuntimeError
-  end
-
-  class InvalidHandle < RuntimeError
+  class CreateFailure < RuntimeError
   end
 
   class DriverNotFound < RuntimeError
@@ -49,5 +18,39 @@ module OGR
 
       super(message)
     end
+  end
+
+  class Failure < StandardError
+  end
+
+  class InvalidDataSource < StandardError
+  end
+
+  class InvalidField < StandardError
+  end
+
+  class InvalidHandle < RuntimeError
+  end
+
+  class InvalidLayer < StandardError
+  end
+
+  class NotEnoughData < RuntimeError
+  end
+
+  class OpenFailure < RuntimeError
+    def initialize(file, msg = nil)
+      message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
+      super(message)
+    end
+  end
+
+  class UnsupportedGeometryType < StandardError
+  end
+
+  class UnsupportedOperation < StandardError
+  end
+
+  class UnsupportedSRS < StandardError
   end
 end
