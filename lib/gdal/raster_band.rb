@@ -560,6 +560,7 @@ module GDAL
     # @yieldparam pixel_line [Array]
     # @yieldparam line_number [Fixnum]
     # @return [NArray]
+    # TODO: Extract RasterIO to separate function.
     def readlines(data_type: :GDT_Byte)
       x_offset = 0
       line_size = 1
@@ -596,7 +597,7 @@ module GDAL
       NArray.to_na(the_array)
     end
 
-    # @param pixel_array [NArray] The NArray of pixels.
+    # @param pixel_array [NArray] The list of pixels.
     # @param x_offset [Fixnum] The left-most pixel to start writing.
     # @param y_offset [Fixnum] The top-most pixel to start writing.
     # @param data_type [FFI::GDAL::GDALDataType] The type of pixel contained in

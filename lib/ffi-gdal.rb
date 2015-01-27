@@ -34,6 +34,10 @@ module GDAL
     File.expand_path('gdal/options', __dir__)
   autoload :RasterAttributeTable,
     File.expand_path('gdal/raster_attribute_table', __dir__)
+  autoload :RasterBand,
+    File.expand_path('gdal/raster_band', __dir__)
+  autoload :RasterBandClassifier,
+    File.expand_path('gdal/raster_band_classifier', __dir__)
   autoload :Utils,
     File.expand_path('gdal/utils', __dir__)
   autoload :WarpOperation,
