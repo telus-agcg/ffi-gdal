@@ -10,10 +10,15 @@ module GDAL
 
     # @return [Hash{x => Fixnum, y => Fixnum}]
     def block_count
-      x_blocks = (x_size + block_size[:x] - 1) / block_size[:x]
-      y_blocks = (y_size + block_size[:y] - 1) / block_size[:y]
+      x_blocks = (x_size + block_size[:x]).divmod(block_size[:x])
+      y_blocks = (y_size + block_size[:y]).divmod(block_size[:y])
 
-      { x: x_blocks, y: y_blocks }
+      {
+        x: x_blocks.first - 1,
+        x_remainder: x_blocks.last,
+        y: y_blocks.first - 1,
+        y_remainder: y_blocks.last
+      }
     end
 
     # The buffer size to use for block-based IO, based on #block_size.
@@ -36,19 +41,30 @@ module GDAL
       data_type = to_data_type || self.data_type
       data_pointer = GDAL._pointer_from_data_type(data_type, block_buffer_size)
 
-      0.upto(block_count[:y] - 1).each do |y_block_number|
+      0.upto(block_count[:y]).each do |y_block_number|
+        y_read_offset = block_size[:y] * y_block_number
+
         0.upto(block_count[:x] - 1).each do |x_block_number|
           read_block(x_block_number, y_block_number, data_pointer)
 
-          0.upto(block_size[:y] - 1).each do |block_index|
-            read_offset = block_size[:x] * block_index
+          y_block_size = if y_block_number == block_count[:y] && !block_count[:y_remainder].zero?
+            block_count[:y_remainder]
+          elsif y_block_number == block_count[:y]
+            block_size[:y]
+          else
+            block_size[:y]
+          end
+
+          0.upto(y_block_size - 1).each do |block_index|
+            x_read_offset = block_size[:x] * block_index
+
             pixels = if data_type == :GDT_Byte
-                       data_pointer.get_array_of_uint8(read_offset, block_size[:x])
+                       data_pointer.get_array_of_uint8(x_read_offset, block_size[:x])
                      elsif data_type == :GDT_UInt16
-                       data_pointer.get_array_of_uint16(read_offset, block_size[:x])
+                       data_pointer.get_array_of_uint16(x_read_offset, block_size[:x])
                      else
-                       data_pointer.get_array_of_float(read_offset, block_size[:x])
-            end
+                       data_pointer.get_array_of_float(x_read_offset, block_size[:x])
+                     end
 
             yield(pixels)
           end
@@ -60,24 +76,26 @@ module GDAL
     #
     # @return [NArray]
     def to_na(to_data_type = nil)
-      data_type = to_data_type || self.data_type
-
-      values = each_by_block(to_data_type).map do |pixels|
+      values = each_by_block.map do |pixels|
         pixels
       end
 
-      case data_type
-      when :GDT_Byte then NArray.to_na(values).to_type(NArray::BYTE)
-      when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::SINT)
-      when :GDT_Int16 then NArray.to_na(values).to_type(NArray::SINT)
-      when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
-      when :GDT_Int32 then NArray.to_na(values).to_type(NArray::INT)
-      when :GDT_Float32 then NArray.to_na(values).to_type(NArray::SFLOAT)
-      when :GDT_Float64 then NArray.to_na(values).to_type(NArray::DFLOAT)
-      when :GDT_CInt16 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
-      when :GDT_CInt32 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
-      when :GDT_CFloat32 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
-      when :GDT_CFloat64 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
+      if to_data_type
+        case to_data_type
+        when :GDT_Byte then NArray.to_na(values).to_type(NArray::BYTE)
+        when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::SINT)
+        when :GDT_Int16 then NArray.to_na(values).to_type(NArray::SINT)
+        when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
+        when :GDT_Int32 then NArray.to_na(values).to_type(NArray::INT)
+        when :GDT_Float32 then NArray.to_na(values).to_type(NArray::SFLOAT)
+        when :GDT_Float64 then NArray.to_na(values).to_type(NArray::DFLOAT)
+        when :GDT_CInt16 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
+        when :GDT_CInt32 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
+        when :GDT_CFloat32 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
+        when :GDT_CFloat64 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
+        else
+          fail "Unknown data type: #{to_data_type}"
+        end
       else
         NArray.to_na(values)
       end
