@@ -704,7 +704,7 @@ module GDAL
       mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
 
       layer_ptr = GDAL._pointer(OGR::Layer, layer)
-      fail "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+      fail OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
 
       options_ptr = GDAL::Options.pointer(options)
 
@@ -717,7 +717,7 @@ module GDAL
         nil                                             # pProgressArg
       )
 
-      OGR::Layer.new(layer_ptr)
+      layer_ptr.instance_of?(OGR::Layer) ? layer_ptr : OGR::Layer.new(layer_ptr)
     end
   end
 end

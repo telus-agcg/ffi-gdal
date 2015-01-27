@@ -363,7 +363,7 @@ module OGR
     def auto_identify_epsg!
       ogr_err = FFI::GDAL.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
 
-      ogr_err.handle_result
+      ogr_err.handle_result "Unable to determine SRS from EPSG"
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as

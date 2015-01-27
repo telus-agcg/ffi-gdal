@@ -327,16 +327,15 @@ module GDAL
         spatial_ref = nil
       else
         spatial_ref = OGR::SpatialReference.new(projection)
-        spatial_ref.auto_identify_epsg!
+        spatial_ref.auto_identify_epsg! rescue OGR::UnsupportedSRS
       end
 
       data_source = ogr_driver.create_data_source(file_name)
 
       band_numbers.each_with_index do |band_number, i|
         log "Starting to polygonize raster band #{band_number}..."
-
         layer_name = "#{layer_name_prefix}-#{band_number}"
-        layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
+        layer = data_source.create_layer(layer_name, geometry_type: :wkbPolygon,
                                                      spatial_reference: spatial_ref)
 
         field_name = "#{field_name_prefix}#{i}"
