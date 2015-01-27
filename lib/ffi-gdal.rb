@@ -1,5 +1,6 @@
 require 'log_switch'
 require_relative 'ext/narray_ext'
+require_relative 'ext/numeric_as_data_type'
 require_relative 'gdal/version_info'
 require_relative 'gdal/environment_methods'
 
