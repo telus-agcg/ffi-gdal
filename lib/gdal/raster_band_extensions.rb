@@ -45,28 +45,30 @@ module GDAL
         y_read_offset = block_size[:y] * y_block_number
 
         0.upto(block_count[:x] - 1).each do |x_block_number|
-          read_block(x_block_number, y_block_number, data_pointer)
-
           y_block_size = if y_block_number == block_count[:y] && !block_count[:y_remainder].zero?
             block_count[:y_remainder]
           elsif y_block_number == block_count[:y]
-            block_size[:y]
+            0
           else
             block_size[:y]
           end
 
-          0.upto(y_block_size - 1).each do |block_index|
-            x_read_offset = block_size[:x] * block_index
+          unless y_block_size.zero?
+            read_block(x_block_number, y_block_number, data_pointer)
 
-            pixels = if data_type == :GDT_Byte
-                       data_pointer.get_array_of_uint8(x_read_offset, block_size[:x])
-                     elsif data_type == :GDT_UInt16
-                       data_pointer.get_array_of_uint16(x_read_offset, block_size[:x])
-                     else
-                       data_pointer.get_array_of_float(x_read_offset, block_size[:x])
-                     end
+            0.upto(y_block_size - 1).each do |block_index|
+              x_read_offset = block_size[:x] * block_index
 
-            yield(pixels)
+              pixels = if data_type == :GDT_Byte
+                         data_pointer.get_array_of_uint8(x_read_offset, block_size[:x])
+                       elsif data_type == :GDT_UInt16
+                         data_pointer.get_array_of_uint16(x_read_offset, block_size[:x])
+                       else
+                         data_pointer.get_array_of_float(x_read_offset, block_size[:x])
+                       end
+
+              yield(pixels)
+            end
           end
         end
       end
