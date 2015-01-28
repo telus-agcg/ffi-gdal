@@ -587,7 +587,7 @@ module GDAL
                        scan_line.read_array_of_uint8(x_size)
                      else
                        scan_line.read_array_of_float(x_size)
-        end
+                     end
 
         yield(line_array, y) if block_given?
 

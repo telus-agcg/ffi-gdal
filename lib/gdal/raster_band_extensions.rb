@@ -42,8 +42,6 @@ module GDAL
       data_pointer = GDAL._pointer_from_data_type(data_type, block_buffer_size)
 
       0.upto(block_count[:y]).each do |y_block_number|
-        y_read_offset = block_size[:y] * y_block_number
-
         0.upto(block_count[:x] - 1).each do |x_block_number|
           y_block_size = if y_block_number == block_count[:y] && !block_count[:y_remainder].zero?
             block_count[:y_remainder]
@@ -124,13 +122,14 @@ module GDAL
 
       table = GDAL::ColorTable.create(:GPI_RGB)
 
-      color_entry_index_count = if data_type == :GDT_Byte
-                                  256
-                                elsif data_type == :GDT_UInt16
-                                  65_536
-                                else
-                                  fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
-      end
+      color_entry_index_count =
+        if data_type == :GDT_Byte
+          256
+        elsif data_type == :GDT_UInt16
+          65_536
+        else
+          fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
+        end
 
       self.color_interpretation ||= :GCI_PaletteIndex
       table.add_color_entry(0, 0, 0, 0, 255)

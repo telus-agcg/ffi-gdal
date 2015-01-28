@@ -35,7 +35,7 @@ module GDAL
                                  geo_transform
                                else
                                  self.class.new_pointer
-      end
+                               end
 
       self.pixel_width ||= 1.0
       self.pixel_height ||= 1.0

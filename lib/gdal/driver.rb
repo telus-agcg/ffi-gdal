@@ -130,7 +130,7 @@ module GDAL
                           options.c_pointer
                         else
                           GDAL::Options.pointer(options)
-      end
+                        end
 
       FFI::GDAL.GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
     end
