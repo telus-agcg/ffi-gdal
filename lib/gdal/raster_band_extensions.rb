@@ -197,35 +197,6 @@ module GDAL
       narray
     end
 
-    # Takes a list of Ranges of color values and remaps them.  Note that these
-    # values are directly written to the raster band, overwriting all existing
-    # values.
-    #
-    # @example
-    #   ranges = [
-    #     { range: 0...20, map_to: 1 },
-    #     { range: 20...50, map_to: 2 },
-    #     { range: 50...250, map_to: 3 }
-    #   ]
-    #   band.reclassify(ranges)
-    #
-    # @param ranges [Array<Hash{range => Range, map_to => Number}>]
-    def reclassify!(ranges)
-      narray = to_na.dup
-
-      0.upto(narray.size - 1) do |pixel_number|
-        next if narray[pixel_number] == no_data_value[:value]
-
-        ranges.each do |range|
-          if range[:range].member?(narray[pixel_number])
-            narray[pixel_number] = range[:map_to]
-          end
-        end
-      end
-
-      write_array(narray, data_type: data_type)
-    end
-
     # @return [Hash]
     def as_json
       {
