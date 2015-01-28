@@ -48,25 +48,23 @@ module GDAL
       range_size = min_max_values[:max] / range_count
       ranges = []
 
-      ranges << {
-        range: range_for_type(@raster_band.to_na.min, 0),
-        map_to: 1.to_data_type(@raster_band.data_type)
-      }
-
       range_count.times do |i|
-        range = range_for_type(range_size * i, range_size * (i + 1))
+        range =
+          if i.zero?
+            range_for_type(@raster_band.to_na.min, range_size * (i + 1))
+          elsif i == (range_count)
+            range_for_type(range_size * i, ranges.last[:range].max + 1)
+          else
+            range_for_type(range_size * i, range_size * (i + 1))
+          end
+
         ranges << {
           range: range,
           map_to: (i + 1).to_data_type(@raster_band.data_type)
         }
       end
 
-      remainder_range =
-        range_for_type(ranges.last[:range].max, ranges.last[:range].max + 1)
-      ranges << {
-        range: remainder_range,
-        map_to: ranges.last[:map_to].to_data_type(@raster_band.data_type)
-      }
+      ranges
     end
 
     # Uses the ranges that have been added to remap ranges to map_to values.
