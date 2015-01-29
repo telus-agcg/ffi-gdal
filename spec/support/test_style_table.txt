@@ -1,0 +1,3 @@
+pink things:PINK
+blue things:Blue
+meow things:Meow

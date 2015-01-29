@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GDAL::DataType do
+RSpec.describe GDAL::DataType do
   describe '.size' do
     context 'with valid data type' do
       it 'returns the size' do
@@ -10,9 +10,9 @@ describe GDAL::DataType do
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        expect {
+        expect do
           described_class.size(:Bob)
-        }.to raise_exception(ArgumentError)
+        end.to raise_exception(ArgumentError)
       end
     end
   end
@@ -32,9 +32,9 @@ describe GDAL::DataType do
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        expect {
+        expect do
           described_class.complex?(:Bob)
-        }.to raise_exception(ArgumentError)
+        end.to raise_exception(ArgumentError)
       end
     end
   end
@@ -50,9 +50,9 @@ describe GDAL::DataType do
       it 'raises an ArgumentError' do
         skip 'Figure out why this causes a segfault'
 
-        expect {
+        expect do
           described_class.name(:Bob)
-        }.to raise_exception(ArgumentError)
+        end.to raise_exception(ArgumentError)
       end
     end
   end
@@ -70,9 +70,9 @@ describe GDAL::DataType do
       it 'raises an ArgumentError' do
         skip 'Figure out why this causes a segfault'
 
-        expect {
+        expect do
           described_class.by_name('Bob')
-        }.to raise_exception(ArgumentError)
+        end.to raise_exception(ArgumentError)
       end
     end
   end

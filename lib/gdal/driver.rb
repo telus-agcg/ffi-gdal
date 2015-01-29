@@ -2,8 +2,6 @@ require_relative '../ffi/gdal'
 require_relative 'major_object'
 require_relative 'driver_extensions'
 require 'multi_xml'
-require 'log_switch'
-
 
 module GDAL
   class Driver
@@ -68,7 +66,7 @@ module GDAL
     # @return [GDAL::Driver]
     def self.at_index(index)
       if index > count
-        raise "index must be between 0 and #{count - 1}."
+        fail "index must be between 0 and #{count - 1}."
       end
 
       driver_ptr = FFI::GDAL.GDALGetDriver(index)
@@ -129,10 +127,10 @@ module GDAL
     # @return [Boolean]
     def validate_creation_options(options)
       options_pointer = if options.is_a? GDAL::Options
-        options.c_pointer
-      else
-        GDAL::Options.pointer(options)
-      end
+                          options.c_pointer
+                        else
+                          GDAL::Options.pointer(options)
+                        end
 
       FFI::GDAL.GDALValidateCreationOptions(@driver_pointer, options_pointer).to_bool
     end
@@ -143,10 +141,8 @@ module GDAL
     # @param old_name [String]
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
-    def copy_dataset_files(new_name, old_name)
-      cpl_err = FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
-
-      cpl_err.to_bool
+    def copy_dataset_files(old_name, new_name)
+      !!FFI::GDAL.GDALCopyDatasetFiles(@driver_pointer, new_name, old_name)
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -156,24 +152,23 @@ module GDAL
     # @param filename [String]
     # @param x_size [Fixnum] Width of created raster in pixels.
     # @param y_size [Fixnum] Height of created raster in pixels.
-    # @param bands [Fixnum]
+    # @param band_count [Fixnum]
     # @param data_type [FFI::GDAL::GDALDataType]
     # @return [GDAL::Dataset] Returns the *closed* dataset.  You'll need to
     #   reopen it if you with to continue working with it.
-    # @todo Implement options.
-    def create_dataset(filename, x_size, y_size, bands: 1, data_type: :GDT_Byte, **options)
+    def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
       dataset_pointer = FFI::GDAL.GDALCreate(@driver_pointer,
         filename,
         x_size,
         y_size,
-        bands,
+        band_count,
         data_type,
         options_pointer
       )
 
-      raise CreateFail if dataset_pointer.null?
+      fail CreateFail if dataset_pointer.null?
 
       dataset = Dataset.new(dataset_pointer)
       yield(dataset) if block_given?
@@ -181,28 +176,28 @@ module GDAL
       dataset
     end
 
-    # @param filename [String] The name for the new dataset file.
     # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
+    # @param destination_path [String] The name for the new dataset file.
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
     # @param options [Hash]
     # @param progress [Proc] For outputting copy progress.  Conforms to the
     #   FFI::GDAL::GDALProgressFunc signature.
-    def copy_dataset(filename, source_dataset, strict: true, **options, &progress)
+    def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
 
       source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
-        source_dataset.c_pointer
-      elsif source_dataset.is_a? String
-        GDAL::Dataset.open(source_dataset, 'r').c_pointer
-      else
-        source_dataset
+                             source_dataset.c_pointer
+                           elsif source_dataset.is_a? String
+                             GDAL::Dataset.open(source_dataset, 'r').c_pointer
+                           else
+                             source_dataset
       end
 
-      raise "Source dataset couldn't be read" if source_dataset_ptr.null?
+      fail "Source dataset couldn't be read" if source_dataset_ptr.null?
 
       destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@driver_pointer,
-        filename,
+        destination_path,
         source_dataset_ptr,
         strict,
         options_ptr,
@@ -210,7 +205,7 @@ module GDAL
         nil
       )
 
-      raise CreateFail if destination_dataset_ptr.null?
+      fail CreateFail if destination_dataset_ptr.null?
 
       dataset = Dataset.new(destination_dataset_ptr)
       yield(dataset) if block_given?
@@ -226,9 +221,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      cpl_err = FFI::GDAL.GDALDeleteDataset(@driver_pointer, file_name)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALDeleteDataset(@driver_pointer, file_name)
     end
 
     # @param new_name [String]
@@ -236,9 +229,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      cpl_err = FFI::GDAL.GDALRenameDataset(@driver_pointer, new_name, old_name)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALRenameDataset(@driver_pointer, new_name, old_name)
     end
   end
 end

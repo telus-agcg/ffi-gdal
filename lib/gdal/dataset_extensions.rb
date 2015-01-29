@@ -3,7 +3,6 @@ require 'json'
 module GDAL
   # Methods not originally supplied with GDAL, but enhance it.
   module DatasetExtensions
-
     # Computes NDVI from the red and near-infrared bands in the dataset.  Raises
     # a GDAL::RequiredBandNotFound if one of those band types isn't found.
     #
@@ -14,16 +13,17 @@ module GDAL
     def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil,
       data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
       **options)
-      original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band,
-          nir: undefined_band
-        }
-      end
+      original_bands =
+        if band_order
+          bands_with_labels(band_order)
+        else
+          {
+            red: red_band,
+            green: green_band,
+            blue: blue_band,
+            nir: undefined_band
+          }
+        end
 
       red = original_bands[:red]
       nir = original_bands[:nir]
@@ -34,12 +34,14 @@ module GDAL
         fail RequiredBandNotFound, 'Near-infrared'
       end
 
-      the_array = calculate_ndvi(red.to_na(data_type), nir.to_na(data_type),
-        no_data_value, remove_negatives, data_type)
+      the_array = calculate_ndvi(red.to_na(data_type),
+        nir.to_na(data_type),
+        no_data_value,
+        remove_negatives,
+        data_type)
       driver = GDAL::Driver.by_name(driver_name)
 
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type, **options) do |ndvi_dataset|
-
         ndvi_dataset.geo_transform = geo_transform
         ndvi_dataset.projection = projection
 
@@ -60,16 +62,17 @@ module GDAL
     def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil,
       data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
       **options)
-      original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band,
-          nir: undefined_band
-        }
-      end
+      original_bands =
+        if band_order
+          bands_with_labels(band_order)
+        else
+          {
+            red: red_band,
+            green: green_band,
+            blue: blue_band,
+            nir: undefined_band
+          }
+        end
 
       green = original_bands[:green]
       nir = original_bands[:nir]
@@ -108,6 +111,10 @@ module GDAL
       driver = GDAL::Driver.by_name(driver_name)
       original_nir_band = raster_band(band_number)
 
+      if original_nir_band.nil?
+        fail InvalidBandNumber, "Band #{band_number} found but was nil."
+      end
+
       driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |nir_dataset|
         nir_dataset.geo_transform = geo_transform
         nir_dataset.projection = projection
@@ -127,22 +134,22 @@ module GDAL
     # @param band_order [Array<String>] The list of band types, i.e. ['red',
     #   'green', 'blue'].
     # @return [GDAL::Dataset]
-    def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil)
+    def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Byte)
       rows = raster_y_size
       columns = raster_x_size
       driver = GDAL::Driver.by_name(driver_name)
 
       original_bands = if band_order
-        bands_with_labels(band_order)
-      else
-        {
-          red: red_band,
-          green: green_band,
-          blue: blue_band
-        }
-      end
+                         bands_with_labels(band_order)
+                       else
+                         {
+                           red: red_band,
+                           green: green_band,
+                           blue: blue_band
+                         }
+                       end
 
-      driver.create_dataset(destination, columns, rows, bands: 3) do |new_dataset|
+      driver.create_dataset(destination, columns, rows, band_count: 3, data_type: data_type) do |new_dataset|
         new_dataset.geo_transform = geo_transform
         new_dataset.projection = projection
 
@@ -162,7 +169,7 @@ module GDAL
     # @param remove_negatives [Fixnum] Value to replace negative values with.
     # @return [NArray]
     def calculate_ndvi(red_band_array, nir_band_array, no_data_value,
-      remove_negatives=false, data_type=nil)
+      remove_negatives = false, data_type = nil)
 
       # convert based on data type
       if data_type != :GDT_Float32
@@ -250,8 +257,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def red_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_RedBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_RedBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -259,8 +266,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def green_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_GreenBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_GreenBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -268,8 +275,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def blue_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_BlueBand
+      band = find_band do |b|
+        b.color_interpretation == :GCI_BlueBand
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -277,8 +284,8 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def undefined_band
-      band = find_band do |band|
-        band.color_interpretation == :GCI_Undefined
+      band = find_band do |b|
+        b.color_interpretation == :GCI_Undefined
       end
 
       band.is_a?(GDAL::RasterBand) ? band : nil
@@ -310,26 +317,26 @@ module GDAL
     #   bands from this dataset to vectorize.  Can be a single Fixnum or array
     #   of Fixnums.
     # @return [OGR::DataSource]
-    def to_vector(file_name, vector_driver_name, geometry_type: :wkbPolygon,
+    def to_vector(file_name, vector_driver_name, geometry_type: :wkbUnknown,
       layer_name_prefix: 'band_number', band_numbers: [1],
-      field_name_prefix: 'field')
+      field_name_prefix: 'field', use_band_masks: true)
       band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-
       ogr_driver = OGR::Driver.by_name(vector_driver_name)
-      spatial_ref = OGR::SpatialReference.new(projection)
-      spatial_ref.auto_identify_epsg!
+
+      if projection.empty?
+        spatial_ref = nil
+      else
+        spatial_ref = OGR::SpatialReference.new(projection)
+        spatial_ref.auto_identify_epsg! rescue OGR::UnsupportedSRS
+      end
 
       data_source = ogr_driver.create_data_source(file_name)
+
       band_numbers.each_with_index do |band_number, i|
         log "Starting to polygonize raster band #{band_number}..."
-
         layer_name = "#{layer_name_prefix}-#{band_number}"
-        layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
-          spatial_reference: spatial_ref)
-
-        unless layer
-          raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
-        end
+        layer = data_source.create_layer(layer_name, geometry_type: :wkbPolygon,
+                                                     spatial_reference: spatial_ref)
 
         field_name = "#{field_name_prefix}#{i}"
         layer.create_field(field_name, :OFTInteger)
@@ -338,11 +345,13 @@ module GDAL
         band.no_data_value = -9999
 
         unless band
-          raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+          fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
         end
 
         pixel_value_field = layer.feature_definition.field_index(field_name)
-        band.polygonize(layer, pixel_value_field: pixel_value_field)
+        options = { pixel_value_field: pixel_value_field }
+        options.merge!(mask_band: band.mask_band) if use_band_masks
+        band.polygonize(layer, options)
       end
 
       if block_given?
@@ -366,7 +375,7 @@ module GDAL
     # @param wkt_geometry_string [String]
     # @param wkt_srid [Fixnum]
     # @return [Boolean]
-    def contains_geometry?(wkt_geometry_string, wkt_srid=4326)
+    def contains_geometry?(wkt_geometry_string, wkt_srid = 4326)
       source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
       source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
       @raster_geometry ||= to_geometry
@@ -379,9 +388,9 @@ module GDAL
     end
 
     def image_warp(destination_file, driver, band_numbers, **warp_options)
-      raise NotImplementedError, '#image_warp not yet implemented.'
+      fail NotImplementedError, '#image_warp not yet implemented.'
 
-      options_ptr = GDAL::Options.pointer(warp_options)
+      _options_ptr = GDAL::Options.pointer(warp_options)
       driver = GDAL::Driver.by_name(driver)
       destination_dataset = driver.create_dataset(destination_file, raster_x_size, raster_y_size)
 
@@ -409,7 +418,7 @@ module GDAL
       error_threshold = 0.0
       order = 0
 
-      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
+      _transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
         projection,
         destination_dataset.c_pointer,
         destination.projection,
@@ -441,7 +450,7 @@ module GDAL
     #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
     # @return NArray
     def to_na
-      na = NMatrix.to_na(raster_bands.map { |raster_band| raster_band.to_na })
+      na = NMatrix.to_na(raster_bands.map(&:to_na))
 
       NArray[*na.transpose]
     end
@@ -463,7 +472,8 @@ module GDAL
       }
     end
 
-    def to_json
+    # @return [String]
+    def to_json(_ = nil)
       as_json.to_json
     end
 
@@ -485,7 +495,7 @@ module GDAL
     #
     # @param narray [NArray]
     # @return [NArray]
-    def remove_negatives_from(narray, replace_with=0)
+    def remove_negatives_from(narray, replace_with = 0)
       0.upto(narray.size - 1) do |i|
         narray[i] = replace_with if narray[i] < 0
       end

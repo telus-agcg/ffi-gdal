@@ -8,9 +8,7 @@ require_relative 'major_object'
 require_relative 'dataset_extensions'
 require_relative '../ogr/spatial_reference'
 
-
 module GDAL
-
   # A set of associated raster bands and info common to them all.  It's also
   # responsible for the georeferencing transform and coordinate system
   # definition of all bands.
@@ -28,11 +26,15 @@ module GDAL
     #   a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
-      uri = URI.parse(path)
-      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
+      file_path = begin
+        uri = URI.parse(path)
+        uri.scheme.nil? ? ::File.expand_path(path) : path
+      rescue URI::InvalidURIError
+        path
+      end
 
       pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-      raise OpenFailure.new(file_path) if pointer.null?
+      fail OpenFailure.new(file_path) if pointer.null?
 
       new(pointer)
     end
@@ -46,7 +48,10 @@ module GDAL
       @dataset_pointer = dataset_pointer
       @last_known_file_list = []
       @open = true
-      close_me = -> { self.close }
+      @driver = nil
+      @geo_transform = nil
+
+      close_me = -> { close }
       ObjectSpace.define_finalizer self, close_me
     end
 
@@ -142,8 +147,7 @@ module GDAL
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
       options_ptr = GDAL::Options.pointer(options)
-      cpl_err = FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
-      cpl_err.to_bool
+      FFI::GDAL.GDALAddBand(@dataset_pointer, type, options_ptr)
 
       raster_band(raster_count)
     end
@@ -153,9 +157,7 @@ module GDAL
     # @param flags [Fixnum] Any of of the GDAL::RasterBand flags.
     # @return [Boolean]
     def create_mask_band(flags)
-      cpl_err = FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, flags)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALCreateDatasetMaskBand(@dataset_pointer, flags)
     end
 
     # @return [String]
@@ -166,9 +168,7 @@ module GDAL
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      cpl_err = FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALSetProjection(@dataset_pointer, new_projection)
     end
 
     # @return [GDAL::GeoTransform]
@@ -176,8 +176,7 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
-      cpl_err = FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
-      cpl_err.to_ruby
+      FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
     end
@@ -186,8 +185,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = FFI::Pointer.new(new_transform.c_pointer)
-      cpl_err = FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
-      cpl_err.to_bool
+      FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
 
       @geo_transform = GeoTransform.new(new_pointer)
     end
@@ -208,14 +206,14 @@ module GDAL
 
     # @return [FFI::GDAL::GDALGCP]
     def gcps
-      return FFI::GDAL.GDALGCP.new if null?
+      return FFI::GDAL::GDALGCP.new if null?
 
       gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
-        FFI::GDAL.GDALGCP.new
+        FFI::GDAL::GDALGCP.new
       else
-        FFI::GDAL.GDALGCP.new(gcp_array_pointer)
+        FFI::GDAL::GDALGCP.new(gcp_array_pointer)
       end
     end
 
@@ -238,12 +236,12 @@ module GDAL
     #   factors to build.
     # @param band_numbers [Array<Fixnum>] The numbers of the bands to build
     #   overviews from.
-    def build_overviews(resampling, overview_levels, band_numbers=nil, &progress)
+    def build_overviews(resampling, overview_levels, band_numbers = nil, &progress)
       resampling_string = if resampling.is_a? String
-        resampling.upcase
-      elsif resampling.is_a? Symbol
-        resampling.to_s.upcase
-      end
+                            resampling.upcase
+                          elsif resampling.is_a? Symbol
+                            resampling.to_s.upcase
+                          end
 
       overview_levels_ptr = FFI::MemoryPointer.new(:int, overview_levels.size)
       overview_levels_ptr.write_array_of_int(overview_levels)
@@ -257,7 +255,7 @@ module GDAL
         band_count = nil
       end
 
-      cpl_err = FFI::GDAL.GDALBuildOverviews(@dataset_pointer,
+      !!FFI::GDAL.GDALBuildOverviews(@dataset_pointer,
         resampling_string,
         overview_levels.size,
         overview_levels_ptr,
@@ -266,8 +264,58 @@ module GDAL
         progress,
         nil
       )
+    end
 
-      cpl_err.to_bool
+    # @param access_flag [String] 'r' or 'w'
+    # @param data_ptr [FFI::MemoryPointer] The pointer to the data to write to
+    #   the dataset.
+    # @param x_size [Fixnum] If not given, uses #raster_x_size.
+    # @param y_size [Fixnum] If not given, uses #raster_y_size.
+    # @param data_type [FFI::GDAL::GDALDataType]
+    # @param band_count [Fixnum] The number of bands to create in the raster.
+    # @param pixel_space
+    def raster_io(access_flag, data_ptr,
+                  x_size: nil,
+                  y_size: nil,
+                  x_offset: 0,
+                  y_offset: 0,
+                  data_type: :GDT_Byte,
+                  band_count: 1,
+                  pixel_space: 0,
+                  line_space: 0,
+                  band_space: 0
+                  )
+
+      x_size ||= raster_x_size
+      y_size ||= raster_y_size
+
+      gdal_access_flag =
+        case access_flag
+        when 'r' then :GF_Read
+        when 'w' then :GF_Write
+        else fail "Invalid access flag: #{access_flag}"
+        end
+
+      x_buffer_size = x_size
+      y_buffer_size = y_size
+
+      !!FFI::GDAL::GDALDatasetRasterIO(
+        @dataset_pointer,                     # hDS
+        gdal_access_flag,                     # eRWFlag
+        x_offset,                             # nXOff
+        y_offset,                             # nYOff
+        x_size,                               # nXSize
+        y_size,                               # nYSize
+        data_ptr,                             # pData
+        x_buffer_size,                        # nBufXSize
+        y_buffer_size,                        # nBufYSize
+        data_type,                            # eBufType
+        band_count,                           # nBandCount
+        nil,                                  # panBandMap (WTH is this?)
+        pixel_space,                          # nPixelSpace
+        line_space,                           # nLineSpace
+        band_space                            # nBandSpace
+      )
     end
 
     # Rasterizes the geometric objects +geometries+ into this raster dataset.
@@ -291,7 +339,7 @@ module GDAL
       transformer: nil, transform_arg: nil, **options, &progress_block)
 
       if geo_transform.nil? && gcp_count.zero?
-        raise "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
+        fail "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
       end
 
       gdal_options = GDAL::Options.pointer(options)
@@ -311,7 +359,7 @@ module GDAL
       # not allowing for now
       progress_callback_data = nil
 
-      cpl_err = FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
+      !!FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
         geometries.size,
@@ -322,8 +370,6 @@ module GDAL
         gdal_options,
         progress_block,
         progress_callback_data)
-
-      cpl_err.to_bool
     end
 
     # @param band_numbers [Array<Fixnum>, Fixnum]
@@ -367,7 +413,7 @@ module GDAL
       burn_values_ptr.write_array_of_double(burn_values)
       log "burn value ptr null? #{burn_values_ptr.null?}"
 
-      cpl_err = FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
+      !!FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
         band_numbers.size,                                # nBandCount
         band_numbers_ptr,                                 # panBandList
         layers.size,                                      # nLayerCount
@@ -378,14 +424,12 @@ module GDAL
         gdal_options,                                     # papszOptions
         progress_block,                                   # pfnProgress
         nil)                                              # pProgressArg
-
-      cpl_err.to_bool
     end
 
     # @todo Implement
     def simple_image_warp(destination_file, driver, band_numbers,
-      transformer, transformer_arg, **options)
-      raise NotImplementedError, '#simple_image_warp not yet implemented.'
+      transformer, _transformer_arg, **options)
+      fail NotImplementedError, '#simple_image_warp not yet implemented.'
 
       options_ptr = GDAL::Options.pointer(options)
       driver = GDAL::Driver.by_name(driver)
@@ -410,7 +454,7 @@ module GDAL
         nil,
         options_ptr)
 
-      raise 'Image warp failed!' unless success
+      fail 'Image warp failed!' unless success
 
       GDAL::Dataset.new(destination_dataset_ptr)
     end

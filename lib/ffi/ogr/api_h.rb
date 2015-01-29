@@ -7,7 +7,6 @@ require_relative 'srs_api_h'
 
 module FFI
   module GDAL
-
     #------------------------------------------------------------------------
     # Typedefs
     #------------------------------------------------------------------------
@@ -250,6 +249,7 @@ module FFI
       %i[OGRGeomFieldDefnH OGRSpatialReferenceH],
       :void
     attach_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
+    attach_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
 
     #~~~~~~~~~~~~~~~~~
     # Feature Definition-related
@@ -518,16 +518,16 @@ module FFI
     attach_function :OGR_ST_GetStyleString, %i[OGRStyleToolH], :string
     attach_function :OGR_ST_GetRGBFromString,
       %i[OGRStyleToolH string pointer pointer pointer pointer],
-      :int
+      :bool
 
     #~~~~~~~~~~~~~~~~~
     # Style Table-related
     #~~~~~~~~~~~~~~~~~
     attach_function :OGR_STBL_Create, [], :OGRStyleTableH
     attach_function :OGR_STBL_Destroy, %i[OGRStyleTableH], :void
-    attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :int
-    attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :int
-    attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :int
+    attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :bool
+    attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :bool
+    attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :bool
     attach_function :OGR_STBL_Find, %i[OGRStyleTableH string], :string
     attach_function :OGR_STBL_ResetStyleStringReading, %i[OGRStyleTableH], :void
     attach_function :OGR_STBL_GetNextStyle, %i[OGRStyleTableH], :string

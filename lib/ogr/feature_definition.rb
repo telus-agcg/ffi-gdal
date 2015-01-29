@@ -3,6 +3,8 @@ require_relative 'feature_definition_extensions'
 require_relative 'field'
 
 module OGR
+  # Note: fields on a FeatureDefintion may be referred to as "fields" _or_
+  # "field definitions".
   class FeatureDefinition
     include FeatureDefinitionExtensions
 
@@ -14,7 +16,7 @@ module OGR
       new(feature_defn_pointer)
     end
 
-    # @param feature_definition [String]
+    # @param feature_definition [OGR::FeatureDefinition, FFI::Pointer]
     def initialize(feature_definition)
       @feature_definition_pointer = GDAL._pointer(OGR::FeatureDefinition,
         feature_definition)
@@ -27,6 +29,10 @@ module OGR
       @feature_definition_pointer
     end
 
+    def release!
+      FFI::GDAL.OGR_FD_Release(@feature_definition_pointer)
+    end
+
     # @return [String]
     def name
       FFI::GDAL.OGR_FD_GetName(@feature_definition_pointer)
@@ -37,19 +43,45 @@ module OGR
       FFI::GDAL.OGR_FD_GetFieldCount(@feature_definition_pointer)
     end
 
+    # Note that this returns an OGR::Field, not an OGR::FieldDefinition.
+    #
     # @param index [Fixnum]
     # @return [OGR::Field]
-    def field(index)
-      field_ptr = FFI::GDAL.OGR_FD_GetFieldDefn(@feature_definition_pointer, index)
-      return nil if field_ptr.null?
+    def field_definition(index)
+      field_definition_ptr =
+        FFI::GDAL.OGR_FD_GetFieldDefn(@feature_definition_pointer, index)
+      return nil if field_definition_ptr.null?
 
-      OGR::Field.new(field_ptr)
+      OGR::Field.new(field_definition_ptr)
+    end
+
+    # @param new_field_definition [OGR::Field, FFI::Pointer]
+    def add_field_definition(field)
+      field_ptr = GDAL._pointer(OGR::Field, field)
+
+      if field_ptr.nil?
+        fail OGR::InvalidField, "Unable to add OGR::Field: '#{field}'"
+      end
+
+      FFI::GDAL.OGR_FD_AddFieldDefn(@feature_definition_pointer, field_ptr)
+    end
+
+    # @param index [Fixnum] Index of the field definition to delete.
+    # @return [Boolean]
+    def delete_field_definition(index)
+      ogr_err = FFI::GDAL.OGR_FD_DeleteFieldDefn(
+        @feature_definition_pointer,
+        index)
+
+      ogr_err.handle_result "Unable to delete field definition at index #{index}"
     end
 
     # @param name [String]
-    # @return [Fixnum] -1 if no match found
+    # @return [Fixnum] nil if no match found
     def field_index(name)
-      FFI::GDAL.OGR_FD_GetFieldIndex(@feature_definition_pointer, name)
+      result = FFI::GDAL.OGR_FD_GetFieldIndex(@feature_definition_pointer, name)
+
+      result < 0 ? nil : result
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
@@ -68,7 +100,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_geometry!(ignore)
+    def ignore_geometry!(ignore = true)
       FFI::GDAL.OGR_FD_SetGeometryIgnored(@feature_definition_pointer, ignore)
     end
 
@@ -78,7 +110,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_style!(ignore)
+    def ignore_style!(ignore = true)
       FFI::GDAL.OGR_FD_SetStyleIgnored(@feature_definition_pointer, ignore)
     end
 
@@ -90,31 +122,44 @@ module OGR
     # @param index [Fixnum]
     # @return [OGR::Field]
     def geometry_field_definition(index)
-      field_ptr = FFI::GDAL.OGR_FD_GetGeomFieldDefn(@feature_definition_pointer, index)
-      return nil if field_ptr.null?
+      geometry_field_definition_ptr =
+        FFI::GDAL.OGR_FD_GetGeomFieldDefn(@feature_definition_pointer, index)
+      return nil if geometry_field_definition_ptr.null?
 
-      OGR::Field.new(field_ptr)
+      OGR::GeometryFieldDefinition.new(geometry_field_definition_ptr)
     end
 
     # @param name [String]
     # @return [Fixnum]
     def geometry_field_index(name)
-      FFI::GDAL.OGR_FD_GetGeomFieldIndex(@feature_definition_pointer, name)
+      result = FFI::GDAL.OGR_FD_GetGeomFieldIndex(@feature_definition_pointer, name)
+
+      result < 0 ? nil : result
     end
 
-    # @param name [String]
-    # @return [OGR::Field]
-    def geometry_field_by_name(name)
-      geometry_field_definition(geometry_field_index(name))
+    # @param geometry_field_definition [OGR::GeometryFieldDefinition, FFI::Pointer]
+    def add_geometry_field_definition(geometry_field_definition)
+      geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition,
+        geometry_field_definition)
+      FFI::GDAL.OGR_FD_AddGeomFieldDefn(@feature_definition_pointer,
+        geometry_field_definition_ptr)
     end
 
-    # @param other_feature_defintion [OGR::Feature, FFI::Pointer]
+    # @param index [Fixnum]
     # @return [Boolean]
-    def same?(other_feature_defintion)
-      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_defintion)
+    def delete_geometry_field_definition(index)
+      ogr_err = FFI::GDAL.OGR_FD_DeleteGeomFieldDefn(@feature_definition_pointer,
+        index)
+
+      ogr_err.handle_result "Unable to delete geometry field definition at index #{index}"
+    end
+
+    # @param other_feature_definition [OGR::Feature, FFI::Pointer]
+    # @return [Boolean]
+    def same?(other_feature_definition)
+      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_definition)
 
       FFI::GDAL.OGR_FD_IsSame(@feature_definition_pointer, fd_ptr)
     end
-    alias_method :==, :same?
   end
 end

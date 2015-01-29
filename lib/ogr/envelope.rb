@@ -5,8 +5,10 @@ module OGR
   class Envelope
     include EnvelopeExtensions
 
-    def initialize(ogr_envelope_struct)
-      @ogr_envelope_struct = ogr_envelope_struct
+    # @param envelope_struct [FFI::GDAL::OGREnvelope]
+    def initialize(envelope_struct = nil, three_d: false)
+      @ogr_envelope_struct = envelope_struct
+      @ogr_envelope_struct ||= three_d ? FFI::GDAL::OGREnvelope3D.new : FFI::GDAL::OGREnvelope.new
     end
 
     # @return [Float]

@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = FFI::GDAL::VERSION
   spec.authors       = ['Steve Loveless']
   spec.email         = %w[steve.loveless@gmail.com]
-  spec.summary       = %q{FFI wrapper for GDAL/OGR.}
+  spec.summary       = 'FFI wrapper for GDAL/OGR.'
   spec.homepage      = 'https://github.com/turboladen/ffi-gdal'
   spec.license       = 'MIT'
 
@@ -24,5 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '~> 1.6'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'ruby-progressbar'
+  spec.add_development_dependency 'simplecov', '~> 0.9.0'
 end

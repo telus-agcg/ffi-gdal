@@ -6,12 +6,11 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    include GDAL::Logger
     include SpatialReferenceExtensions
 
     # @return [Array<String>]
     def self.projection_methods
-      return @projection_methods if @projection_methods
-
       methods_ptr_ptr = FFI::GDAL.OPTGetProjectionMethods
       count = FFI::GDAL.CSLCount(methods_ptr_ptr)
 
@@ -36,10 +35,10 @@ module OGR
       # For some reason #get_array_of_string leaves off the first 6.
       pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
 
-      name = if !name_ptr_ptr.read_pointer.null?
-        name_ptr_ptr.read_pointer.read_string
-      else
-        nil
+      name = if name_ptr_ptr.read_pointer.null?
+               nil
+             else
+               name_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -64,16 +63,16 @@ module OGR
 
       return {} unless result
 
-      name = if !name_ptr_ptr.read_pointer.null?
-        name_ptr_ptr.read_pointer.read_string
-      else
-        nil
+      name = if name_ptr_ptr.read_pointer.null?
+               nil
+             else
+               name_ptr_ptr.read_pointer.read_string
       end
 
-      type = if !type_ptr_ptr.read_pointer.null?
-        type_ptr_ptr.read_pointer.read_string
-      else
-        nil
+      type = if type_ptr_ptr.read_pointer.null?
+               nil
+             else
+               type_ptr_ptr.read_pointer.read_string
       end
 
       {
@@ -86,16 +85,16 @@ module OGR
     # @param code [Fixnum]
     # @return [OGR::SpatialReference]
     def self.new_from_epsg(code)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromEPSG(spatial_ref.c_pointer, code)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromEPSG(spatial_ref_ptr, code)
       end
     end
 
     # @param code [Fixnum]
     # @return [OGR::SpatialReference]
     def self.new_from_epsga(code)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromEPSGA(spatial_ref.c_pointer, code)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromEPSGA(spatial_ref_ptr, code)
       end
     end
 
@@ -104,8 +103,8 @@ module OGR
     # @param linear_unit_name [String] Plural form of linear units, i.e. "FEET".
     # @return [OGR::SpatialReference]
     def self.new_from_erm(projection_name, datum_name, linear_unit_name)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromERM(spatial_ref.c_pointer, projection_name,
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromERM(spatial_ref_ptr, projection_name,
           datum_name, linear_unit_name)
       end
     end
@@ -113,20 +112,20 @@ module OGR
     # @param prj_text [Array<String>]
     # @return [OGR::SpatialReference]
     def self.new_from_esri(prj_text)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         prj_ptr = FFI::MemoryPointer.new(:string, prj_text.size)
         prj_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         prj_ptr_ptr.write_pointer(prj_ptr)
 
-        FFI::GDAL.OSRImportFromESRI(spatial_ref.c_pointer, prj_ptr_ptr)
+        FFI::GDAL.OSRImportFromESRI(spatial_ref_ptr, prj_ptr_ptr)
       end
     end
 
     # @param coord_sys [String] The Mapinfo style CoordSys definition string.
     # @return [OGR::SpatialReference]
     def self.new_from_mapinfo(coord_sys)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromMICoordSys(spatial_ref.c_pointer, coord_sys)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromMICoordSys(spatial_ref_ptr, coord_sys)
       end
     end
 
@@ -135,7 +134,7 @@ module OGR
     # @param proj_params [Array<String>]
     # @return [OGR::SpatialReference]
     def self.new_from_pci(proj, units, *proj_params)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         if proj_params.empty?
           proj_ptr = nil
         else
@@ -143,36 +142,36 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        FFI::GDAL.OSRImportFromPCI(spatial_ref.c_pointer, proj, units, proj_ptr)
+        FFI::GDAL.OSRImportFromPCI(spatial_ref_ptr, proj, units, proj_ptr)
       end
     end
 
     # @param proj4 [String]
     # @return [OGR::SpatialReference]
     def self.new_from_proj4(proj4)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromProj4(spatial_ref.c_pointer, proj4)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromProj4(spatial_ref_ptr, proj4)
       end
     end
 
     # @param url [String] URL to fetch the spatial reference from.
     # @return [OGR::SpatialReference]
     def self.new_from_url(url)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromUrl(spatial_ref.c_pointer, url)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromUrl(spatial_ref_ptr, url)
       end
     end
 
     def self.new_from_user_input(definition)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRSetFromUserInput(spatial_ref.c_pointer, definition)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRSetFromUserInput(spatial_ref_ptr, definition)
       end
     end
 
     # @param projection_system_code
     # @return [OGR::SpatialReference]
     def self.new_from_usgs(projection_system_code, zone, datum, *proj_params)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         if proj_params.empty?
           proj_ptr = nil
         else
@@ -180,7 +179,7 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        FFI::GDAL.OSRImportFromUSGS(spatial_ref.c_pointer,
+        FFI::GDAL.OSRImportFromUSGS(spatial_ref_ptr,
           projection_system_code, zone, proj_ptr, datum)
       end
     end
@@ -191,12 +190,12 @@ module OGR
     # @param wkt [String]
     # @return [OGR::SpatialReference]
     def self.new_from_wkt(wkt)
-      build_spatial_ref do |spatial_ref|
+      build_spatial_ref do |spatial_ref_ptr|
         wkt_ptr = FFI::MemoryPointer.from_string(wkt)
         wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-        FFI::GDAL.OSRImportFromWkt(spatial_ref.c_pointer, wkt_ptr_ptr)
+        FFI::GDAL.OSRImportFromWkt(spatial_ref_ptr, wkt_ptr_ptr)
       end
     end
 
@@ -205,16 +204,16 @@ module OGR
     # @param xml [String]
     # @return [OGR::SpatialReference]
     def self.new_from_xml(xml)
-      build_spatial_ref do |spatial_ref|
-        FFI::GDAL.OSRImportFromXML(spatial_ref.c_pointer, xml)
+      build_spatial_ref do |spatial_ref_ptr|
+        FFI::GDAL.OSRImportFromXML(spatial_ref_ptr, xml)
       end
     end
 
     # @return [OGR::SpatialReference]
-    def self.build_spatial_ref(spatial_reference_or_wkt=nil)
+    def self.build_spatial_ref(spatial_reference_or_wkt = nil)
       object = new(spatial_reference_or_wkt)
-      ogr_err = yield object
-      ogr_err.to_ruby
+      ogr_err = yield object.c_pointer
+      ogr_err.handle_result
 
       object
     end
@@ -228,19 +227,22 @@ module OGR
     #
     # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
     #   String]
-    def initialize(spatial_reference_or_wkt=nil)
-      @ogr_spatial_ref_pointer = if spatial_reference_or_wkt.is_a? OGR::SpatialReference
-        spatial_reference_or_wkt.c_pointer
-      elsif spatial_reference_or_wkt.is_a? String
-        FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
-      elsif spatial_reference_or_wkt.is_a? FFI::Pointer
-        spatial_reference_or_wkt
-      else
-        FFI::GDAL.OSRNewSpatialReference(nil)
-      end
+    def initialize(spatial_reference_or_wkt = nil)
+      @ogr_spatial_ref_pointer =
+        case spatial_reference_or_wkt.class.name
+        when 'OGR::SpatialReference'
+          spatial_reference_or_wkt.c_pointer
+        when 'String', 'NilClass'
+          FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
+        when 'FFI::Pointer', 'FFI::MemoryPointer'
+          spatial_reference_or_wkt
+        else
+          log "Dunno what to do with #{spatial_reference_or_wkt}"
+        end
 
-      close_me = -> { destroy! }
-      ObjectSpace.define_finalizer self, close_me
+      if @ogr_spatial_ref_pointer.nil? || @ogr_spatial_ref_pointer.null?
+        fail OGR::CreateFailure, "Unable to create SpatialReference."
+      end
     end
 
     def c_pointer
@@ -271,34 +273,34 @@ module OGR
     def validate
       ogr_err = FFI::GDAL.OSRValidate(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
       ogr_err = FFI::GDAL.OSRFixupOrdering(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
       ogr_err = FFI::GDAL.OSRFixup(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
       ogr_err = FFI::GDAL.OSRStripCTParms(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @param name [String] The case-insensitive tree node to look for.
     # @param child [Fixnum] The child of the node to fetch.
     # @return [String, nil]
-    def attribute_value(name, child=0)
+    def attribute_value(name, child = 0)
       FFI::GDAL.OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
     end
 
@@ -352,7 +354,7 @@ module OGR
     def projection=(projection_name)
       ogr_err = FFI::GDAL.OSRSetProjection(@ogr_spatial_ref_pointer, projection_name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # Sets the EPSG authority info if possible.
@@ -361,7 +363,7 @@ module OGR
     def auto_identify_epsg!
       ogr_err = FFI::GDAL.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result "Unable to determine SRS from EPSG"
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as
@@ -380,7 +382,7 @@ module OGR
     def towgs84
       coefficients = FFI::MemoryPointer.new(:double, 7)
       ogr_err = FFI::GDAL.OSRGetTOWGS84(@ogr_spatial_ref_pointer, coefficients, 7)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       coefficients.read_array_of_double(0)
     end
@@ -389,7 +391,7 @@ module OGR
     #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
     #   search at the root element.
     # @return [String, nil]
-    def authority_code(target_key=nil)
+    def authority_code(target_key = nil)
       FFI::GDAL.OSRGetAuthorityCode(@ogr_spatial_ref_pointer, target_key)
     end
 
@@ -397,14 +399,14 @@ module OGR
     #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
     #   search at the root element.
     # @return [String, nil]
-    def authority_name(target_key=nil)
+    def authority_name(target_key = nil)
       FFI::GDAL.OSRGetAuthorityName(@ogr_spatial_ref_pointer, target_key)
     end
 
     # @param axis_number [Fixnum] The Axis to query (0 or 1.)
     # @param target_key [String]
     # @return [String, nil]
-    def axis(axis_number, target_key=nil)
+    def axis(axis_number, target_key = nil)
       axis_orientation_ptr = FFI::MemoryPointer.new(:int)
 
       name = FFI::GDAL.OSRGetAxis(@ogr_spatial_ref_pointer, target_key, axis_number, axis_orientation_ptr)
@@ -413,66 +415,61 @@ module OGR
       { name: name, orientation: OGRAxisOrientation[ao_value] }
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_INVFLATTENING+ (298.257223563)
+    #   if no semi-major is found.  If set to +true+, this will return that
+    #   value if the semi-major isn't found.
     # @return [Float]
-    def spheroid_inverse_flattening
+    def spheroid_inverse_flattening(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        # noinspection RubyQuotedStringsInspection
-        warn 'WARN: #spheroid_inverse_flattening received error _and_ a value. Something is fishy...'
-      end
-
-      ogr_err.to_ruby
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+    #   semi-major is found.  If set to +true+, this will return that value if
+    #   the semi-major isn't found.
     # @return [Float]
-    def semi_major
+    def semi_major(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        # noinspection RubyQuotedStringsInspection
-        warn 'WARN: #semi_major received error _and_ a value. Something is fishy...'
-      end
-
-      ogr_err.to_ruby
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
     # @param hemisphere [Symbol] :north or :south.
     # @return [Fixnum] The zone, or 0 if this isn't a UTM definition.
-    def utm_zone(hemisphere=:north)
-      north = case hemisphere
-      when :north then 1
-      when :south then 0
-      else raise "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
-      end
+    def utm_zone(hemisphere = :north)
+      north =
+        case hemisphere
+        when :north then 1
+        when :south then 0
+        else fail "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
+        end
       north_ptr = FFI::MemoryPointer.new(:bool)
       north_ptr.write_bytes(north.to_s)
 
       FFI::GDAL.OSRGetUTMZone(@ogr_spatial_ref_pointer, north_ptr)
     end
 
+    # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+    #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+    #   semi-major is found.  If set to +true+, this will return that value if
+    #   the semi-major isn't found.
     # @return [Float]
-    def semi_minor
+    def semi_minor(return_wgs84_on_nil = false)
       err_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::GDAL.OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
       ogr_err = FFI::GDAL::OGRErr[err_ptr.read_int]
+      wgs84_value = return_wgs84_on_nil ? value : nil
 
-      if ogr_err == :OGRERR_FAILURE && value.is_a?(Float)
-        # noinspection RubyQuotedStringsInspection
-        warn "WARN: #semi_minor received error _and_ a value. Something is fishy..."
-      end
-
-      ogr_err.to_ruby
-
-      value
+      ogr_err == :OGRERR_FAILURE ? wgs84_value : value
     end
 
     # Set the user-visible LOCAL_CS name.
@@ -482,7 +479,7 @@ module OGR
     def local_cs=(name)
       ogr_err = FFI::GDAL.OSRSetLocalCS(@ogr_spatial_ref_pointer, name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # Set the user-visible GEOCCS name.
@@ -492,7 +489,7 @@ module OGR
     def geoccs=(name)
       ogr_err = FFI::GDAL.OSRSetGeocCS(@ogr_spatial_ref_pointer, name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # Set the GEOCCS based on a well-knon name.
@@ -503,7 +500,7 @@ module OGR
       if GDAL._supported? :OSRSetWellKnownGeocCS
         ogr_err = FFI::GDAL.OSRSetWellKnownGeocCS(@ogr_spatial_ref_pointer, name)
 
-        ogr_err.to_ruby
+        ogr_err.handle_result
       end
     end
 
@@ -514,7 +511,7 @@ module OGR
     def projcs=(name)
       ogr_err = FFI::GDAL.OSRSetProjCS(@ogr_spatial_ref_pointer, name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @return [Hash]
@@ -525,7 +522,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToERM(@ogr_spatial_ref_pointer, projection_name,
         datum_name, units)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       {
         projection_name: projection_name.read_string,
@@ -542,7 +539,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToMICoordSys(@ogr_spatial_ref_pointer,
         return_ptr_ptr)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       return_ptr_ptr.get_array_of_string(0)
     end
@@ -563,7 +560,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
         units_ptr, prj_params_ptr)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       {
         projection: proj_ptr.read_pointer.read_string,
@@ -579,7 +576,7 @@ module OGR
       proj4_ptr.write_pointer(proj4)
 
       ogr_err = FFI::GDAL.OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       proj4_ptr.read_pointer.read_string
     end
@@ -595,7 +592,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToUSGS(@ogr_spatial_ref_pointer, proj_sys,
         zone, prj_params_ptr, datum)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       {
         projection_system_code: proj_sys.read_long,
@@ -612,21 +609,21 @@ module OGR
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
       ogr_err = FFI::GDAL.OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       wkt_ptr_ptr.read_pointer.read_string
     end
 
     # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
     #   +EXTENSION+ nodes.
-    def to_pretty_wkt(simplify=false)
+    def to_pretty_wkt(simplify = false)
       wkt_ptr = FFI::MemoryPointer.new(:string)
       wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       wkt_ptr_ptr.write_pointer(wkt_ptr)
 
       ogr_err = FFI::GDAL.OSRExportToPrettyWkt(@ogr_spatial_ref_pointer,
         wkt_ptr_ptr, simplify)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       wkt_ptr_ptr.read_pointer.read_string
     end
@@ -640,7 +637,7 @@ module OGR
 
       ogr_err = FFI::GDAL.OSRExportToXML(@ogr_spatial_ref_pointer, xml_ptr_ptr,
         dialect)
-      ogr_err.to_ruby
+      ogr_err.handle_result
 
       {
         dialect: dialect.read_string,
@@ -695,7 +692,6 @@ module OGR
 
       FFI::GDAL.OSRIsSame(@ogr_spatial_ref_pointer, spatial_ref_ptr)
     end
-    alias_method :==, :same?
 
     # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     # @return [Boolean]

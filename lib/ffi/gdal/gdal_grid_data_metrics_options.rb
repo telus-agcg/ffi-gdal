@@ -1,6 +1,5 @@
 require 'ffi'
 
-
 module FFI
   module GDAL
     class GDALGridDataMetricsOptions < FFI::Struct

@@ -9,16 +9,18 @@ module GDAL
       FFI::MemoryPointer.new(:double, 6)
     end
 
-    # @param filename [String]
+    # @param [String] filename
+    # @param [String] extension The file extension to use.  When nil, GDAL will
+    #   try to derive it from the +filename+.
     # @return [GDAL::GeoTransform]
-    def self.from_world_file(filename, extension=nil)
+    def self.from_world_file(filename, extension = nil)
       gt_ptr = new_pointer
 
       result = if extension
-        FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
-      else
-        FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
-      end
+                 FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
+               else
+                 FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
+               end
 
       return nil unless result
 
@@ -26,14 +28,19 @@ module GDAL
     end
 
     # @param geo_transform [FFI::Pointer]
-    def initialize(geo_transform=nil)
+    def initialize(geo_transform = nil)
       @geo_transform_pointer = if geo_transform.is_a? GDAL::GeoTransform
-        geo_transform.c_pointer
-      elsif geo_transform
-        geo_transform
-      else
-        self.class.new_pointer
-      end
+                                 geo_transform.c_pointer
+                               elsif geo_transform
+                                 geo_transform
+                               else
+                                 self.class.new_pointer
+                               end
+
+      self.pixel_width ||= 1.0
+      self.pixel_height ||= 1.0
+      self.x_rotation ||= 0.0
+      self.y_rotation ||= 0.0
 
       to_a
     end
@@ -137,26 +144,39 @@ module GDAL
     end
 
     # Converts a (pixel, line) coordinate to a georeferenced (geo_x, geo_y)
-    # location.
+    # location.  Uses the following algorithm:
+    #
+    #   geo_x = x_origin + (pixel * pixel_width) + (line * pixel_rotation)
+    #   geo_y = y_origin + (pixel * y_rotation) + (line * pixel_height)
+    #
+    # This is also the same as doing:
+    #
+    #   geo_transform.invert.world_to_pixel(pixel, line)
     #
     # @param pixel [Float] Input pixel position.
     # @param line [Float] Input line position.
-    # @return [Hash{x_location: Float, y_location: Float}] longitude, latitude.
+    # @return [Hash{x_geo => Float, y_geo => Float}]  +:x_geo+ is the
+    # #   easting/longitude; +:y_geo+ is the northing/latitude.
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
       FFI::GDAL.GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
-      { longitude: geo_x_ptr.read_double, latitude: geo_y_ptr.read_double }
+      { x_geo: geo_x_ptr.read_double, y_geo: geo_y_ptr.read_double }
     end
+    alias_method :pixel_to_world, :apply_geo_transform
 
-    # Composes this and the give geo_transform.  The result is equivalent to
-    # applying both geotransforms to a point.
+    # Composes this and the given geo_transform.  The resulting GeoTransform is
+    # equivalent to applying both GeoTransforms to a point.
     #
     # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
     # @return [GDAL::GeoTransform]
     def compose(other_geo_transform)
       other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
+
+      unless other_ptr
+        fail GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
+      end
 
       new_gt_ptr = self.class.new_pointer
       FFI::GDAL.GDALComposeGeoTransforms(@geo_transform_pointer, other_ptr, new_gt_ptr)
@@ -166,7 +186,7 @@ module GDAL
     end
 
     # Inverts the current 3x2 set of coefficients and returns a new GeoTransform.
-    # Useful for converting from the geotransform equation from pixel to geo to
+    # Useful for converting from the GeoTransform equation from pixel to geo to
     # being geo to pixel.
     #
     # @return [GDAL::GeoTransform]

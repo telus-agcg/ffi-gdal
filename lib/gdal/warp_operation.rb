@@ -17,13 +17,11 @@ module GDAL
     # @param x_size [Fixnum] X size (width) of the destination image.
     # @param y_size [Fixnum] Y size (height) of the destination image.
     def chunk_and_warp_image(x_offset, y_offset, x_size, y_size)
-      cpl_err = FFI::GDAL.GDALChunkAndWarpImage(@warp_operation_pointer,
+      !!FFI::GDAL.GDALChunkAndWarpImage(@warp_operation_pointer,
         x_offset,
         y_offset,
         x_size,
         y_size)
-
-      cpl_err.to_bool
     end
 
     # @param x_offset [Fixnum] X offset of the destination image.
@@ -31,10 +29,10 @@ module GDAL
     # @param x_size [Fixnum] X size (width) of the destination image.
     # @param y_size [Fixnum] Y size (height) of the destination image.
     # @todo Implement
-    def chunk_and_warp_multi(x_offset, y_offset, x_size, y_size)
-      raise NotImplementedError, '#chunk_and_warp_multi not yet implemented.'
+    def chunk_and_warp_multi(_x_offset, _y_offset, _x_size, _y_size)
+      fail NotImplementedError, '#chunk_and_warp_multi not yet implemented.'
 
-      FFI::GDAL.GDALChunkAndWarpMulti(@warp_operation_pointer,
+      FFI::GDAL.GDALChunkAndWarpMulti(@warp_operation_pointer
       )
     end
 
@@ -50,7 +48,7 @@ module GDAL
       destination_x_size, destination_y_size,
       source_x_offset, source_y_offset,
       source_x_size, source_y_size)
-      cpl_err = FFI::GDAL.GDALWarpRegion(@warp_operation_pointer,
+      !!FFI::GDAL.GDALWarpRegion(@warp_operation_pointer,
         destination_x_offset,
         destination_y_offset,
         destination_x_size,
@@ -59,8 +57,6 @@ module GDAL
         source_y_offset,
         source_x_size,
         source_y_size)
-
-      cpl_err.to_bool
     end
 
     # @param destination_x_offset [Fixnum] X offset of the destination image.
@@ -78,7 +74,7 @@ module GDAL
       buffer, data_type,
       source_x_offset, source_y_offset,
       source_x_size, source_y_size)
-      cpl_err = FFI::GDAL.GDALWarpRegionToBuffer(@warp_operation_pointer,
+      !!FFI::GDAL.GDALWarpRegionToBuffer(@warp_operation_pointer,
         destination_x_offset,
         destination_y_offset,
         destination_x_size,
@@ -89,8 +85,6 @@ module GDAL
         source_y_offset,
         source_x_size,
         source_y_size)
-
-      cpl_err.to_bool
     end
   end
 end

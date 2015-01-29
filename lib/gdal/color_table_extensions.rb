@@ -2,10 +2,9 @@ require 'json'
 
 module GDAL
   module ColorTableExtensions
-
     def color_entries_for(color_number)
       unless (1..4).to_a.include? color_number
-        raise "Invalid ColorEntry number 'color#{color_number}'"
+        fail "Invalid ColorEntry number 'color#{color_number}'"
       end
 
       0.upto(color_entry_count - 1).map do |i|
@@ -35,12 +34,12 @@ module GDAL
       {
         color_entry_count: color_entry_count,
         color_entries: color_entries.map(&:as_json),
-        palette_interpretation: palette_interpretation,
+        palette_interpretation: palette_interpretation
       }
     end
 
     # @return [String]
-    def to_json
+    def to_json(_ = nil)
       as_json.to_json
     end
   end

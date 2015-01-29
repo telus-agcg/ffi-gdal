@@ -1,6 +1,5 @@
 require 'ffi'
 
-
 module GDAL
   # A wrapper for the way GDAL does key/value pair options for methods.
   class Options < Hash
@@ -8,12 +7,18 @@ module GDAL
     # them.
     #
     # @param hash [Hash]
+    # @param nil_on_empty [Boolean] When +true+, if +hash+ is empty, return
+    #   +nil+.  If +false+, creates a 0-size pointer.
     # @return [FFI::MemoryPointer, nil]
-    def self.pointer(hash)
-      hash.empty? ? nil : new(hash).c_pointer
+    def self.pointer(hash, nil_on_empty: true)
+      if nil_on_empty
+        hash.empty? ? nil : new(hash).c_pointer
+      else
+        new(hash).c_pointer
+      end
     end
 
-    def initialize(hash={})
+    def initialize(hash = {})
       super()
       capitalize_keys!(hash)
     end
@@ -21,9 +26,9 @@ module GDAL
     # @return [FFI::MemoryPointer] The double-char pointer that contains the
     #   options for GDAL to use.
     def c_pointer
-      options_ptr = FFI::MemoryPointer.new(:pointer, self.size)
+      options_ptr = FFI::MemoryPointer.new(:pointer, size)
 
-      self.each do |key, value|
+      each do |key, value|
         options_ptr = FFI::GDAL.CSLSetNameValue(options_ptr, key, value)
       end
 
@@ -38,6 +43,7 @@ module GDAL
     #     options_array[i].first.read_string
     #   end
     # end
+
     private
 
     def capitalize_keys!(hash)

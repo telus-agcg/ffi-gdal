@@ -1,5 +1,6 @@
 require 'log_switch'
 require_relative 'ext/narray_ext'
+require_relative 'ext/numeric_as_data_type'
 require_relative 'gdal/version_info'
 require_relative 'gdal/environment_methods'
 
@@ -25,12 +26,18 @@ module GDAL
     File.expand_path('gdal/driver', __dir__)
   autoload :GeoTransform,
     File.expand_path('gdal/geo_transform', __dir__)
+  autoload :Grid,
+    File.expand_path('gdal/grid', __dir__)
   autoload :MajorObject,
     File.expand_path('gdal/major_object', __dir__)
   autoload :Options,
     File.expand_path('gdal/options', __dir__)
   autoload :RasterAttributeTable,
     File.expand_path('gdal/raster_attribute_table', __dir__)
+  autoload :RasterBand,
+    File.expand_path('gdal/raster_band', __dir__)
+  autoload :RasterBandClassifier,
+    File.expand_path('gdal/raster_band_classifier', __dir__)
   autoload :Utils,
     File.expand_path('gdal/utils', __dir__)
   autoload :WarpOperation,
@@ -41,22 +48,26 @@ module GDAL
 
   # Internal factory method for returning a pointer from +variable+, which could
   # be either of +klass+ class or a type of FFI::Pointer.
-  def self._pointer(klass, variable, warn_on_nil=true)
+  def self._pointer(klass, variable, warn_on_nil = true)
     if variable.kind_of?(klass)
+      variable.c_pointer.autorelease = true
       variable.c_pointer
     elsif variable.kind_of? FFI::Pointer
+      variable.autorelease = true
       variable
-    elsif warn_on_nil
-      Logger.log "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
-      Logger.log "<#{name}._pointer> Called at: #{caller(1, 1).first}"
     else
+      if warn_on_nil
+        Logger.logger.debug "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
+        Logger.logger.debug "<#{name}._pointer> Called at: #{caller(1, 1).first}"
+      end
+
       nil
     end
   end
 
   # @param data_type [FFI::GDAL::GDALDataType]
   # @return [Symbol] The FFI Symbol that represents a data type.
-  def self._pointer_from_data_type(data_type, size=nil)
+  def self._pointer_from_data_type(data_type, size = nil)
     pointer_type = _gdal_data_type_to_ffi(data_type)
 
     if size
@@ -91,6 +102,10 @@ module GDAL
   def self._supported?(function_name)
     !FFI::GDAL.unsupported_gdal_functions.include?(function_name)
   end
+
+  require_relative 'gdal/cpl_error_handler'
+  FFI_GDAL_ERROR_HANDLER = GDAL::CPLErrorHandler.handle_error
+  FFI::GDAL.CPLSetErrorHandler(FFI_GDAL_ERROR_HANDLER)
 end
 
 module OGR
@@ -106,30 +121,42 @@ module OGR
     File.expand_path('ogr/feature', __dir__)
   autoload :FeatureDefinition,
     File.expand_path('ogr/feature_definition', __dir__)
+  autoload :Field,
+    File.expand_path('ogr/field', __dir__)
   autoload :GeocodingSession,
     File.expand_path('ogr/geocoding_session', __dir__)
   autoload :Geometry,
     File.expand_path('ogr/geometry', __dir__)
+  autoload :GeometryCollection,
+    File.expand_path('ogr/geometries/geometry_collection', __dir__)
+  autoload :GeometryFieldDefinition,
+    File.expand_path('ogr/geometry_field_definition', __dir__)
   autoload :Layer,
     File.expand_path('ogr/layer', __dir__)
   autoload :LineString,
-    File.expand_path('ogr/line_string', __dir__)
+    File.expand_path('ogr/geometries/line_string', __dir__)
   autoload :LinearRing,
-    File.expand_path('ogr/linear_ring', __dir__)
+    File.expand_path('ogr/geometries/linear_ring', __dir__)
   autoload :MultiLineString,
-    File.expand_path('ogr/multi_line_string', __dir__)
+    File.expand_path('ogr/geometries/multi_line_string', __dir__)
   autoload :MultiPoint,
-    File.expand_path('ogr/multi_point', __dir__)
+    File.expand_path('ogr/geometries/multi_point', __dir__)
   autoload :MultiPolygon,
-    File.expand_path('ogr/multi_polygon', __dir__)
+    File.expand_path('ogr/geometries/multi_polygon', __dir__)
+  autoload :NoneGeometry,
+    File.expand_path('ogr/geometries/none_geometry', __dir__)
   autoload :Point,
-    File.expand_path('ogr/point', __dir__)
+    File.expand_path('ogr/geometries/point', __dir__)
   autoload :Polygon,
-    File.expand_path('ogr/polygon', __dir__)
+    File.expand_path('ogr/geometries/polygon', __dir__)
   autoload :SpatialReference,
     File.expand_path('ogr/spatial_reference', __dir__)
   autoload :StyleTable,
     File.expand_path('ogr/style_table', __dir__)
+  autoload :StyleTool,
+    File.expand_path('ogr/style_tool', __dir__)
+  autoload :UnknownGeometry,
+    File.expand_path('ogr/geometries/unknown_geometry', __dir__)
 
   FFI::GDAL.OGRRegisterAll
 
@@ -137,7 +164,7 @@ module OGR
     case flag
     when 'w' then true
     when 'r' then false
-    else raise "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
+    else fail "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
     end
   end
 end

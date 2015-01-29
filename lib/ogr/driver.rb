@@ -1,4 +1,9 @@
 module OGR
+  # Wrapper for OGR's Driver class.  In this case, to use a driver, find the
+  # driver you're looking for using +.by_name+ or +.by_index+; that will return
+  # an instance of an OGR::Driver.
+  #
+  # More about the C API here: http://www.gdal.org/ogr_drivertut.html.
   class Driver
     include GDAL::MajorObject
     include GDAL::Logger
@@ -10,9 +15,10 @@ module OGR
 
     # @param name [String] Short name of the registered OGRDriver.
     # @return [OGR::Driver]
+    # @raise [OGR::DriverNotFound] if a driver with +name+ isn't found.
     def self.by_name(name)
       driver_ptr = FFI::GDAL.OGRGetDriverByName(name)
-      return nil if driver_ptr.null?
+      fail OGR::DriverNotFound, name if driver_ptr.null?
 
       new(driver_ptr)
     end
@@ -20,33 +26,33 @@ module OGR
     # @param index [Fixnum] Index of the registered driver.  Must be less than
     #   OGR::Driver.count.
     # @return [OGR::Driver]
+    # @raise [OGR::DriverNotFound] if a driver at +index+ isn't found.
     def self.at_index(index)
-      if index > count
-        raise "index must be between 0 and #{count - 1}."
-      end
+      fail OGR::DriverNotFound, index if index > count
 
       driver_ptr = FFI::GDAL.OGRGetDriver(index)
       return nil if driver_ptr.null?
+      fail OGR::DriverNotFound, index if driver_ptr.null?
 
       new(driver_ptr)
     end
 
     # @return [Array<String>]
     def self.names
-      return @names if @names
-
-      names = 0.upto(count - 1).map do |i|
+      0.upto(count - 1).map do |i|
         at_index(i).name
       end
-
-      @names = names.compact.sort
     end
 
+    # You probably don't want to use this directly--see .by_name and .at_index
+    # to instantiate a OGR::Driver object.
+    #
     # @param driver [OGR::Driver, FFI::Pointer]
     def initialize(driver)
       @driver_pointer = GDAL._pointer(OGR::Driver, driver)
     end
 
+    # @return [FFI::Pointer]
     def c_pointer
       @driver_pointer
     end
@@ -83,14 +89,9 @@ module OGR
       return nil if data_source_ptr.null?
 
       ds = OGR::DataSource.new(data_source_ptr)
-
       yield ds if block_given?
 
       ds
-    rescue GDAL::InvalidBandNumber
-      ds.close if ds
-      delete_data_source(file_name)
-      raise
     end
 
     # @param file_name [String]
@@ -98,7 +99,7 @@ module OGR
     def delete_data_source(file_name)
       ogr_err = FFI::GDAL.OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
 
-      ogr_err.to_ruby
+      ogr_err.handle_result
     end
 
     # @param source_data_source [OGR::DataSource, FFI::Pointer]
@@ -107,6 +108,10 @@ module OGR
     # @return [OGR::DataSource, nil]
     def copy_data_source(source_data_source, new_file_name, **options)
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
+      if source_ptr.nil? || source_ptr.null?
+        fail OGR::InvalidDataSource, source_data_source
+      end
+
       options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = FFI::GDAL.OGR_Dr_CopyDataSource(@driver_pointer,
@@ -114,6 +119,12 @@ module OGR
       return nil if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr)
+    end
+
+    # @param [String] capability
+    # @return [Boolean]
+    def test_capability(capability)
+      FFI::GDAL.OGR_Dr_TestCapability(@driver_pointer, capability)
     end
   end
 end

@@ -1,6 +1,5 @@
 module GDAL
   module DriverExtensions
-    
     # The things that this driver can do, as reported by its metadata.
     # Possibilities include:
     #   * :open

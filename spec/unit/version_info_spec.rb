@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'gdal/version_info'
 
-describe GDAL::VersionInfo do
+RSpec.describe GDAL::VersionInfo do
   subject do
     Object.new.extend(described_class)
   end

@@ -3,7 +3,6 @@ require_relative '../ffi/ogr'
 
 module OGR
   class CoordinateTransformation
-
     # @param source_srs [OGR::SpatialReference, FFI::Pointer]
     # @param destination_srs [OGR::SpatialReference, FFI::Pointer]
     # @return [OGR::CoordinateTransformation]
@@ -13,17 +12,19 @@ module OGR
       ct_ptr = FFI::GDAL.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
       return nil if ct_ptr.null?
 
-      source = if source_srs.is_a?(OGR::SpatialReference)
-        source_srs
-      else
-        OGR::SpatialReference.new(source_srs)
-      end
+      source =
+        if source_srs.is_a?(OGR::SpatialReference)
+          source_srs
+        else
+          OGR::SpatialReference.new(source_srs)
+        end
 
-      destination = if destination_srs.is_a?(OGR::SpatialReference)
-        destination_srs
-      else
-        OGR::SpatialReference.new(destination_srs)
-      end
+      destination =
+        if destination_srs.is_a?(OGR::SpatialReference)
+          destination_srs
+        else
+          OGR::SpatialReference.new(destination_srs)
+        end
 
       new(ct_ptr, source, destination)
     end
@@ -71,7 +72,7 @@ module OGR
     # @param z_vertices [Array<Float>]
     # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, y1], [x2,
     #   y2], etc]
-    def transform(x_vertices, y_vertices, z_vertices=[])
+    def transform(x_vertices, y_vertices, z_vertices = [])
       x_ptr = FFI::MemoryPointer.new(:pointer, x_vertices.size)
       x_ptr.write_array_of_double(x_vertices)
       y_ptr = FFI::MemoryPointer.new(:pointer, y_vertices.size)
@@ -94,7 +95,7 @@ module OGR
 
       x_vals = x_ptr.read_array_of_double
       y_vals = y_ptr.read_array_of_double
-      z_vals = z_ptr.read_array_of_double unless z_vertices.empty?
+      z_vals = z_vertices.empty? ? nil : z_ptr.read_array_of_double
 
       points = if z_vertices.empty?
                  NMatrix[x_vals, y_vals]

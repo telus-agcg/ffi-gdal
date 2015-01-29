@@ -1,7 +1,6 @@
 require_relative 'layer'
 
 module OGR
-
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html
   class GeocodingSession
     # @param options [Hash]

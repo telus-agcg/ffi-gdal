@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module SpatialReferenceExtensions
-
     # @return [Hash]
     def as_json
       {
@@ -25,7 +24,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_ = nil)
       as_json.to_json
     end
   end

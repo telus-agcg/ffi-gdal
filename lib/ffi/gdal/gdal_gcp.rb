@@ -1,9 +1,7 @@
 require 'ffi'
 
-
 module FFI
   module GDAL
-
     # Ground Control Point
     class GDALGCP < FFI::Struct
       layout :id, :string,

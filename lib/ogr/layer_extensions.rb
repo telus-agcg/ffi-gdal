@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module LayerExtensions
-
     # @return [Array<OGR::Feature>]
     def features
       feature_list = 0.upto(feature_count - 1).map do |i|
@@ -40,15 +39,15 @@ module OGR
           geometry_column: geometry_column,
           geometry_type: geometry_type,
           name: name,
-          spatial_reference: spatial_reference.as_json,
+          spatial_reference: spatial_reference ? spatial_reference.as_json : nil,
           style_table: style_table ? style_table.as_json : nil
         },
-        metadata: nil #all_metadata
+        metadata: nil # all_metadata
       }
     end
 
     # @return [String]
-    def to_json
+    def to_json(_ = nil)
       as_json.to_json
     end
   end

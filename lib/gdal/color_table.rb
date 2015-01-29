@@ -2,7 +2,6 @@ require_relative '../ffi/gdal'
 require_relative 'color_table_extensions'
 require_relative 'color_entry'
 
-
 module GDAL
   module ColorTableTypes
     autoload :CMYK,
@@ -38,7 +37,7 @@ module GDAL
       when :GPI_CMYK then extend GDAL::ColorTableTypes::CMYK
       when :GPI_HLS then extend GDAL::ColorTableTypes::HLS
       else
-        raise "Unknown PaletteInterpretation: #{palette_interpretation}"
+        fail "Unknown PaletteInterpretation: #{palette_interpretation}"
       end
     end
 
@@ -111,7 +110,7 @@ module GDAL
     # @param four [Fixnum] The `c4` value of the GDAL::ColorEntry
     #   struct to set.
     # @return [GDAL::ColorEntry]
-    def add_color_entry(index, one=nil, two=nil, three=nil, four=nil)
+    def add_color_entry(index, one = nil, two = nil, three = nil, four = nil)
       entry = GDAL::ColorEntry.new
       entry.color1 = one if one
       entry.color2 = two if two

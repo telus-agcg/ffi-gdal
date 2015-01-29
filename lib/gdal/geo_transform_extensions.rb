@@ -2,55 +2,20 @@ require 'json'
 
 module GDAL
   module GeoTransformExtensions
-
-    # The calculated UTM easting of the pixel on the map.
+    # Calculates the pixel and line location of a geospatial coordinate.  Used
+    # for converting from world coordinates to to image pixels.
     #
-    # @return [Float]
-    def x_projection(x_pixel, y_pixel)
-      return nil if null?
+    # @param x_geo [Fixnum]
+    # @param y_geo [Fixnum]
+    # @return [Hash{pixel => Fixnum, line Fixnum}]
+    def world_to_pixel(x_geo, y_geo)
+      pixel = (x_geo - x_origin) / pixel_width
+      line = (y_origin - y_geo) / pixel_height
 
-      apply_geo_transform(x_pixel, y_pixel)[:x_location]
+      { pixel: pixel.round.to_i, line: line.round.to_i }
     end
 
-    # The calculated UTM northing of the pixel on the map.
-    #
-    # @return [Float]
-    def y_projection(x_pixel, y_pixel)
-      return nil if null?
-
-      apply_geo_transform(x_pixel, y_pixel)[:y_location]
-    end
-
-    # The algorithm per http://www.gdal.org/gdal_datamodel.html.
-    def pixel_to_world(pixel, line)
-      x_geo = x_origin + (pixel * pixel_width) + (line * x_rotation)
-      y_geo = y_origin + (pixel * pixel_height) + (line * y_rotation)
-
-      { longitude: y_geo, latitude: x_geo }
-    end
-
-    # Adapted from "Advanced Geospatial Python Modeling".  Calculates the
-    # pixel location of a geospatial coordinate.
-    #
-    # @param lon [Fixnum]
-    # @param lat [Fixnum]
-    # @param value_type [Symbol] Data type to return: :float or :integer.
-    # @return [Hash<x, y>] [pixel, line]
-    def world_to_pixel(lon, lat, value_type=:float)
-      pixel = (lon - x_origin) / pixel_width
-      line = (y_origin - lat) / pixel_height
-
-      case value_type
-      when :float
-        { x: pixel.to_f, y: line.to_f }
-      when :integer
-        { x: pixel.to_i, y: line.to_i }
-      else
-        { x: pixel, y: line }
-      end
-    end
-
-    # All attributes as an Array, in the order:
+    # All attributes as an Array, in the order the C-Struct describes them:
     #   * x_origin
     #   * pixel_width
     #   * x_rotation
@@ -83,7 +48,7 @@ module GDAL
     end
 
     # @return [String]
-    def to_json
+    def to_json(_ = nil)
       as_json.to_json
     end
   end

@@ -1,6 +1,5 @@
 module FFI
   module GDAL
-
     #------------------------------------------------------------------------
     # Enums
     #------------------------------------------------------------------------
@@ -26,8 +25,8 @@ module FFI
       :ODT_VD_GeoidModelDerived, 2005,
       :ODT_VD_Depth, 2006,
       :ODT_VD_Max, 2999,
-      :ODT_LD_Min, 10000,
-      :ODT_LD_Max, 32767
+      :ODT_LD_Min, 10_000,
+      :ODT_LD_Max, 32_767
 
     #------------------------------------------------------------------------
     # Typedefs
@@ -189,7 +188,6 @@ module FFI
       OGRErr
     attach_function :OSRSetOM,
       %i[OGRSpatialReferenceH double double double double double double double],
-      OGRErr
       OGRErr
     attach_function :OSRSetHOM,
       %i[OGRSpatialReferenceH double double double double double double double],

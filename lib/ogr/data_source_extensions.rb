@@ -1,6 +1,5 @@
 module OGR
   module DataSourceExtensions
-
     # @return [Array<OGR::Layer>]
     def layers
       l = 0.upto(layer_count - 1).map do |i|
@@ -25,7 +24,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json
+    def to_json(_ = nil)
       as_json.to_json
     end
   end

@@ -4,7 +4,7 @@ require_relative 'field_extensions'
 module OGR
   class Field
     include FieldExtensions
-    
+
     # @param name [String]
     # @param type [FFI::GDAL::OGRFieldType]
     # @return [OGR::Field]
@@ -26,6 +26,25 @@ module OGR
 
     def destroy!
       FFI::GDAL.OGR_Fld_Destroy(@field_pointer)
+      @field_pointer = nil
+    end
+
+    # Set all defining attributes in one call.
+    #
+    # @param name [String]
+    # @param type [FFI::GDAL::OGRFieldType]
+    # @param width [Fixnum]
+    # @param precision [Fixnum]
+    # @param justification [FFI::GDAL::OGRJustification]
+    def set(name, type, width, precision, justification)
+      FFI::GDAL.OGR_Fld_Set(
+        @field_pointer,
+        name,
+        type,
+        width,
+        precision,
+        justification
+      )
     end
 
     # @return [String]

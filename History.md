@@ -39,7 +39,7 @@
 
 * Improvements
     * The `approx_ok` param for `RasterBand#histogram` should default to
-      `false` (prefering data exactness over performance).
+      `false` (preferring data exactness over performance).
 * Bug fixes
     * Fixed URL silliness introduced in 0.0.2.
     * `Dataset#*_band` methods should return `nil` if the band with that color

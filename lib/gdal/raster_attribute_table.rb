@@ -1,7 +1,6 @@
 require_relative '../ffi/gdal'
 require_relative 'raster_attribute_table_extensions'
 
-
 module GDAL
   class RasterAttributeTable
     include RasterAttributeTableExtensions
@@ -20,14 +19,13 @@ module GDAL
     def self.from_color_table(color_table)
       color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
       rat_ptr = FFI::GDAL.GDALCreateRasterAttributeTable
-      cpl_err = FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
-      cpl_err.to_bool
+      FFI::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
 
       new(rat_ptr)
     end
 
     # @param raster_attribute_table [GDAL::RasterAttributeTable, FFI::Pointer]
-    def initialize(raster_attribute_table=nil)
+    def initialize(raster_attribute_table = nil)
       @rat_pointer = GDAL._pointer(GDAL::RasterAttributeTable, raster_attribute_table)
     end
 
@@ -91,9 +89,7 @@ module GDAL
     # @param usage [FFI::GDALRATFieldUsage]
     # @return [Boolean]
     def create_column(name, type, usage)
-      cpl_err = FFI::GDAL.GDALRATCreateColumn(@rat_pointer, name, type, usage)
-
-      cpl_err.to_bool
+      !!FFI::GDAL.GDALRATCreateColumn(@rat_pointer, name, type, usage)
     end
 
     # @return [Fixnum] The number of rows.
@@ -147,7 +143,7 @@ module GDAL
       when 'Fixnum'
         FFI::GDAL.GDALRATSetValueAsInt(@rat_pointer, row, field, value)
       else
-        raise "Unknown value type for value '#{value}'"
+        fail "Unknown value type for value '#{value}'"
       end
     end
 
@@ -173,11 +169,11 @@ module GDAL
     end
 
     # @param file_path [String]
-    def dump_readable(file_path=nil)
+    def dump_readable(file_path = nil)
       file = if file_path
-        File.open(file_path, 'r')
-      else
-        file_path
+               File.open(file_path, 'r')
+             else
+               file_path
       end
       FFI::GDAL.GDALRATDumpReadable(@rat_pointer, file)
     end

@@ -29,3 +29,4 @@ vendor/bundle
 *.xml
 *.dbf
 *.shx
+.rake_tasks
