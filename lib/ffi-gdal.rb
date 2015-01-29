@@ -1,16 +1,15 @@
-require 'log_switch'
 require_relative 'ext/narray_ext'
 require_relative 'ext/numeric_as_data_type'
 require_relative 'gdal/version_info'
 require_relative 'gdal/environment_methods'
+require_relative 'gdal/internal_helpers'
+require_relative 'gdal/cpl_error_handler'
+require_relative 'ogr/internal_helpers'
 
 module GDAL
   extend VersionInfo
   extend EnvironmentMethods
-
-  module Logger
-    include LogSwitch
-  end
+  include InternalHelpers
 
   autoload :ColorEntry,
     File.expand_path('gdal/color_entry', __dir__)
@@ -46,69 +45,13 @@ module GDAL
   # Register all drivers!
   FFI::GDAL.GDALAllRegister
 
-  # Internal factory method for returning a pointer from +variable+, which could
-  # be either of +klass+ class or a type of FFI::Pointer.
-  def self._pointer(klass, variable, warn_on_nil = true)
-    if variable.kind_of?(klass)
-      variable.c_pointer.autorelease = true
-      variable.c_pointer
-    elsif variable.kind_of? FFI::Pointer
-      variable.autorelease = true
-      variable
-    else
-      if warn_on_nil
-        Logger.logger.debug "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
-        Logger.logger.debug "<#{name}._pointer> Called at: #{caller(1, 1).first}"
-      end
-
-      nil
-    end
-  end
-
-  # @param data_type [FFI::GDAL::GDALDataType]
-  # @return [Symbol] The FFI Symbol that represents a data type.
-  def self._pointer_from_data_type(data_type, size = nil)
-    pointer_type = _gdal_data_type_to_ffi(data_type)
-
-    if size
-      FFI::MemoryPointer.new(pointer_type, size)
-    else
-      FFI::MemoryPointer.new(pointer_type)
-    end
-  end
-
-  # Maps GDAL DataTypes to FFI types.
-  #
-  # @param data_type [FFI::GDAL::GDALDataType]
-  def self._gdal_data_type_to_ffi(data_type)
-    case data_type
-    when :GDT_Byte then :uchar
-    when :GDT_UInt16 then :uint16
-    when :GDT_Int16 then :int16
-    when :GDT_UInt32 then :uint32
-    when :GDT_Int32 then :int32
-    when :GDT_Float32 then :float
-    when :GDT_Float64 then :double
-    else
-      :float
-    end
-  end
-
-  # Check to see if the function is supported in the version of GDAL that we're
-  # using.
-  #
-  # @param function_name [Symbol]
-  # @return [Boolean]
-  def self._supported?(function_name)
-    !FFI::GDAL.unsupported_gdal_functions.include?(function_name)
-  end
-
-  require_relative 'gdal/cpl_error_handler'
   FFI_GDAL_ERROR_HANDLER = GDAL::CPLErrorHandler.handle_error
   FFI::GDAL.CPLSetErrorHandler(FFI_GDAL_ERROR_HANDLER)
 end
 
 module OGR
+  include InternalHelpers
+
   autoload :CoordinateTransformation,
     File.expand_path('ogr/coordinate_transformation', __dir__)
   autoload :DataSource,
@@ -159,14 +102,6 @@ module OGR
     File.expand_path('ogr/geometries/unknown_geometry', __dir__)
 
   FFI::GDAL.OGRRegisterAll
-
-  def self._boolean_access_flag(flag)
-    case flag
-    when 'w' then true
-    when 'r' then false
-    else fail "Invalid access_flag '#{access_flag}'.  Use 'r' or 'w'."
-    end
-  end
 end
 
 require_relative 'ffi/gdal'
