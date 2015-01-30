@@ -32,6 +32,9 @@ module OGR
   class InvalidField < StandardError
   end
 
+  class InvalidGeometry < StandardError
+  end
+
   class InvalidGeometryFieldDefinition < StandardError
   end
 

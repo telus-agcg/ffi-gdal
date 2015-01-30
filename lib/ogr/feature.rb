@@ -164,7 +164,7 @@ module OGR
       when :OFTInteger then !raw_field[:integer].nil?
       when :OFTIntegerList then !raw_field[:integer_list].nil?
       when :OFTReal then !raw_field[:real].nil?
-      # when :OFTString then !raw_field[:string].nil?
+      when :OFTString then !raw_field[:string].nil?
       when :OFTString then raw_field[:string]
       when :OFTStringList then !raw_field[:string_list].nil?
       when :OFTBinary then !raw_field[:binary].nil?
@@ -289,6 +289,8 @@ module OGR
       ogr_err.handle_result
     end
 
+    # The number of Geometries in this feature.
+    #
     # @return [Fixnum]
     def geometry_field_count
       FFI::GDAL.OGR_F_GetGeomFieldCount(@feature_pointer)
@@ -301,11 +303,7 @@ module OGR
     #   +index+.
     def geometry_field_definition(index)
       gfd_ptr = FFI::GDAL.OGR_F_GetGeomFieldDefnRef(@feature_pointer, index)
-
-      if gfd_ptr.nil?
-        fail OGR::InvalidGeometryFeatureDefinition,
-          "No geometry field definition found at index #{index}"
-      end
+      return nil if gfd_ptr.nil?
 
       gfd = OGR::GeometryFieldDefinition.new(gfd_ptr)
       gfd.read_only = true
@@ -313,23 +311,19 @@ module OGR
       gfd
     end
 
-    # @param index [Fixnum]
-    # @return [OGR::Geometry]
-    def geometry_field(index)
+    # @param name [String]
+    # @return index [Fixnum]
+    def geometry_field_index(name)
       FFI::GDAL.OGR_F_GetGeomFieldIndex(@feature_pointer, name)
     end
 
     # @param index [Fixnum]
-    # @return [OGR::Geometry] A read-only OGR::Geometry.
-    # @raise [OGR::InvalidGeometry] If there isn't one at +index+.
+    # @return [OGR::Geometry, nil] A read-only OGR::Geometry.
     def geometry_field(index)
       geometry_ptr = FFI::GDAL.OGR_F_GetGeomFieldRef(@feature_pointer, index)
+      return nil if geometry_ptr.nil? || geometry_ptr.null?
 
-      if geometry_ptr.nil?
-        fail OGR::InvalidGeometry, "No geometry found at index #{index}"
-      end
-
-      geometry = OGR::Geometry.factory(gfd_ptr)
+      geometry = OGR::Geometry.new(geometry_ptr)
       geometry.read_only = true
 
       geometry
@@ -337,7 +331,7 @@ module OGR
 
     # @param index [Fixnum]
     # @param [OGR::Geometry]
-    def add_geometry_field(index, geometry)
+    def set_geometry_field(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
       fail OGR::InvalidGeometry if geometry_ptr.nil?
 
@@ -472,7 +466,7 @@ module OGR
     # @return [OGR::StyleTable]
     def style_table
       style_table_ptr = FFI::GDAL.OGR_F_GetStyleTable(@feature_pointer)
-      return nil if style_table_ptr.nil?
+      return nil if style_table_ptr.nil? || style_table_ptr.null?
 
       OGR::StyleTable.new(style_table_ptr)
     end

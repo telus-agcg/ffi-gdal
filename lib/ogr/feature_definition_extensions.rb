@@ -3,9 +3,11 @@ require 'json'
 module OGR
   module FeatureDefinitionExtensions
     # @return [Array<OGR::Field>]
-    def fields
+    def field_definitions
+      return [] if field_count.zero?
+
       0.upto(field_count - 1).map do |i|
-        field(i)
+        field_definition(i)
       end
     end
 
@@ -31,7 +33,7 @@ module OGR
     def as_json
       {
         field_count: field_count,
-        fields: fields.map(&:as_json),
+        field_definitions: field_definitions.map(&:as_json),
         geometry_field_count: geometry_field_count,
         geometry_type: geometry_type,
         is_geometry_ignored: geometry_ignored?,

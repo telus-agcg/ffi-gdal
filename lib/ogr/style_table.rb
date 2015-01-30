@@ -9,7 +9,7 @@ module OGR
       @style_table_pointer = c_pointer ? c_pointer : FFI::GDAL.OGR_STBL_Create
 
       if @style_table_pointer.null?
-        fail "Unable to create StyleTable using class #{style_table_class}"
+        fail "Unable to create StyleTable"
       end
     end
 

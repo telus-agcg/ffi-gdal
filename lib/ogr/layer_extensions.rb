@@ -4,6 +4,8 @@ module OGR
   module LayerExtensions
     # @return [Array<OGR::Feature>]
     def features
+      return [] if feature_count.zero?
+
       feature_list = 0.upto(feature_count - 1).map do |i|
         feature(i)
       end
