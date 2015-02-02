@@ -1,4 +1,5 @@
 require 'ffi'
+require 'ffi/tools/const_generator'
 
 module FFI
   module Library
@@ -82,6 +83,31 @@ module FFI
       return @gdal_library_path if @gdal_library_path
 
       @gdal_library_path = find_lib('{lib,}gdal*')
+    end
+
+    # @return [Array<String>] Related files that contain C constants.
+    def self._files_with_constants
+      header_files = %w[
+        cpl_conv.h cpl_error.h cpl_port.h cpl_string.h cpl_vsi.h
+        gdal.h gdal_alg.h gdal_vrt.h gdalwarper.h
+        ogr_core.h ogr_srs_api.h
+      ]
+
+      header_search_paths = %w[/usr/local/include /usr/include]
+
+      header_files.map do |file|
+        dir = header_search_paths.find do |d|
+          File.exist?("#{d}/#{file}")
+        end
+        dir ? "#{dir}/#{file}" : nil
+      end.compact
+    end
+
+    # Locates one of the files that has constants.
+    #
+    # @return [String] Full path to +file_name+.
+    def self._file_with_constants(file_name)
+      _files_with_constants.find { |f| f.end_with?(file_name) }
     end
 
     ffi_lib(gdal_library_path)

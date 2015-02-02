@@ -9,6 +9,11 @@ module OGR
     include GDAL::Logger
     include SpatialReferenceExtensions
 
+    eval FFI::GDAL::SRS_UL.to_ruby
+    METER_TO_METER = 1.0
+    eval FFI::GDAL::SRS_UA.to_ruby
+    RADIAN_TO_RADIAN = 1.0
+
     # @return [Array<String>]
     def self.projection_methods
       methods_ptr_ptr = FFI::GDAL.OPTGetProjectionMethods
@@ -304,7 +309,9 @@ module OGR
       FFI::GDAL.OSRGetAttrValue(@ogr_spatial_ref_pointer, name, child)
     end
 
-    # @return [Hash{unit_name: String, value: Float}]
+    # @return [Hash{unit_name: String, value: Float}]  +unit_name+ is the name
+    #   of the unit type ("degree" or "radian").  +value+ is the number to
+    #   multiply angular distances to transform them to radians.
     def angular_units
       name = FFI::MemoryPointer.new(:string)
       name_ptr = FFI::MemoryPointer.new(:pointer)
@@ -315,7 +322,18 @@ module OGR
       { unit_name: name_ptr.read_pointer.read_string, value: value }
     end
 
-    # @return [Hash{unit_name: String, value: Float}]
+    # @param unit_label [String]
+    # @param transfor_to_meters [Float] The value to multiply an angle to
+    #   transform the value to radians.
+    def set_angular_units(unit_label, transform_to_radians)
+      ogr_err = FFI::GDAL.OSRSetAngularUnits(@ogr_spatial_ref_pointer, unit_label, transform_to_radians.to_f)
+
+      ogr_err.handle_result
+    end
+
+    # @return [Hash{unit_name: String, value: Float}]  +unit_name+ is the name
+    #   of the unit type (e.g. "Meters"). +value+ is the number to multiply
+    #   linear distances to transform them to meters.
     def linear_units
       name = FFI::MemoryPointer.new(:string)
       name_ptr = FFI::MemoryPointer.new(:pointer)
@@ -324,6 +342,15 @@ module OGR
       value = FFI::GDAL.OSRGetLinearUnits(@ogr_spatial_ref_pointer, name_ptr)
 
       { unit_name: name_ptr.read_pointer.read_string, value: value }
+    end
+
+    # @param unit_label [String]
+    # @param transfor_to_meters [Float] The value to multiply a length to
+    #   transform the value to meters.
+    def set_linear_units(unit_label, transform_to_meters)
+      ogr_err = FFI::GDAL.OSRSetLinearUnits(@ogr_spatial_ref_pointer, unit_label, transform_to_meters.to_f)
+
+      ogr_err.handle_result
     end
 
     # @param target_key [String] I.e. "PROJCS" or "VERT_CS".
