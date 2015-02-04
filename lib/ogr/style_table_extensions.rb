@@ -25,7 +25,7 @@ module OGR
     end
 
     # @return [String]
-    def to_json(_ = nil)
+    def to_json(options = nil)
       as_json(options).to_json
     end
   end

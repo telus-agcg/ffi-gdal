@@ -50,7 +50,7 @@ RSpec.describe OGR::FeatureDefinition do
     context 'param is not a Field' do
       it 'raises' do
         expect do
-          subject.add_field_definition('bobo')
+          subject.add_field_definition('not a pointer')
         end.to raise_exception OGR::InvalidField
       end
     end

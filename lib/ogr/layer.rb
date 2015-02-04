@@ -12,7 +12,6 @@ module OGR
       @spatial_reference = nil
       @spatial_filter = nil
       @envelope = nil
-      @feature_definition = nil
       @style_table = nil
     end
 
@@ -118,6 +117,7 @@ module OGR
     # @param layer_method [OGR::Layer, FFI::Pointer]
     # @return [OGR::Layer] Contains features whose geometries are in one or the
     #   other layer, but not in both.
+    # TODO: Fix me?
     def symmetrical_difference(other_layer, **options, &progress)
       other_layer_ptr = GDAL._pointer(OGR::Layer, other_layer)
       # TODO: Should this be allocated by LibC?
@@ -163,6 +163,7 @@ module OGR
       FFI::GDAL.OGR_L_TestCapability(@layer_pointer, capability)
     end
 
+    # TODO: Fix me?
     def union(other_layer, **options, &progress)
       raise NotImplementedError
 
@@ -191,6 +192,7 @@ module OGR
       ogr_err.handle_result
     end
 
+    # TODO: Fix me?
     def update(other_layer, **options, &progress)
       raise NotImplementedError
 
@@ -338,12 +340,11 @@ module OGR
     #
     # @return [OGR::FeatureDefinition,nil]
     def feature_definition
-      return @feature_definition if @feature_definition
-
       feature_defn_pointer = FFI::GDAL.OGR_L_GetLayerDefn(@layer_pointer)
       return nil if feature_defn_pointer.null?
 
-      @feature_definition = OGR::FeatureDefinition.new(feature_defn_pointer)
+      # This object should not be modified.
+      OGR::FeatureDefinition.new(feature_defn_pointer)
     end
 
     # @return [OGR::SpatialReference]

@@ -25,23 +25,26 @@ module OGR
             OGR::UnknownGeometry.new(geometry)
           end
 
+        new_pointer = geometry.c_pointer
+        geometry.c_pointer.autorelease = true
+
         _ = case geometry.type
         when :wkbPoint, :wkbPoint25D
-          OGR::Point.new(geometry.c_pointer)
+          OGR::Point.new(new_pointer)
         when :wkbLineString, :wkbLineString25D
-          OGR::LineString.new(geometry.c_pointer)
+          OGR::LineString.new(new_pointer)
         when :wkbLinearRing
-          OGR::LinearRing.new(geometry.c_pointer)
+          OGR::LinearRing.new(new_pointer)
         when :wkbPolygon, :wkbPolygon25D
-          OGR::Polygon.new(geometry.c_pointer)
+          OGR::Polygon.new(new_pointer)
         when :wkbMultiPoint, :wkbMultiPoint25D
-          OGR::MultiPoint.new(geometry.c_pointer)
+          OGR::MultiPoint.new(new_pointer)
         when :wkbMultiLineString, :wkbMultiLineString25D
-          OGR::MultiLineString.new(geometry.c_pointer)
+          OGR::MultiLineString.new(new_pointer)
         when :wkbMultiPolygon, :wkbMultiPolygon25D
-          OGR::MultiPolygon.new(geometry.c_pointer)
+          OGR::MultiPolygon.new(new_pointer)
         when :wkbGeometryCollection
-          OGR::GeometryCollection.new(geometry.c_pointer)
+          OGR::GeometryCollection.new(new_pointer)
         else
           geometry
         end
@@ -61,14 +64,14 @@ module OGR
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-        spatial_ref_pointer = if spatial_reference
-                                GDAL._pointer(OGR::SpatialReference, spatial_reference)
-                              else
-                                FFI::MemoryPointer.new(:pointer)
-        end
+        spatial_ref_pointer =
+          if spatial_reference
+            GDAL._pointer(OGR::SpatialReference, spatial_reference)
+          else
+            nil
+          end
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
-        geometry_ptr.autorelease = true
 
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr.write_pointer(geometry_ptr)
@@ -80,8 +83,11 @@ module OGR
                       geometry_ptr_ptr.read_pointer.null?
         geometry_ptr_ptr.read_pointer.nil?
 
-        # Not assigning here makes tests crash when using a #let.
-        _ = factory(geometry_ptr_ptr.read_pointer)
+        geometry = factory(geometry_ptr_ptr.read_pointer)
+
+        ObjectSpace.define_finalizer(geometry) { destroy! }
+
+        geometry
       end
 
       # @param gml_data [String]
@@ -124,6 +130,8 @@ module OGR
     end
 
     def destroy!
+      return unless @geometry_pointer
+
       FFI::GDAL.OGR_G_DestroyGeometry(@geometry_pointer)
       @geometry_pointer = nil
     end
@@ -167,8 +175,6 @@ module OGR
 
     # @return [OGR::Envelope]
     def envelope
-      return @envelope if @envelope
-
       case coordinate_dimension
       when 2
         envelope = FFI::GDAL::OGREnvelope.new
@@ -184,7 +190,7 @@ module OGR
 
       return nil if envelope.null?
 
-      @envelope = OGR::Envelope.new(envelope)
+      OGR::Envelope.new(envelope)
     end
 
     # @return [FFI::GDAL::OGRwkbGeometryType]
@@ -389,12 +395,9 @@ module OGR
 
     # @return [OGR::SpatialReference]
     def spatial_reference
-      return @spatial_reference if @spatial_reference
-
       spatial_ref_ptr = FFI::GDAL.OGR_G_GetSpatialReference(@geometry_pointer)
       return nil if spatial_ref_ptr.null?
 
-      @spatial_reference = OGR::SpatialReference.new(spatial_ref_ptr)
       OGR::SpatialReference.new(spatial_ref_ptr)
     end
 
@@ -405,7 +408,6 @@ module OGR
     def spatial_reference=(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
 
-      @spatial_reference = new_spatial_ref
       FFI::GDAL.OGR_G_AssignSpatialReference(@geometry_pointer, new_spatial_ref_ptr)
     end
 
@@ -510,7 +512,7 @@ module OGR
     def to_wkb(byte_order = :wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
       ogr_err = FFI::GDAL.OGR_G_ExportToWkb(@geometry_pointer, byte_order, output)
-      ogr_err.handle_result
+      ogr_err.handle_result 'Unable to export geometry to WKB'
 
       output.read_bytes(wkb_size)
     end
@@ -610,8 +612,6 @@ module OGR
     # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
     def initialize_from_pointer(geometry_ptr)
       @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
-      @envelope = nil
-      @spatial_reference = OGR::SpatialReference.new
       @read_only = false
     end
 
@@ -624,7 +624,6 @@ module OGR
         return nil
       end
 
-      # self.class.factory(new_geometry_ptr)
       OGR::Geometry.factory(new_geometry_ptr)
     end
   end

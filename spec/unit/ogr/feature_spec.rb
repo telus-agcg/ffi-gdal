@@ -40,7 +40,7 @@ RSpec.describe OGR::Feature do
     context 'param is not a FeatureDefinition' do
       it 'raises an OGR::InvalidFeatureDefinition' do
         expect do
-          described_class.create('mewo')
+          described_class.create('not a pointer')
         end.to raise_exception OGR::InvalidFeatureDefinition
       end
     end

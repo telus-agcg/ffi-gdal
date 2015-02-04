@@ -171,12 +171,10 @@ module OGR
 
     # @return [OGR::StyleTable, nil]
     def style_table
-      return @style_table if @style_table
-
       style_table_ptr = FFI::GDAL.OGR_DS_GetStyleTable(@data_source_pointer)
       return nil if style_table_ptr.null?
 
-      @style_table = OGR::StyleTable.new(style_table_ptr)
+      OGR::StyleTable.new(style_table_ptr)
     end
 
     # @param new_style_table [OGR::StyleTable, FFI::Pointer]
@@ -185,12 +183,11 @@ module OGR
 
       FFI::GDAL.OGR_DS_SetStyleTable(@data_source_pointer, new_style_table_ptr)
 
-      @style_table =
-        if new_style_table.instance_of? OGR::StyleTable
-          new_style_table
-        else
-          OGR::StyleTable.new(new_style_table_ptr)
-        end
+      if new_style_table.instance_of? OGR::StyleTable
+        new_style_table
+      else
+        OGR::StyleTable.new(new_style_table_ptr)
+      end
     end
 
     # @param capability [String] Must be one of: ODsCCreateLayer,

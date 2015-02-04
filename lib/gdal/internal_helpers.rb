@@ -23,7 +23,8 @@ module GDAL
         else
           if warn_on_nil
             Logger.logger.debug "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
-            Logger.logger.debug "<#{name}._pointer> Called at: #{caller(1, 1).first}"
+            Logger.logger.debug "<#{name}._pointer> Called at: #{caller(1, 2).first}"
+            caller(1, 2).each { |line| Logger.logger.debug "<#{name}._pointer>\t#{line}" }
           end
 
           nil

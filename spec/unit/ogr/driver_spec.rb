@@ -114,7 +114,7 @@ RSpec.describe OGR::Driver do
     context 'source data source does not exist' do
       it 'raises an OGR::InvalidDataSource' do
         expect do
-          subject.copy_data_source('asdf', 'bobo')
+          subject.copy_data_source('not a pointer', 'bobo')
         end.to raise_exception OGR::InvalidDataSource
       end
     end

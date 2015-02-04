@@ -408,7 +408,6 @@ module OGR
       )
 
       byte_count = byte_count_ptr.read_int
-      puts "byte count: #{byte_count}"
       string = byte_count > 0 ? binary_data.read_bytes(byte_count) : ''
 
       string.unpack('C*')

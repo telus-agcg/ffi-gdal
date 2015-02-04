@@ -140,11 +140,15 @@ RSpec.describe OGR::DataSource do
 
   describe '#style_table=' do
     context 'no style table associated' do
-      let(:style_table) { OGR::StyleTable.new }
+      let(:style_table) do
+        st = OGR::StyleTable.new
+        st.add_style('test', '#123456')
+        st
+      end
 
-      it 'assigns the new style table to @style_table' do
+      it 'assigns the new style table' do
         subject.style_table = style_table
-        expect(subject.instance_variable_get(:@style_table)).to eq style_table
+        expect(subject.style_table.find('test')).to eq '#123456'
       end
     end
   end
