@@ -153,10 +153,11 @@ module OGR
         fail TypeError,
           "Raw field is not of required field type: #{field_definition(index).type}"
       end
-      # FFI::GDAL.OGR_F_SetFieldRaw(@feature_pointer, index, value.to_ptr)
+
       FFI::GDAL.OGR_F_SetFieldRaw(@feature_pointer, index, value)
     end
 
+    # TODO: this seems really wonky...
     def valid_raw_field?(index, raw_field)
       field_def = field_definition(index)
 

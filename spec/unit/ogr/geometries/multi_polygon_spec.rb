@@ -22,6 +22,8 @@ RSpec.describe OGR::MultiPolygon do
   end
 
   describe '#union_cascaded' do
+    subject { OGR::Geometry.create_from_wkt(wkt) }
+
     let(:wkt) do
       'MULTIPOLYGON(((0 0,0 1,1 1,0 0)),((0 0,1 1,1 0,0 0)))'
     end

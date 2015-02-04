@@ -235,10 +235,10 @@ RSpec.describe OGR::FeatureDefinition do
     end
   end
 
-  describe '#fields' do
+  describe '#field_definitions' do
     it 'returns an array of size field_count' do
-      expect(subject.fields).to be_an Array
-      expect(subject.fields.size).to eq subject.field_count
+      expect(subject.field_definitions).to be_an Array
+      expect(subject.field_definitions.size).to eq subject.field_count
     end
   end
 
@@ -295,7 +295,7 @@ RSpec.describe OGR::FeatureDefinition do
     it 'returns a Hash of all attributes and values' do
       expect(subject.as_json).to eq({
         field_count: 0,
-        fields: [],
+        field_definitions: [],
         geometry_field_count: 1,
         geometry_type: :wkbMultiPolygon,
         is_geometry_ignored: false,

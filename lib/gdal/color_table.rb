@@ -117,7 +117,7 @@ module GDAL
       entry.color3 = three if three
       entry.color4 = four if four
 
-      FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry.c_pointer)
+      FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry.c_struct)
       @color_entries.insert(index, entry)
 
       entry
@@ -133,8 +133,8 @@ module GDAL
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
     # @return [Fixnum] The total number of entries.  nil or -1 on error.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
-      start_color_ptr = GDAL._pointer(GDAL::ColorEntry, start_color)
-      end_color_ptr = GDAL._pointer(GDAL::ColorEntry, end_color)
+      start_color_ptr = start_color.c_struct
+      end_color_ptr = end_color.c_struct
 
       FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index,
         start_color_ptr,

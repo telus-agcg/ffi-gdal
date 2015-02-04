@@ -50,6 +50,8 @@ module OGR
 
     # Closes opened data source and releases allocated resources.
     def destroy!
+      return unless @data_source_pointer
+
       FFI::GDAL.OGR_DS_Destroy(@data_source_pointer)
       @data_source_pointer = nil
     end
@@ -106,7 +108,7 @@ module OGR
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference)
+      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
@@ -151,7 +153,7 @@ module OGR
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
     def execute_sql(command, spatial_filter = nil, dialect = nil)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter)
+      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
       layer_ptr = FFI::GDAL.OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
         dialect)
@@ -166,6 +168,7 @@ module OGR
     # @param layer [OGR::Layer, FFI::Pointer]
     def release_result_set(layer)
       layer_ptr = GDAL._pointer(OGR::Layer, layer)
+      layer = nil
       FFI::GDAL.OGR_DS_ReleaseResultSet(@data_source_pointer, layer_ptr)
     end
 

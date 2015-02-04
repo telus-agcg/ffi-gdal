@@ -45,6 +45,8 @@ module OGR
           OGR::MultiPolygon.new(new_pointer)
         when :wkbGeometryCollection
           OGR::GeometryCollection.new(new_pointer)
+        when :wkbNone
+          OGR::NoneGeometry.new(new_pointer)
         else
           geometry
         end
@@ -310,6 +312,8 @@ module OGR
     # @return [Boolean]
     def valid?
       FFI::GDAL.OGR_G_IsValid(@geometry_pointer)
+    rescue GDAL::Error
+      false
     end
 
     # Returns TRUE if the geometry has no anomalous geometric points, such as
@@ -327,6 +331,12 @@ module OGR
     # @return [Boolean]
     def ring?
       FFI::GDAL.OGR_G_IsRing(@geometry_pointer)
+    rescue GDAL::Error => ex
+      if ex.message.include? 'IllegalArgumentException'
+        false
+      else
+        raise
+      end
     end
 
     # @param other_geometry [OGR::Geometry]
@@ -611,6 +621,7 @@ module OGR
 
     # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
     def initialize_from_pointer(geometry_ptr)
+      fail OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
       @geometry_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
       @read_only = false
     end
@@ -618,11 +629,6 @@ module OGR
     def build_geometry
       new_geometry_ptr = yield(@geometry_pointer)
       return nil if new_geometry_ptr.nil? || new_geometry_ptr.null?
-
-      if new_geometry_ptr == @geometry_pointer
-        log 'Newly created geometry and current geometry are the same.'
-        return nil
-      end
 
       OGR::Geometry.factory(new_geometry_ptr)
     end

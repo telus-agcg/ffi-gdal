@@ -8,7 +8,13 @@ module GDAL
       @color_entry_struct = color_entry || FFI::GDAL::GDALColorEntry.new
     end
 
+    # @return [FFI::MemoryPointer] Pointer to the C struct.
     def c_pointer
+      @color_entry_struct.pointer
+    end
+
+    # @return [FFI::GDAL::GDALColorEntry]
+    def c_struct
       @color_entry_struct
     end
 

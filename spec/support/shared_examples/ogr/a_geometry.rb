@@ -263,8 +263,17 @@ RSpec.shared_examples 'a geometry' do
   end
 
   describe '#spatial_reference' do
-    it 'returns a spatial reference' do
-      expect(geometry.spatial_reference).to be_a OGR::SpatialReference
+    context 'none assigned' do
+      it 'returns nil' do
+        expect(geometry.spatial_reference).to be_nil
+      end
+    end
+
+    context 'has one assigned' do
+      it 'returns a spatial reference' do
+        geometry.spatial_reference = OGR::SpatialReference.new_from_epsg 4326
+        expect(geometry.spatial_reference).to be_a OGR::SpatialReference
+      end
     end
   end
 
@@ -343,7 +352,23 @@ RSpec.shared_examples 'a geometry' do
   describe '#wkb_size' do
     it 'returns a non-zero integer' do
       expect(geometry.wkb_size).to be_a Fixnum
-      expect(geometry.wkb_size).to be > 0
+
+      if geometry.name == 'LINEARRING'
+        expect(geometry.wkb_size).to be_zero
+      else
+        expect(geometry.wkb_size).to be > 0
+      end
+    end
+  end
+
+  describe '#to_wkb' do
+    it 'returns some binary String data' do
+      if geometry.name == 'LINEARRING'
+        expect { geometry.to_wkb }.to raise_exception OGR::UnsupportedOperation
+      else
+        expect(geometry.to_wkb).to be_a String
+        expect(geometry.to_wkb).to_not be_empty
+      end
     end
   end
 
@@ -351,13 +376,6 @@ RSpec.shared_examples 'a geometry' do
     it 'returns some String data' do
       expect(geometry.to_wkt).to be_a String
       expect(geometry.to_wkt).to_not be_empty
-    end
-  end
-
-  describe '#to_wkb' do
-    it 'returns some binary String data' do
-      expect(geometry.to_wkb).to be_a String
-      expect(geometry.to_wkb).to_not be_empty
     end
   end
 

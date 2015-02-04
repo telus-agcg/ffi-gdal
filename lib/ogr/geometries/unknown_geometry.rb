@@ -2,8 +2,8 @@ module OGR
   class UnknownGeometry
     include OGR::Geometry
 
-    def initialize(geometry_ptr = nil)
-      geometry_ptr ||= OGR::Geometry.create(:wkbUnknown)
+    # @param geometry_ptr [FFI::Pointer]
+    def initialize(geometry_ptr)
       initialize_from_pointer(geometry_ptr)
     end
   end
