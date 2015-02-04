@@ -3,7 +3,7 @@ require 'json'
 module OGR
   module FieldExtensions
     # @return [Hash]
-    def as_json
+    def as_json(options = nil)
       {
         is_ignored: ignored?,
         justification: justification,
@@ -15,8 +15,8 @@ module OGR
     end
 
     # @return [String]
-    def to_json(_ = nil)
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
   end
 end

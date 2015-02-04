@@ -30,27 +30,27 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json
+    def as_json(options = nil)
       {
         layer: {
-          extent: extent.as_json,
+          extent: extent.as_json(options),
           feature_count: feature_count,
-          feature_definition: feature_definition.as_json,
+          feature_definition: feature_definition.as_json(options),
           features: features.map(&:as_json),
           fid_column: fid_column,
           geometry_column: geometry_column,
           geometry_type: geometry_type,
           name: name,
-          spatial_reference: spatial_reference ? spatial_reference.as_json : nil,
-          style_table: style_table ? style_table.as_json : nil
+          spatial_reference: spatial_reference ? spatial_reference.as_json(options) : nil,
+          style_table: style_table ? style_table.as_json(options) : nil
         },
         metadata: nil # all_metadata
       }
     end
 
     # @return [String]
-    def to_json(_ = nil)
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
   end
 end

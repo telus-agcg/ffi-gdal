@@ -3,7 +3,7 @@ require 'json'
 module OGR
   module GeometryExtensions
     # @return [Hash]
-    def as_json
+    def as_json(options = nil)
       json = {
         coordinate_dimension: coordinate_dimension,
         geometry_count: geometry_count,
@@ -14,7 +14,7 @@ module OGR
         is_valid: valid?,
         name: name,
         point_count: point_count,
-        spatial_reference: spatial_reference.nil? ? nil : spatial_reference.as_json,
+        spatial_reference: spatial_reference.nil? ? nil : spatial_reference.as_json(options),
         type: type_to_name,
         wkb_size: wkb_size
       }
@@ -27,8 +27,8 @@ module OGR
     end
 
     # @return [String]
-    def to_json(_ = nil)
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
 
     def collection?
