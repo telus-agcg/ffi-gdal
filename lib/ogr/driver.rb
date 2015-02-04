@@ -41,7 +41,7 @@ module OGR
     def self.names
       0.upto(count - 1).map do |i|
         at_index(i).name
-      end
+      end.sort
     end
 
     # You probably don't want to use this directly--see .by_name and .at_index
