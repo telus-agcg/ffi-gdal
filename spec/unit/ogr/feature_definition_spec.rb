@@ -230,7 +230,7 @@ RSpec.describe OGR::FeatureDefinition do
       it 'deletes the gfld' do
         expect do
           subject.delete_geometry_field_definition(1)
-        end.to change { subject.geometry_field_count }.by -1
+        end.to change { subject.geometry_field_count }.by(-1)
       end
     end
   end

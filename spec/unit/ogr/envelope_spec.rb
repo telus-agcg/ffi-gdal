@@ -218,7 +218,7 @@ RSpec.describe OGR::Envelope do
     end
 
     it 'has an y_min that equals the most minimum value between the two envelopes' do
-      expect(subject.merge(other_envelope).y_min).to eq -100
+      expect(subject.merge(other_envelope).y_min).to eq(-100)
     end
 
     it 'has an x_max that equals the most maximum value between the two envelopes' do
