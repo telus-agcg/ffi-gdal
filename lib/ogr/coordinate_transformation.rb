@@ -10,7 +10,7 @@ module OGR
       source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
       ct_ptr = FFI::GDAL.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
-      return nil if ct_ptr.null?
+      fail OGR::Failure, 'Unable to create coordinate transformation' if ct_ptr.null?
 
       source =
         if source_srs.is_a?(OGR::SpatialReference)

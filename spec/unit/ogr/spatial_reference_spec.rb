@@ -1,81 +1,42 @@
 require 'spec_helper'
 
 RSpec.describe OGR::SpatialReference do
-  # Not sure why yet, but it seems I can only do angular unit setting with
-  # certain projections; 4326 is one of them.
-  describe '#set_angular_units + #angular_units' do
-    subject { OGR::SpatialReference.new_from_epsg(4326) }
+  describe '.projection_methods' do
+    context 'strip underscores' do
+      subject { described_class.projection_methods(true) }
 
-    context 'using a known label and value' do
-      it 'sets the new label and value' do
-        subject.set_angular_units(OGR::SpatialReference::RADIAN_LABEL, 1.0)
-        expect(subject.angular_units).to eq(unit_name: 'radian', value: 1.0)
+      it 'returns an Array of Strings' do
+        expect(subject).to be_an Array
+        expect(subject.first).to be_a String
+      end
+
+      it 'has Strings with no underscores' do
+        expect(subject).to satisfy { |v| !v.include?('_') }
       end
     end
 
-    context 'using an unknown label and value' do
-      it 'sets the new label and value' do
-        subject.set_angular_units('Darrels', 25.6)
-        expect(subject.angular_units).to eq(unit_name: 'Darrels', value: 25.6)
+    context 'not strip underscores' do
+      subject { described_class.projection_methods(false) }
+
+      it 'returns an Array of Strings' do
+        expect(subject).to be_an Array
+        expect(subject.first).to be_a String
       end
-    end
-  end
 
-  # Not sure why yet, but it seems I can only do angular unit setting with
-  # certain projections; 4326 is one of them.
-  describe '#angular_units= + #angular_units' do
-    subject { OGR::SpatialReference.new_from_epsg(4326) }
-
-    context 'using a known label' do
-      it 'sets the new label and value' do
-        subject.angular_units = :radian
-        expect(subject.angular_units).to eq(unit_name: 'radian', value: 1.0)
-      end
-    end
-
-    context 'using an unknown label and value' do
-      it 'raises a NameError' do
-        expect { subject.angular_units = 'Darrels' }.to raise_exception NameError
+      it 'has Strings with underscores' do
+        expect(subject).to satisfy { |v| !v.include?(' ') }
       end
     end
   end
 
-  # Not sure why yet, but it seems I can only do linear unit setting with
-  # certain projections; 4333 is one of them.
-  describe '#set_linear_units + #linear_units' do
-    subject { OGR::SpatialReference.new_from_epsg(4333) }
+  describe '#copy_geog_cs_from' do
+    let(:other_srs) { OGR::SpatialReference.new_from_epsg(4326) }
 
-    context 'using a known label and value' do
-      it 'sets the new label and value' do
-        subject.set_linear_units(OGR::SpatialReference::FOOT_LABEL, OGR::SpatialReference::METER_TO_FOOT)
-        expect(subject.linear_units).to eq(unit_name: 'Foot (International)', value: 0.3048)
-      end
-    end
-
-    context 'using an unknown label and value' do
-      it 'sets the new label and value' do
-        subject.set_linear_units('Darrels', 25.6)
-        expect(subject.linear_units).to eq(unit_name: 'Darrels', value: 25.6)
-      end
+    it 'copies the info over' do
+      expect(subject.to_wkt).to be_empty
+      subject.copy_geog_cs_from(other_srs)
+      expect(subject.to_wkt).to eq other_srs.to_wkt
     end
   end
 
-  # Not sure why yet, but it seems I can only do linear unit setting with
-  # certain projections; 4333 is one of them.
-  describe '#linear_units= + #linear_units' do
-    subject { OGR::SpatialReference.new_from_epsg(4333) }
-
-    context 'using a known label' do
-      it 'sets the new label and value' do
-        subject.linear_units = :foot
-        expect(subject.linear_units).to eq(unit_name: 'Foot (International)', value: 0.3048)
-      end
-    end
-
-    context 'using an unknown label and value' do
-      it 'raises a NameError' do
-        expect { subject.linear_units = 'Darrels' }.to raise_exception NameError
-      end
-    end
-  end
 end

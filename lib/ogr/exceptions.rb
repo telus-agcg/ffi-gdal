@@ -47,6 +47,9 @@ module OGR
   class InvalidStyleTable < StandardError
   end
 
+  class InvalidSpatialReference < StandardError
+  end
+
   class NotEnoughData < RuntimeError
   end
 

@@ -193,7 +193,7 @@ module FFI
       :double
     attach_function :OSRSetUTM, %i[OGRSpatialReferenceH int int], OGRErr
     attach_function :OSRGetUTMZone, %i[OGRSpatialReferenceH pointer], :int
-    attach_function :OSRSetStatePlane, %i[OGRSpatialReferenceH int int], OGRErr
+    attach_function :OSRSetStatePlane, %i[OGRSpatialReferenceH int bool], OGRErr
     attach_function :OSRSetStatePlaneWithUnits,
       %i[OGRSpatialReferenceH int int string double],
       OGRErr
@@ -357,6 +357,7 @@ module FFI
       %i[OGRSpatialReferenceH double double double double double double double],
       OGRErr
     attach_function :OSRGetTOWGS84, %i[OGRSpatialReferenceH pointer int], OGRErr
+    attach_function :OSRSetVertCS, %i[OGRSpatialReferenceH string string int], OGRErr
     attach_function :OSRSetCompoundCS,
       %i[OGRSpatialReferenceH string OGRSpatialReferenceH OGRSpatialReferenceH],
       OGRErr
