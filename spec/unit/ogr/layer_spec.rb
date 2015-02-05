@@ -1,14 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe OGR::Layer do
-  let(:driver) { OGR::Driver.by_name 'Memory' }
-  let(:data_source) { driver.create_data_source 'spec data source' }
-
-  subject(:layer) do
-    data_source.create_layer 'spec layer',
-                              geometry_type: :wkbMultiPoint,
-                              spatial_reference: OGR::SpatialReference.new_from_epsg(4326)
-  end
+  include_context 'OGR::Layer, spatial_reference'
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -22,77 +15,9 @@ RSpec.describe OGR::Layer do
     end
   end
 
-  describe '#next_feature_index=' do
-    context 'no features' do
-      it 'raises an OGR::Failure' do
-        expect { subject.next_feature_index = 123 }.
-          to raise_exception OGR::Failure
-      end
-    end
-
-    context 'features exist' do
-      let!(:feature1) do
-        subject.create_feature
-      end
-
-      let!(:feature2) do
-        subject.create_feature
-      end
-
-      it 'sets to the given feature' do
-        subject.next_feature_index = 1
-        expect(subject.next_feature).to_not be_nil
-      end
-    end
-  end
-
-  describe '#spatial_filter' do
-    context 'default' do
-      subject { layer.spatial_filter }
-      it { is_expected.to be_nil }
-    end
-  end
-
-  describe '#spatial_filter= + #spatial_filter' do
-    it 'assigns the spatial_filter to the new geometry' do
-      geometry = OGR::Geometry.create_from_wkt('POINT (1 1)')
-      subject.spatial_filter = geometry
-      expect(subject.spatial_filter).to eq geometry
-    end
-  end
-
-  describe '#set_spatial_filter_ex' do
-    it 'does not die' do
-      geometry = OGR::Geometry.create_from_wkt('POINT (1 1)')
-      expect { subject.set_spatial_filter_ex(0, geometry) }.to_not raise_exception
-    end
-  end
-
-  describe '#set_spatial_filter_rectangle' do
-    it 'does not die' do
-      expect { subject.set_spatial_filter_rectangle(0, 0, 1000, 1000) }.
-        to_not raise_exception
-    end
-  end
-
-  describe '#set_spatial_filter_rectangle_ex' do
-    it 'does not die' do
-      expect { subject.set_spatial_filter_rectangle_ex(0, 0, 0, 1000, 1000) }.
-        to_not raise_exception
-    end
-  end
-
-  describe '#symmetrical_difference' do
-    let(:other_layer) do
-      data_source.create_layer 'other layer',
-                               geometry_type: :wkbMultiPoint,
-                               spatial_reference: OGR::SpatialReference.new_from_epsg(4326)
-    end
-
-    it 'does not die' do
-      skip 'Figuring out how to init a result pointer'
-      # expect { subject.symmetrical_difference(other_layer) }.
-      #   to_not raise_exception
+  describe '#geometry_column' do
+    it 'returns a String' do
+      expect(subject.geometry_column).to be_a String
     end
   end
 
@@ -119,6 +44,57 @@ RSpec.describe OGR::Layer do
     context 'unsupported capabilities to check' do
       it 'returns false' do
         expect(subject.test_capability('meow')).to eq false
+      end
+    end
+  end
+
+  describe '#spatial_reference' do
+    context 'no spatial ref' do
+      include_context 'OGR::Layer, no spatial_reference'
+
+      it 'returns nil' do
+        expect(subject.spatial_reference).to be_nil
+      end
+    end
+
+    context 'with a spatial ref' do
+      it 'returns an OGR::SpatialReference' do
+        expect(subject.spatial_reference).to be_a OGR::SpatialReference
+      end
+    end
+  end
+
+  describe '#extent' do
+    it 'returns an OGR::Envelope' do
+      expect(subject.extent).to be_a OGR::Envelope
+    end
+  end
+
+  describe '#extent_by_geometry' do
+    context 'force is false' do
+      it 'returns an OGR::Envelope' do
+        expect(subject.extent_by_geometry(0, false)).to be_a OGR::Envelope
+      end
+    end
+
+    context 'force is true' do
+      it 'returns an OGR::Envelope' do
+        expect(subject.extent_by_geometry(0, true)).to be_a OGR::Envelope
+      end
+    end
+  end
+
+  describe '#style_table= + #style_table' do
+    context 'one is not set' do
+      it 'returns nil' do
+        expect(subject.style_table).to be_nil
+      end
+    end
+
+    context 'one is set' do
+      it 'returns an OGR::StyleTable' do
+        subject.style_table = OGR::StyleTable.new
+        expect(subject.style_table).to be_a OGR::StyleTable
       end
     end
   end

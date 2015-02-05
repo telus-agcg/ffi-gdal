@@ -99,6 +99,7 @@ module OGR
 
     # @param index [Fixnum]
     # @param values [Array<String>]
+    # @raise [GDAL::Error] If index isn't valid
     def set_field_string_list(index, values)
       values_ptr = GDAL._string_array_to_pointer(values)
 

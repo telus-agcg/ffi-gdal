@@ -201,10 +201,10 @@ RSpec.describe OGR::Feature do
     end
 
     context 'to an invalid valid index' do
-      it 'adds the field' do
+      it 'raises a GDAL::Error' do
         expect do
           subject.set_field_string_list(100, [1, 2, 3])
-        end.to raise_exception TypeError
+        end.to raise_exception GDAL::Error, 'Invalid index : 100'
       end
     end
 
