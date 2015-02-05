@@ -27,33 +27,28 @@ module OGR
 
       # Deletes the feature from the layer.
       #
-      # TODO: Use OGR_L_TestCapability before trying to delete.
+      # @param feature_id [Fixnum] ID of the Feature to delete.
       # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure] When trying to delete a feature with an ID that
+      #   does not exist.
+      # TODO: Use OGR_L_TestCapability before trying to delete.
       def delete_feature(feature_id)
         ogr_err = FFI::GDAL.OGR_L_DeleteFeature(@layer_pointer, feature_id)
 
-        ogr_err.handle_result
+        ogr_err.handle_result "Unable to delete feature with ID '#{feature_id}'"
       end
 
       # The number of features in this layer.  If +force+ is false and it would be
       # expensive to determine the feature count, -1 may be returned.
       #
-      # @param force [Boolean] Force the calculation even if it's
-      #   expensive.
+      # @param force [Boolean] Force the calculation even if it's expensive.
       # @return [Fixnum]
       def feature_count(force = true)
         FFI::GDAL.OGR_L_GetFeatureCount(@layer_pointer, force)
       end
 
-      # The name of the underlying database column or "" if not supported.
-      #
-      # @return [String]
-      def fid_column
-        FFI::GDAL.OGR_L_GetFIDColumn(@layer_pointer)
-      end
-
       # @param index [Fixnum] The 0-based index of the feature to get.  It should
-      #   be <= +feature_count+, but not checking is done to ensure.
+      #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
         @features.fetch(index) do

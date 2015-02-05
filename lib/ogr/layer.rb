@@ -83,14 +83,6 @@ module OGR
       FFI::GDAL.OGR_L_GetGeomType(@layer_pointer)
     end
 
-    # The name of the underlying database column being used as the geometry
-    # column.  Returns "" if not supported.
-    #
-    # @return [String]
-    def geometry_column
-      FFI::GDAL.OGR_L_GetGeometryColumn(@layer_pointer)
-    end
-
     # @return [OGR::StyleTable, nil]
     def style_table
       style_table_pointer = FFI::GDAL.OGR_L_GetStyleTable(@layer_pointer)

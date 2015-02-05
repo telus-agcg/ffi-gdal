@@ -15,12 +15,6 @@ RSpec.describe OGR::Layer do
     end
   end
 
-  describe '#geometry_column' do
-    it 'returns a String' do
-      expect(subject.geometry_column).to be_a String
-    end
-  end
-
   describe '#sync_to_disk' do
     it 'does not die' do
       expect { subject.sync_to_disk }.to_not raise_exception
