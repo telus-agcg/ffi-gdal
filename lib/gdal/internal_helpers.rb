@@ -43,6 +43,26 @@ module GDAL
         end
       end
 
+      # Takes an array of strings (or things that should be converted to
+      # strings) and creates a char**.
+      #
+      # @param [Array<String>] [description]
+      # @return [FFI::MemoryPointer]
+      def _string_array_to_pointer(strings)
+        string_pointers = strings.map do |string|
+          FFI::MemoryPointer.from_string(string.to_s)
+        end
+
+        string_pointers << nil
+        array_pointer = FFI::MemoryPointer.new(:pointer, strings.size + 1)
+
+        string_pointers.each_with_index do |ptr, i|
+          array_pointer[i].put_pointer(0, ptr)
+        end
+
+        array_pointer
+      end
+
       # Maps GDAL DataTypes to FFI types.
       #
       # @param data_type [FFI::GDAL::GDALDataType]
@@ -66,7 +86,8 @@ module GDAL
       # @param function_name [Symbol]
       # @return [Boolean]
       def _supported?(function_name)
-        !FFI::GDAL.unsupported_gdal_functions.include?(function_name)
+        !FFI::GDAL.unsupported_gdal_functions.include?(function_name) &&
+          FFI::GDAL.respond_to?(function_name)
       end
     end
   end

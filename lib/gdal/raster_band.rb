@@ -140,16 +140,7 @@ module GDAL
     # @param names [Array<String>]
     # @return [Boolean]
     def category_names=(names)
-      str_pointers = names.map do |name|
-        FFI::MemoryPointer.from_string(name.to_s)
-      end
-
-      str_pointers << nil
-      names_pointer = FFI::MemoryPointer.new(:pointer, str_pointers.length)
-
-      str_pointers.each_with_index do |ptr, i|
-        names_pointer[i].put_pointer(0, ptr)
-      end
+      names_pointer = GDAL._string_array_to_pointer(names)
 
       !!FFI::GDAL.GDALSetRasterCategoryNames(@raster_band_pointer, names_pointer)
     end

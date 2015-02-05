@@ -158,20 +158,8 @@ module OGR
 
         # @param prj_text [Array<String>]
       def import_from_esri(esri_text)
-        test_array = esri_text.split("\n")
-
-        string_pointers = test_array.map do |line|
-          FFI::MemoryPointer.from_string(line.strip)
-        end
-
-        string_pointers << nil
-
-        esri_ptr_ptr = FFI::MemoryPointer.new(:pointer, test_array.size + 1)
-
-        string_pointers.each_with_index do |pointer, i|
-          esri_ptr_ptr[i].write_pointer(pointer)
-        end
-
+        text_array = esri_text.split("\n")
+        esri_ptr_ptr = GDAL._string_array_to_pointer(text_array)
         ogr_err = FFI::GDAL.OSRImportFromESRI(@ogr_spatial_ref_pointer, esri_ptr_ptr)
 
         ogr_err.handle_result

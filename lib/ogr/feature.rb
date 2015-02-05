@@ -100,16 +100,7 @@ module OGR
     # @param index [Fixnum]
     # @param values [Array<String>]
     def set_field_string_list(index, values)
-      string_pointers = values.map do |value|
-        FFI::MemoryPointer.from_string(value)
-      end
-
-      string_pointers << nil
-      values_ptr = FFI::MemoryPointer.new(:pointer, values.size + 1)
-
-      string_pointers.each_with_index do |pointer, i|
-        values_ptr[i].write_pointer(pointer)
-      end
+      values_ptr = GDAL._string_array_to_pointer(values)
 
       FFI::GDAL.OGR_F_SetFieldStringList(
         @feature_pointer,
