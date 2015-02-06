@@ -44,19 +44,19 @@ module GDAL
     #
     # @param range_count [Fixnum] The number of ranges to create.
     def equal_value_ranges(range_count)
-      min_max_values = @raster_band.min_max
-      range_size = min_max_values[:max] / range_count
+      raster_min_max = @raster_band.min_max
+      range_size = (raster_min_max[:max] - raster_min_max[:min]) / range_count
       ranges = []
 
+      breakpoint_calculator = lambda do |range_number|
+        min = raster_min_max[:min] + (range_size * range_number)
+        max = min + range_size
+
+        range_for_type(min, max)
+      end
+
       range_count.times do |i|
-        range =
-          if i.zero?
-            range_for_type(@raster_band.to_na.min, range_size * (i + 1))
-          elsif i == (range_count)
-            range_for_type(range_size * i, ranges.last[:range].max + 1)
-          else
-            range_for_type(range_size * i, range_size * (i + 1))
-          end
+        range = breakpoint_calculator.call(i)
 
         ranges << {
           range: range,
