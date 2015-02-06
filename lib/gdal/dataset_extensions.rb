@@ -342,12 +342,12 @@ module GDAL
         layer.create_field(field_name, :OFTInteger)
 
         band = raster_band(band_number)
-        band.no_data_value = -9999
 
         unless band
           fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
         end
 
+        band.no_data_value = -9999
         pixel_value_field = layer.feature_definition.field_index(field_name)
         options = { pixel_value_field: pixel_value_field }
         options.merge!(mask_band: band.mask_band) if use_band_masks

@@ -657,7 +657,9 @@ module GDAL
       { min: min_max[0].read_double, max: min_max[1].read_double }
     end
 
-    # The minimum value in the band, no counting NODATA values.
+    # The minimum value in the band, not counting NODATA values. For file
+    # formats that don't know this intrinsically, the minimum supported value
+    # for the data type will generally be returned.
     #
     # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
     #   tells whether the minimum is a tight minimum.
@@ -668,7 +670,9 @@ module GDAL
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
     end
 
-    # The maximum value in the band, no counting NODATA values.
+    # The maximum value in the band, not counting NODATA values. For file
+    # formats that don't know this intrinsically, the maximum supported value
+    # for the data type will generally be returned.
     #
     # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
     #   tells whether the maximum is a tight maximum.
