@@ -133,6 +133,18 @@ module FFI
       :OGRSTLabelLast,        21
 
     #------------------------------------------------------------------------
+    # Constants
+    #------------------------------------------------------------------------
+    OGR_ALTER = FFI::ConstGenerator.new do |gen|
+      gen.include _file_with_constants('ogr_core.h')
+      gen.const :ALTER_NAME_FLAG, '%x'
+      gen.const :ALTER_TYPE_FLAG, '%x'
+      gen.const :ALTER_WIDTH_PRECISION_FLAG, '%x'
+      gen.const :ALTER_ALL_FLAG, '%x'
+    end
+    OGR_ALTER.calculate
+
+    #------------------------------------------------------------------------
     # Typedefs
     #------------------------------------------------------------------------
     typedef :int, :OGRBoolean
