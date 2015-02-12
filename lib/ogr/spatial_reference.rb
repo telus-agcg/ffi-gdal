@@ -91,13 +91,13 @@ module OGR
                nil
              else
                name_ptr_ptr.read_pointer.read_string
-      end
+             end
 
       type = if type_ptr_ptr.read_pointer.null?
                nil
              else
                type_ptr_ptr.read_pointer.read_string
-      end
+             end
 
       {
         type: type,
@@ -237,7 +237,7 @@ module OGR
 
     # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.
     def create_coordinate_transformation(destination_spatial_ref)
-      OGR::CoordinateTransformation.create(@ogr_spatial_ref_pointer, destination_spatial_ref)
+      OGR::CoordinateTransformation.new(@ogr_spatial_ref_pointer, destination_spatial_ref)
     end
   end
 end

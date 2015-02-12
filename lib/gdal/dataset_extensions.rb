@@ -380,7 +380,7 @@ module GDAL
       source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
       @raster_geometry ||= to_geometry
 
-      coordinate_transformation = OGR::CoordinateTransformation.create(source_srs,
+      coordinate_transformation = OGR::CoordinateTransformation.new(source_srs,
         @raster_geometry.spatial_reference)
       source_geometry.transform!(coordinate_transformation)
 
