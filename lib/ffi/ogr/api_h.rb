@@ -10,6 +10,7 @@ module FFI
     #------------------------------------------------------------------------
     # Typedefs
     #------------------------------------------------------------------------
+    # TODO: Use the typedefs for creating pointers throughout the app.
     typedef :pointer, :OGRGeometryH
     typedef :pointer, :OGRFieldDefnH
     typedef :pointer, :OGRFeatureDefnH
@@ -390,7 +391,7 @@ module FFI
     attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], OGRErr
     attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
     attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], :OGRSpatialReferenceH
-    attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string int], :int
+    attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
     attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
 
     attach_function :OGR_L_GetExtent, [:OGRLayerH, OGREnvelope.ptr, :bool], OGRErr
