@@ -356,9 +356,6 @@ module GDAL
       burn_values_ptr = FFI::MemoryPointer.new(:pointer, burn_values.size)
       burn_values_ptr.write_array_of_double(burn_values)
 
-      # not allowing for now
-      progress_callback_data = nil
-
       !!FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
@@ -369,7 +366,7 @@ module GDAL
         burn_values_ptr,
         gdal_options,
         progress_block,
-        progress_callback_data)
+        nil)
     end
 
     # @param band_numbers [Array<Fixnum>, Fixnum]

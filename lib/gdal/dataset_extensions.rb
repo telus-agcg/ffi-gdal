@@ -335,19 +335,17 @@ module GDAL
       band_numbers.each_with_index do |band_number, i|
         log "Starting to polygonize raster band #{band_number}..."
         layer_name = "#{layer_name_prefix}-#{band_number}"
-        layer = data_source.create_layer(layer_name, geometry_type: :wkbPolygon,
+        layer = data_source.create_layer(layer_name, geometry_type: geometry_type,
                                                      spatial_reference: spatial_ref)
 
         field_name = "#{field_name_prefix}#{i}"
         layer.create_field(field_name, :OFTInteger)
-
         band = raster_band(band_number)
 
         unless band
           fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
         end
 
-        band.no_data_value = -9999
         pixel_value_field = layer.feature_definition.field_index(field_name)
         options = { pixel_value_field: pixel_value_field }
         options.merge!(mask_band: band.mask_band) if use_band_masks
@@ -360,16 +358,6 @@ module GDAL
       end
 
       data_source
-    end
-
-    # Converts the dataset to an in-memory vector, then creates a OGR::Geometry
-    # from its extent (i.e. from the boundary of the image).
-    #
-    # @return [OGR::Geometry] A convex hull geometry.
-    def to_geometry
-      raster_data_source = to_vector('memory', 'Memory', geometry_type: :wkbLinearRing)
-
-      raster_data_source.layer(0).geometry_from_extent
     end
 
     # @param wkt_geometry_string [String]
