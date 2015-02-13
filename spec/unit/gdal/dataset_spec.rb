@@ -59,12 +59,8 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#add_band' do
-    it 'raises a GDAL::CPLErrFailure' do
-      skip 'Figure out why this causes a segfault'
-
-      expect do
-        subject.add_band(:GDT_Byte)
-      end.to raise_exception(GDAL::CPLErrFailure)
+    it 'raises a GDAL::UnsupportedOperation' do
+      expect { subject.add_band(:GDT_Byte) }.to raise_exception(GDAL::UnsupportedOperation)
     end
   end
 

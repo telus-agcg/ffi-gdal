@@ -48,8 +48,6 @@ RSpec.describe GDAL::DataType do
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        skip 'Figure out why this causes a segfault'
-
         expect do
           described_class.name(:Bob)
         end.to raise_exception(ArgumentError)
@@ -60,19 +58,13 @@ RSpec.describe GDAL::DataType do
   describe '.by_name' do
     context 'with valid data type name' do
       it 'returns the data type' do
-        skip 'Figure out why this causes a segfault'
-
         expect(described_class.by_name('Byte')).to eq :GDT_Byte
       end
     end
 
     context 'with invalid data type name' do
-      it 'raises an ArgumentError' do
-        skip 'Figure out why this causes a segfault'
-
-        expect do
-          described_class.by_name('Bob')
-        end.to raise_exception(ArgumentError)
+      it 'returns :GDT_Unknown' do
+        expect(described_class.by_name('Bob')).to eq :GDT_Unknown
       end
     end
   end

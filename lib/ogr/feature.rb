@@ -158,7 +158,7 @@ module OGR
       when :OFTIntegerList then !raw_field[:integer_list].nil?
       when :OFTReal then !raw_field[:real].nil?
       when :OFTString then !raw_field[:string].nil?
-      when :OFTString then raw_field[:string]
+      # when :OFTString then raw_field[:string]
       when :OFTStringList then !raw_field[:string_list].nil?
       when :OFTBinary then !raw_field[:binary].nil?
       when :OFTDate then !raw_field[:date].nil?

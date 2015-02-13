@@ -104,8 +104,8 @@ RSpec.describe OGR::Driver do
 
   describe '#delete_data_source' do
     context 'data source does not exist' do
-      it do
-        skip
+      it "raises a GDAL::UnsupportedOperation (Memory driver doesn't support)" do
+        expect { subject.delete_data_source('we no here') }.to raise_exception GDAL::UnsupportedOperation
       end
     end
   end

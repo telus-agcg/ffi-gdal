@@ -79,8 +79,8 @@ module GDAL
       0.upto(narray.size - 1) do |pixel_number|
         next if narray[pixel_number] == @raster_band.no_data_value[:value]
 
-        range = @ranges.find do |range|
-          range[:range].member? narray[pixel_number]
+        range = @ranges.find do |r|
+          r[:range].member? narray[pixel_number]
         end
 
         if range
