@@ -50,7 +50,7 @@ module GDAL
 
       breakpoint_calculator = lambda do |range_number|
         min = raster_min_max[:min] + (range_size * range_number)
-        max = min + range_size
+        max = raster_min_max[:min] + (range_size * (range_number + 1))
 
         range_for_type(min, max)
       end
