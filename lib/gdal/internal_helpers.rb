@@ -21,7 +21,7 @@ module GDAL
           variable.autorelease = true
           variable
         else
-          if warn_on_nil
+          if warn_on_nil && Logger.logging_enabled
             Logger.logger.debug "<#{name}._pointer> #{variable.inspect} is not a valid #{klass} or FFI::Pointer."
             Logger.logger.debug "<#{name}._pointer> Called at:"
             caller(1, 2).each { |line| Logger.logger.debug "<#{name}._pointer>\t#{line}" }
