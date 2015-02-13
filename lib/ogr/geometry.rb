@@ -258,8 +258,9 @@ module OGR
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
     def equals?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
-      FFI::GDAL.OGR_G_Equals(@geometry_pointer, geometry_ptr)
+      return false unless geometry.is_a? OGR::Geometry
+
+      FFI::GDAL.OGR_G_Equals(@geometry_pointer, geometry.c_pointer)
     end
     alias_method :==, :equals?
 
