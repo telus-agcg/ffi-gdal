@@ -2,12 +2,12 @@ require 'spec_helper'
 
 RSpec.describe OGR::FeatureDefinition do
   subject(:feature_definition) do
-    fd = described_class.create('spec feature definition')
+    fd = described_class.new('spec feature definition')
     fd.geometry_type = :wkbMultiPolygon
     fd
   end
 
-  let(:field) { OGR::Field.create('test field', :OFTString) }
+  let(:field) { OGR::Field.new('test field', :OFTString) }
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -56,7 +56,7 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'param is a Field' do
-      let(:field) { OGR::Field.create('test field', :OFTString) }
+      let(:field) { OGR::Field.new('test field', :OFTString) }
 
       it 'adds the field' do
         subject.add_field_definition(field)
@@ -95,7 +95,7 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'field with requested name exists' do
-      let(:field) { OGR::Field.create('test field', :OFTString) }
+      let(:field) { OGR::Field.new('test field', :OFTString) }
       before { subject.add_field_definition(field) }
 
       it "returns the Field's index" do
@@ -107,7 +107,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#geometry_type' do
     context 'default' do
       subject(:feature_definition) do
-        described_class.create('spec feature definition')
+        described_class.new('spec feature definition')
       end
 
       it 'is :wkbUnknown' do
@@ -201,7 +201,7 @@ RSpec.describe OGR::FeatureDefinition do
 
   describe '#add_geometry_field_definition + #geometry_field_definition' do
     let(:geometry_field_definition) do
-      OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+      OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
     end
 
     it 'adds the geometry_field_definition' do
@@ -222,7 +222,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'geometry field definition exists at given index' do
       let(:geometry_field_definition) do
-        OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+        OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
       end
 
       before { subject.add_geometry_field_definition(geometry_field_definition) }
@@ -270,7 +270,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#same?' do
     context 'is the same as the other' do
       let(:other_feature_definition) do
-        df = described_class.create('spec feature definition')
+        df = described_class.new('spec feature definition')
         df.geometry_type = :wkbMultiPolygon
         df
       end
@@ -282,7 +282,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'not the same as the other' do
       let(:other_feature_definition) do
-        described_class.create('other feature definition')
+        described_class.new('other feature definition')
       end
 
       it 'returns false' do

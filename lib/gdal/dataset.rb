@@ -26,33 +26,35 @@ module GDAL
     #   a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
-      file_path = begin
-        uri = URI.parse(path)
-        uri.scheme.nil? ? ::File.expand_path(path) : path
-      rescue URI::InvalidURIError
-        path
-      end
-
-      pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-      fail OpenFailure.new(file_path) if pointer.null?
-
-      new(pointer)
+      new(path, access_flag)
     end
 
     #---------------------------------------------------------------------------
     # Instance methods
     #---------------------------------------------------------------------------
 
-    # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
-    def initialize(dataset_pointer)
-      @dataset_pointer = dataset_pointer
-      @last_known_file_list = []
-      @open = true
-      @driver = nil
-      @geo_transform = nil
+    # @param path_or_pointer [String, FFI::Pointer] Path to the file that
+    #   contains the dataset or a pointer to the dataset. If it's a path, it can
+    #   be a local file or a URL.
+    # @param access_flag [String] 'r' or 'w'.
+    def initialize(path_or_pointer, access_flag)
+      @dataset_pointer =
+        if path_or_pointer.is_a? String
+          file_path = begin
+            uri = URI.parse(path_or_pointer)
+            uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
+          rescue URI::InvalidURIError
+            path_or_pointer
+          end
 
-      close_me = -> { close }
-      ObjectSpace.define_finalizer self, close_me
+          FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+        else
+          path_or_pointer
+        end
+
+      fail OpenFailure.new(path_or_pointer) if @dataset_pointer.null?
+      @last_known_file_list = []
+      ObjectSpace.define_finalizer self, -> { close }
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
@@ -82,10 +84,9 @@ module GDAL
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      return @driver if @driver
       driver_ptr = FFI::GDAL.GDALGetDatasetDriver(@dataset_pointer)
 
-      @driver = Driver.new(driver_ptr)
+      Driver.new(driver_ptr)
     end
 
     # Fetches all files that form the dataset.
@@ -173,12 +174,10 @@ module GDAL
 
     # @return [GDAL::GeoTransform]
     def geo_transform
-      return @geo_transform if @geo_transform
-
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
       FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
 
-      @geo_transform = GeoTransform.new(geo_transform_pointer)
+      GeoTransform.new(geo_transform_pointer)
     end
 
     # @param new_transform [GDAL::GeoTransform]
@@ -187,7 +186,7 @@ module GDAL
       new_pointer = FFI::Pointer.new(new_transform.c_pointer)
       FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
 
-      @geo_transform = GeoTransform.new(new_pointer)
+      GeoTransform.new(new_pointer)
     end
 
     # @return [Fixnum]

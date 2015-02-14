@@ -18,7 +18,7 @@ module GDAL
     NODATA = 0x08
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
-    def initialize(raster_band = nil)
+    def initialize(raster_band)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
       @default_raster_attribute_table = nil
       @color_table = nil

@@ -5,19 +5,20 @@ module OGR
   class Field
     include FieldExtensions
 
-    # @param name [String]
+    # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::GDAL::OGRFieldType]
-    # @return [OGR::Field]
-    def self.create(name, type)
-      field_ptr = FFI::GDAL.OGR_Fld_Create(name, type)
-      return nil if field_ptr.null?
+    def initialize(name_or_pointer, type)
+      @field_pointer = if name_or_pointer.is_a? String
+                         FFI::GDAL.OGR_Fld_Create(name_or_pointer, type)
+                       else
+                         name_or_pointer
+                       end
 
-      new(field_ptr)
-    end
+      unless @field_pointer.is_a?(FFI::Pointer) && !@field_pointer.null?
+        fail OGR::InvalidField, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
 
-    # @param field [OGR::Field, FFI::Pointer]
-    def initialize(field)
-      @field_pointer = GDAL._pointer(OGR::Field, field)
+      ObjectSpace.define_finalizer(self, -> { destroy! })
     end
 
     def c_pointer

@@ -15,6 +15,12 @@ module GDAL
   class InvalidBandNumber < StandardError
   end
 
+  class InvalidColorTable < StandardError
+  end
+
+  class InvalidRasterBand < StandardError
+  end
+
   class NoWriteAccess < RuntimeError
   end
 

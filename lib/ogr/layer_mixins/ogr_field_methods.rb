@@ -9,7 +9,7 @@ module OGR
       #   different form, depending on the limitations of the format driver.
       # @return [OGR::Field]
       def create_field(name, type, approx_ok = false)
-        field = OGR::Field.create(name, type)
+        field = OGR::Field.new(name, type)
         ogr_err = FFI::GDAL.OGR_L_CreateField(@layer_pointer, field.c_pointer, approx_ok)
         ogr_err.handle_result
 

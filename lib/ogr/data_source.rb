@@ -11,27 +11,32 @@ module OGR
     include GDAL::Logger
     include DataSourceExtensions
 
-    # @param path [String] Path/URL to the file to open.
+    # Same as +.new+.
+    #
+    # @param path [String]
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      uri = URI.parse(path)
-      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
-
-      pointer = FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
-      fail OGR::OpenFailure.new(file_path) if pointer.null?
-
-      new(pointer)
+      new(path, access_flag)
     end
 
-    # @param data_source_pointer [FFI::Pointer]
-    def initialize(data_source_pointer)
-      @data_source_pointer = data_source_pointer
-      @layers = []
-      @driver = nil
+    # @param path_or_pointer [String, FFI::Pointer] Path/URL to the file to
+    #   open or the Pointer to an already existing data soruce.
+    # @param access_flag [String] 'r' for read, 'w', for write.
+    def initialize(path_or_pointer, access_flag)
+      @data_source_pointer =
+        if path_or_pointer.is_a? String
+          uri = URI.parse(path_or_pointer)
+          file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
+          FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+        else
+          path_or_pointer
+        end
 
-      close_me = -> { destroy! }
-      ObjectSpace.define_finalizer self, close_me
+      fail OGR::OpenFailure.new(file_path) if @data_source_pointer.null?
+
+      @layers = []
+      ObjectSpace.define_finalizer self, -> { destroy! }
     end
 
     def c_pointer
@@ -56,12 +61,10 @@ module OGR
 
     # @return [OGR::Driver]
     def driver
-      return @driver if @driver
-
       driver_ptr = FFI::GDAL.OGR_DS_GetDriver(@data_source_pointer)
       return nil if driver_ptr.nil?
 
-      @driver = OGR::Driver.new(driver_ptr)
+      OGR::Driver.new(driver_ptr)
     end
 
     # @return [Fixnum]

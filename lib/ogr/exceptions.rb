@@ -26,6 +26,9 @@ module OGR
   class InvalidDataSource < StandardError
   end
 
+  class InvalidFeature < StandardError
+  end
+
   class InvalidFeatureDefinition < StandardError
   end
 

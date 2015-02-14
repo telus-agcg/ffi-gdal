@@ -17,18 +17,22 @@ module GDAL
   class ColorTable
     include ColorTableExtensions
 
-    # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
-    # @return [GDAL::ColorTable]
-    def self.create(palette_interpretation)
-      color_table_pointer = FFI::GDAL::GDALCreateColorTable(palette_interpretation)
-      return nil if color_table_pointer.null?
+    # @param palette_interp_or_pointer [FFI::GDAL::GDALPaletteInterp,
+    #   FFI::Pointer]
+    # @raise [GDAL::InvalidColorTable] If unable to create the color table.
+    def initialize(palette_interp_or_pointer)
+      @color_table_pointer =
+        if FFI::GDAL::GDALPaletteInterp[palette_interp_or_pointer]
+          FFI::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
+        else
+          palette_interp_or_pointer
+        end
 
-      new(color_table_pointer)
-    end
+      if !@color_table_pointer.is_a?(FFI::Pointer) || @color_table_pointer.null?
+        fail GDAL::InvalidColorTable,
+          "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
+      end
 
-    # @param color_table
-    def initialize(color_table)
-      @color_table_pointer = GDAL._pointer(self.class, color_table)
       @color_entries = []
 
       case palette_interpretation
@@ -63,7 +67,7 @@ module GDAL
     #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      @palette_interpretation ||= FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
+      FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
     end
 
     # @return [Fixnum]

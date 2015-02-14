@@ -4,18 +4,21 @@ module OGR
   class GeometryFieldDefinition
     include GeometryFieldDefinitionExtensions
 
-    # @param name [String]
+    # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::GDAL::OGRwkbGeometryType]
-    def self.create(name, type = :wkbUnknown)
-      geometry_field_definition_pointer = FFI::GDAL.OGR_GFld_Create(name, type)
-      new(geometry_field_definition_pointer)
-    end
-
-    # @param [OGR::GeometryFieldDefinition, FFI::Pointer]
-    def initialize(geometry_field_definition)
+    def initialize(name_or_pointer, type = :wkbUnknown)
       @geometry_field_definition_pointer =
-        GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_definition)
-      @spatial_reference = nil
+        if name_or_pointer.is_a? String
+          FFI::GDAL.OGR_GFld_Create(name_or_pointer, type)
+        else
+          name_or_pointer
+        end
+
+      unless @geometry_field_definition_pointer.is_a?(FFI::Pointer) && !@geometry_field_definition_pointer.null?
+        fail OGR::InvalidGeometryFieldDefinition,
+          "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
+
       @read_only = false
     end
 
@@ -59,14 +62,12 @@ module OGR
 
     # @return [OGR::SpatialReference]
     def spatial_reference
-      return @spatial_reference if @spatial_reference
-
       spatial_ref_ptr = FFI::GDAL.OGR_GFld_GetSpatialRef(@geometry_field_definition_pointer)
 
       if spatial_ref_ptr.nil? || spatial_ref_ptr.null?
         nil
       else
-        @spatial_reference = OGR::SpatialReference.new(spatial_ref_ptr)
+        OGR::SpatialReference.new(spatial_ref_ptr)
       end
     end
 
@@ -79,13 +80,6 @@ module OGR
       FFI::GDAL.OGR_GFld_SetSpatialRef(
         @geometry_field_definition_pointer,
         spatial_ref_ptr)
-
-      @spatial_reference =
-        if new_spatial_reference.instance_of?(OGR::SpatialReference)
-          new_spatial_reference
-        else
-          OGR::SpatialReference.new(spatial_ref_ptr)
-        end
     end
 
     # @return [Boolean]

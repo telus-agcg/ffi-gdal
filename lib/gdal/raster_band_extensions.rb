@@ -120,7 +120,7 @@ module GDAL
     def colorize!(*colors)
       return if colors.empty?
 
-      table = GDAL::ColorTable.create(:GPI_RGB)
+      table = GDAL::ColorTable.new(:GPI_RGB)
 
       color_entry_index_count =
         if data_type == :GDT_Byte

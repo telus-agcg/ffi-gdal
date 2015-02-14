@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe OGR::Field do
-  describe '.create' do
-    it 'creates a new OGR::Field' do
-      expect(described_class.create('test', :OFTInteger)).to be_a OGR::Field
-    end
-  end
-
-  subject(:field) { described_class.create('test field', :OFTInteger) }
+  subject(:field) { described_class.new('test field', :OFTInteger) }
 
   describe '#set' do
     before do

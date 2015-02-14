@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe OGR::GeometryFieldDefinition do
-  subject(:geometry_field_definition) { described_class.create('test gfld') }
+  subject(:geometry_field_definition) { described_class.new('test gfld') }
 
   describe '#destroy!' do
     it 'sets the c_pointer to nil' do
@@ -48,7 +48,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
     it 'assigns the new SpatialReference' do
       new_spatial_reference = OGR::SpatialReference.new_from_epsg 4326
       subject.spatial_reference = new_spatial_reference
-      expect(subject.spatial_reference).to eq new_spatial_reference
+      expect(subject.spatial_reference.authority_code.to_i).to eq 4326
     end
   end
 

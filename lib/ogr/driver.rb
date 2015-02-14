@@ -71,7 +71,7 @@ module OGR
       data_source_ptr = FFI::GDAL.OGR_Dr_Open(@driver_pointer, file_name, update)
       return nil if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr)
+      OGR::DataSource.new(data_source_ptr, nil)
     end
 
     # Creates a new data source at path +file_name+.  Yields the newly created
@@ -88,7 +88,7 @@ module OGR
         file_name, options_ptr)
       return nil if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr)
+      ds = OGR::DataSource.new(data_source_ptr, nil)
       yield ds if block_given?
 
       ds
@@ -118,7 +118,7 @@ module OGR
         source_ptr, new_file_name, options_ptr)
       return nil if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr)
+      OGR::DataSource.new(data_source_ptr, nil)
     end
 
     # @param [String] capability

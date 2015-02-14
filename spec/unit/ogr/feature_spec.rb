@@ -2,21 +2,21 @@ require 'spec_helper'
 require 'date'
 
 RSpec.describe OGR::Feature do
-  let(:integer_field) { OGR::Field.create('test integer field', :OFTInteger) }
-  let(:integer_list_field) { OGR::Field.create('test integer list field', :OFTIntegerList) }
-  let(:real_field) { OGR::Field.create('test real field', :OFTReal) }
-  let(:real_list_field) { OGR::Field.create('test real list field', :OFTRealList) }
-  let(:string_field) { OGR::Field.create('test string field', :OFTString) }
-  let(:string_list_field) { OGR::Field.create('test string list field', :OFTStringList) }
-  let(:binary_field) { OGR::Field.create('test binary field', :OFTBinary) }
-  let(:date_field) { OGR::Field.create('test date field', :OFTDate) }
+  let(:integer_field) { OGR::Field.new('test integer field', :OFTInteger) }
+  let(:integer_list_field) { OGR::Field.new('test integer list field', :OFTIntegerList) }
+  let(:real_field) { OGR::Field.new('test real field', :OFTReal) }
+  let(:real_list_field) { OGR::Field.new('test real list field', :OFTRealList) }
+  let(:string_field) { OGR::Field.new('test string field', :OFTString) }
+  let(:string_list_field) { OGR::Field.new('test string list field', :OFTStringList) }
+  let(:binary_field) { OGR::Field.new('test binary field', :OFTBinary) }
+  let(:date_field) { OGR::Field.new('test date field', :OFTDate) }
 
   let(:geometry_field_definition) do
-    OGR::GeometryFieldDefinition.create('test geometry', :wkbPoint)
+    OGR::GeometryFieldDefinition.new('test geometry', :wkbPoint)
   end
 
   let(:feature_definition) do
-    fd = OGR::FeatureDefinition.create('test FD')
+    fd = OGR::FeatureDefinition.new('test FD')
 
     fd.add_field_definition(integer_field)        # 0
     fd.add_field_definition(integer_list_field)   # 1
@@ -33,20 +33,20 @@ RSpec.describe OGR::Feature do
   end
 
   let(:empty_feature_definition) do
-    OGR::FeatureDefinition.create('empty test FD')
+    OGR::FeatureDefinition.new('empty test FD')
   end
 
-  describe '.create' do
+  describe '.new' do
     context 'param is not a FeatureDefinition' do
-      it 'raises an OGR::InvalidFeatureDefinition' do
+      it 'raises an OGR::InvalidFeature' do
         expect do
-          described_class.create('not a pointer')
-        end.to raise_exception OGR::InvalidFeatureDefinition
+          described_class.new('not a pointer')
+        end.to raise_exception OGR::InvalidFeature
       end
     end
   end
 
-  subject(:feature) { described_class.create(feature_definition) }
+  subject(:feature) { described_class.new(feature_definition) }
 
   describe '#clone' do
     it 'returns a new Feature' do
@@ -246,13 +246,13 @@ RSpec.describe OGR::Feature do
 
     context 'raw field is not of the given type' do
       let(:int_feature_definition) do
-        fd = OGR::FeatureDefinition.create('test FD')
+        fd = OGR::FeatureDefinition.new('test FD')
         fd.add_field_definition(integer_field)        # 0
 
         fd
       end
 
-      subject { described_class.create(int_feature_definition) }
+      subject { described_class.new(int_feature_definition) }
 
       it 'raises a TypeError' do
         expect do

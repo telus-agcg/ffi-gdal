@@ -3,23 +3,23 @@ require_relative 'feature_definition_extensions'
 require_relative 'field'
 
 module OGR
-  # Note: fields on a FeatureDefintion may be referred to as "fields" _or_
-  # "field definitions".
   class FeatureDefinition
     include FeatureDefinitionExtensions
 
-    # @param name [String]
-    def self.create(name)
-      feature_defn_pointer = FFI::GDAL.OGR_FD_Create(name)
-      return nil if feature_defn_pointer.null?
+    # @param name_or_pointer [String, FFI::Pointer] When given a String, it will
+    #   create a new FeatureDefinition with that name. When given an
+    #   FFI::Pointer, the new object will simply wrap the C FeatureDefinition
+    #   at that address.
+    def initialize(name_or_pointer)
+      @feature_definition_pointer = if name_or_pointer.is_a? String
+                                      FFI::GDAL.OGR_FD_Create(name_or_pointer)
+                                    else
+                                      name_or_pointer
+                                    end
 
-      new(feature_defn_pointer)
-    end
-
-    # @param feature_definition [OGR::FeatureDefinition, FFI::Pointer]
-    def initialize(feature_definition)
-      @feature_definition_pointer = GDAL._pointer(OGR::FeatureDefinition,
-        feature_definition)
+      if !@feature_definition_pointer.is_a?(FFI::Pointer) || @feature_definition_pointer.null?
+        fail OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
 
       close_me = -> { FFI::GDAL.OGR_FD_Destroy(@feature_definition_pointer) }
       ObjectSpace.define_finalizer self, close_me
@@ -52,7 +52,7 @@ module OGR
         FFI::GDAL.OGR_FD_GetFieldDefn(@feature_definition_pointer, index)
       return nil if field_definition_ptr.null?
 
-      OGR::Field.new(field_definition_ptr)
+      OGR::Field.new(field_definition_ptr, nil)
     end
 
     # @param new_field_definition [OGR::Field, FFI::Pointer]

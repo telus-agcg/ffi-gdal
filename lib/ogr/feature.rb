@@ -8,31 +8,22 @@ module OGR
   class Feature
     include FeatureExtensions
 
-    # @param feature_definition [OGR::FeatureDefinition,FFI::Pointer]
-    # @return [OGR::Feature]
-    def self.create(feature_definition)
-      feature_def_ptr = GDAL._pointer(OGR::FeatureDefinition, feature_definition)
+    # @param fd_or_pointer [OGR::FeatureDefinition, FFI::Pointer] Must either be
+    #   a FeatureDefinition (i.e. normal Feature creation) or a Pointer (in the
+    #   case a handle to a C OGR Feature needs to be wrapped with this object).
+    def initialize(fd_or_pointer)
+      @feature_pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
+                           FFI::GDAL.OGR_F_Create(fd_or_pointer.c_pointer)
+                         else
+                           fd_or_pointer
+                         end
 
-      if feature_def_ptr.nil?
-        fail OGR::InvalidFeatureDefinition,
-          "Unable to create Feature.  Feature definition is invalid: #{feature_definition}"
+      if !@feature_pointer.is_a?(FFI::Pointer) || @feature_pointer.null?
+        fail OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
       end
-
-      feature_ptr = FFI::GDAL::OGR_F_Create(feature_def_ptr)
-      return nil if feature_ptr.null?
-
-      new(feature_ptr)
-    end
-
-    # @param feature [OGR::Feature, FFI::Pointer]
-    def initialize(feature)
-      @feature_pointer = GDAL._pointer(OGR::Feature, feature)
 
       close_me = -> { FFI::GDAL.OGR_F_Destroy(@feature_pointer) }
       ObjectSpace.define_finalizer self, close_me
-
-      @geometry = nil
-      @definition = nil
     end
 
     def c_pointer
@@ -210,7 +201,7 @@ module OGR
       field_pointer = FFI::GDAL.OGR_F_GetFieldDefnRef(@feature_pointer, index)
       return nil if field_pointer.null?
 
-      OGR::Field.new(field_pointer)
+      OGR::Field.new(field_pointer, nil)
     end
 
     # @param name [String]
@@ -234,29 +225,24 @@ module OGR
 
     # @return [OGR::FeatureDefinition,nil]
     def definition
-      return @definition if @definition
-
       feature_defn_ptr = FFI::GDAL.OGR_F_GetDefnRef(@feature_pointer)
       return nil if feature_defn_ptr.null?
 
-      @definition = OGR::FeatureDefinition.new(feature_defn_ptr)
+      OGR::FeatureDefinition.new(feature_defn_ptr)
     end
 
     # @return [OGR::Geometry]
     def geometry
-      return @geometry if @geometry
-
       geometry_ptr = FFI::GDAL.OGR_F_GetGeometryRef(@feature_pointer)
       return nil if geometry_ptr.null?
 
-      @geometry = OGR::Geometry.factory(geometry_ptr)
+      OGR::Geometry.factory(geometry_ptr)
     end
 
     # @param new_geometry [OGR::Geometry]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def geometry=(new_geometry)
       ogr_err = FFI::GDAL.OGR_F_SetGeometryDirectly(@feature_pointer, new_geometry.c_pointer)
-      @geometry = new_geometry
 
       ogr_err.handle_result
     end

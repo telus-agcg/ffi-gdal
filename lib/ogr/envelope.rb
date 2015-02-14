@@ -11,6 +11,14 @@ module OGR
       @ogr_envelope_struct ||= three_d ? FFI::GDAL::OGREnvelope3D.new : FFI::GDAL::OGREnvelope.new
     end
 
+    def c_struct
+      @ogr_envelope_struct
+    end
+
+    def c_pointer
+      @ogr_envelope_struct.to_ptr
+    end
+
     # @return [Float]
     def x_min
       @ogr_envelope_struct[:min_x]
