@@ -1,5 +1,11 @@
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/spec/'
+  add_group 'GDAL', 'lib/gdal'
+  add_group 'OGR', 'lib/ogr'
+  add_group 'FFI', 'lib/ffi'
+  add_group 'ext', 'lib/ext'
+end
 
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 require 'ffi-gdal'

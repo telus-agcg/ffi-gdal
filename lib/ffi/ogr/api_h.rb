@@ -401,7 +401,7 @@ module FFI
     attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
     attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], OGRErr
     attach_function :OGR_L_CreateGeomField,
-      %i[OGRLayerH OGRGeomFieldDefnH int],
+      %i[OGRLayerH OGRGeomFieldDefnH bool],
       OGRErr
     attach_function :OGR_L_DeleteField, %i[OGRLayerH int], OGRErr
     attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], OGRErr

@@ -96,8 +96,10 @@ module OGR
     end
 
     # @param name [String] The name for the new layer.
-    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType]
+    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType] Constrain to this
+    #   geometry type.
     # @param spatial_reference [FFI::Pointer, OGR::SpatialReference] The coordinate system
+    # @param options [Hash] Driver-specific options.
     #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)

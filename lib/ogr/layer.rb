@@ -49,7 +49,7 @@ module OGR
     # @return [Boolean]
     # @see http://www.gdal.org/ogr__api_8h.html#a480adc8b839b04597f49583371d366fd
     def test_capability(capability)
-      FFI::GDAL.OGR_L_TestCapability(@layer_pointer, capability)
+      FFI::GDAL.OGR_L_TestCapability(@layer_pointer, capability.to_s)
     end
 
     # @return [OGR::SpatialReference]

@@ -1,7 +1,9 @@
 module OGR
   module LayerMixins
     module OGRFieldMethods
-      # Creates and writes a new field to the layer.
+      # Creates and writes a new field to the layer. This adds the field to the
+      # internal FieldDefinition; C API says not to update the FieldDefinition
+      # directly.
       #
       # @param name [String]
       # @param type [FFI::GDAL::OGRFieldType]
@@ -30,7 +32,7 @@ module OGR
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
       # @return [Boolean]
       def reorder_fields(*new_order)
-        map_array_ptr = FFI::MemoryPointer.new(:int, field_count - 1)
+        map_array_ptr = FFI::MemoryPointer.new(:int, new_order.size).write_array_of_int(new_order)
         ogr_err = FFI::GDAL.OGR_L_ReorderFields(@layer_pointer, map_array_ptr)
 
         ogr_err.handle_result
@@ -88,7 +90,7 @@ module OGR
       def create_geometry_field(geometry_field_def, approx_ok = false)
         geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)
 
-        ogr_err = OGR_L_CreateGeomField(
+        ogr_err = FFI::GDAL.OGR_L_CreateGeomField(
           @layer_pointer,
           geometry_field_definition_ptr,
           approx_ok)

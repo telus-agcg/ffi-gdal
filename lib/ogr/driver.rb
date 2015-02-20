@@ -69,7 +69,10 @@ module OGR
       update = OGR._boolean_access_flag(access_flag)
 
       data_source_ptr = FFI::GDAL.OGR_Dr_Open(@driver_pointer, file_name, update)
-      return nil if data_source_ptr.null?
+
+      if data_source_ptr.null?
+        fail OGR::InvalidDataSource, "Unable to open data source at #{file_name}"
+      end
 
       OGR::DataSource.new(data_source_ptr, nil)
     end
@@ -108,6 +111,7 @@ module OGR
     # @return [OGR::DataSource, nil]
     def copy_data_source(source_data_source, new_file_name, **options)
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
+
       if source_ptr.nil? || source_ptr.null?
         fail OGR::InvalidDataSource, source_data_source
       end
