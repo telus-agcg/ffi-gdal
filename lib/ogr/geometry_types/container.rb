@@ -14,7 +14,7 @@ module OGR
       # @return +true+ if successful, otherwise raises an OGR exception.
       def add_geometry(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
-        ogr_err = FFI::GDAL.OGR_G_AddGeometry(@geometry_pointer, sub_geometry_ptr)
+        ogr_err = FFI::OGR::API.OGR_G_AddGeometry(@geometry_pointer, sub_geometry_ptr)
 
         ogr_err.handle_result "Unable to add geometry: #{sub_geometry}"
       end
@@ -23,7 +23,7 @@ module OGR
       # @return +true+ if successful, otherwise raises an OGR exception.
       def add_directly(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
-        ogr_err = FFI::GDAL.OGR_G_AddGeometryDirectly(@geometry_pointer, sub_geometry_ptr)
+        ogr_err = FFI::OGR::API.OGR_G_AddGeometryDirectly(@geometry_pointer, sub_geometry_ptr)
 
         ogr_err.handle_result
       end
@@ -32,7 +32,7 @@ module OGR
       # @param delete [Boolean]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def remove_geometry(geometry_index, delete = true)
-        ogr_err = FFI::GDAL.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
+        ogr_err = FFI::OGR::API.OGR_G_RemoveGeometry(@geometry_pointer, geometry_index, delete)
 
         ogr_err.handle_result
       end
@@ -44,7 +44,7 @@ module OGR
       # @return [OGR::Geometry]
       def geometry_at(sub_geometry_index)
         build_geometry do |ptr|
-          FFI::GDAL.OGR_G_GetGeometryRef(ptr, sub_geometry_index)
+          FFI::OGR::API.OGR_G_GetGeometryRef(ptr, sub_geometry_index)
         end
       end
 
@@ -58,14 +58,14 @@ module OGR
         best_effort = false
         ogrerr_ptr = FFI::MemoryPointer.new(:pointer)
 
-        new_geometry_ptr = FFI::GDAL.OGRBuildPolygonFromEdges(@geometry_pointer,
+        new_geometry_ptr = FFI::OGR::API.OGRBuildPolygonFromEdges(@geometry_pointer,
           best_effort,
           auto_close,
           tolerance,
           ogrerr_ptr)
 
         ogrerr_int = ogrerr_ptr.read_int
-        ogrerr = FFI::GDAL::OGRErr[ogrerr_int]
+        ogrerr = FFI::OGR::Core::Err[ogrerr_int]
         ogrerr.handle_result "Couldn't create polygon"
 
         OGR::Geometry.factory(new_geometry_ptr)

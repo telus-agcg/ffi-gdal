@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gdal/data_type'
 
 RSpec.describe GDAL::DataType do
   describe '.size' do

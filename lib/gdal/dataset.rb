@@ -1,12 +1,14 @@
 require 'uri'
 require_relative '../ffi/gdal'
+require_relative '../ffi/cpl/string'
+require_relative '../ogr/spatial_reference'
 require_relative 'driver'
 require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
 require_relative 'dataset_extensions'
-require_relative '../ogr/spatial_reference'
+require_relative 'options'
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also
@@ -78,7 +80,7 @@ module GDAL
 
       flag = FFI::GDAL.GDALGetAccess(@dataset_pointer)
 
-      FFI::GDAL::GDALAccess[flag]
+      FFI::GDAL::Access[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
@@ -95,7 +97,7 @@ module GDAL
       list_pointer = FFI::GDAL.GDALGetFileList(@dataset_pointer)
       return [] if list_pointer.null?
       file_list = list_pointer.get_array_of_string(0)
-      FFI::GDAL.CSLDestroy(list_pointer)
+      FFI::CPL::String.CSLDestroy(list_pointer)
 
       file_list
     end

@@ -14,21 +14,21 @@ module OGR
     def x
       return nil if empty?
 
-      FFI::GDAL.OGR_G_GetX(@geometry_pointer, 0)
+      FFI::OGR::API.OGR_G_GetX(@geometry_pointer, 0)
     end
 
     # @return [Float]
     def y
       return nil if empty?
 
-      FFI::GDAL.OGR_G_GetY(@geometry_pointer, 0)
+      FFI::OGR::API.OGR_G_GetY(@geometry_pointer, 0)
     end
 
     # @return [Float]
     def z
       return nil if empty?
 
-      FFI::GDAL.OGR_G_GetZ(@geometry_pointer, 0)
+      FFI::OGR::API.OGR_G_GetZ(@geometry_pointer, 0)
     end
 
     # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
@@ -39,7 +39,7 @@ module OGR
       y_ptr = FFI::MemoryPointer.new(:double)
       z_ptr = FFI::MemoryPointer.new(:double)
 
-      FFI::GDAL.OGR_G_GetPoint(@geometry_pointer, 0, x_ptr, y_ptr, z_ptr)
+      FFI::OGR::API.OGR_G_GetPoint(@geometry_pointer, 0, x_ptr, y_ptr, z_ptr)
 
       if coordinate_dimension == 2
         [x_ptr.read_double, y_ptr.read_double]
@@ -49,7 +49,7 @@ module OGR
     end
 
     def set_point(x, y, z = 0)
-      FFI::GDAL.OGR_G_SetPoint(@geometry_pointer, 0, x, y, z)
+      FFI::OGR::API.OGR_G_SetPoint(@geometry_pointer, 0, x, y, z)
     end
 
     # Adds a point to a LineString or Point geometry.
@@ -58,7 +58,7 @@ module OGR
     # @param y [Float]
     # @param z [Float]
     def add_point(x, y, z = 0)
-      FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
+      FFI::OGR::API.OGR_G_AddPoint(@geometry_pointer, x, y, z)
     end
   end
 end

@@ -4,6 +4,10 @@ require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
 require_relative 'data_source_extensions'
 require_relative 'exceptions'
+require_relative 'driver'
+require_relative 'style_table'
+require_relative 'layer'
+require_relative '../gdal/major_object'
 
 module OGR
   class DataSource
@@ -28,7 +32,7 @@ module OGR
         if path_or_pointer.is_a? String
           uri = URI.parse(path_or_pointer)
           file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+          FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
         else
           path_or_pointer
         end
@@ -47,7 +51,7 @@ module OGR
     def destroy!
       return unless @data_source_pointer
 
-      FFI::GDAL.OGR_DS_Destroy(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_Destroy(@data_source_pointer)
       @data_source_pointer = nil
     end
     alias_method :close, :destroy!
@@ -56,12 +60,12 @@ module OGR
     #
     # @return [String]
     def name
-      FFI::GDAL.OGR_DS_GetName(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_GetName(@data_source_pointer)
     end
 
     # @return [OGR::Driver]
     def driver
-      driver_ptr = FFI::GDAL.OGR_DS_GetDriver(@data_source_pointer)
+      driver_ptr = FFI::OGR::API.OGR_DS_GetDriver(@data_source_pointer)
       return nil if driver_ptr.nil?
 
       OGR::Driver.new(driver_ptr)
@@ -69,14 +73,14 @@ module OGR
 
     # @return [Fixnum]
     def layer_count
-      FFI::GDAL.OGR_DS_GetLayerCount(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_GetLayerCount(@data_source_pointer)
     end
 
     # @param index [Fixnum] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
       @layers.fetch(index) do
-        layer_pointer = FFI::GDAL.OGR_DS_GetLayer(@data_source_pointer, index)
+        layer_pointer = FFI::OGR::API.OGR_DS_GetLayer(@data_source_pointer, index)
         return nil if layer_pointer.null?
 
         l = OGR::Layer.new(layer_pointer)
@@ -89,14 +93,14 @@ module OGR
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)
-      layer_pointer = FFI::GDAL.OGR_DS_GetLayerByName(@data_source_pointer, name)
+      layer_pointer = FFI::OGR::API.OGR_DS_GetLayerByName(@data_source_pointer, name)
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
     end
 
     # @param name [String] The name for the new layer.
-    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType] Constrain to this
+    # @param geometry_type [FFI::OGR::API::WKBGeometryType] Constrain to this
     #   geometry type.
     # @param spatial_reference [FFI::Pointer, OGR::SpatialReference] The coordinate system
     # @param options [Hash] Driver-specific options.
@@ -106,7 +110,7 @@ module OGR
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
+      layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@data_source_pointer, name,
         spatial_ref_ptr, geometry_type, options_obj)
 
       unless layer_ptr
@@ -126,7 +130,7 @@ module OGR
       source_layer_ptr = GDAL._pointer(OGR::Layer, source_layer)
       options_ptr = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::GDAL.OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
+      layer_ptr = FFI::OGR::API.OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
         new_name, options_ptr)
       return nil if layer_ptr.null?
 
@@ -136,7 +140,7 @@ module OGR
     # @param index [Fixnum]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
-      ogr_err = FFI::GDAL.OGR_DS_DeleteLayer(@data_source_pointer, index)
+      ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@data_source_pointer, index)
 
       ogr_err.handle_result "Unable to delete layer #{index}"
     end
@@ -150,7 +154,7 @@ module OGR
     def execute_sql(command, spatial_filter = nil, dialect = nil)
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
-      layer_ptr = FFI::GDAL.OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
+      layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
         dialect)
 
       return nil if layer_ptr.null?
@@ -164,12 +168,12 @@ module OGR
     def release_result_set(layer)
       layer_ptr = GDAL._pointer(OGR::Layer, layer)
       layer = nil
-      FFI::GDAL.OGR_DS_ReleaseResultSet(@data_source_pointer, layer_ptr)
+      FFI::OGR::API.OGR_DS_ReleaseResultSet(@data_source_pointer, layer_ptr)
     end
 
     # @return [OGR::StyleTable, nil]
     def style_table
-      style_table_ptr = FFI::GDAL.OGR_DS_GetStyleTable(@data_source_pointer)
+      style_table_ptr = FFI::OGR::API.OGR_DS_GetStyleTable(@data_source_pointer)
       return nil if style_table_ptr.null?
 
       OGR::StyleTable.new(style_table_ptr)
@@ -179,7 +183,7 @@ module OGR
     def style_table=(new_style_table)
       new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
 
-      FFI::GDAL.OGR_DS_SetStyleTable(@data_source_pointer, new_style_table_ptr)
+      FFI::OGR::API.OGR_DS_SetStyleTable(@data_source_pointer, new_style_table_ptr)
 
       if new_style_table.instance_of? OGR::StyleTable
         new_style_table
@@ -193,12 +197,12 @@ module OGR
     #   ODsCCurveGeometries.
     # @return [Boolean]
     def test_capability(capability)
-      FFI::GDAL.OGR_DS_TestCapability(@data_source_pointer, capability)
+      FFI::OGR::API.OGR_DS_TestCapability(@data_source_pointer, capability)
     end
 
     # @return [Boolean]
     def sync_to_disk
-      ogr_err = FFI::GDAL.OGR_DS_SyncToDisk(@data_source_pointer)
+      ogr_err = FFI::OGR::API.OGR_DS_SyncToDisk(@data_source_pointer)
 
       ogr_err.handle_result
     end

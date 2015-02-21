@@ -21,15 +21,15 @@ module OGR
     include SpatialReferenceMixins::ParameterGetterSetters
     include SpatialReferenceMixins::TypeChecks
 
-    eval FFI::GDAL::SRS_UL.to_ruby
+    eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
     METER_TO_METER = 1.0
-    eval FFI::GDAL::SRS_UA.to_ruby
+    eval FFI::OGR::SRSAPI::SRS_UA.to_ruby
     RADIAN_TO_RADIAN = 1.0
 
     # @return [Array<String>]
     def self.projection_methods(strip_underscores = false)
-      methods_ptr_ptr = FFI::GDAL.OPTGetProjectionMethods
-      count = FFI::GDAL.CSLCount(methods_ptr_ptr)
+      methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
+      count = FFI::CPL::String.CSLCount(methods_ptr_ptr)
 
       # For some reason #get_array_of_string leaves off the first 6.
       pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
@@ -48,9 +48,9 @@ module OGR
       name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
       name_ptr_ptr.write_pointer(name_ptr)
 
-      params_ptr_ptr = FFI::GDAL.OPTGetParameterList(projection_method,
+      params_ptr_ptr = FFI::OGR::SRSAPI.OPTGetParameterList(projection_method,
         name_ptr_ptr)
-      count = FFI::GDAL.CSLCount(params_ptr_ptr)
+      count = FFI::CPL::String.CSLCount(params_ptr_ptr)
 
       # For some reason #get_array_of_string leaves off the first 6.
       pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
@@ -82,7 +82,7 @@ module OGR
 
       default_value_ptr = FFI::MemoryPointer.new(:double)
 
-      result = FFI::GDAL.OPTGetParameterInfo(projection_method, parameter_name,
+      result = FFI::OGR::SRSAPI.OPTGetParameterInfo(projection_method, parameter_name,
         name_ptr_ptr, type_ptr_ptr, default_value_ptr)
 
       return {} unless result
@@ -106,15 +106,15 @@ module OGR
       }
     end
 
-    # @param [FFI::GDAL::OGRAxisOrientation] [description]
+    # @param [FFI::OGR::SRSAPI::AxisOrientation] [description]
     # @return [String]
     def self.axis_enum_to_name(orientation)
-      FFI::GDAL::OSRAxisEnumToName(orientation)
+      FFI::OGR::SRSAPI::AxisEnumToName(orientation)
     end
 
     # Cleans up cached SRS-related memory.
     def self.cleanup
-      FFI::GDAL.OSRCleanup
+      FFI::OGR::SRSAPI.OSRCleanup
     end
 
     # Builds a spatial reference object using either the passed-in WKT string,
@@ -131,7 +131,7 @@ module OGR
         when 'OGR::SpatialReference'
           spatial_reference_or_wkt.c_pointer
         when 'String', 'NilClass'
-          FFI::GDAL.OSRNewSpatialReference(spatial_reference_or_wkt)
+          FFI::OGR::SRSAPI.OSRNewSpatialReference(spatial_reference_or_wkt)
         when 'FFI::Pointer', 'FFI::MemoryPointer'
           spatial_reference_or_wkt
         else
@@ -150,7 +150,7 @@ module OGR
     def destroy!
       return unless @ogr_spatial_ref_pointer
 
-      FFI::GDAL.OSRDestroySpatialReference(@ogr_spatial_ref_pointer)
+      FFI::OGR::SRSAPI.OSRDestroySpatialReference(@ogr_spatial_ref_pointer)
       @ogr_spatial_ref_pointer = nil
     end
 
@@ -158,7 +158,7 @@ module OGR
     #
     # @return [OGR::SpatialReference]
     def clone
-      new_spatial_ref_ptr = FFI::GDAL.OSRClone(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRClone(@ogr_spatial_ref_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
@@ -167,7 +167,7 @@ module OGR
     #
     # @return [OGR::SpatialReference]
     def clone_geog_cs
-      new_spatial_ref_ptr = FFI::GDAL.OSRCloneGeogCS(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRCloneGeogCS(@ogr_spatial_ref_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
@@ -179,28 +179,28 @@ module OGR
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
       fail OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
 
-      ogr_err = FFI::GDAL.OSRCopyGeogCSFrom(@ogr_spatial_ref_pointer, other_spatial_ref_ptr)
+      ogr_err = FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@ogr_spatial_ref_pointer, other_spatial_ref_ptr)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def validate
-      ogr_err = FFI::GDAL.OSRValidate(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRValidate(@ogr_spatial_ref_pointer)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
-      ogr_err = FFI::GDAL.OSRFixupOrdering(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRFixupOrdering(@ogr_spatial_ref_pointer)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
-      ogr_err = FFI::GDAL.OSRFixup(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRFixup(@ogr_spatial_ref_pointer)
 
       ogr_err.handle_result
     end
@@ -209,7 +209,7 @@ module OGR
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
-      ogr_err = FFI::GDAL.OSRStripCTParms(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@ogr_spatial_ref_pointer)
 
       ogr_err.handle_result
     end
@@ -218,7 +218,7 @@ module OGR
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def auto_identify_epsg!
-      ogr_err = FFI::GDAL.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
 
       ogr_err.handle_result "Unable to determine SRS from EPSG"
     end
@@ -226,13 +226,13 @@ module OGR
     # @return [Boolean] +true+ if this coordinate system should be treated as
     #   having lat/long coordinate ordering.
     def epsg_treats_as_lat_long?
-      FFI::GDAL.OSREPSGTreatsAsLatLong(@ogr_spatial_ref_pointer)
+      FFI::OGR::SRSAPI.OSREPSGTreatsAsLatLong(@ogr_spatial_ref_pointer)
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as
     #   having northing/easting coordinate ordering.
     def epsg_treats_as_northing_easting?
-      FFI::GDAL.OSREPSGTreatsAsNorthingEasting(@ogr_spatial_ref_pointer)
+      FFI::OGR::SRSAPI.OSREPSGTreatsAsNorthingEasting(@ogr_spatial_ref_pointer)
     end
 
     # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.

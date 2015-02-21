@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'ogr/geometry_field_definition'
+require 'ogr/spatial_reference'
 
 RSpec.describe OGR::GeometryFieldDefinition do
   subject(:geometry_field_definition) { described_class.new('test gfld') }

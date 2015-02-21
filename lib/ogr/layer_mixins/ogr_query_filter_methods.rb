@@ -1,3 +1,5 @@
+require_relative '../geometry'
+
 module OGR
   module LayerMixins
     module OGRQueryFilterMethods
@@ -6,7 +8,7 @@ module OGR
       #
       # @return [OGR::Geometry]
       def spatial_filter
-        filter_pointer = FFI::GDAL.OGR_L_GetSpatialFilter(@layer_pointer)
+        filter_pointer = FFI::OGR::API.OGR_L_GetSpatialFilter(@layer_pointer)
         return nil if filter_pointer.null?
 
         OGR::Geometry.factory(filter_pointer)
@@ -16,7 +18,7 @@ module OGR
       def spatial_filter=(new_spatial_filter)
         spatial_filter_ptr = GDAL._pointer(OGR::Geometry, new_spatial_filter)
 
-        FFI::GDAL.OGR_L_SetSpatialFilter(@layer_pointer, spatial_filter_ptr)
+        FFI::OGR::API.OGR_L_SetSpatialFilter(@layer_pointer, spatial_filter_ptr)
       end
 
       # Only feature which intersect the filter geometry will be returned.
@@ -28,7 +30,7 @@ module OGR
       def set_spatial_filter_ex(geometry_field_index, geometry)
         geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
 
-        FFI::GDAL.OGR_L_SetSpatialFilterEx(
+        FFI::OGR::API.OGR_L_SetSpatialFilterEx(
           @layer_pointer, geometry_field_index, geometry_ptr)
       end
 
@@ -42,7 +44,7 @@ module OGR
       # @param max_x [Float]
       # @param max_x [Float]
       def set_spatial_filter_rectangle(min_x, min_y, max_x, max_y)
-        FFI::GDAL.OGR_L_SetSpatialFilterRect(
+        FFI::OGR::API.OGR_L_SetSpatialFilterRect(
           @layer_pointer,
           min_x,
           min_y,
@@ -62,7 +64,7 @@ module OGR
       # @param max_x [Float]
       # @param max_x [Float]
       def set_spatial_filter_rectangle_ex(geometry_field_index, min_x, min_y, max_x, max_y)
-        FFI::GDAL.OGR_L_SetSpatialFilterRectEx(
+        FFI::OGR::API.OGR_L_SetSpatialFilterRectEx(
           @layer_pointer,
           geometry_field_index,
           min_x,
@@ -78,7 +80,7 @@ module OGR
       # @param query [String]
       # @see http://ogdi.sourceforge.net/prop/6.2.CapabilitiesMetadata.html
       def set_attribute_filter(query)
-        ogr_err = FFI::GDAL.OGR_L_SetAttributeFilter(@layer_pointer, query)
+        ogr_err = FFI::OGR::API.OGR_L_SetAttributeFilter(@layer_pointer, query)
 
         ogr_err.handle_result
       end

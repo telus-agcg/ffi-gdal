@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   # Not sure why yet, but it seems I can only do angular unit setting with

@@ -218,13 +218,13 @@ RSpec.describe OGR::Feature do
 
   describe '#set_field_raw + #field_as_raw' do
     let(:integer_field_struct) do
-      f = FFI::GDAL::OGRField.new
+      f = FFI::OGR::Field.new
       f[:integer] = 1
       f
     end
 
     let(:integer_list_field_struct) do
-      f = FFI::GDAL::OGRField.new
+      f = FFI::OGR::Field.new
       f[:integer_list] = [1, 2, 3]
       f
     end

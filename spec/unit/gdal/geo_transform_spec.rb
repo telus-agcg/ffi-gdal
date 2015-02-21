@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gdal/geo_transform'
 
 RSpec.describe GDAL::GeoTransform do
   let(:world_file_path) do

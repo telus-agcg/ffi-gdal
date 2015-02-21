@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/driver'
 
 RSpec.describe OGR::Driver do
   describe '.count' do
@@ -45,14 +46,16 @@ RSpec.describe OGR::Driver do
   describe '#open' do
     context 'data source at path does not exist' do
       context 'with write flag' do
-        it 'returns nil' do
-          expect(subject.open('spec source', 'w')).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { subject.open('spec source', 'w') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
 
       context 'with read flag' do
-        it 'returns nil' do
-          expect(subject.open('spec source', 'r')).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { subject.open('spec source', 'r') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
     end
@@ -77,9 +80,9 @@ RSpec.describe OGR::Driver do
       end
 
       context 'using a driver that does not support the file type' do
-        it 'returns nil' do
-          data_source = memory_driver.open(shapefile_path, 'r')
-          expect(data_source).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { memory_driver.open(shapefile_path, 'r') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
     end

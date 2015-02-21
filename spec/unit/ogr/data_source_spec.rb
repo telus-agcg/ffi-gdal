@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'ogr/data_source'
+require 'ogr/spatial_reference'
 
 RSpec.describe OGR::DataSource do
   describe '.open' do

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gdal/color_table'
 
 RSpec.describe GDAL::ColorTable do
   describe '#initialize' do

@@ -5,11 +5,11 @@ module OGR
     include GeometryFieldDefinitionExtensions
 
     # @param name_or_pointer [String, FFI::Pointer]
-    # @param type [FFI::GDAL::OGRwkbGeometryType]
+    # @param type [FFI::OGR::API::WKBGeometryType]
     def initialize(name_or_pointer, type = :wkbUnknown)
       @geometry_field_definition_pointer =
         if name_or_pointer.is_a? String
-          FFI::GDAL.OGR_GFld_Create(name_or_pointer, type)
+          FFI::OGR::API.OGR_GFld_Create(name_or_pointer, type)
         else
           name_or_pointer
         end
@@ -32,37 +32,37 @@ module OGR
     end
 
     def destroy!
-      FFI::GDAL.OGR_GFld_Destroy(@geometry_field_definition_pointer)
+      FFI::OGR::API.OGR_GFld_Destroy(@geometry_field_definition_pointer)
       @geometry_field_definition_pointer = nil
     end
 
     # @return [String]
     def name
-      FFI::GDAL.OGR_GFld_GetNameRef(@geometry_field_definition_pointer)
+      FFI::OGR::API.OGR_GFld_GetNameRef(@geometry_field_definition_pointer)
     end
 
     # @param new_name [String]
     def name=(new_name)
       fail OGR::ReadOnlyObject if @read_only
 
-      FFI::GDAL.OGR_GFld_SetName(@geometry_field_definition_pointer, new_name)
+      FFI::OGR::API.OGR_GFld_SetName(@geometry_field_definition_pointer, new_name)
     end
 
-    # @return [FFI::GDAL::OGRwkbGeometryType]
+    # @return [FFI::OGR::API::WKBGeometryType]
     def type
-      FFI::GDAL.OGR_GFld_GetType(@geometry_field_definition_pointer)
+      FFI::OGR::API.OGR_GFld_GetType(@geometry_field_definition_pointer)
     end
 
-    # @param new_type [FFI::GDAL::OGRwkbGeometryType]
+    # @param new_type [FFI::OGR::API::WKBGeometryType]
     def type=(new_type)
       fail OGR::ReadOnlyObject if @read_only
 
-      FFI::GDAL.OGR_GFld_SetType(@geometry_field_definition_pointer, new_type)
+      FFI::OGR::API.OGR_GFld_SetType(@geometry_field_definition_pointer, new_type)
     end
 
     # @return [OGR::SpatialReference]
     def spatial_reference
-      spatial_ref_ptr = FFI::GDAL.OGR_GFld_GetSpatialRef(@geometry_field_definition_pointer)
+      spatial_ref_ptr = FFI::OGR::API.OGR_GFld_GetSpatialRef(@geometry_field_definition_pointer)
 
       if spatial_ref_ptr.nil? || spatial_ref_ptr.null?
         nil
@@ -77,21 +77,21 @@ module OGR
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference)
 
-      FFI::GDAL.OGR_GFld_SetSpatialRef(
+      FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @geometry_field_definition_pointer,
         spatial_ref_ptr)
     end
 
     # @return [Boolean]
     def ignored?
-      FFI::GDAL.OGR_GFld_IsIgnored(@geometry_field_definition_pointer)
+      FFI::OGR::API.OGR_GFld_IsIgnored(@geometry_field_definition_pointer)
     end
 
     # @param value [Boolean]
     def ignore=(value)
       fail OGR::ReadOnlyObject if @read_only
 
-      FFI::GDAL.OGR_GFld_SetIgnored(@geometry_field_definition_pointer, value)
+      FFI::OGR::API.OGR_GFld_SetIgnored(@geometry_field_definition_pointer, value)
     end
   end
 end

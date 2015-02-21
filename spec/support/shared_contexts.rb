@@ -1,4 +1,7 @@
 RSpec.shared_context 'OGR::Layer, spatial_reference' do
+  require 'ogr/driver'
+  require 'ogr/spatial_reference'
+
   let(:driver) { OGR::Driver.by_name 'Memory' }
   let(:data_source) { driver.create_data_source 'spec data source' }
 
@@ -10,6 +13,9 @@ RSpec.shared_context 'OGR::Layer, spatial_reference' do
 end
 
 RSpec.shared_context 'OGR::Layer, no spatial_reference' do
+  require 'ogr/driver'
+  require 'ogr/spatial_reference'
+
   let(:driver) { OGR::Driver.by_name 'Memory' }
   let(:data_source) { driver.create_data_source 'spec data source' }
 

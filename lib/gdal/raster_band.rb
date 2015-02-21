@@ -1,5 +1,5 @@
 require_relative '../ffi/gdal'
-require_relative '../ffi/ogr/api_h'
+require_relative '../ffi/ogr/api'
 require_relative 'raster_band_extensions'
 require_relative 'color_table'
 require_relative 'major_object'

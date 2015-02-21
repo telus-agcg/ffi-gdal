@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::LineString do
   let(:open_line_string) do

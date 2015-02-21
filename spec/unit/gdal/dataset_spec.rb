@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gdal/dataset'
 
 RSpec.describe GDAL::Dataset do
   let(:file_path) do

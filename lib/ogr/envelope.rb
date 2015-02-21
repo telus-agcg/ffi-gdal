@@ -5,10 +5,10 @@ module OGR
   class Envelope
     include EnvelopeExtensions
 
-    # @param envelope_struct [FFI::GDAL::OGREnvelope]
+    # @param envelope_struct [FFI::OGR::Envelope]
     def initialize(envelope_struct = nil, three_d: false)
       @ogr_envelope_struct = envelope_struct
-      @ogr_envelope_struct ||= three_d ? FFI::GDAL::OGREnvelope3D.new : FFI::GDAL::OGREnvelope.new
+      @ogr_envelope_struct ||= three_d ? FFI::OGR::Envelope3D.new : FFI::OGR::Envelope.new
     end
 
     def c_struct
@@ -61,28 +61,28 @@ module OGR
 
     # @return [Float, nil]
     def z_min
-      return nil unless @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      return nil unless @ogr_envelope_struct.is_a? FFI::OGR::Envelope3D
 
       @ogr_envelope_struct[:min_z]
     end
 
     # @param new_z_min [Float]
     def z_min=(new_z_min)
-      return nil unless @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      return nil unless @ogr_envelope_struct.is_a? FFI::OGR::Envelope3D
 
       @ogr_envelope_struct[:min_z] = new_z_min
     end
 
     # @return [Float, nil]
     def z_max
-      return nil unless @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      return nil unless @ogr_envelope_struct.is_a? FFI::OGR::Envelope3D
 
       @ogr_envelope_struct[:max_z]
     end
 
     # @param new_z_max [Float]
     def z_max=(new_z_max)
-      return nil unless @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      return nil unless @ogr_envelope_struct.is_a? FFI::OGR::Envelope3D
 
       @ogr_envelope_struct[:max_z] = new_z_max
     end

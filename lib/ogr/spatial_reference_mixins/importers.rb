@@ -127,14 +127,14 @@ module OGR
       # @param code [Fixnum]
       # @raise [GDAL::UnsupportedOperation] On unknown EPSG code.
       def import_from_epsg(code)
-        ogr_err = FFI::GDAL.OSRImportFromEPSG(@ogr_spatial_ref_pointer, code)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromEPSG(@ogr_spatial_ref_pointer, code)
 
         ogr_err.handle_result
       end
 
       # @param code [Fixnum]
       def import_from_epsga(code)
-        ogr_err = FFI::GDAL.OSRImportFromEPSGA(@ogr_spatial_ref_pointer, code)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromEPSGA(@ogr_spatial_ref_pointer, code)
 
         ogr_err.handle_result
       end
@@ -144,14 +144,14 @@ module OGR
         wkt_ptr = FFI::MemoryPointer.from_string(wkt)
         wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         wkt_ptr_ptr.write_pointer(wkt_ptr)
-        ogr_err = FFI::GDAL.OSRImportFromWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
 
         ogr_err.handle_result
       end
 
       # @param proj4 [String]
       def import_from_proj4(proj4)
-        ogr_err = FFI::GDAL.OSRImportFromProj4(@ogr_spatial_ref_pointer, proj4)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromProj4(@ogr_spatial_ref_pointer, proj4)
 
         ogr_err.handle_result
       end
@@ -160,7 +160,7 @@ module OGR
       def import_from_esri(esri_text)
         text_array = esri_text.split("\n")
         esri_ptr_ptr = GDAL._string_array_to_pointer(text_array)
-        ogr_err = FFI::GDAL.OSRImportFromESRI(@ogr_spatial_ref_pointer, esri_ptr_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromESRI(@ogr_spatial_ref_pointer, esri_ptr_ptr)
 
         ogr_err.handle_result
       end
@@ -176,7 +176,7 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        ogr_err = FFI::GDAL.OSRImportFromPCI(@ogr_spatial_ref_pointer, proj, units, proj_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromPCI(@ogr_spatial_ref_pointer, proj, units, proj_ptr)
 
         ogr_err.handle_result
       end
@@ -193,7 +193,7 @@ module OGR
           proj_ptr.write_array_of_double(proj_params)
         end
 
-        ogr_err = FFI::GDAL.OSRImportFromUSGS(
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromUSGS(
           @ogr_spatial_ref_pointer,
           projection_system_code,
           zone,
@@ -207,14 +207,14 @@ module OGR
       #
       # @param xml [String]
       def import_from_xml(xml)
-        ogr_err = FFI::GDAL.OSRImportFromXML(@ogr_spatial_ref_pointer, xml)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromXML(@ogr_spatial_ref_pointer, xml)
 
         ogr_err.handle_result
       end
 
       # @param coord_sys [String] The Mapinfo style CoordSys definition string.
       def import_from_mapinfo(coord_sys)
-        ogr_err = FFI::GDAL.OSRImportFromMICoordSys(@ogr_spatial_ref_pointer, coord_sys)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromMICoordSys(@ogr_spatial_ref_pointer, coord_sys)
 
         ogr_err.handle_result
       end
@@ -223,7 +223,7 @@ module OGR
       # @param datum_name [String] I.e. "NAD83".
       # @param linear_unit_name [String] Plural form of linear units, i.e. "FEET".
       def import_from_erm(projection_name, datum_name, linear_unit_name)
-        ogr_err = FFI::GDAL.OSRImportFromERM(
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromERM(
           @ogr_spatial_ref_pointer,
           projection_name,
           datum_name,
@@ -234,7 +234,7 @@ module OGR
 
       # @param url [String] URL to fetch the spatial reference from.
       def import_from_url(url)
-        ogr_err = FFI::GDAL.OSRImportFromUrl(@ogr_spatial_ref_pointer, url)
+        ogr_err = FFI::OGR::SRSAPI.OSRImportFromUrl(@ogr_spatial_ref_pointer, url)
 
         ogr_err.handle_result
       end

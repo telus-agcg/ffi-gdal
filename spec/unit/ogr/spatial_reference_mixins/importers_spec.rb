@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   describe '#import_from_epsg' do

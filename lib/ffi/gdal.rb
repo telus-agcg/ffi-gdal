@@ -2,60 +2,8 @@ require 'ffi'
 require 'ffi/tools/const_generator'
 
 module FFI
-  module Library
-    alias_method :old_attach_function, :attach_function
-
-    def attach_function(*args)
-      old_attach_function(*args)
-    rescue FFI::NotFoundError
-      @unsupported_gdal_functions ||= []
-
-      if $VERBOSE
-        warn "ffi-gdal warning: function '#{args.first}' is not available in this build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
-      end
-
-      @unsupported_gdal_functions << args.first
-    end
-
-    def unsupported_gdal_functions
-      @unsupported_gdal_functions ||= []
-    end
-  end
-
   module GDAL
     extend ::FFI::Library
-
-    autoload :GDALColorEntry,
-      File.expand_path('gdal/gdal_color_entry', __dir__)
-    autoload :GDALGCP,
-      File.expand_path('gdal/gdal_gcp', __dir__)
-    autoload :GDALGridDataMetricsOptions,
-      File.expand_path('gdal/gdal_grid_data_metrics_options', __dir__)
-    autoload :GDALGridInverseDistanceToAPowerOptions,
-      File.expand_path('gdal/gdal_grid_inverse_distance_to_a_power_options', __dir__)
-    autoload :GDALGridMovingAverageOptions,
-      File.expand_path('gdal/gdal_grid_moving_average_options', __dir__)
-    autoload :GDALGridNearestNeighborOptions,
-      File.expand_path('gdal/gdal_grid_nearest_neighbor_options', __dir__)
-    autoload :GDALRPCInfo,
-      File.expand_path('gdal/gdal_rpc_info', __dir__)
-    autoload :GDALTransformerInfo,
-      File.expand_path('gdal/gdal_transformer_info', __dir__)
-    autoload :GDALWarpOptions,
-      File.expand_path('gdal/gdal_warp_options', __dir__)
-
-    autoload :OGRContourWriterInfo,
-      File.expand_path('ogr/ogr_contour_writer_info', __dir__)
-    autoload :OGREnvelope,
-      File.expand_path('ogr/ogr_envelope', __dir__)
-    autoload :OGREnvelope3D,
-      File.expand_path('ogr/ogr_envelope_3d', __dir__)
-    autoload :OGRField,
-      File.expand_path('ogr/ogr_field', __dir__)
-    autoload :OGRStyleParam,
-      File.expand_path('ogr/ogr_style_param', __dir__)
-    autoload :OGRStyleValue,
-      File.expand_path('ogr/ogr_style_value', __dir__)
 
     def self.search_paths
       @search_paths ||= begin
@@ -117,12 +65,8 @@ module FFI
   end
 end
 
+require_relative 'cpl/conv'
+require_relative 'gdal/gdal'
 require_relative 'gdal/version'
-require_relative 'cpl/conv_h'
-require_relative 'cpl/error_h'
-require_relative 'cpl/minixml_h'
-require_relative 'cpl/string_h'
-require_relative 'cpl/vsi_h'
 require_relative '../ext/to_bool'
 
-require_relative 'gdal/gdal_h'

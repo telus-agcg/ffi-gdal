@@ -1,6 +1,8 @@
 require_relative '../ffi/gdal'
 require_relative 'major_object'
 require_relative 'driver_extensions'
+require_relative 'dataset'
+require_relative 'options'
 require 'multi_xml'
 
 module GDAL
@@ -170,7 +172,7 @@ module GDAL
 
       fail CreateFail if dataset_pointer.null?
 
-      dataset = Dataset.new(dataset_pointer, nil)
+      dataset = GDAL::Dataset.new(dataset_pointer, nil)
       yield(dataset) if block_given?
 
       dataset
@@ -233,3 +235,5 @@ module GDAL
     end
   end
 end
+
+require_relative 'dataset'

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
   include_context 'OGR::Layer, spatial_reference'

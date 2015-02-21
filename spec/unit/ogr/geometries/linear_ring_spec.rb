@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::LinearRing do
   let(:linear_ring) do

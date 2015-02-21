@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::Geometry do
   describe '.create_from_wkt' do

@@ -22,7 +22,7 @@ module GDAL
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
       @color_table_pointer =
-        if FFI::GDAL::GDALPaletteInterp[palette_interp_or_pointer]
+        if FFI::GDAL::PaletteInterp[palette_interp_or_pointer]
           FFI::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
         else
           palette_interp_or_pointer

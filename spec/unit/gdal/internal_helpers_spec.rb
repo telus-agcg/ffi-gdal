@@ -1,4 +1,7 @@
 require 'spec_helper'
+require 'gdal/internal_helpers'
+require 'ogr/spatial_reference'
+require 'gdal/dataset'
 
 RSpec.describe GDAL::InternalHelpers do
   subject(:tester) do

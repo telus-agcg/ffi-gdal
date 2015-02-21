@@ -1,13 +1,13 @@
 require 'ffi'
-require_relative 'minixml_h'
+require_relative 'minixml'
 
 module FFI
-  module GDAL
-    class CPLXMLNode < FFI::Struct
-      layout :type, CPLXMLNodeType,
+  module CPL
+    class XMLNode < FFI::Struct
+      layout :type, FFI::CPL::MiniXML::XMLNodeType,
         :value, :string,
-        :next, CPLXMLNode.ptr,
-        :child, CPLXMLNode.ptr
+        :next, XMLNode.ptr,
+        :child, XMLNode.ptr
     end
   end
 end

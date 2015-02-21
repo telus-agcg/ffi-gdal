@@ -1,4 +1,6 @@
 require_relative '../ffi/ogr'
+require_relative '../gdal/major_object'
+require_relative 'envelope'
 require_relative 'layer_mixins/extensions'
 require_relative 'layer_mixins/ogr_feature_methods'
 require_relative 'layer_mixins/ogr_field_methods'
@@ -16,7 +18,7 @@ module OGR
     include LayerMixins::OGRQueryFilterMethods
     include LayerMixins::OGRSQLMethods
 
-    eval FFI::GDAL::OGR_ALTER.to_ruby
+    eval FFI::OGR::Core::OGR_ALTER.to_ruby
 
     # @param layer_ptr [FFI::Pointer]
     def initialize(layer_ptr)
@@ -30,14 +32,14 @@ module OGR
 
     # @return [String]
     def name
-      FFI::GDAL.OGR_L_GetName(@layer_pointer)
+      FFI::OGR::API.OGR_L_GetName(@layer_pointer)
     end
 
     # @return [Boolean]
     # TODO: This seems to occasionally lead to: 28352 illegal hardware
     #   instruction, and sometimes full crashes.
     def sync_to_disk
-      ogr_err = FFI::GDAL.OGR_L_SyncToDisk(@layer_pointer)
+      ogr_err = FFI::OGR::API.OGR_L_SyncToDisk(@layer_pointer)
 
       ogr_err.handle_result
     end
@@ -49,12 +51,12 @@ module OGR
     # @return [Boolean]
     # @see http://www.gdal.org/ogr__api_8h.html#a480adc8b839b04597f49583371d366fd
     def test_capability(capability)
-      FFI::GDAL.OGR_L_TestCapability(@layer_pointer, capability.to_s)
+      FFI::OGR::API.OGR_L_TestCapability(@layer_pointer, capability.to_s)
     end
 
     # @return [OGR::SpatialReference]
     def spatial_reference
-      spatial_ref_pointer = FFI::GDAL.OGR_L_GetSpatialRef(@layer_pointer)
+      spatial_ref_pointer = FFI::OGR::API.OGR_L_GetSpatialRef(@layer_pointer)
       return nil if spatial_ref_pointer.null?
 
       OGR::SpatialReference.new(spatial_ref_pointer)
@@ -62,8 +64,8 @@ module OGR
 
     # @return [OGR::Envelope]
     def extent(force = true)
-      envelope = FFI::GDAL::OGREnvelope.new
-      FFI::GDAL.OGR_L_GetExtent(@layer_pointer, envelope, force)
+      envelope = FFI::OGR::Envelope.new
+      FFI::OGR::API.OGR_L_GetExtent(@layer_pointer, envelope, force)
       return nil if envelope.null?
 
       OGR::Envelope.new(envelope)
@@ -71,8 +73,8 @@ module OGR
 
     # @return [OGR::Envelope]
     def extent_by_geometry(geometry_field_index, force = true)
-      envelope = FFI::GDAL::OGREnvelope.new
-      FFI::GDAL.OGR_L_GetExtentEx(@layer_pointer, geometry_field_index, envelope, force)
+      envelope = FFI::OGR::Envelope.new
+      FFI::OGR::API.OGR_L_GetExtentEx(@layer_pointer, geometry_field_index, envelope, force)
       return nil if envelope.null?
 
       OGR::Envelope.new(envelope)
@@ -80,12 +82,12 @@ module OGR
 
     # @return [Symbol] One of OGRwkbGeometryType.
     def geometry_type
-      FFI::GDAL.OGR_L_GetGeomType(@layer_pointer)
+      FFI::OGR::API.OGR_L_GetGeomType(@layer_pointer)
     end
 
     # @return [OGR::StyleTable, nil]
     def style_table
-      style_table_pointer = FFI::GDAL.OGR_L_GetStyleTable(@layer_pointer)
+      style_table_pointer = FFI::OGR::API.OGR_L_GetStyleTable(@layer_pointer)
       return nil if style_table_pointer.null?
 
       OGR::StyleTable.new(style_table_pointer)
@@ -96,7 +98,7 @@ module OGR
       style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
       fail OGR::Failure if style_table_ptr.nil? || style_table_ptr.null?
 
-      FFI::GDAL.OGR_L_SetStyleTable(@layer_pointer, style_table_ptr)
+      FFI::OGR::API.OGR_L_SetStyleTable(@layer_pointer, style_table_ptr)
     end
   end
 end

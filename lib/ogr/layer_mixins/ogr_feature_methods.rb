@@ -1,3 +1,6 @@
+require_relative '../feature'
+require_relative '../feature_definition'
+
 module OGR
   module LayerMixins
     module OGRFeatureMethods
@@ -5,7 +8,7 @@ module OGR
       #
       # @return [OGR::FeatureDefinition,nil]
       def feature_definition
-        feature_defn_pointer = FFI::GDAL.OGR_L_GetLayerDefn(@layer_pointer)
+        feature_defn_pointer = FFI::OGR::API.OGR_L_GetLayerDefn(@layer_pointer)
         return nil if feature_defn_pointer.null?
 
         # This object should not be modified.
@@ -19,7 +22,7 @@ module OGR
       def create_feature
         feature_def = feature_definition
         feature = OGR::Feature.new(feature_def)
-        ogr_err = FFI::GDAL.OGR_L_CreateFeature(@layer_pointer, feature.c_pointer)
+        ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@layer_pointer, feature.c_pointer)
         ogr_err.handle_result
 
         feature
@@ -33,7 +36,7 @@ module OGR
       #   does not exist.
       # TODO: Use OGR_L_TestCapability before trying to delete.
       def delete_feature(feature_id)
-        ogr_err = FFI::GDAL.OGR_L_DeleteFeature(@layer_pointer, feature_id)
+        ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@layer_pointer, feature_id)
 
         ogr_err.handle_result "Unable to delete feature with ID '#{feature_id}'"
       end
@@ -44,7 +47,7 @@ module OGR
       # @param force [Boolean] Force the calculation even if it's expensive.
       # @return [Fixnum]
       def feature_count(force = true)
-        FFI::GDAL.OGR_L_GetFeatureCount(@layer_pointer, force)
+        FFI::OGR::API.OGR_L_GetFeatureCount(@layer_pointer, force)
       end
 
       # @param index [Fixnum] The 0-based index of the feature to get.  It should
@@ -52,7 +55,7 @@ module OGR
       # @return [OGR::Feature, nil]
       def feature(index)
         @features.fetch(index) do
-          feature_pointer = FFI::GDAL.OGR_L_GetFeature(@layer_pointer, index)
+          feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@layer_pointer, index)
           return nil if feature_pointer.null?
 
           feature = OGR::Feature.new(feature_pointer)
@@ -70,7 +73,7 @@ module OGR
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         fail OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
-        ogr_err = FFI::GDAL.OGR_L_SetFeature(@layer_pointer, new_feature_ptr)
+        ogr_err = FFI::OGR::API.OGR_L_SetFeature(@layer_pointer, new_feature_ptr)
 
         ogr_err.handle_result
       end
@@ -81,7 +84,7 @@ module OGR
       #
       # @return [OGR::Feature, nil]
       def next_feature
-        feature_pointer = FFI::GDAL.OGR_L_GetNextFeature(@layer_pointer)
+        feature_pointer = FFI::OGR::API.OGR_L_GetNextFeature(@layer_pointer)
         return nil if feature_pointer.null?
 
         OGR::Feature.new(feature_pointer)
@@ -92,19 +95,19 @@ module OGR
       # @param feature_index [Fixnum]
       # @return [Boolean]
       def next_feature_index=(feature_index)
-        ogr_err = FFI::GDAL.OGR_L_SetNextByIndex(@layer_pointer, feature_index)
+        ogr_err = FFI::OGR::API.OGR_L_SetNextByIndex(@layer_pointer, feature_index)
 
         ogr_err.handle_result "Unable to set next feature index to #{feature_index}"
       end
 
       # @return [Fixnum]
       def features_read
-        FFI::GDAL.OGR_L_GetFeaturesRead(@layer_pointer)
+        FFI::OGR::API.OGR_L_GetFeaturesRead(@layer_pointer)
       end
 
       # Resets the sequential reading of features for this layer.
       def reset_reading
-        FFI::GDAL.OGR_L_ResetReading(@layer_pointer)
+        FFI::OGR::API.OGR_L_ResetReading(@layer_pointer)
       end
     end
   end

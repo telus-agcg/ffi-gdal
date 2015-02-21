@@ -8,7 +8,7 @@ module OGR
         datum_name = FFI::MemoryPointer.new(:string)
         units = FFI::MemoryPointer.new(:string)
 
-        ogr_err = FFI::GDAL.OSRExportToERM(@ogr_spatial_ref_pointer, projection_name,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToERM(@ogr_spatial_ref_pointer, projection_name,
           datum_name, units)
         ogr_err.handle_result 'Required parameters (name, datum name, units) are not defined'
 
@@ -25,7 +25,7 @@ module OGR
         return_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         return_ptr_ptr.write_pointer(return_ptr)
 
-        ogr_err = FFI::GDAL.OSRExportToMICoordSys(@ogr_spatial_ref_pointer,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToMICoordSys(@ogr_spatial_ref_pointer,
           return_ptr_ptr)
         ogr_err.handle_result
 
@@ -46,7 +46,7 @@ module OGR
         prj_params_ptr = FFI::MemoryPointer.new(:pointer)
         prj_params_ptr.write_pointer(prj_params)
 
-        ogr_err = FFI::GDAL.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToPCI(@ogr_spatial_ref_pointer, proj_ptr,
           units_ptr, prj_params_ptr)
         ogr_err.handle_result
 
@@ -64,7 +64,7 @@ module OGR
         proj4_ptr = FFI::MemoryPointer.new(:pointer)
         proj4_ptr.write_pointer(proj4)
 
-        ogr_err = FFI::GDAL.OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToProj4(@ogr_spatial_ref_pointer, proj4_ptr)
         ogr_err.handle_result
 
         proj4_ptr.read_pointer.read_string
@@ -79,7 +79,7 @@ module OGR
         prj_params_ptr = FFI::MemoryPointer.new(:pointer)
         prj_params_ptr.write_pointer(prj_params)
 
-        ogr_err = FFI::GDAL.OSRExportToUSGS(@ogr_spatial_ref_pointer, proj_sys,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToUSGS(@ogr_spatial_ref_pointer, proj_sys,
           zone, prj_params_ptr, datum)
         ogr_err.handle_result
 
@@ -97,7 +97,7 @@ module OGR
         wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-        ogr_err = FFI::GDAL.OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToWkt(@ogr_spatial_ref_pointer, wkt_ptr_ptr)
         ogr_err.handle_result
 
         wkt_ptr_ptr.read_pointer.read_string
@@ -110,7 +110,7 @@ module OGR
         wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         wkt_ptr_ptr.write_pointer(wkt_ptr)
 
-        ogr_err = FFI::GDAL.OSRExportToPrettyWkt(@ogr_spatial_ref_pointer,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@ogr_spatial_ref_pointer,
           wkt_ptr_ptr, simplify)
         ogr_err.handle_result
 
@@ -123,7 +123,7 @@ module OGR
         xml_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         xml_ptr_ptr.write_pointer(xml_ptr)
 
-        ogr_err = FFI::GDAL.OSRExportToXML(@ogr_spatial_ref_pointer, xml_ptr_ptr,
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToXML(@ogr_spatial_ref_pointer, xml_ptr_ptr,
           dialect)
         ogr_err.handle_result
 

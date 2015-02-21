@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'ogr/envelope'
+require 'gdal/geo_transform'
 
 RSpec.describe OGR::Envelope do
   describe '#x_min' do

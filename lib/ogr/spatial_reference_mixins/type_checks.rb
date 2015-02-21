@@ -3,32 +3,32 @@ module OGR
     module TypeChecks
       # @return [Boolean] True if the root node is a GEOGCS node.
       def geographic?
-        FFI::GDAL.OSRIsGeographic(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsGeographic(@ogr_spatial_ref_pointer)
       end
 
       # @return [Boolean] True if the root node is a LOCAL_CS node.
       def local?
-        FFI::GDAL.OSRIsLocal(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsLocal(@ogr_spatial_ref_pointer)
       end
 
       # @return [Boolean] True if it contains a PROJCS node.
       def projected?
-        FFI::GDAL.OSRIsProjected(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsProjected(@ogr_spatial_ref_pointer)
       end
 
       # @return [Boolean] True if the root node is a COMPD_CS node.
       def compound?
-        FFI::GDAL.OSRIsCompound(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsCompound(@ogr_spatial_ref_pointer)
       end
 
       # @return [Boolean] True if the root node is a GEOCCS node.
       def geocentric?
-        FFI::GDAL.OSRIsGeocentric(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsGeocentric(@ogr_spatial_ref_pointer)
       end
 
       # @return [Boolean] True if it contains a VERT_CS node.
       def vertical?
-        FFI::GDAL.OSRIsVertical(@ogr_spatial_ref_pointer)
+        FFI::OGR::SRSAPI.OSRIsVertical(@ogr_spatial_ref_pointer)
       end
 
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
@@ -37,7 +37,7 @@ module OGR
       def same?(other_spatial_ref)
         spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
 
-        FFI::GDAL.OSRIsSame(@ogr_spatial_ref_pointer, spatial_ref_ptr)
+        FFI::OGR::SRSAPI.OSRIsSame(@ogr_spatial_ref_pointer, spatial_ref_ptr)
       end
 
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
@@ -46,7 +46,7 @@ module OGR
       def geog_cs_is_same?(other_spatial_ref)
         spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
 
-        FFI::GDAL.OSRIsSameGeogCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
+        FFI::OGR::SRSAPI.OSRIsSameGeogCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
       end
 
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
@@ -55,7 +55,7 @@ module OGR
       def vert_cs_is_same?(other_spatial_ref)
         spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
 
-        FFI::GDAL.OSRIsSameVertCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
+        FFI::OGR::SRSAPI.OSRIsSameVertCS(@ogr_spatial_ref_pointer, spatial_ref_ptr)
       end
     end
   end

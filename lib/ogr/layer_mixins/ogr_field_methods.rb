@@ -6,13 +6,13 @@ module OGR
       # directly.
       #
       # @param name [String]
-      # @param type [FFI::GDAL::OGRFieldType]
+      # @param type [FFI::OGR::FieldType]
       # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
       #   different form, depending on the limitations of the format driver.
       # @return [OGR::Field]
       def create_field(name, type, approx_ok = false)
         field = OGR::Field.new(name, type)
-        ogr_err = FFI::GDAL.OGR_L_CreateField(@layer_pointer, field.c_pointer, approx_ok)
+        ogr_err = FFI::OGR::API.OGR_L_CreateField(@layer_pointer, field_definition_ptr, approx_ok)
         ogr_err.handle_result
 
         field
@@ -23,7 +23,7 @@ module OGR
       # TODO: Use OGR_L_TestCapability before trying to delete.
       # @return +true+ if successful, otherwise raises an OGR exception.
       def delete_field(field_id)
-        ogr_err = FFI::GDAL.OGR_L_DeleteField(@layer_pointer, field_id)
+        ogr_err = FFI::OGR::API.OGR_L_DeleteField(@layer_pointer, field_id)
 
         ogr_err.handle_result
       end
@@ -33,7 +33,7 @@ module OGR
       # @return [Boolean]
       def reorder_fields(*new_order)
         map_array_ptr = FFI::MemoryPointer.new(:int, new_order.size).write_array_of_int(new_order)
-        ogr_err = FFI::GDAL.OGR_L_ReorderFields(@layer_pointer, map_array_ptr)
+        ogr_err = FFI::OGR::API.OGR_L_ReorderFields(@layer_pointer, map_array_ptr)
 
         ogr_err.handle_result
       end
@@ -44,7 +44,7 @@ module OGR
       # @param old_position [Fixnum]
       # @param new_position [Fixnum]
       def reorder_field(old_position, new_position)
-        ogr_err = FFI::GDAL.OGR_L_ReorderField(@layer_pointer, old_position, new_position)
+        ogr_err = FFI::OGR::API.OGR_L_ReorderField(@layer_pointer, old_position, new_position)
 
         ogr_err.handle_result
       end
@@ -58,7 +58,7 @@ module OGR
       def alter_field_definition(field_index, new_field_definition, flags)
         new_field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, new_field_definition)
 
-        ogr_err = FFI::GDAL.OGR_L_AlterFieldDefn(
+        ogr_err = FFI::OGR::API.OGR_L_AlterFieldDefn(
           @layer_pointer,
           field_index,
           new_field_definition_ptr,
@@ -74,7 +74,7 @@ module OGR
       #   given form, the driver will try to make changes to make a match.
       # @return [Fixnum] Index of the field or +nil+ if the field doesn't exist.
       def find_field_index(field_name, exact_match = true)
-        result = FFI::GDAL.OGR_L_FindFieldIndex(@layer_pointer, field_name, exact_match)
+        result = FFI::OGR::API.OGR_L_FindFieldIndex(@layer_pointer, field_name, exact_match)
 
         result < 0 ? nil : result
       end
@@ -90,7 +90,7 @@ module OGR
       def create_geometry_field(geometry_field_def, approx_ok = false)
         geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)
 
-        ogr_err = FFI::GDAL.OGR_L_CreateGeomField(
+        ogr_err = FFI::OGR::API.OGR_L_CreateGeomField(
           @layer_pointer,
           geometry_field_definition_ptr,
           approx_ok)
@@ -101,7 +101,7 @@ module OGR
       # @param field_names [Array<String>]
       def set_ignored_fields(*field_names)
         fields_ptr = GDAL._string_array_to_pointer(field_names)
-        ogr_err = FFI::GDAL.OGR_L_SetIgnoredFields(@layer_pointer, fields_ptr)
+        ogr_err = FFI::OGR::API.OGR_L_SetIgnoredFields(@layer_pointer, fields_ptr)
 
         ogr_err.handle_result
       end

@@ -20,7 +20,7 @@ module OGR
                    nil
       end
 
-      _num_points = FFI::GDAL.OGR_G_GetPoints(@geometry_pointer,
+      _num_points = FFI::OGR::API.OGR_G_GetPoints(@geometry_pointer,
         x_buffer,
         x_stride,
         y_buffer,
