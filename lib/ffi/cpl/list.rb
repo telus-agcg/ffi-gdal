@@ -15,6 +15,9 @@ module FFI
             extend ::FFI::Library
             ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
 
+            #-------------------------------------------------------------------
+            # Functions
+            #-------------------------------------------------------------------
             attach_function :CPLListAppend, [List.ptr, :pointer], List.ptr
             attach_function :CPLListInsert, [List.ptr, :pointer, :int], List.ptr
             attach_function :CPLListGetLast, [List.ptr], List.ptr
