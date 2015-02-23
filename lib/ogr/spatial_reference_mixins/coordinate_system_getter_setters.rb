@@ -34,23 +34,18 @@ module OGR
       end
       alias_method :geoc_cs=, :set_geoc_cs
 
-      # Set the GEOCCS based on a well-known name.
+      # Set the GEOGCS based on a well-known name.
       #
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
       # @raise [NotImplementedError] If your version of GDAL/OGR doesn't define
       #   the C function needed for this.
-      def set_well_known_geoc_cs(name)
-        if GDAL._supported? :OSRSetWellKnownGeocCS
-          ogr_err = FFI::OGR::SRSAPI.OSRSetWellKnownGeocCS(@ogr_spatial_ref_pointer, name)
+      def set_well_known_geog_cs(name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@ogr_spatial_ref_pointer, name)
 
-          ogr_err.handle_result
-        else
-          fail NotImplementedError,
-            'OSRSetWellKnownGeocCS is not implemented in your version of GDAL/OGR'
-        end
+        ogr_err.handle_result
       end
-      alias_method :well_known_geoc_cs=, :set_well_known_geoc_cs
+      alias_method :well_known_geog_cs=, :set_well_known_geog_cs
 
       # @param definition [String]
       def set_from_user_input(definition)

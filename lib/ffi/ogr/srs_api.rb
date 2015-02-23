@@ -356,7 +356,7 @@ module FFI
       attach_function :OSRSetLocalCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetProjCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetGeocCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
-      attach_function :OSRSetWellKnownGeocCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
+      attach_function :OSRSetWellKnownGeogCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetFromUserInput, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRCopyGeogCSFrom, %i[OGRSpatialReferenceH OGRSpatialReferenceH], FFI::OGR::Core::Err
       attach_function :OSRSetTOWGS84,
