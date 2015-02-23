@@ -45,11 +45,7 @@ module FFI
       attach_function :CSLTestBoolean, %i[string], :int
       attach_function :CSLFetchBoolean, %i[pointer string int], :int
 
-      attach_function :CPLSPrintf, %i[string varargs], :string
-      attach_function :CSLAppendPrintf, %i[pointer string varargs], :pointer
-      attach_function :CPLVASPrintf, %i[pointer string varargs], :pointer
       attach_function :CPLParseNameValue, %i[string pointer], :string
-
       attach_function :CSLFetchNameValue, %i[pointer string], :string
       attach_function :CSLFetchNameValueDef, %i[pointer string string], :string
       attach_function :CSLFetchNameValueMultiple, %i[pointer string], :pointer
@@ -68,6 +64,15 @@ module FFI
       attach_function :CPLStrlcpy, %i[string string size_t], :size_t
       attach_function :CPLStrlcat, %i[string string size_t], :size_t
       attach_function :CPLStrnlen, %i[string size_t], :size_t
+      attach_function :CPLvsnprintf, %i[string size_t string varargs], :size_t
+      attach_function :CPLsnprintf, %i[string size_t varargs], :size_t
+      attach_function :CPLsprintf, %i[string varargs], :size_t
+      attach_function :CPLprintf, %i[varargs], :size_t
+      attach_function :CPLsscanf, %i[string varargs], :size_t
+      attach_function :CPLSPrintf, %i[string varargs], :string
+      attach_function :CSLAppendPrintf, %i[pointer string varargs], :pointer
+      attach_function :CPLVASPrintf, %i[pointer string varargs], :pointer
+
       attach_function :CPLEncodingCharSize, %i[string], :int
 
       attach_function :CPLClearRecodeWarningFlags, [], :void
