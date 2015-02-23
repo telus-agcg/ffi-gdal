@@ -1,21 +1,23 @@
+require_relative '../field_definition'
+require_relative '../field'
+require_relative '../geometry_field_definition'
+
 module OGR
   module LayerMixins
     module OGRFieldMethods
       # Creates and writes a new field to the layer. This adds the field to the
-      # internal FieldDefinition; C API says not to update the FieldDefinition
+      # internal FeatureDefinition; C API says not to update the FeatureDefinition
       # directly.
       #
-      # @param name [String]
-      # @param type [FFI::OGR::FieldType]
+      # @param field_definition [OGR::FieldDefinition]
       # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
       #   different form, depending on the limitations of the format driver.
-      # @return [OGR::Field]
-      def create_field(name, type, approx_ok = false)
-        field = OGR::Field.new(name, type)
+      # @return [Boolean]
+      def create_field(field_definition, approx_ok = false)
+        field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
         ogr_err = FFI::OGR::API.OGR_L_CreateField(@layer_pointer, field_definition_ptr, approx_ok)
-        ogr_err.handle_result
 
-        field
+        ogr_err.handle_result
       end
 
       # Deletes the field definition from the layer.
@@ -32,6 +34,9 @@ module OGR
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
       # @return [Boolean]
       def reorder_fields(*new_order)
+        return false if new_order.empty?
+        return false if new_order.any? { |i| i > feature_definition.field_count }
+
         map_array_ptr = FFI::MemoryPointer.new(:int, new_order.size).write_array_of_int(new_order)
         ogr_err = FFI::OGR::API.OGR_L_ReorderFields(@layer_pointer, map_array_ptr)
 
@@ -85,7 +90,7 @@ module OGR
       # @param geometry_field_def [OGR::GeometryFieldDefinition] The definition
       #   to use for creating the new field.
       # @param approx_ok [Boolean]
-      # @return [OGR::GeometryField]
+      # @return [Boolean]
       # TODO: Check if the Layer supports this with the OLCCreateField capability
       def create_geometry_field(geometry_field_def, approx_ok = false)
         geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)
@@ -98,12 +103,19 @@ module OGR
         ogr_err.handle_result
       end
 
+      # If the driver supports this functionality, it will not fetch the
+      # specified fields in subsequent calls to #feature / #next_feature and
+      # thus save some processing time and/or bandwidth.
+      #
       # @param field_names [Array<String>]
+      # @return [Boolean]
       def set_ignored_fields(*field_names)
+        return false if field_names.empty?
+
         fields_ptr = GDAL._string_array_to_pointer(field_names)
         ogr_err = FFI::OGR::API.OGR_L_SetIgnoredFields(@layer_pointer, fields_ptr)
 
-        ogr_err.handle_result
+        ogr_err.handle_result "Unable to ignore fields with names: #{field_names}"
       end
     end
   end

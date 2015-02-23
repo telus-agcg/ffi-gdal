@@ -8,6 +8,11 @@ module FFI
           :list, :pointer
       end
 
+      class Integer64List < FFI::Struct
+        layout :count, CPL::Port.find_type(:GIntBig),
+          :list, :pointer
+      end
+
       class RealList < FFI::Struct
         layout :count, :int,
           :list, :pointer
@@ -20,7 +25,7 @@ module FFI
 
       class Binary < FFI::Struct
         layout :count, :int,
-          :list, :pointer
+          :data, :pointer
       end
 
       class Set < FFI::Struct
@@ -29,13 +34,13 @@ module FFI
       end
 
       class Date < FFI::Struct
-        layout :year, FFI::CPL::Conv.find_type(:GInt16),
-          :month, FFI::CPL::Conv.find_type(:GByte),
-          :day, FFI::CPL::Conv.find_type(:GByte),
-          :hour, FFI::CPL::Conv.find_type(:GByte),
-          :minute, FFI::CPL::Conv.find_type(:GByte),
-          :second, FFI::CPL::Conv.find_type(:GByte),
-          :tz_flag, FFI::CPL::Conv.find_type(:GByte)
+        layout :year, CPL::Port.find_type(:GInt16),
+          :month, CPL::Port.find_type(:GByte),
+          :day, CPL::Port.find_type(:GByte),
+          :hour, CPL::Port.find_type(:GByte),
+          :minute, CPL::Port.find_type(:GByte),
+          :second, CPL::Port.find_type(:GByte),
+          :tz_flag, CPL::Port.find_type(:GByte)
       end
     end
 
@@ -43,9 +48,11 @@ module FFI
       include FieldTypes
 
       layout :integer, :int,
+        :integer64, CPL::Port.find_type(:GIntBig),
         :real, :double,
-        :string, :string,
+        :string, :pointer,
         :integer_list, FieldTypes::IntegerList,
+        :integer64_list, FieldTypes::Integer64List,
         :real_list, FieldTypes::RealList,
         :string_list, FieldTypes::StringList,
         :binary, FieldTypes::Binary,

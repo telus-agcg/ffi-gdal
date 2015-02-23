@@ -1,15 +1,16 @@
 require 'spec_helper'
 require 'date'
+require 'ogr/feature'
 
 RSpec.describe OGR::Feature do
-  let(:integer_field) { OGR::Field.new('test integer field', :OFTInteger) }
-  let(:integer_list_field) { OGR::Field.new('test integer list field', :OFTIntegerList) }
-  let(:real_field) { OGR::Field.new('test real field', :OFTReal) }
-  let(:real_list_field) { OGR::Field.new('test real list field', :OFTRealList) }
-  let(:string_field) { OGR::Field.new('test string field', :OFTString) }
-  let(:string_list_field) { OGR::Field.new('test string list field', :OFTStringList) }
-  let(:binary_field) { OGR::Field.new('test binary field', :OFTBinary) }
-  let(:date_field) { OGR::Field.new('test date field', :OFTDate) }
+  let(:integer_field) { OGR::FieldDefinition.new('test integer field', :OFTInteger) }
+  let(:integer_list_field) { OGR::FieldDefinition.new('test integer list field', :OFTIntegerList) }
+  let(:real_field) { OGR::FieldDefinition.new('test real field', :OFTReal) }
+  let(:real_list_field) { OGR::FieldDefinition.new('test real list field', :OFTRealList) }
+  let(:string_field) { OGR::FieldDefinition.new('test string field', :OFTString) }
+  let(:string_list_field) { OGR::FieldDefinition.new('test string list field', :OFTStringList) }
+  let(:binary_field) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
+  let(:date_field) { OGR::FieldDefinition.new('test date field', :OFTDate) }
 
   let(:geometry_field_definition) do
     OGR::GeometryFieldDefinition.new('test geometry', :wkbPoint)
@@ -317,8 +318,8 @@ RSpec.describe OGR::Feature do
   end
   describe '#field_definition' do
     context 'field exists at the given index' do
-      it 'returns the Field' do
-        expect(subject.field_definition(0)).to be_a OGR::Field
+      it 'returns the FieldDefinition' do
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
 
@@ -331,7 +332,7 @@ RSpec.describe OGR::Feature do
 
   describe 'field_index' do
     context 'field exists with the given name' do
-      it "returns the Field's index" do
+      it "returns the FieldDefinition's index" do
         expect(subject.field_index('test binary field')).to eq 6
       end
     end

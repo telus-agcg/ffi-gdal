@@ -44,24 +44,22 @@ module OGR
       FFI::OGR::API.OGR_FD_GetFieldCount(@feature_definition_pointer)
     end
 
-    # Note that this returns an OGR::Field, not an OGR::FieldDefinition.
-    #
     # @param index [Fixnum]
-    # @return [OGR::Field]
+    # @return [OGR::FieldDefinition]
     def field_definition(index)
       field_definition_ptr =
         FFI::OGR::API.OGR_FD_GetFieldDefn(@feature_definition_pointer, index)
       return nil if field_definition_ptr.null?
 
-      OGR::Field.new(field_definition_ptr, nil)
+      OGR::FieldDefinition.new(field_definition_ptr, nil)
     end
 
-    # @param new_field_definition [OGR::Field, FFI::Pointer]
-    def add_field_definition(field)
-      field_ptr = GDAL._pointer(OGR::Field, field)
+    # @param field_definition [OGR::FieldDefinition, FFI::Pointer]
+    def add_field_definition(field_definition)
+      field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
 
-      if field_ptr.nil?
-        fail OGR::InvalidField, "Unable to add OGR::Field: '#{field}'"
+      if field_definition_ptr.nil?
+        fail OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
       end
 
       FFI::OGR::API.OGR_FD_AddFieldDefn(@feature_definition_pointer, field_definition_ptr)
@@ -121,7 +119,7 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @return [OGR::Field]
+    # @return [OGR::GeometryFieldDefinition]
     def geometry_field_definition(index)
       geometry_field_definition_ptr =
         FFI::OGR::API.OGR_FD_GetGeomFieldDefn(@feature_definition_pointer, index)

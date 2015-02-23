@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/feature_definition'
 
 RSpec.describe OGR::FeatureDefinition do
   subject(:feature_definition) do
@@ -7,7 +8,7 @@ RSpec.describe OGR::FeatureDefinition do
     fd
   end
 
-  let(:field) { OGR::Field.new('test field', :OFTString) }
+  let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -41,26 +42,26 @@ RSpec.describe OGR::FeatureDefinition do
       before { subject.add_field_definition(field) }
 
       it 'returns the Field' do
-        expect(subject.field_definition(0)).to be_a OGR::Field
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
   end
 
   describe '#add_field_definition + #field_definition' do
-    context 'param is not a Field' do
+    context 'param is not a FieldDefinition' do
       it 'raises' do
         expect do
           subject.add_field_definition('not a pointer')
-        end.to raise_exception OGR::InvalidField
+        end.to raise_exception OGR::InvalidFieldDefinition
       end
     end
 
-    context 'param is a Field' do
-      let(:field) { OGR::Field.new('test field', :OFTString) }
+    context 'param is a FieldDefinition' do
+      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
 
       it 'adds the field' do
         subject.add_field_definition(field)
-        expect(subject.field_definition(0)).to be_a OGR::Field
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
   end
@@ -95,10 +96,10 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'field with requested name exists' do
-      let(:field) { OGR::Field.new('test field', :OFTString) }
+      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
       before { subject.add_field_definition(field) }
 
-      it "returns the Field's index" do
+      it "returns the FieldDefinition's index" do
         expect(subject.field_index('test field')).to be_zero
       end
     end
@@ -187,7 +188,7 @@ RSpec.describe OGR::FeatureDefinition do
 
   describe '#geometry_field_definition' do
     context 'default, at 0' do
-      it 'returns an OGR::Field' do
+      it 'returns an OGR::GeometryFieldDefinition' do
         expect(subject.geometry_field_definition(0)).
           to be_a OGR::GeometryFieldDefinition
       end
@@ -242,26 +243,26 @@ RSpec.describe OGR::FeatureDefinition do
     end
   end
 
-  describe '#field_by_name' do
+  describe '#field_definitino_by_name' do
     context 'field with name does not exist' do
       it 'returns nil' do
-        expect(subject.field_by_name('asdfasdfasdf')).to be_nil
+        expect(subject.field_definition_by_name('asdfasdfasdf')).to be_nil
       end
     end
   end
 
-  describe '#geometry_field_by_name' do
+  describe '#geometry_field_definition_by_name' do
     context 'field with name does not exist' do
       it 'returns nil' do
         subject.geometry_field_definition(0).name
-        expect(subject.geometry_field_by_name('asdfasdf')).to be_nil
+        expect(subject.geometry_field_definition_by_name('asdfasdf')).to be_nil
       end
     end
 
     context 'field with name exists' do
       it 'returns the OGR::GeometryFieldDefinition' do
         name = subject.geometry_field_definition(0).name
-        expect(subject.geometry_field_by_name(name)).
+        expect(subject.geometry_field_definition_by_name(name)).
           to be_a OGR::GeometryFieldDefinition
       end
     end

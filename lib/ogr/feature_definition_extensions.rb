@@ -2,7 +2,7 @@ require 'json'
 
 module OGR
   module FeatureDefinitionExtensions
-    # @return [Array<OGR::Field>]
+    # @return [Array<OGR::FieldDefinition>]
     def field_definitions
       return [] if field_count.zero?
 
@@ -12,17 +12,17 @@ module OGR
     end
 
     # @param name [String]
-    # @return [OGR::Field]
-    def field_by_name(name)
+    # @return [OGR::FieldDefinition]
+    def field_definition_by_name(name)
       i = field_index(name)
       return unless i
 
-      field(i)
+      field_definition(i)
     end
 
     # @param name [String]
-    # @return [OGR::Field]
-    def geometry_field_by_name(name)
+    # @return [OGR::GeometryFieldDefinition]
+    def geometry_field_definition_by_name(name)
       g = geometry_field_index(name)
       return unless g
 

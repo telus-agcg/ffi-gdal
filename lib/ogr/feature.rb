@@ -1,7 +1,7 @@
 require_relative '../ffi/ogr'
 require_relative 'feature_extensions'
 require_relative 'feature_definition'
-require_relative 'field'
+require_relative 'field_definition'
 require 'date'
 
 module OGR
@@ -57,7 +57,7 @@ module OGR
     def set_from!(other_feature, be_forgiving = false, with_map: nil)
       fail NotImplementedError, 'with_map: is not yet supported' if with_map
 
-      ogr_err = FFI::GDAL.OGR_F_SetFrom(@feature_pointer, other_feature_ptr)
+      ogr_err = FFI::OGR::API.OGR_F_SetFrom(@feature_pointer, other_feature_ptr)
 
       ogr_err.handle_result
     end
@@ -147,9 +147,11 @@ module OGR
       case field_def.type
       when :OFTInteger then !raw_field[:integer].nil?
       when :OFTIntegerList then !raw_field[:integer_list].nil?
+      when :OFTInteger64 then !raw_field[:integer64].nil?
+      when :OFTInteger64List then !raw_field[:integer64_list].nil?
       when :OFTReal then !raw_field[:real].nil?
+      when :OFTRealList then !raw_field[:real_list].nil?
       when :OFTString then !raw_field[:string].nil?
-      # when :OFTString then raw_field[:string]
       when :OFTStringList then !raw_field[:string_list].nil?
       when :OFTBinary then !raw_field[:binary].nil?
       when :OFTDate then !raw_field[:date].nil?
@@ -177,13 +179,7 @@ module OGR
     # @param [Date, Time, DateTime]
     def set_field_date_time(index, value)
       time = value.to_time
-      zone = if time.zone =~ /GMT/
-               100
-             elsif time.zone
-               1
-             else
-               0
-      end
+      zone = OGR._format_time_zone_for_ogr(time.zone)
 
       FFI::OGR::API.OGR_F_SetFieldDateTime(@feature_pointer, index,
         time.year,
@@ -196,12 +192,12 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @return [OGR::Field]
+    # @return [OGR::FieldDefinition]
     def field_definition(index)
       field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@feature_pointer, index)
       return nil if field_pointer.null?
 
-      OGR::Field.new(field_pointer, nil)
+      OGR::FieldDefinition.new(field_pointer, nil)
     end
 
     # @param name [String]
@@ -414,11 +410,7 @@ module OGR
       )
       return nil unless result
 
-      formatted_tz = case time_zone_flag_ptr.read_int
-                     when 0 then nil
-                     when 1 then (Time.now.getlocal.utc_offset / 3600).to_s
-                     when 100 then '+0'
-                     end
+      formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
 
       DateTime.new(
         year_ptr.read_int,

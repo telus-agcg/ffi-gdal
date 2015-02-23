@@ -32,7 +32,7 @@ module OGR
   class InvalidFeatureDefinition < StandardError
   end
 
-  class InvalidField < StandardError
+  class InvalidFieldDefinition < StandardError
   end
 
   class InvalidGeometry < StandardError

@@ -43,7 +43,7 @@ module OGR
       layer = data_source.create_layer(layer_name, geometry_type: type,
                                                    spatial_reference: spatial_reference)
 
-      # field = Field.new('Name', :OFTString)
+      # field = FieldDefinition.new('Name', :OFTString)
       # field.width = 32
 
       unless layer
