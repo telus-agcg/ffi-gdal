@@ -655,11 +655,11 @@ module FFI
     attach_function :GDALDataTypeUnion, [DataType, DataType], DataType
 
     attach_function :GDALSetCacheMax, %i[int], :void
-    attach_function :GDALSetCacheMax64, [FFI::CPL::Conv.find_type(:GIntBig)], :void
+    attach_function :GDALSetCacheMax64, [CPL::Port.find_type(:GIntBig)], :void
     attach_function :GDALGetCacheMax, [], :int
-    attach_function :GDALGetCacheMax64, [], FFI::CPL::Conv.find_type(:GIntBig)
+    attach_function :GDALGetCacheMax64, [], CPL::Port.find_type(:GIntBig)
     attach_function :GDALGetCacheUsed, [], :int
-    attach_function :GDALGetCacheUsed64, [], FFI::CPL::Conv.find_type(:GIntBig)
+    attach_function :GDALGetCacheUsed64, [], CPL::Port.find_type(:GIntBig)
     attach_function :GDALFlushCacheBlock, [], :bool
 
     attach_function :GDALLoadWorldFile, %i[string pointer], :bool

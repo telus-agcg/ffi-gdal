@@ -1,23 +1,12 @@
 require 'ffi'
 require_relative 'error'
+require_relative 'port'
 
 module FFI
   module CPL
     module Conv
       extend ::FFI::Library
       ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
-
-      #------------------------------------------------------------------------
-      # cpl_port Typedefs
-      #------------------------------------------------------------------------
-      typedef :int, :GInt32
-      typedef :uint, :GUInt32
-      typedef :short, :GInt16
-      typedef :ushort, :GUInt16
-      typedef :uchar, :GByte
-      typedef :int, :GBool
-      typedef :long_long, :GIntBig
-      typedef :ulong_long, :GUIntBig
 
       #--------------------------------------------------------------------------
       # Functions
@@ -60,7 +49,7 @@ module FFI
       attach_function :CPLScanDouble, %i[string int], :double
       attach_function :CPLScanLong, %i[string int], :long
       attach_function :CPLScanLong, %i[string int], :ulong
-      attach_function :CPLScanUIntBig, %i[string int], :GUIntBig
+      attach_function :CPLScanUIntBig, %i[string int], Port.find_type(:GUIntBig)
       attach_function :CPLScanPointer, %i[string int], :pointer
       attach_function :CPLPrintString, %i[string string int], :int
       attach_function :CPLPrintStringFill, %i[string string int], :int
@@ -68,8 +57,8 @@ module FFI
       #---------
       # Numbers to strings
       #---------
-      attach_function :CPLPrintInt32, %i[string GInt32 int], :int
-      attach_function :CPLPrintUIntBig, %i[string GUIntBig int], :int
+      attach_function :CPLPrintInt32, [:string, Port.find_type(:GInt32), :int], :int
+      attach_function :CPLPrintUIntBig, [:string, Port.find_type(:GUIntBig), :int], :int
       attach_function :CPLPrintDouble, %i[string string double string], :int
       attach_function :CPLPrintTime, %i[string int string pointer string], :int
       attach_function :CPLPrintPointer, %i[string pointer int], :int

@@ -423,7 +423,7 @@ module FFI
       attach_function :OGR_L_GetRefCount, %i[OGRLayerH], :int
       attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], FFI::OGR::Core::Err
 
-      attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], FFI::CPL::Conv.find_type(:GIntBig)
+      attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], CPL::Port.find_type(:GIntBig)
       attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :string
       attach_function :OGR_L_GetGeometryColumn, %i[OGRLayerH], :string
       attach_function :OGR_L_GetStyleTable, %i[OGRLayerH], :OGRStyleTableH

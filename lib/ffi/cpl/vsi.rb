@@ -1,5 +1,5 @@
 require 'ffi'
-require_relative 'conv'
+require_relative 'port'
 
 module FFI
   module CPL
@@ -17,7 +17,7 @@ module FFI
       #------------------------------------------------------------------------
       # Typedefs
       #------------------------------------------------------------------------
-      typedef ::FFI::CPL::Conv.find_type(:GUIntBig), :vsi_l_offset
+      typedef ::FFI::CPL::Port.find_type(:GUIntBig), :vsi_l_offset
       callback :VSIWriteFunction, %i[pointer size_t size_t pointer], :pointer
 
       #------------------------------------------------------------------------
@@ -57,7 +57,7 @@ module FFI
       attach_function :VSIFPrintfL, %i[pointer string varargs], :int
       attach_function :VSIFPutcL, %i[int pointer], :int
       attach_function :VSIIngestFile,
-        [:pointer, :string, :pointer, :pointer, FFI::CPL::Conv.find_type(:GIntBig)],
+        [:pointer, :string, :pointer, :pointer, Port.find_type(:GIntBig)],
         :int
       attach_function :VSIStatL, %i[string pointer], :int
       attach_function :VSIStatExL, %i[string pointer int], :int
