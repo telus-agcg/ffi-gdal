@@ -426,7 +426,7 @@ module FFI
       [:GDALRasterBandH, :GDALColorTableH],
       FFI::CPL::Error::CPLErr
 
-    attach_function :GDALasArbitraryOverviews, [:GDALRasterBandH], :int
+    attach_function :GDALHasArbitraryOverviews, [:GDALRasterBandH], :int
     attach_function :GDALGetOverviewCount, [:GDALRasterBandH], :int
     attach_function :GDALGetOverview, [:GDALRasterBandH, :int], :GDALRasterBandH
     attach_function :GDALGetRasterNoDataValue,
