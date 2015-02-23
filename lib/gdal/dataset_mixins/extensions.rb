@@ -1,4 +1,9 @@
 require 'json'
+require 'narray'
+require_relative '../raster_band'
+require_relative '../warp_operation'
+require_relative '../../ogr/layer'
+require_relative '../../ogr/spatial_reference'
 
 module GDAL
   module DatasetMixins
@@ -340,7 +345,7 @@ module GDAL
                                                        spatial_reference: spatial_ref)
 
           field_name = "#{field_name_prefix}#{i}"
-          layer.create_field(field_name, :OFTInteger)
+          layer.create_field(OGR::FieldDefinition.new(field_name, :OFTInteger))
           band = raster_band(band_number)
 
           unless band
@@ -390,7 +395,7 @@ module GDAL
         bands_ptr.write_array_of_int(band_numbers)
         log "band numbers ptr null? #{bands_ptr.null?}"
 
-        warp_options_struct = FFI::GDAL::GDALWarpOptions.new
+        warp_options_struct = FFI::GDAL::WarpOptions.new
 
         warp_options.each do |k, _|
           warp_options_struct[k] = warp_options[k]
@@ -407,7 +412,7 @@ module GDAL
         error_threshold = 0.0
         order = 0
 
-        _transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
+        _transformer_ptr = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(@dataset_pointer,
           projection,
           destination_dataset.c_pointer,
           destination.projection,

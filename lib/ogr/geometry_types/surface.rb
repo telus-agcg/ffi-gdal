@@ -1,3 +1,5 @@
+require_relative '../../ffi/ogr/api'
+
 module OGR
   module GeometryTypes
     module Surface
@@ -6,7 +8,7 @@ module OGR
       #
       # @return [Float] 0.0 for unsupported geometry types.
       def area
-        FFI::GDAL.OGR_G_Area(@geometry_pointer)
+        FFI::OGR::API.OGR_G_Area(@geometry_pointer)
       end
 
       # Returns the units used by the associated OGR::SpatialReference.
@@ -20,7 +22,7 @@ module OGR
       #
       # @return [OGR::Point]
       def point_on_surface
-        build_geometry { |ptr| FFI::GDAL.OGR_G_PointOnSurface(ptr) }
+        build_geometry { |ptr| FFI::OGR::API.OGR_G_PointOnSurface(ptr) }
       end
     end
   end

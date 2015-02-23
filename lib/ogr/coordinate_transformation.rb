@@ -1,5 +1,5 @@
 require 'narray'
-require_relative '../ffi/ogr'
+require_relative '../ffi/ogr/srs_api'
 
 module OGR
   class CoordinateTransformation
@@ -20,7 +20,7 @@ module OGR
     def initialize(source_srs, destination_srs)
       source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
-      @transformation_pointer = FFI::GDAL.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
+      @transformation_pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
       if @transformation_pointer.null?
         fail OGR::Failure, 'Unable to create coordinate transformation'
@@ -36,7 +36,7 @@ module OGR
 
     # Deletes the object and deallocates all related resources.
     def destroy!
-      FFI::GDAL.OCTDestroyCoordinateTransformation(@transformation_pointer)
+      FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(@transformation_pointer)
     end
 
     # Transforms points in the +source_srs+ space to points in the
@@ -62,7 +62,7 @@ module OGR
 
       point_count = x_vertices.size + y_vertices.size + z_vertices.size
 
-      result = FFI::GDAL.OCTTransform(@transformation_pointer, point_count,
+      result = FFI::OGR::SRSAPI.OCTTransform(@transformation_pointer, point_count,
         x_ptr, y_ptr, z_ptr)
 
       # maybe this should raise?

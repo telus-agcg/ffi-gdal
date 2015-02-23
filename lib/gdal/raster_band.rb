@@ -1,5 +1,6 @@
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr/api'
+require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'raster_band_extensions'
 require_relative 'color_table'
 require_relative 'major_object'
@@ -10,6 +11,7 @@ module GDAL
   class RasterBand
     include MajorObject
     include GDAL::Logger
+    include RasterBandMixins::AlgorithmMethods
     include RasterBandExtensions
 
     ALL_VALID = 0x01
@@ -20,8 +22,6 @@ module GDAL
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band)
       @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
-      @default_raster_attribute_table = nil
-      @color_table = nil
     end
 
     def c_pointer
@@ -94,19 +94,16 @@ module GDAL
 
     # @return [GDAL::ColorTable]
     def color_table
-      return @color_table if @color_table
-
       gdal_color_table = FFI::GDAL.GDALGetRasterColorTable(@raster_band_pointer)
       return nil if gdal_color_table.null?
 
-      @color_table = ColorTable.new(gdal_color_table)
+      ColorTable.new(gdal_color_table)
     end
 
     # @param new_color_table [GDAL::ColorTable]
     def color_table=(new_color_table)
       color_table_pointer = GDAL._pointer(GDAL::ColorTable, new_color_table)
       FFI::GDAL.GDALSetRasterColorTable(@raster_band_pointer, color_table_pointer)
-      @color_table = ColorTable.new(color_table_pointer)
     end
 
     # The pixel data type for this band.
@@ -371,19 +368,16 @@ module GDAL
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table
-      return @default_raster_attribute_table if @default_raster_attribute_table
-
       rat_pointer = FFI::GDAL.GDALGetDefaultRAT(@raster_band_pointer)
       return nil if rat_pointer.null?
 
-      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(rat_pointer)
+      GDAL::RasterAttributeTable.new(rat_pointer)
     end
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
       rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
       FFI::GDAL.GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
-      @default_raster_attribute_table = GDAL::RasterAttributeTable.new(rat_table_pointer)
     end
 
     # Gets the default raster histogram.  Results are returned as a Hash so some
@@ -681,39 +675,6 @@ module GDAL
       value = FFI::GDAL.GDALGetRasterMaximum(@raster_band_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
-    end
-
-    # Creates vector polygons for all connected regions of pixels in the raster
-    # that share a common pixel value.
-    #
-    # @param layer [OGR::Layer, FFI::Pointer] The layer to write the polygons
-    #   to.
-    # @param mask_band [GDAL::RasterBand, FFI::Pointer] Optional band, where all
-    #   pixels in the mask with a value other than zero will be considered
-    #   suitable for collection as polygons.
-    # @param pixel_value_field [Fixnum] Index of the feature attribute into
-    #   which the pixel value of the polygon should be written.
-    # @param options [Hash]
-    # @param progress [Proc]
-    # @return [OGR::Layer]
-    def polygonize(layer, mask_band: nil, pixel_value_field: -1, **options, &progress)
-      mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
-
-      layer_ptr = GDAL._pointer(OGR::Layer, layer)
-      fail OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
-
-      options_ptr = GDAL::Options.pointer(options)
-
-      FFI::GDAL.GDALFPolygonize(@raster_band_pointer,   # hSrcBand
-        mask_band_ptr,                                  # hMaskBand
-        layer_ptr,                                      # hOutLayer
-        pixel_value_field,                              # iPixValField
-        options_ptr,                                    # papszOptions
-        progress,                                       # pfnProgress
-        nil                                             # pProgressArg
-      )
-
-      layer_ptr.instance_of?(OGR::Layer) ? layer_ptr : OGR::Layer.new(layer_ptr)
     end
   end
 end

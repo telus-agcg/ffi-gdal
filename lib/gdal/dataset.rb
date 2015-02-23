@@ -7,7 +7,8 @@ require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
-require_relative 'dataset_extensions'
+require_relative 'dataset_mixins/extensions'
+require_relative 'dataset_mixins/matching'
 require_relative 'options'
 
 module GDAL
@@ -16,7 +17,8 @@ module GDAL
   # definition of all bands.
   class Dataset
     include MajorObject
-    include DatasetExtensions
+    include DatasetMixins::Extensions
+    include DatasetMixins::Matching
     include GDAL::Logger
 
     ACCESS_FLAGS = {
@@ -55,7 +57,6 @@ module GDAL
         end
 
       fail OpenFailure.new(path_or_pointer) if @dataset_pointer.null?
-      @last_known_file_list = []
       ObjectSpace.define_finalizer self, -> { close }
     end
 
@@ -424,11 +425,20 @@ module GDAL
         nil)                                              # pProgressArg
     end
 
-    # @todo Implement
-    def simple_image_warp(destination_file, driver, band_numbers,
-      transformer, _transformer_arg, **options)
-      fail NotImplementedError, '#simple_image_warp not yet implemented.'
-
+    # @param destination_file [String]
+    # @param driver [String] Name of the driver to use for outputing the new
+    #   image.
+    # @param transformer [Proc]
+    # @param trasnformer_arg_ptr [FFI::Pointer]
+    # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
+    #   warping.  0 indicates all bands.
+    # @param options [Hash]
+    # @option options [String] init Indicates that the output dataset should be
+    #   initialized to the given value in any area where valid data isn't
+    #   written.  In form: "v[,v...]"
+    # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
+    def simple_image_warp(destination_file, driver, transformer,
+      transformer_arg_ptr, band_numbers = 0, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
       driver = GDAL::Driver.by_name(driver)
       destination_dataset_ptr = driver.open(destination_file, 'w')
@@ -440,41 +450,37 @@ module GDAL
       bands_ptr.write_array_of_int(band_numbers)
       log "band numbers ptr null? #{bands_ptr.null?}"
 
-      log "transformer: #{transformer}"
-
       success = FFI::GDAL.GDALSimpleImageWarp(@dataset_pointer,
         destination_dataset_ptr,
         band_numbers.size,
         bands_ptr,
         transformer,
-        nil,
-        nil,
+        transformer_arg_ptr,
+        progress,
         nil,
         options_ptr)
 
-      fail 'Image warp failed!' unless success
-
-      GDAL::Dataset.new(destination_dataset_ptr)
+      success ? GDAL::Dataset.new(destination_dataset_ptr) : nil
     end
 
-    # @return [FFI::Pointer] Pointer to be used for transformations.
-    def create_general_image_projection_transformer(destination_dataset,
-      source_projection: nil, destination_projection: nil, use_gcps: false)
-      log "destination dataset: #{destination_dataset}"
+    def suggested_warp_output(transformer, transform_arg)
+      geo_transform = GDAL::GeoTransform.new
+      pixels_ptr = FFI::MemoryPointer.new(:int)
+      lines_ptr = FFI::MemoryPointer.new(:int)
 
-      error_threshold = 0.0
-      order = 0
+      FFI::GDAL.GDALSuggestedWarpOutput(
+        @dataset_pointer,
+        transformer,
+        transform_arg,
+        geo_transform.c_pointer,
+        pixels_ptr,
+        lines_ptr)
 
-      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
-        source_projection,
-        destination_dataset.c_pointer,
-        destination_projection,
-        use_gcps,
-        error_threshold,
-        order)
-
-      log "transformer pointer: #{transformer_ptr}"
-      transformer_ptr
+      {
+        geo_transform: geo_transform,
+        lines: lines_ptr.read_int,
+        pixels: pixels_ptr.read_int
+      }
     end
   end
 end

@@ -311,7 +311,8 @@ module OGR
       fail OGR::InvalidGeometry if geometry_ptr.nil?
 
       ogr_err =
-        FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@feature_pointer, index, geometry_ptr)
+        # FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@feature_pointer, index, geometry_ptr)
+        FFI::OGR::API.OGR_F_SetGeomField(@feature_pointer, index, geometry_ptr)
 
       ogr_err.handle_result
     end
