@@ -2,7 +2,7 @@ require_relative 'layer'
 
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html
-  class GeocodingSession
+  class Geocoder
     # @param options [Hash]
     # @option options cache_file [String] Name of the file to write the cache
     #   to.
