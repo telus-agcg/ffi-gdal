@@ -11,8 +11,9 @@ RSpec.describe OGR::Layer do
   end
 
   describe '#create_feature' do
-    it 'returns a new OGR::Feature' do
-      expect(subject.create_feature).to be_a OGR::Feature
+    it 'returns true' do
+      feature = OGR::Feature.new(subject.feature_definition)
+      expect(subject.create_feature(feature)).to eq true
     end
   end
 
@@ -24,7 +25,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'has a feature' do
-      before { subject.create_feature }
+      before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
 
       it 'returns true' do
         expect(subject.delete_feature(0)).to eq true
@@ -46,7 +47,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'has a feature' do
-      before { subject.create_feature }
+      before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
 
       it 'returns an OGR::Feature' do
         expect(subject.feature(0)).to be_a OGR::Feature
@@ -68,7 +69,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'has a feature' do
-      before { subject.create_feature }
+      before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
 
       it 'returns an OGR::Feature' do
         expect(subject.next_feature).to be_a OGR::Feature
@@ -86,11 +87,11 @@ RSpec.describe OGR::Layer do
 
     context 'features exist' do
       let!(:feature1) do
-        subject.create_feature
+        subject.create_feature(OGR::Feature.new(subject.feature_definition))
       end
 
       let!(:feature2) do
-        subject.create_feature
+        subject.create_feature(OGR::Feature.new(subject.feature_definition))
       end
 
       it 'sets to the given feature' do

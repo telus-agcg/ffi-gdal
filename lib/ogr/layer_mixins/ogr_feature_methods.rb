@@ -15,17 +15,19 @@ module OGR
         OGR::FeatureDefinition.new(feature_defn_pointer)
       end
 
-      # Uses the already-defined FeatureDefinition to create then write a new feature
-      # to the layer.
+      # Adds the new OGR::Feature to the Layer. The feature should have been
+      # created using the Layer's FeatureDefintion.
       #
-      # @return [OGR::Feature]
-      def create_feature
-        feature_def = feature_definition
-        feature = OGR::Feature.new(feature_def)
+      #   feature = OGR::Feature.new(layer.feature_definition)
+      #   feature.set_field_integer(123)
+      #   layer.create_feature(feature)
+      #
+      # @param feature [OGR::Feature] [description]
+      # @return [Boolean]
+      def create_feature(feature)
         ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@layer_pointer, feature.c_pointer)
-        ogr_err.handle_result
 
-        feature
+        ogr_err.handle_result
       end
 
       # Deletes the feature from the layer.
