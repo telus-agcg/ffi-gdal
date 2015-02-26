@@ -206,16 +206,16 @@ module GDAL
       FFI::GDAL.GDALGetGCPProjection(@dataset_pointer)
     end
 
-    # @return [FFI::GDAL::GDALGCP]
+    # @return [FFI::GDAL::GCP]
     def gcps
-      return FFI::GDAL::GDALGCP.new if null?
+      return FFI::GDAL::GCP.new if null?
 
       gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
-        FFI::GDAL::GDALGCP.new
+        FFI::GDAL::GCP.new
       else
-        FFI::GDAL::GDALGCP.new(gcp_array_pointer)
+        FFI::GDAL::GCP.new(gcp_array_pointer)
       end
     end
 

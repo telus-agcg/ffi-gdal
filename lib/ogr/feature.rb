@@ -253,7 +253,7 @@ module OGR
 
     # @return [Fixnum]
     def fid
-      OGR::API::GDAL.OGR_F_GetFID(@feature_pointer)
+      FFI::OGR::API.OGR_F_GetFID(@feature_pointer)
     end
 
     # @param new_fid [Fixnum]
