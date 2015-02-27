@@ -17,18 +17,22 @@ module GDAL
   class ColorTable
     include ColorTableExtensions
 
-    # @param palette_interpretation [FFI::GDAL::GDALPaletteInterp]
-    # @return [GDAL::ColorTable]
-    def self.create(palette_interpretation)
-      color_table_pointer = FFI::GDAL::GDALCreateColorTable(palette_interpretation)
-      return nil if color_table_pointer.null?
+    # @param palette_interp_or_pointer [FFI::GDAL::GDALPaletteInterp,
+    #   FFI::Pointer]
+    # @raise [GDAL::InvalidColorTable] If unable to create the color table.
+    def initialize(palette_interp_or_pointer)
+      @color_table_pointer =
+        if FFI::GDAL::PaletteInterp[palette_interp_or_pointer]
+          FFI::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
+        else
+          palette_interp_or_pointer
+        end
 
-      new(color_table_pointer)
-    end
+      if !@color_table_pointer.is_a?(FFI::Pointer) || @color_table_pointer.null?
+        fail GDAL::InvalidColorTable,
+          "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
+      end
 
-    # @param color_table
-    def initialize(color_table)
-      @color_table_pointer = GDAL._pointer(self.class, color_table)
       @color_entries = []
 
       case palette_interpretation
@@ -63,7 +67,7 @@ module GDAL
     #
     # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
     def palette_interpretation
-      @palette_interpretation ||= FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
+      FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
     end
 
     # @return [Fixnum]
@@ -117,7 +121,7 @@ module GDAL
       entry.color3 = three if three
       entry.color4 = four if four
 
-      FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry.c_pointer)
+      FFI::GDAL.GDALSetColorEntry(@color_table_pointer, index, entry.c_struct)
       @color_entries.insert(index, entry)
 
       entry
@@ -133,8 +137,8 @@ module GDAL
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
     # @return [Fixnum] The total number of entries.  nil or -1 on error.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
-      start_color_ptr = GDAL._pointer(GDAL::ColorEntry, start_color)
-      end_color_ptr = GDAL._pointer(GDAL::ColorEntry, end_color)
+      start_color_ptr = start_color.c_struct
+      end_color_ptr = end_color.c_struct
 
       FFI::GDAL.GDALCreateColorRamp(@color_table_pointer, start_index,
         start_color_ptr,

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::MultiLineString do
   it_behaves_like 'a geometry' do

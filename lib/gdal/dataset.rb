@@ -1,12 +1,15 @@
 require 'uri'
 require_relative '../ffi/gdal'
+require_relative '../ffi/cpl/string'
+require_relative '../ogr/spatial_reference'
 require_relative 'driver'
 require_relative 'geo_transform'
 require_relative 'raster_band'
 require_relative 'exceptions'
 require_relative 'major_object'
-require_relative 'dataset_extensions'
-require_relative '../ogr/spatial_reference'
+require_relative 'dataset_mixins/extensions'
+require_relative 'dataset_mixins/matching'
+require_relative 'options'
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also
@@ -14,7 +17,8 @@ module GDAL
   # definition of all bands.
   class Dataset
     include MajorObject
-    include DatasetExtensions
+    include DatasetMixins::Extensions
+    include DatasetMixins::Matching
     include GDAL::Logger
 
     ACCESS_FLAGS = {
@@ -26,33 +30,34 @@ module GDAL
     #   a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
     def self.open(path, access_flag)
-      file_path = begin
-        uri = URI.parse(path)
-        uri.scheme.nil? ? ::File.expand_path(path) : path
-      rescue URI::InvalidURIError
-        path
-      end
-
-      pointer = FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-      fail OpenFailure.new(file_path) if pointer.null?
-
-      new(pointer)
+      new(path, access_flag)
     end
 
     #---------------------------------------------------------------------------
     # Instance methods
     #---------------------------------------------------------------------------
 
-    # @param dataset_pointer [FFI::Pointer] Pointer to the dataset in memory.
-    def initialize(dataset_pointer)
-      @dataset_pointer = dataset_pointer
-      @last_known_file_list = []
-      @open = true
-      @driver = nil
-      @geo_transform = nil
+    # @param path_or_pointer [String, FFI::Pointer] Path to the file that
+    #   contains the dataset or a pointer to the dataset. If it's a path, it can
+    #   be a local file or a URL.
+    # @param access_flag [String] 'r' or 'w'.
+    def initialize(path_or_pointer, access_flag)
+      @dataset_pointer =
+        if path_or_pointer.is_a? String
+          file_path = begin
+            uri = URI.parse(path_or_pointer)
+            uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
+          rescue URI::InvalidURIError
+            path_or_pointer
+          end
 
-      close_me = -> { close }
-      ObjectSpace.define_finalizer self, close_me
+          FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+        else
+          path_or_pointer
+        end
+
+      fail OpenFailure.new(path_or_pointer) if @dataset_pointer.null?
+      ObjectSpace.define_finalizer self, -> { close }
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
@@ -76,16 +81,15 @@ module GDAL
 
       flag = FFI::GDAL.GDALGetAccess(@dataset_pointer)
 
-      FFI::GDAL::GDALAccess[flag]
+      FFI::GDAL::Access[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      return @driver if @driver
       driver_ptr = FFI::GDAL.GDALGetDatasetDriver(@dataset_pointer)
 
-      @driver = Driver.new(driver_ptr)
+      Driver.new(driver_ptr)
     end
 
     # Fetches all files that form the dataset.
@@ -94,7 +98,7 @@ module GDAL
       list_pointer = FFI::GDAL.GDALGetFileList(@dataset_pointer)
       return [] if list_pointer.null?
       file_list = list_pointer.get_array_of_string(0)
-      FFI::GDAL.CSLDestroy(list_pointer)
+      FFI::CPL::String.CSLDestroy(list_pointer)
 
       file_list
     end
@@ -173,12 +177,10 @@ module GDAL
 
     # @return [GDAL::GeoTransform]
     def geo_transform
-      return @geo_transform if @geo_transform
-
       geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
       FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
 
-      @geo_transform = GeoTransform.new(geo_transform_pointer)
+      GeoTransform.new(geo_transform_pointer)
     end
 
     # @param new_transform [GDAL::GeoTransform]
@@ -187,7 +189,7 @@ module GDAL
       new_pointer = FFI::Pointer.new(new_transform.c_pointer)
       FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
 
-      @geo_transform = GeoTransform.new(new_pointer)
+      GeoTransform.new(new_pointer)
     end
 
     # @return [Fixnum]
@@ -204,16 +206,16 @@ module GDAL
       FFI::GDAL.GDALGetGCPProjection(@dataset_pointer)
     end
 
-    # @return [FFI::GDAL::GDALGCP]
+    # @return [FFI::GDAL::GCP]
     def gcps
-      return FFI::GDAL::GDALGCP.new if null?
+      return FFI::GDAL::GCP.new if null?
 
       gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@dataset_pointer)
 
       if gcp_array_pointer.null?
-        FFI::GDAL::GDALGCP.new
+        FFI::GDAL::GCP.new
       else
-        FFI::GDAL::GDALGCP.new(gcp_array_pointer)
+        FFI::GDAL::GCP.new(gcp_array_pointer)
       end
     end
 
@@ -356,9 +358,6 @@ module GDAL
       burn_values_ptr = FFI::MemoryPointer.new(:pointer, burn_values.size)
       burn_values_ptr.write_array_of_double(burn_values)
 
-      # not allowing for now
-      progress_callback_data = nil
-
       !!FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
         band_numbers.size,
         band_numbers_ptr,
@@ -369,7 +368,7 @@ module GDAL
         burn_values_ptr,
         gdal_options,
         progress_block,
-        progress_callback_data)
+        nil)
     end
 
     # @param band_numbers [Array<Fixnum>, Fixnum]
@@ -426,11 +425,20 @@ module GDAL
         nil)                                              # pProgressArg
     end
 
-    # @todo Implement
-    def simple_image_warp(destination_file, driver, band_numbers,
-      transformer, _transformer_arg, **options)
-      fail NotImplementedError, '#simple_image_warp not yet implemented.'
-
+    # @param destination_file [String]
+    # @param driver [String] Name of the driver to use for outputing the new
+    #   image.
+    # @param transformer [Proc]
+    # @param trasnformer_arg_ptr [FFI::Pointer]
+    # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
+    #   warping.  0 indicates all bands.
+    # @param options [Hash]
+    # @option options [String] init Indicates that the output dataset should be
+    #   initialized to the given value in any area where valid data isn't
+    #   written.  In form: "v[,v...]"
+    # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
+    def simple_image_warp(destination_file, driver, transformer,
+      transformer_arg_ptr, band_numbers = 0, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
       driver = GDAL::Driver.by_name(driver)
       destination_dataset_ptr = driver.open(destination_file, 'w')
@@ -442,41 +450,37 @@ module GDAL
       bands_ptr.write_array_of_int(band_numbers)
       log "band numbers ptr null? #{bands_ptr.null?}"
 
-      log "transformer: #{transformer}"
-
       success = FFI::GDAL.GDALSimpleImageWarp(@dataset_pointer,
         destination_dataset_ptr,
         band_numbers.size,
         bands_ptr,
         transformer,
-        nil,
-        nil,
+        transformer_arg_ptr,
+        progress,
         nil,
         options_ptr)
 
-      fail 'Image warp failed!' unless success
-
-      GDAL::Dataset.new(destination_dataset_ptr)
+      success ? GDAL::Dataset.new(destination_dataset_ptr) : nil
     end
 
-    # @return [FFI::Pointer] Pointer to be used for transformations.
-    def create_general_image_projection_transformer(destination_dataset,
-      source_projection: nil, destination_projection: nil, use_gcps: false)
-      log "destination dataset: #{destination_dataset}"
+    def suggested_warp_output(transformer, transform_arg)
+      geo_transform = GDAL::GeoTransform.new
+      pixels_ptr = FFI::MemoryPointer.new(:int)
+      lines_ptr = FFI::MemoryPointer.new(:int)
 
-      error_threshold = 0.0
-      order = 0
+      FFI::GDAL.GDALSuggestedWarpOutput(
+        @dataset_pointer,
+        transformer,
+        transform_arg,
+        geo_transform.c_pointer,
+        pixels_ptr,
+        lines_ptr)
 
-      transformer_ptr = FFI::GDAL.GDALCreateGenImgProjTransformer(@dataset_pointer,
-        source_projection,
-        destination_dataset.c_pointer,
-        destination_projection,
-        use_gcps,
-        error_threshold,
-        order)
-
-      log "transformer pointer: #{transformer_ptr}"
-      transformer_ptr
+      {
+        geo_transform: geo_transform,
+        lines: lines_ptr.read_int,
+        pixels: pixels_ptr.read_int
+      }
     end
   end
 end

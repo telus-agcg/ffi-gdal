@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/style_tool'
 
 RSpec.describe OGR::StyleTool do
   describe '#initialize' do

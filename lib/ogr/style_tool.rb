@@ -2,10 +2,10 @@ require_relative '../ffi/ogr'
 
 module OGR
   class StyleTool
-    # @param style_tool_class [FFI::GDAL::OGRSTClassId] Must be one of :OGRSTCPen,
+    # @param style_tool_class [FFI::OGR::Core::STClassId] Must be one of :OGRSTCPen,
     #   :OGRSTCBrush, :OGRSTCSymbol, :OGRSTCLabel.
     def initialize(style_tool_class)
-      @style_tool_pointer = FFI::GDAL.OGR_ST_Create(style_tool_class)
+      @style_tool_pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
 
       if @style_tool_pointer.null?
         fail OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
@@ -18,30 +18,30 @@ module OGR
 
     # @return [String, nil]
     def style_string
-      FFI::GDAL.OGR_ST_GetStyleString(@style_tool_pointer)
+      FFI::OGR::API.OGR_ST_GetStyleString(@style_tool_pointer)
     end
 
-    # @return [FFI::GDAL::OGRSTClassId]
+    # @return [FFI::OGR::Core::STClassId]
     def type
-      FFI::GDAL.OGR_ST_GetType(@style_tool_pointer)
+      FFI::OGR::API.OGR_ST_GetType(@style_tool_pointer)
     end
 
-    # @return [FFI::GDAL::OGRSTUnitId]
+    # @return [FFI::OGR::Core::STUnitId]
     def unit
-      FFI::GDAL.OGR_ST_GetUnit(@style_tool_pointer)
+      FFI::OGR::API.OGR_ST_GetUnit(@style_tool_pointer)
     end
 
-    # @param new_unit [FFI::GDAL::OGRSTUnitId]
+    # @param new_unit [FFI::OGR::Core::STUnitId]
     # @param ground_to_paper_scale [Float]
     def set_unit(new_unit, ground_to_paper_scale)
-      FFI::GDAL.OGR_ST_SetUnit(@style_tool_pointer, new_unit, ground_to_paper_scale)
+      FFI::OGR::API.OGR_ST_SetUnit(@style_tool_pointer, new_unit, ground_to_paper_scale)
     end
 
     # @param param_number [Fixnum]
     # @return [Float, nil]
     def param_as_double(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
-      value = FFI::GDAL.OGR_ST_GetParamDbl(@style_tool_pointer, param_number, value_is_null_ptr)
+      value = FFI::OGR::API.OGR_ST_GetParamDbl(@style_tool_pointer, param_number, value_is_null_ptr)
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
@@ -50,7 +50,7 @@ module OGR
     # @param param_number [Fixnum]
     # @param value [Float]
     def set_param_as_double(param_number, value)
-      FFI::GDAL.OGR_ST_SetParamDbl(@style_tool_pointer, param_number, value)
+      FFI::OGR::API.OGR_ST_SetParamDbl(@style_tool_pointer, param_number, value)
     end
     alias_method :set_param_as_float, :set_param_as_double
 
@@ -58,7 +58,7 @@ module OGR
     # @return [Fixnum, nil]
     def param_as_number(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
-      value = FFI::GDAL.OGR_ST_GetParamNum(@style_tool_pointer, param_number, value_is_null_ptr)
+      value = FFI::OGR::API.OGR_ST_GetParamNum(@style_tool_pointer, param_number, value_is_null_ptr)
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
@@ -67,7 +67,7 @@ module OGR
     # @param param_number [Fixnum]
     # @param value [Fixnum]
     def set_param_as_number(param_number, value)
-      FFI::GDAL.OGR_ST_SetParamNum(@style_tool_pointer, param_number, value)
+      FFI::OGR::API.OGR_ST_SetParamNum(@style_tool_pointer, param_number, value)
     end
     alias_method :set_param_as_integer, :set_param_as_number
 
@@ -75,7 +75,7 @@ module OGR
     # @return [String, nil]
     def param_as_string(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
-      value = FFI::GDAL.OGR_ST_GetParamStr(@style_tool_pointer, param_number, value_is_null_ptr)
+      value = FFI::OGR::API.OGR_ST_GetParamStr(@style_tool_pointer, param_number, value_is_null_ptr)
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
@@ -83,7 +83,7 @@ module OGR
     # @param param_number [Fixnum]
     # @param value [String]
     def set_param_as_string(param_number, value)
-      FFI::GDAL.OGR_ST_SetParamStr(@style_tool_pointer, param_number, value)
+      FFI::OGR::API.OGR_ST_SetParamStr(@style_tool_pointer, param_number, value)
     end
 
     # Returns the R, G, B, A components of a #RRGGBB[AA] formatted string.
@@ -96,7 +96,7 @@ module OGR
       blue_ptr = FFI::MemoryPointer.new(:int)
       alpha_ptr = FFI::MemoryPointer.new(:int)
 
-      boolean_result = FFI::GDAL.OGR_ST_GetRGBFromString(
+      boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(
         @style_tool_pointer,
         color_string,
         red_ptr,

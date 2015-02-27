@@ -120,7 +120,7 @@ module GDAL
     def colorize!(*colors)
       return if colors.empty?
 
-      table = GDAL::ColorTable.create(:GPI_RGB)
+      table = GDAL::ColorTable.new(:GPI_RGB)
 
       color_entry_index_count =
         if data_type == :GDT_Byte
@@ -199,7 +199,7 @@ module GDAL
     end
 
     # @return [Hash]
-    def as_json
+    def as_json(options = nil)
       {
         raster_band: {
           block_size: block_size,
@@ -229,8 +229,8 @@ module GDAL
     end
 
     # @return [String]
-    def to_json(_ = nil)
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
   end
 end

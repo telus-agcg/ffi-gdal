@@ -1,13 +1,14 @@
 require 'spec_helper'
+require 'ogr/feature_definition'
 
 RSpec.describe OGR::FeatureDefinition do
   subject(:feature_definition) do
-    fd = described_class.create('spec feature definition')
+    fd = described_class.new('spec feature definition')
     fd.geometry_type = :wkbMultiPolygon
     fd
   end
 
-  let(:field) { OGR::Field.create('test field', :OFTString) }
+  let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -41,26 +42,26 @@ RSpec.describe OGR::FeatureDefinition do
       before { subject.add_field_definition(field) }
 
       it 'returns the Field' do
-        expect(subject.field_definition(0)).to be_a OGR::Field
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
   end
 
   describe '#add_field_definition + #field_definition' do
-    context 'param is not a Field' do
+    context 'param is not a FieldDefinition' do
       it 'raises' do
         expect do
-          subject.add_field_definition('bobo')
-        end.to raise_exception OGR::InvalidField
+          subject.add_field_definition('not a pointer')
+        end.to raise_exception OGR::InvalidFieldDefinition
       end
     end
 
-    context 'param is a Field' do
-      let(:field) { OGR::Field.create('test field', :OFTString) }
+    context 'param is a FieldDefinition' do
+      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
 
       it 'adds the field' do
         subject.add_field_definition(field)
-        expect(subject.field_definition(0)).to be_a OGR::Field
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
   end
@@ -95,10 +96,10 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'field with requested name exists' do
-      let(:field) { OGR::Field.create('test field', :OFTString) }
+      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
       before { subject.add_field_definition(field) }
 
-      it "returns the Field's index" do
+      it "returns the FieldDefinition's index" do
         expect(subject.field_index('test field')).to be_zero
       end
     end
@@ -107,7 +108,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#geometry_type' do
     context 'default' do
       subject(:feature_definition) do
-        described_class.create('spec feature definition')
+        described_class.new('spec feature definition')
       end
 
       it 'is :wkbUnknown' do
@@ -187,7 +188,7 @@ RSpec.describe OGR::FeatureDefinition do
 
   describe '#geometry_field_definition' do
     context 'default, at 0' do
-      it 'returns an OGR::Field' do
+      it 'returns an OGR::GeometryFieldDefinition' do
         expect(subject.geometry_field_definition(0)).
           to be_a OGR::GeometryFieldDefinition
       end
@@ -201,7 +202,7 @@ RSpec.describe OGR::FeatureDefinition do
 
   describe '#add_geometry_field_definition + #geometry_field_definition' do
     let(:geometry_field_definition) do
-      OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+      OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
     end
 
     it 'adds the geometry_field_definition' do
@@ -222,7 +223,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'geometry field definition exists at given index' do
       let(:geometry_field_definition) do
-        OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
+        OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
       end
 
       before { subject.add_geometry_field_definition(geometry_field_definition) }
@@ -230,38 +231,38 @@ RSpec.describe OGR::FeatureDefinition do
       it 'deletes the gfld' do
         expect do
           subject.delete_geometry_field_definition(1)
-        end.to change { subject.geometry_field_count }.by -1
+        end.to change { subject.geometry_field_count }.by(-1)
       end
     end
   end
 
-  describe '#fields' do
+  describe '#field_definitions' do
     it 'returns an array of size field_count' do
-      expect(subject.fields).to be_an Array
-      expect(subject.fields.size).to eq subject.field_count
+      expect(subject.field_definitions).to be_an Array
+      expect(subject.field_definitions.size).to eq subject.field_count
     end
   end
 
-  describe '#field_by_name' do
+  describe '#field_definition_by_name' do
     context 'field with name does not exist' do
       it 'returns nil' do
-        expect(subject.field_by_name('asdfasdfasdf')).to be_nil
+        expect(subject.field_definition_by_name('asdfasdfasdf')).to be_nil
       end
     end
   end
 
-  describe '#geometry_field_by_name' do
+  describe '#geometry_field_definition_by_name' do
     context 'field with name does not exist' do
       it 'returns nil' do
         subject.geometry_field_definition(0).name
-        expect(subject.geometry_field_by_name('asdfasdf')).to be_nil
+        expect(subject.geometry_field_definition_by_name('asdfasdf')).to be_nil
       end
     end
 
     context 'field with name exists' do
       it 'returns the OGR::GeometryFieldDefinition' do
         name = subject.geometry_field_definition(0).name
-        expect(subject.geometry_field_by_name(name)).
+        expect(subject.geometry_field_definition_by_name(name)).
           to be_a OGR::GeometryFieldDefinition
       end
     end
@@ -270,7 +271,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#same?' do
     context 'is the same as the other' do
       let(:other_feature_definition) do
-        df = described_class.create('spec feature definition')
+        df = described_class.new('spec feature definition')
         df.geometry_type = :wkbMultiPolygon
         df
       end
@@ -282,7 +283,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'not the same as the other' do
       let(:other_feature_definition) do
-        described_class.create('other feature definition')
+        described_class.new('other feature definition')
       end
 
       it 'returns false' do
@@ -295,7 +296,7 @@ RSpec.describe OGR::FeatureDefinition do
     it 'returns a Hash of all attributes and values' do
       expect(subject.as_json).to eq({
         field_count: 0,
-        fields: [],
+        field_definitions: [],
         geometry_field_count: 1,
         geometry_type: :wkbMultiPolygon,
         is_geometry_ignored: false,

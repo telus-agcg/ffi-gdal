@@ -5,6 +5,7 @@ module GDAL
   class GeoTransform
     include GeoTransformExtensions
 
+    # @return [FFI::Pointer] A pointer that can be used to hold a GeoTransform.
     def self.new_pointer
       FFI::MemoryPointer.new(:double, 6)
     end

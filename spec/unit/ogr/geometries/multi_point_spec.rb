@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::MultiPoint do
   it_behaves_like 'a geometry' do

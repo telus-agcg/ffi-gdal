@@ -15,6 +15,8 @@ module GDAL
   #
   # @param ranges [Array<Hash{range => Range, map_to => Number}>]
   class RasterBandClassifier
+    include GDAL::Logger
+
     attr_reader :ranges
 
     # @param raster_band [GDAL::RasterBand]
@@ -50,7 +52,7 @@ module GDAL
 
       breakpoint_calculator = lambda do |range_number|
         min = raster_min_max[:min] + (range_size * range_number)
-        max = min + range_size
+        max = raster_min_max[:min] + (range_size * (range_number + 1))
 
         range_for_type(min, max)
       end
@@ -77,10 +79,14 @@ module GDAL
       0.upto(narray.size - 1) do |pixel_number|
         next if narray[pixel_number] == @raster_band.no_data_value[:value]
 
-        @ranges.each do |range|
-          if range[:range].member?(narray[pixel_number])
-            narray[pixel_number] = range[:map_to]
-          end
+        range = @ranges.find do |r|
+          r[:range].member? narray[pixel_number]
+        end
+
+        if range
+          narray[pixel_number] = range[:map_to]
+        else
+          log "pixel #{pixel_number} (value: #{narray[pixel_number]}) not in any given range"
         end
       end
 

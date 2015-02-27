@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'gdal/geo_transform'
 
 RSpec.describe GDAL::GeoTransform do
   let(:world_file_path) do
@@ -29,7 +30,7 @@ RSpec.describe GDAL::GeoTransform do
 
     describe '#x_origin' do
       subject { world.x_origin }
-      it { is_expected.to eq -179.99999999999997 }
+      it { is_expected.to eq(-179.99999999999997) }
     end
 
     describe '#pixel_width' do
@@ -49,7 +50,7 @@ RSpec.describe GDAL::GeoTransform do
 
     describe '#pixel_height' do
       subject { world.pixel_height }
-      it { is_expected.to eq -0.03333333333333 }
+      it { is_expected.to eq(-0.03333333333333) }
     end
 
     describe '#y_rotation' do
@@ -125,20 +126,20 @@ RSpec.describe GDAL::GeoTransform do
       it "returns the GeoTransform's origins for (0, 0)" do
         projected = subject.apply_geo_transform(0, 0)
         expect(projected[:x_geo]).to eq 1000
-        expect(projected[:y_geo]).to eq -2000
+        expect(projected[:y_geo]).to eq(-2000)
       end
 
       it "returns calculated points" do
         projected = subject.apply_geo_transform(100, 100)
         expect(projected[:x_geo]).to eq 1010.0
-        expect(projected[:y_geo]).to eq -1990.0
+        expect(projected[:y_geo]).to eq(-1990.0)
       end
     end
 
     describe '#compose' do
       context 'given parameter is not a GeoTransform' do
         it 'raises a GDAL::NullObject' do
-          expect { subject.compose('meow') }.to raise_exception GDAL::NullObject
+          expect { subject.compose('not a pointer') }.to raise_exception GDAL::NullObject
         end
       end
 
@@ -222,11 +223,11 @@ RSpec.describe GDAL::GeoTransform do
       end
 
       it 'returns an inverted x_rotation' do
-        expect(subject.x_rotation).to eq -0.8
+        expect(subject.x_rotation).to eq(-0.8)
       end
 
       it 'returns an inverted y_origin' do
-        expect(subject.y_origin).to eq -1600.0
+        expect(subject.y_origin).to eq (-1600.0)
       end
 
       it 'returns an inverted pixel_height' do

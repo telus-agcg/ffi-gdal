@@ -26,10 +26,16 @@ module OGR
   class InvalidDataSource < StandardError
   end
 
+  class InvalidFeature < StandardError
+  end
+
   class InvalidFeatureDefinition < StandardError
   end
 
-  class InvalidField < StandardError
+  class InvalidFieldDefinition < StandardError
+  end
+
+  class InvalidGeometry < StandardError
   end
 
   class InvalidGeometryFieldDefinition < StandardError
@@ -42,6 +48,9 @@ module OGR
   end
 
   class InvalidStyleTable < StandardError
+  end
+
+  class InvalidSpatialReference < StandardError
   end
 
   class NotEnoughData < RuntimeError

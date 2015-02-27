@@ -36,7 +36,7 @@ module GDAL
     end
 
     # @return [Hash]
-    def as_json
+    def as_json(options = nil)
       {
         x_origin: x_origin,
         x_rotation: x_rotation,
@@ -48,8 +48,8 @@ module GDAL
     end
 
     # @return [String]
-    def to_json(_ = nil)
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
   end
 end

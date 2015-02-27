@@ -84,7 +84,7 @@ TIF_FILES.each do |file|
 
     describe '#gcps' do
       it 'is a GDALGCP' do
-        expect(subject.gcps).to be_a FFI::GDAL::GDALGCP
+        expect(subject.gcps).to be_a FFI::GDAL::GCP
       end
     end
   end

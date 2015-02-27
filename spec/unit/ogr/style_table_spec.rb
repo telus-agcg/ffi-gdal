@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/style_table'
 
 RSpec.describe OGR::StyleTable do
   describe '#destroy!' do

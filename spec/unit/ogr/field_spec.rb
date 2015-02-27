@@ -1,140 +1,193 @@
 require 'spec_helper'
+require 'ogr/field'
 
 RSpec.describe OGR::Field do
-  describe '.create' do
-    it 'creates a new OGR::Field' do
-      expect(described_class.create('test', :OFTInteger)).to be_a OGR::Field
+  describe '#integer' do
+    context 'not set' do
+      it 'returns 0.0' do
+        expect(subject.integer).to eql 0
+      end
     end
   end
 
-  subject(:field) { described_class.create('test field', :OFTInteger) }
+  describe '#integer= + #integer' do
+    context 'valid int' do
+      it 'sets the value' do
+        subject.integer = 1
+        expect(subject.integer).to eq 1
+      end
+    end
+  end
+
+  describe '#integer64' do
+    context 'not set' do
+      it 'returns 0.0' do
+        expect(subject.integer64).to eql 0
+      end
+    end
+  end
+
+  describe '#integer64= + #integer64' do
+    context 'valid int64' do
+      it 'sets the value' do
+        subject.integer64 = 2**32 + 1
+        expect(subject.integer64).to eq 2**32 + 1
+      end
+    end
+  end
+
+  describe '#real' do
+    context 'not set' do
+      it 'returns 0.0' do
+        expect(subject.real).to eql 0.0
+      end
+    end
+  end
+
+  describe '#real= + #real' do
+    context 'valid float' do
+      it 'sets the value' do
+        subject.real = 1.23
+        expect(subject.real).to eq 1.23
+      end
+    end
+  end
+
+  describe '#string' do
+    context 'not set' do
+      it 'returns an empty string' do
+        expect(subject.string).to eq ''
+      end
+    end
+  end
+
+  describe '#string= + #string' do
+    context 'valid string' do
+      it 'sets the value' do
+        subject.string = 'meow'
+        expect(subject.string).to eq 'meow'
+      end
+    end
+  end
+
+  describe '#integer_list' do
+    context 'not set' do
+      it 'returns an empty array' do
+        expect(subject.integer_list).to eq []
+      end
+    end
+  end
+
+  describe '#integer_list= + #integer_list' do
+    context 'valid int array' do
+      it 'sets the value' do
+        subject.integer_list = [1, 2]
+        expect(subject.integer_list).to eq [1, 2]
+      end
+    end
+  end
+
+  describe '#integer64_list' do
+    context 'not set' do
+      it 'returns an empty array' do
+        expect(subject.integer64_list).to eq []
+      end
+    end
+  end
+
+  describe '#integer64_list= + #integer64_list' do
+    context 'valid int64 array' do
+      it 'sets the value' do
+        subject.integer64_list = [2**32 + 1, 2**32 + 2]
+        expect(subject.integer64_list).to eq [2**32 + 1, 2**32 + 2]
+      end
+    end
+  end
+
+  describe '#real_list' do
+    context 'not set' do
+      it 'returns an empty array' do
+        expect(subject.real_list).to eq []
+      end
+    end
+  end
+
+  describe '#real_list= + #real_list' do
+    context 'valid float array' do
+      it 'sets the value' do
+        subject.real_list = [1.5, 6.9]
+        expect(subject.real_list).to eq [1.5, 6.9]
+      end
+    end
+  end
+
+  describe '#string_list' do
+    context 'not set' do
+      it 'returns an empty array' do
+        expect(subject.string_list).to eq []
+      end
+    end
+  end
+
+  describe '#string_list= + #string_list' do
+    context 'valid string array' do
+      it 'sets the value' do
+        subject.string_list = %w[one two]
+        expect(subject.string_list).to eq %w[one two]
+      end
+    end
+  end
+
+  describe '#binary' do
+    context 'not set' do
+      it 'returns an empty string' do
+        expect(subject.binary).to eq ''
+      end
+    end
+  end
+
+  describe '#binary= + #binary' do
+    context 'valid binary' do
+      it 'sets the value' do
+        subject.binary = [1, 2, 3].pack('C*')
+        expect(subject.binary).to eq [1, 2, 3].pack('C*')
+      end
+    end
+  end
 
   describe '#set' do
-    before do
-      subject.set('new name', :OFTString, 5, 2, :OJRight)
-    end
-
-    it 'sets the name' do
-      expect(subject.name).to eq 'new name'
-    end
-
-    it 'sets the width' do
-      expect(subject.width).to eq 5
-    end
-
-    it 'sets the precision' do
-      expect(subject.precision).to eq 2
-    end
-
-    it 'sets the justification' do
-      expect(subject.justification).to eq :OJRight
-    end
-  end
-
-  describe '#name' do
-    it 'returns the name given during creation' do
-      expect(subject.name).to eq 'test field'
-    end
-  end
-
-  describe '#name= + #name' do
-    it 'assigns the name' do
-      subject.name = 'new test name'
-      expect(subject.name).to eq 'new test name'
-    end
-  end
-
-  describe '#justification' do
-    context 'default' do
-      it 'returns :OJUndefined' do
-        expect(subject.justification).to eq :OJUndefined
+    context 'not set' do
+      it 'returns a Hash with markers set to 0' do
+        expect(subject.set).to eq(marker1: 0, marker2: 0)
       end
     end
   end
 
-  describe '#justification= + #justification' do
-    it 'assigns the justification' do
-      subject.justification = :OJLeft
-      expect(subject.justification).to eq :OJLeft
-    end
-  end
-
-  describe '#precision' do
-    context 'default' do
-      it 'returns 0' do
-        expect(subject.precision).to be_zero
+  describe '#set= + #set' do
+    context 'valid set hash' do
+      it 'sets the value' do
+        subject.set = { marker1: 1, marker2: 200 }
+        expect(subject.set).to eq(marker1: 1.0, marker2: 200)
       end
     end
   end
 
-  describe '#precision= + #precision' do
-    it 'assigns the precision' do
-      subject.precision = 1
-      expect(subject.precision).to eq 1
-    end
-  end
-
-  describe '#type' do
-    context 'default' do
-      it 'returns the value it was created with' do
-        expect(subject.type).to eq :OFTInteger
+  describe '#date' do
+    context 'not set' do
+      it 'returns nil' do
+        expect(subject.date).to be_nil
       end
     end
   end
 
-  describe '#type= + #type' do
-    it 'assigns the type' do
-      subject.type = :OFTString
-      expect(subject.type).to eq :OFTString
-    end
-  end
+  describe '#date= + #date' do
+    context 'valid date' do
+      let(:now) { DateTime.now }
 
-  describe '#width' do
-    context 'default' do
-      it 'returns 0' do
-        expect(subject.width).to be_zero
+      it 'sets the date' do
+        subject.date = now
+        expect(subject.date.httpdate).to eq now.httpdate
       end
-    end
-  end
-
-  describe '#width= + #width' do
-    it 'assigns the width' do
-      subject.width = 1
-      expect(subject.width).to eq 1
-    end
-  end
-
-  describe '#ignored?' do
-    context 'default' do
-      it 'returns false' do
-        expect(subject).to_not be_ignored
-      end
-    end
-  end
-
-  describe '#ignore= + #ignored?' do
-    it 'assigns the value' do
-      subject.ignore = true
-      expect(subject).to be_ignored
-    end
-  end
-
-  describe '#as_json' do
-    it 'returns a Hash of attributes' do
-      expect(subject.as_json).to eq(
-        is_ignored: false,
-        justification: :OJUndefined,
-        name: 'test field',
-        precision: 0,
-        type: :OFTInteger,
-        width: 0
-      )
-    end
-  end
-
-  describe '#to_json' do
-    it 'returns a string' do
-      expect(subject.to_json).to be_a String
     end
   end
 end

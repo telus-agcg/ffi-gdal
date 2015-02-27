@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::MultiPolygon do
   it_behaves_like 'a geometry' do
@@ -22,6 +23,8 @@ RSpec.describe OGR::MultiPolygon do
   end
 
   describe '#union_cascaded' do
+    subject { OGR::Geometry.create_from_wkt(wkt) }
+
     let(:wkt) do
       'MULTIPOLYGON(((0 0,0 1,1 1,0 0)),((0 0,1 1,1 0,0 0)))'
     end

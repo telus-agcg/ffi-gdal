@@ -1,22 +1,23 @@
 require 'spec_helper'
 require 'date'
+require 'ogr/feature'
 
 RSpec.describe OGR::Feature do
-  let(:integer_field) { OGR::Field.create('test integer field', :OFTInteger) }
-  let(:integer_list_field) { OGR::Field.create('test integer list field', :OFTIntegerList) }
-  let(:real_field) { OGR::Field.create('test real field', :OFTReal) }
-  let(:real_list_field) { OGR::Field.create('test real list field', :OFTRealList) }
-  let(:string_field) { OGR::Field.create('test string field', :OFTString) }
-  let(:string_list_field) { OGR::Field.create('test string list field', :OFTStringList) }
-  let(:binary_field) { OGR::Field.create('test binary field', :OFTBinary) }
-  let(:date_field) { OGR::Field.create('test date field', :OFTDate) }
+  let(:integer_field) { OGR::FieldDefinition.new('test integer field', :OFTInteger) }
+  let(:integer_list_field) { OGR::FieldDefinition.new('test integer list field', :OFTIntegerList) }
+  let(:real_field) { OGR::FieldDefinition.new('test real field', :OFTReal) }
+  let(:real_list_field) { OGR::FieldDefinition.new('test real list field', :OFTRealList) }
+  let(:string_field) { OGR::FieldDefinition.new('test string field', :OFTString) }
+  let(:string_list_field) { OGR::FieldDefinition.new('test string list field', :OFTStringList) }
+  let(:binary_field) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
+  let(:date_field) { OGR::FieldDefinition.new('test date field', :OFTDate) }
 
   let(:geometry_field_definition) do
-    OGR::GeometryFieldDefinition.create('test geometry', :wkbPoint)
+    OGR::GeometryFieldDefinition.new('test geometry', :wkbPoint)
   end
 
   let(:feature_definition) do
-    fd = OGR::FeatureDefinition.create('test FD')
+    fd = OGR::FeatureDefinition.new('test FD')
 
     fd.add_field_definition(integer_field)        # 0
     fd.add_field_definition(integer_list_field)   # 1
@@ -33,20 +34,20 @@ RSpec.describe OGR::Feature do
   end
 
   let(:empty_feature_definition) do
-    OGR::FeatureDefinition.create('empty test FD')
+    OGR::FeatureDefinition.new('empty test FD')
   end
 
-  describe '.create' do
-    context 'param is not a FeatureDefinition' do
-      it 'raises an OGR::InvalidFeatureDefinition' do
+  describe '.new' do
+    context 'param is not a FeatureDefinition or pointer to a FeatureDefinition' do
+      it 'raises an OGR::InvalidFeature' do
         expect do
-          described_class.create('mewo')
-        end.to raise_exception OGR::InvalidFeatureDefinition
+          described_class.new('not a pointer')
+        end.to raise_exception OGR::InvalidFeature
       end
     end
   end
 
-  subject(:feature) { described_class.create(feature_definition) }
+  subject(:feature) { described_class.new(feature_definition) }
 
   describe '#clone' do
     it 'returns a new Feature' do
@@ -201,10 +202,10 @@ RSpec.describe OGR::Feature do
     end
 
     context 'to an invalid valid index' do
-      it 'adds the field' do
+      it 'raises a GDAL::Error' do
         expect do
           subject.set_field_string_list(100, [1, 2, 3])
-        end.to raise_exception TypeError
+        end.to raise_exception GDAL::Error, 'Invalid index : 100'
       end
     end
 
@@ -218,13 +219,13 @@ RSpec.describe OGR::Feature do
 
   describe '#set_field_raw + #field_as_raw' do
     let(:integer_field_struct) do
-      f = FFI::GDAL::OGRField.new
+      f = FFI::OGR::Field.new
       f[:integer] = 1
       f
     end
 
     let(:integer_list_field_struct) do
-      f = FFI::GDAL::OGRField.new
+      f = FFI::OGR::Field.new
       f[:integer_list] = [1, 2, 3]
       f
     end
@@ -246,13 +247,13 @@ RSpec.describe OGR::Feature do
 
     context 'raw field is not of the given type' do
       let(:int_feature_definition) do
-        fd = OGR::FeatureDefinition.create('test FD')
+        fd = OGR::FeatureDefinition.new('test FD')
         fd.add_field_definition(integer_field)        # 0
 
         fd
       end
 
-      subject { described_class.create(int_feature_definition) }
+      subject { described_class.new(int_feature_definition) }
 
       it 'raises a TypeError' do
         expect do
@@ -317,8 +318,8 @@ RSpec.describe OGR::Feature do
   end
   describe '#field_definition' do
     context 'field exists at the given index' do
-      it 'returns the Field' do
-        expect(subject.field_definition(0)).to be_a OGR::Field
+      it 'returns the FieldDefinition' do
+        expect(subject.field_definition(0)).to be_a OGR::FieldDefinition
       end
     end
 
@@ -331,7 +332,7 @@ RSpec.describe OGR::Feature do
 
   describe 'field_index' do
     context 'field exists with the given name' do
-      it "returns the Field's index" do
+      it "returns the FieldDefinition's index" do
         expect(subject.field_index('test binary field')).to eq 6
       end
     end

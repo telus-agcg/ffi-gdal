@@ -1,4 +1,6 @@
 require 'spec_helper'
+require 'gdal/driver'
+require 'gdal/raster_band_classifier'
 
 RSpec.describe GDAL::RasterBandClassifier do
   let(:driver) { GDAL::Driver.by_name('MEM') }

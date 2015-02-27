@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/driver'
 
 RSpec.describe OGR::Driver do
   describe '.count' do
@@ -45,14 +46,16 @@ RSpec.describe OGR::Driver do
   describe '#open' do
     context 'data source at path does not exist' do
       context 'with write flag' do
-        it 'returns nil' do
-          expect(subject.open('spec source', 'w')).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { subject.open('spec source', 'w') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
 
       context 'with read flag' do
-        it 'returns nil' do
-          expect(subject.open('spec source', 'r')).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { subject.open('spec source', 'r') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
     end
@@ -77,9 +80,9 @@ RSpec.describe OGR::Driver do
       end
 
       context 'using a driver that does not support the file type' do
-        it 'returns nil' do
-          data_source = memory_driver.open(shapefile_path, 'r')
-          expect(data_source).to be_nil
+        it 'raises an OGR::InvalidDataSource' do
+          expect { memory_driver.open(shapefile_path, 'r') }.
+            to raise_exception OGR::InvalidDataSource
         end
       end
     end
@@ -104,8 +107,8 @@ RSpec.describe OGR::Driver do
 
   describe '#delete_data_source' do
     context 'data source does not exist' do
-      it do
-        skip
+      it "raises a GDAL::UnsupportedOperation (Memory driver doesn't support)" do
+        expect { subject.delete_data_source('we no here') }.to raise_exception GDAL::UnsupportedOperation
       end
     end
   end
@@ -114,7 +117,7 @@ RSpec.describe OGR::Driver do
     context 'source data source does not exist' do
       it 'raises an OGR::InvalidDataSource' do
         expect do
-          subject.copy_data_source('asdf', 'bobo')
+          subject.copy_data_source('not a pointer', 'bobo')
         end.to raise_exception OGR::InvalidDataSource
       end
     end

@@ -1,110 +1,213 @@
-require_relative '../ffi/ogr'
-require_relative 'field_extensions'
+require 'date'
 
 module OGR
   class Field
-    include FieldExtensions
+    attr_reader :c_struct
 
-    # @param name [String]
-    # @param type [FFI::GDAL::OGRFieldType]
-    # @return [OGR::Field]
-    def self.create(name, type)
-      field_ptr = FFI::GDAL.OGR_Fld_Create(name, type)
-      return nil if field_ptr.null?
-
-      new(field_ptr)
+    # @param [FFI::OGR::Point, FFI::Pointer]
+    def initialize(ogr_field_struct = nil)
+      @c_struct = ogr_field_struct || ::FFI::OGR::Field.new
     end
 
-    # @param field [OGR::Field, FFI::Pointer]
-    def initialize(field)
-      @field_pointer = GDAL._pointer(OGR::Field, field)
-    end
-
+    # @return [FFI::Pointer]
     def c_pointer
-      @field_pointer
-    end
-
-    def destroy!
-      FFI::GDAL.OGR_Fld_Destroy(@field_pointer)
-      @field_pointer = nil
-    end
-
-    # Set all defining attributes in one call.
-    #
-    # @param name [String]
-    # @param type [FFI::GDAL::OGRFieldType]
-    # @param width [Fixnum]
-    # @param precision [Fixnum]
-    # @param justification [FFI::GDAL::OGRJustification]
-    def set(name, type, width, precision, justification)
-      FFI::GDAL.OGR_Fld_Set(
-        @field_pointer,
-        name,
-        type,
-        width,
-        precision,
-        justification
-      )
-    end
-
-    # @return [String]
-    def name
-      FFI::GDAL.OGR_Fld_GetNameRef(@field_pointer)
-    end
-
-    # @param new_value [String]
-    def name=(new_value)
-      FFI::GDAL.OGR_Fld_SetName(@field_pointer, new_value)
-    end
-
-    # @return [FFI::GDAL::OGRJustification]
-    def justification
-      FFI::GDAL.OGR_Fld_GetJustify(@field_pointer)
-    end
-
-    # @param new_value [FFI::GDAL::OGRJustification]
-    def justification=(new_value)
-      FFI::GDAL.OGR_Fld_SetJustify(@field_pointer, new_value)
+      @c_struct.to_ptr
     end
 
     # @return [Fixnum]
-    def precision
-      FFI::GDAL.OGR_Fld_GetPrecision(@field_pointer)
+    def integer
+      @c_struct[:integer]
+    end
+    alias_method :to_i, :integer
+
+    # @param new_int [Fixnum]
+    def integer=(new_int)
+      @c_struct[:integer] = new_int
     end
 
-    # @param new_value [Fixnum]
-    def precision=(new_value)
-      FFI::GDAL.OGR_Fld_SetPrecision(@field_pointer, new_value)
+    # @return [Bignum]
+    def integer64
+      @c_struct[:integer64]
     end
 
-    # @return [FFI::GDAL::OGRFieldType]
-    def type
-      FFI::GDAL.OGR_Fld_GetType(@field_pointer)
+    # @param new_int64 [Bignum]
+    def integer64=(new_int64)
+      @c_struct[:integer64] = new_int64
     end
 
-    # @param new_value [FFI::GDAL::OGRFieldType]
-    def type=(new_value)
-      FFI::GDAL.OGR_Fld_SetType(@field_pointer, new_value)
+    # @return [Float]
+    def real
+      @c_struct[:real]
+    end
+    alias_method :to_f, :real
+
+    # @param new_real [Float]
+    def real=(new_real)
+      @c_struct[:real] = new_real
     end
 
-    # @return [Fixnum]
-    def width
-      FFI::GDAL.OGR_Fld_GetWidth(@field_pointer)
+    # TODO: This blows up when another value type has been set.
+    def string
+      return '' if @c_struct[:string] && @c_struct[:string].null?
+
+      @c_struct[:string].read_string
     end
 
-    # @param new_value [Fixnum]
-    def width=(new_value)
-      FFI::GDAL.OGR_Fld_SetWidth(@field_pointer, new_value)
+    def string=(new_string)
+      @c_struct[:string] = FFI::MemoryPointer.from_string(new_string)
     end
 
-    # @return [Boolean]
-    def ignored?
-      FFI::GDAL.OGR_Fld_IsIgnored(@field_pointer)
+    # @return [Array<Fixnum>]
+    def integer_list
+      il = @c_struct[:integer_list]
+      return [] if il[:count].zero?
+
+      il[:list].read_array_of_int(il[:count])
     end
 
-    # @param new_value [Boolean]
-    def ignore=(new_value)
-      FFI::GDAL.OGR_Fld_SetIgnored(@field_pointer, new_value)
+    # @param integer_list [Array<Fixnum>]
+    def integer_list=(new_integer_list)
+      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.size)
+      list_ptr.write_array_of_int(new_integer_list)
+
+      il = FFI::OGR::FieldTypes::IntegerList.new
+      il[:count] = new_integer_list.size
+      il[:list] = list_ptr
+
+      @c_struct[:integer_list] = il
+    end
+
+    # @return [Array<Bignum>]
+    def integer64_list
+      il = @c_struct[:integer_list]
+      return [] if il[:count].zero?
+
+      il[:list].read_array_of_int64(il[:count])
+    end
+    alias_method :to_bignum, :integer64_list
+
+    # @param new_integer64_list [Array<Bignum>]
+    def integer64_list=(new_integer64_list)
+      list_ptr = FFI::MemoryPointer.new(:int64, new_integer64_list.size)
+      list_ptr.write_array_of_int64(new_integer64_list)
+
+      il = FFI::OGR::FieldTypes::Integer64List.new
+      il[:count] = new_integer64_list.size
+      il[:list] = list_ptr
+
+      @c_struct[:integer64_list] = il
+    end
+    alias_method :bignum_list=, :integer64_list=
+
+    # @return [Array<Float>]
+    def real_list
+      rl = @c_struct[:real_list]
+      return [] if rl[:count].zero?
+
+      rl[:list].read_array_of_double(rl[:count])
+    end
+    alias_method :float_list, :real_list
+
+    # @param new_real_list [Array<Float>]
+    def real_list=(new_real_list)
+      list_ptr = FFI::MemoryPointer.new(:double, new_real_list.size)
+      list_ptr.write_array_of_double(new_real_list)
+
+      rl = FFI::OGR::FieldTypes::RealList.new
+      rl[:count] = new_real_list.size
+      rl[:list] = list_ptr
+
+      @c_struct[:real_list] = rl
+    end
+    alias_method :float_list=, :real_list=
+
+    # @return [Array<String>]
+    def string_list
+      sl = @c_struct[:string_list]
+      return [] if sl[:count].zero?
+
+      sl[:list].read_array_of_pointer(sl[:count]).map do |ptr|
+        ptr.read_string
+      end
+    end
+
+    # @param new_string_list [Array<String>]
+    def string_list=(new_string_list)
+      list_ptr = GDAL._string_array_to_pointer(new_string_list)
+
+      sl = FFI::OGR::FieldTypes::StringList.new
+      sl[:count] = new_string_list.size
+      sl[:list] = list_ptr
+
+      @c_struct[:string_list] = sl
+    end
+
+    # @return [String] 8-bit, unsigned data (uchar). Unpack with
+    #   String#unpack('C*').
+    def binary
+      b = @c_struct[:binary]
+
+      b[:count] > 0 ? b[:data].read_bytes(b[:count]) : ''
+    end
+
+    # @param new_binary [String] Binary string of 8-bit, unsigned data (uchar).
+    #   Pack with Array#pack('C*').
+    def binary=(new_binary)
+      data = FFI::MemoryPointer.new(:uchar, new_binary.length)
+      data.put_bytes(0, new_binary)
+
+      b = FFI::OGR::FieldTypes::Binary.new
+      b[:data] = data
+      b[:count] = new_binary.length
+
+      @c_struct[:binary] = b
+    end
+
+    # @return [Hash]
+    def set
+      { marker1: @c_struct[:set][:marker1], marker2: @c_struct[:set][:marker2] }
+    end
+
+    # @param new_set [Hash{marker1 => Fixnum, marker2 => Fixnum}]
+    def set=(new_set)
+      set = FFI::OGR::FieldTypes::Set.new
+      set[:marker1] = new_set[:marker1]
+      set[:marker2] = new_set[:marker2]
+
+      @c_struct[:set] = set
+    end
+
+    # @return [DateTime]
+    def date
+      c_date = @c_struct[:date]
+      return if c_date[:year].zero? || c_date[:month].zero? || c_date[:day].zero?
+
+      formatted_tz = OGR._format_time_zone_for_ruby(c_date[:tz_flag].to_i)
+
+      DateTime.new(c_date[:year],
+        c_date[:month],
+        c_date[:day],
+        c_date[:hour],
+        c_date[:minute],
+        c_date[:second],
+        formatted_tz)
+    end
+
+    # @param [Date, Time, DateTime]
+    def date=(new_date)
+      time = new_date.to_time
+      zone = OGR._format_time_zone_for_ogr(time.zone)
+
+      date = FFI::OGR::FieldTypes::Date.new
+      date[:year] = time.year
+      date[:month] = time.month
+      date[:day] = time.day
+      date[:hour] = time.hour
+      date[:minute] = time.min
+      date[:second] = time.sec
+      date[:tz_flag] = zone
+
+      @c_struct[:date] = date
     end
   end
 end

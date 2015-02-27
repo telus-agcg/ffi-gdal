@@ -5,13 +5,6 @@ module GDAL
   class RasterAttributeTable
     include RasterAttributeTableExtensions
 
-    # @return [GDAL::RasterAttributeTable]
-    def self.create
-      raster_attribute_table_ptr = FFI::GDAL.GDALCreateRasterAttributeTable
-
-      new(raster_attribute_table_ptr)
-    end
-
     # Create an object from a ColorTable.
     #
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
@@ -25,8 +18,8 @@ module GDAL
     end
 
     # @param raster_attribute_table [GDAL::RasterAttributeTable, FFI::Pointer]
-    def initialize(raster_attribute_table = nil)
-      @rat_pointer = GDAL._pointer(GDAL::RasterAttributeTable, raster_attribute_table)
+    def initialize(pointer = nil)
+      @rat_pointer = pointer || FFI::GDAL.GDALCreateRasterAttributeTable
     end
 
     def destroy!

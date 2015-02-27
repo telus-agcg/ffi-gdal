@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'ogr/geometry'
 
 RSpec.describe OGR::Point do
   subject { OGR::Geometry.create_from_wkt(wkt) }
