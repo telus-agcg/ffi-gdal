@@ -243,7 +243,7 @@ RSpec.describe OGR::FeatureDefinition do
     end
   end
 
-  describe '#field_definitino_by_name' do
+  describe '#field_definition_by_name' do
     context 'field with name does not exist' do
       it 'returns nil' do
         expect(subject.field_definition_by_name('asdfasdfasdf')).to be_nil

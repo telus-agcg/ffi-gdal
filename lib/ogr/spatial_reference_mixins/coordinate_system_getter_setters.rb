@@ -128,6 +128,7 @@ module OGR
 
         ogr_err.handle_result
       end
+
       # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
       #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
       #   semi-major is found.  If set to +true+, this will return that value if

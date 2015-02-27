@@ -31,7 +31,7 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json(options)
+    def as_json(options = nil)
       {
         angular_units: angular_units,
         epsg_treats_as_lat_long: epsg_treats_as_lat_long?,

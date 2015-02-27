@@ -38,7 +38,7 @@ RSpec.describe OGR::Feature do
   end
 
   describe '.new' do
-    context 'param is not a FeatureDefinition' do
+    context 'param is not a FeatureDefinition or pointer to a FeatureDefinition' do
       it 'raises an OGR::InvalidFeature' do
         expect do
           described_class.new('not a pointer')

@@ -41,7 +41,7 @@ module OGR
       end
 
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
-      # @return [Boolean] True if the GEOCCS nodes of each SpatialReference
+      # @return [Boolean] True if the GEOGCS nodes of each SpatialReference
       #   match.
       def geog_cs_is_same?(other_spatial_ref)
         spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)

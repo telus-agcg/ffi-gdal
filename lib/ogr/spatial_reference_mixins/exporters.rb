@@ -117,7 +117,7 @@ module OGR
         wkt_ptr_ptr.read_pointer.read_string
       end
 
-      # @return [Hash]
+      # @return [String]
       def to_xml(dialect = nil)
         xml_ptr = FFI::MemoryPointer.new(:string)
         xml_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -127,7 +127,7 @@ module OGR
           dialect)
         ogr_err.handle_result
 
-        xml_ptr_ptr.get_array_of_string(0)
+        xml_ptr_ptr.get_array_of_string(0).join
       end
     end
   end

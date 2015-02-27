@@ -39,5 +39,4 @@ RSpec.describe OGR::SpatialReference do
       expect(subject.to_wkt).to eq other_srs.to_wkt
     end
   end
-
 end
