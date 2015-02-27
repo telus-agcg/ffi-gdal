@@ -13,7 +13,7 @@ module GDAL
       @color_entry_struct.pointer
     end
 
-    # @return [FFI::GDAL::GDALColorEntry]
+    # @return [FFI::GDAL::ColorEntry]
     def c_struct
       @color_entry_struct
     end

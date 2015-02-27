@@ -17,7 +17,7 @@ module GDAL
   class ColorTable
     include ColorTableExtensions
 
-    # @param palette_interp_or_pointer [FFI::GDAL::GDALPaletteInterp,
+    # @param palette_interp_or_pointer [FFI::GDAL::PaletteInterp,
     #   FFI::Pointer]
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
@@ -65,7 +65,7 @@ module GDAL
 
     # Usually :GPI_RGB.
     #
-    # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
+    # @return [Symbol] One of FFI::GDAL::PaletteInterp.
     def palette_interpretation
       FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
     end

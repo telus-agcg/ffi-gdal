@@ -80,12 +80,12 @@ module GDAL
       @dataset = GDAL::Dataset.new(dataset_ptr)
     end
 
-    # @return [Symbol] One of FFI::GDAL::GDALColorInterp.
+    # @return [Symbol] One of FFI::GDAL::ColorInterp.
     def color_interpretation
       FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
     end
 
-    # @param new_color_interp [FFI::GDAL::GDALColorInterp]
+    # @param new_color_interp [FFI::GDAL::ColorInterp]
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
       !!FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer,
@@ -108,7 +108,7 @@ module GDAL
 
     # The pixel data type for this band.
     #
-    # @return [Symbol] One of FFI::GDAL::GDALDataType.
+    # @return [Symbol] One of FFI::GDAL::DataType.
     def data_type
       FFI::GDAL.GDALGetRasterDataType(@raster_band_pointer)
     end
@@ -585,7 +585,7 @@ module GDAL
     # @param pixel_array [NArray] The list of pixels.
     # @param x_offset [Fixnum] The left-most pixel to start writing.
     # @param y_offset [Fixnum] The top-most pixel to start writing.
-    # @param data_type [FFI::GDAL::GDALDataType] The type of pixel contained in
+    # @param data_type [FFI::GDAL::DataType] The type of pixel contained in
     #   the +pixel_array+.
     # @param line_space [Fixnum]
     # @param pixel_space [Fixnum]

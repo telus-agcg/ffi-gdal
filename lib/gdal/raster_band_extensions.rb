@@ -31,7 +31,7 @@ module GDAL
     # Reads through the raster, block-by-block and yields the pixel data that
     # it gathered.
     #
-    # @param to_data_type [FFI::GDAL::GDALDataType]
+    # @param to_data_type [FFI::GDAL::DataType]
     # @return [Enumerator, nil] Returns an Enumerable if no block is given,
     #   allowing to chain with other Enumerable methods.  Returns nil if a
     #   block is given.

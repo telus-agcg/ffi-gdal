@@ -18,7 +18,7 @@ module GDAL
         # @param green_band [GDAL::RasterBand, FFI::Pointer]
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
         # @param colors [Fixnum] Number of colors to return; 2-256.
-        # @param color_interpretation [FFI::GDAL::GDALPaletteInterp] The type
+        # @param color_interpretation [FFI::GDAL::PaletteInterp] The type
         #   of ColorTable to return.
         # @return [GDAL::ColorTable]
         def compute_median_cut_pct(red_band, green_band, blue_band,

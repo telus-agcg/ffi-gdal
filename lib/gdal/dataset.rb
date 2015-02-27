@@ -146,7 +146,7 @@ module GDAL
       @raster_bands[zero_index]
     end
 
-    # @param type [FFI::GDAL::GDALDataType]
+    # @param type [FFI::GDAL::DataType]
     # @param options [Hash]
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
@@ -273,7 +273,7 @@ module GDAL
     #   the dataset.
     # @param x_size [Fixnum] If not given, uses #raster_x_size.
     # @param y_size [Fixnum] If not given, uses #raster_y_size.
-    # @param data_type [FFI::GDAL::GDALDataType]
+    # @param data_type [FFI::GDAL::DataType]
     # @param band_count [Fixnum] The number of bands to create in the raster.
     # @param pixel_space
     def raster_io(access_flag, data_ptr,

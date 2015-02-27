@@ -31,7 +31,7 @@ module GDAL
         end
       end
 
-      # @param data_type [FFI::GDAL::GDALDataType]
+      # @param data_type [FFI::GDAL::DataType]
       # @return [Symbol] The FFI Symbol that represents a data type.
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -65,7 +65,7 @@ module GDAL
 
       # Maps GDAL DataTypes to FFI types.
       #
-      # @param data_type [FFI::GDAL::GDALDataType]
+      # @param data_type [FFI::GDAL::DataType]
       def _gdal_data_type_to_ffi(data_type)
         case data_type
         when :GDT_Byte then :uchar
