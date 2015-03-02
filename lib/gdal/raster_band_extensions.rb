@@ -83,10 +83,10 @@ module GDAL
       if to_data_type
         case to_data_type
         when :GDT_Byte then NArray.to_na(values).to_type(NArray::BYTE)
-        when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::SINT)
         when :GDT_Int16 then NArray.to_na(values).to_type(NArray::SINT)
-        when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
+        when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::INT)
         when :GDT_Int32 then NArray.to_na(values).to_type(NArray::INT)
+        when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
         when :GDT_Float32 then NArray.to_na(values).to_type(NArray::SFLOAT)
         when :GDT_Float64 then NArray.to_na(values).to_type(NArray::DFLOAT)
         when :GDT_CInt16 then NArray.to_na(values).to_type(NArray::SCOMPLEX)

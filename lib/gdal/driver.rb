@@ -156,8 +156,8 @@ module GDAL
     # @param y_size [Fixnum] Height of created raster in pixels.
     # @param band_count [Fixnum]
     # @param data_type [FFI::GDAL::DataType]
-    # @return [GDAL::Dataset] Returns the *closed* dataset.  You'll need to
-    #   reopen it if you with to continue working with it.
+    # @return [GDAL::Dataset] Returns the *open* dataset.  You'll need to
+    #   close it.
     def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
@@ -209,7 +209,7 @@ module GDAL
 
       fail CreateFail if destination_dataset_ptr.null?
 
-      dataset = Dataset.new(destination_dataset_ptr)
+      dataset = Dataset.new(destination_dataset_ptr, 'w')
       yield(dataset) if block_given?
       dataset.close
 
