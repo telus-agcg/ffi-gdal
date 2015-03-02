@@ -85,13 +85,13 @@ module GDAL
     #
     # After this code gets called, error handling will return to normal.
     def custom_handle
-      FFI::GDAL.CPLPushErrorHandler(handler_lambda)
+      FFI::CPL::Error.CPLPushErrorHandler(handler_lambda)
       yield
-      FFI::GDAL.CPLPopErrorHandler
+      FFI::CPL::Error.CPLPopErrorHandler
 
-      result(FFI::GDAL.CPLGetLastErrorType,
-             FFI::GDAL.CPLGetLastErrorNo,
-             FFI::GDAL.CPLGetLastErrorMsg
+      result(FFI::CPL::Error.CPLGetLastErrorType,
+             FFI::CPL::Error.CPLGetLastErrorNo,
+             FFI::CPL::Error.CPLGetLastErrorMsg
       )
     end
 

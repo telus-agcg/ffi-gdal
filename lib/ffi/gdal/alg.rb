@@ -27,14 +27,14 @@ module FFI
       # Typedefs
       #------------------------------------------------------------------------
       callback :GDALTransformerFunc,
-        %i[pointer int int pointer pointer pointer pointer],
+        %i[pointer bool int pointer pointer pointer pointer],
         :int
 
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :GDALApproxTransform,
-        %i[pointer int int pointer pointer pointer pointer],
+      ApproxTransform = attach_function :GDALApproxTransform,
+        %i[pointer bool int pointer pointer pointer pointer],
         :int
       attach_function :GDALChecksumImage,
         [GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
@@ -94,9 +94,15 @@ module FFI
       attach_function :GDALCreateGenImgProjTransformer2,
         [GDAL.find_type(:GDALDatasetH), GDAL.find_type(:GDALDatasetH), :pointer],
         :pointer
+
       attach_function :GDALCreateReprojectionTransformer,
         %i[string string],
         :pointer
+      attach_function :GDALDestroyReprojectionTransformer, %i[pointer], :pointer
+      ReprojectionTransform = attach_function :GDALReprojectionTransform,
+        %i[pointer bool int pointer pointer pointer pointer],
+        :int
+
       attach_function :GDALCreateRPCTransformer,
         [RPCInfo.ptr, :int, :double, :pointer],
         :pointer
@@ -105,7 +111,6 @@ module FFI
       attach_function :GDALDestroyApproxTransformer, %i[pointer], :void
       attach_function :GDALDestroyGCPTransformer, %i[pointer], :pointer
       attach_function :GDALDestroyGenImgProjTransformer, %i[pointer], :pointer
-      attach_function :GDALDestroyReprojectionTransformer, %i[pointer], :pointer
       attach_function :GDALDestroyTPSTransformer, %i[pointer], :pointer
 
       attach_function :GDALDitherRGB2PCT,
@@ -153,11 +158,11 @@ module FFI
           :pointer
         ],
         CPL::Error::CPLErr
-      attach_function :GDALGCPTransform,
-        %i[pointer int int pointer pointer pointer pointer],
+      GCPTransform = attach_function :GDALGCPTransform,
+        %i[pointer bool int pointer pointer pointer pointer],
         :bool
-      attach_function :GDALGenImgProjTransform,
-        %i[pointer int int pointer pointer pointer pointer],
+      GenImgProjTransform = attach_function :GDALGenImgProjTransform,
+        %i[pointer bool int pointer pointer pointer pointer],
         :bool
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -234,9 +239,6 @@ module FFI
         ],
         CPL::Error::CPLErr
 
-      attach_function :GDALReprojectionTransform,
-        %i[pointer int int pointer pointer pointer pointer],
-        :int
       attach_function :GDALSetGenImgProjTransformerDstGeoTransform,
         %i[pointer pointer],
         :void

@@ -68,11 +68,10 @@ module GDAL
 
     # Close the dataset.
     def close
-      if @dataset_pointer.null?
-        false
-      else
-        FFI::GDAL.GDALClose(@dataset_pointer)
-      end
+      return unless @dataset_pointer
+
+      FFI::GDAL.GDALClose(@dataset_pointer)
+      @dataset_pointer = nil
     end
 
     # @return [Symbol]
@@ -468,7 +467,7 @@ module GDAL
       pixels_ptr = FFI::MemoryPointer.new(:int)
       lines_ptr = FFI::MemoryPointer.new(:int)
 
-      FFI::GDAL.GDALSuggestedWarpOutput(
+      FFI::GDAL::Alg.GDALSuggestedWarpOutput(
         @dataset_pointer,
         transformer,
         transform_arg,
