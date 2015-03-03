@@ -60,6 +60,8 @@ module GDAL
 
       fail OpenFailure.new(path_or_pointer) if @dataset_pointer.null?
       ObjectSpace.define_finalizer self, -> { close }
+
+      @geo_transform = nil
     end
 
     # @return [FFI::Pointer] Pointer to the GDALDatasetH that's represented by
@@ -178,19 +180,21 @@ module GDAL
 
     # @return [GDAL::GeoTransform]
     def geo_transform
-      geo_transform_pointer = FFI::MemoryPointer.new(:double, 6)
+      return @geo_transform if @geo_transform
+
+      geo_transform_pointer = GDAL::GeoTransform.new_pointer
       FFI::GDAL.GDALGetGeoTransform(@dataset_pointer, geo_transform_pointer)
 
-      GeoTransform.new(geo_transform_pointer)
+      @geo_transform = GeoTransform.new(geo_transform_pointer)
     end
 
     # @param new_transform [GDAL::GeoTransform]
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
-      new_pointer = FFI::Pointer.new(new_transform.c_pointer)
+      new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
       FFI::GDAL.GDALSetGeoTransform(@dataset_pointer, new_pointer)
 
-      GeoTransform.new(new_pointer)
+      @geo_transform = GeoTransform.new(new_pointer)
     end
 
     # @return [Fixnum]
