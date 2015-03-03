@@ -1,5 +1,5 @@
 require_relative '../ffi/gdal'
-require_relative 'color_table_extensions'
+require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
 module GDAL
@@ -15,7 +15,7 @@ module GDAL
   end
 
   class ColorTable
-    include ColorTableExtensions
+    include ColorTableMixins::Extensions
 
     # @param palette_interp_or_pointer [FFI::GDAL::PaletteInterp,
     #   FFI::Pointer]

@@ -1,9 +1,9 @@
 require_relative '../ffi/gdal'
-require_relative 'raster_attribute_table_extensions'
+require_relative 'raster_attribute_table_mixins/extensions'
 
 module GDAL
   class RasterAttributeTable
-    include RasterAttributeTableExtensions
+    include RasterAttributeTableMixins::Extensions
 
     # Create an object from a ColorTable.
     #

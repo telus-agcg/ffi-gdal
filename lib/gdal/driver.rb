@@ -1,6 +1,6 @@
 require_relative '../ffi/gdal'
 require_relative 'major_object'
-require_relative 'driver_extensions'
+require_relative 'driver_mixins/extensions'
 require_relative 'dataset'
 require_relative 'options'
 require 'multi_xml'
@@ -9,7 +9,7 @@ module GDAL
   class Driver
     include MajorObject
     include GDAL::Logger
-    include DriverExtensions
+    include DriverMixins::Extensions
 
     GDAL_DOCS_URL = 'http://gdal.org'
 

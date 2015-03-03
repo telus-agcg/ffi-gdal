@@ -1,8 +1,8 @@
-require_relative 'color_entry_extensions'
+require_relative 'color_entry_mixins/extensions'
 
 module GDAL
   class ColorEntry
-    include ColorEntryExtensions
+    include ColorEntryMixins::Extensions
 
     def initialize(color_entry = nil)
       @color_entry_struct = color_entry || FFI::GDAL::ColorEntry.new

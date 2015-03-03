@@ -1,7 +1,7 @@
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr/api'
 require_relative 'raster_band_mixins/algorithm_methods'
-require_relative 'raster_band_extensions'
+require_relative 'raster_band_mixins/extensions'
 require_relative 'color_table'
 require_relative 'major_object'
 require_relative 'raster_attribute_table'
@@ -12,7 +12,7 @@ module GDAL
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
-    include RasterBandExtensions
+    include RasterBandMixins::Extensions
 
     ALL_VALID = 0x01
     PER_DATASET = 0x02
