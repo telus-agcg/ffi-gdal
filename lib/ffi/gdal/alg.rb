@@ -30,6 +30,10 @@ module FFI
       callback :GDALTransformerFunc,
         %i[pointer bool int pointer pointer pointer pointer],
         :int
+      callback :GDALContourWriter,
+        %i[double int pointer pointer pointer],
+        CPL::Error::CPLErr
+      typedef :pointer, :GDALContourGeneratorH
 
       #------------------------------------------------------------------------
       # Functions
@@ -57,6 +61,29 @@ module FFI
           GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
+        CPL::Error::CPLErr
+
+      #~~~~~~~~~~~~~~~~~~~~~~
+      # Contour functions
+      #~~~~~~~~~~~~~~~~~~~~~~
+      attach_function :GDAL_CG_Create,
+        %i[
+          int
+          int
+          int
+          double
+          double
+          double
+          GDALContourWriter
+          pointer
+        ],
+        :GDALContourGeneratorH
+      attach_function :GDAL_CG_FeedLine,
+        %i[GDALContourGeneratorH pointer],
+        CPL::Error::CPLErr
+      attach_function :GDAL_CG_Destroy, %i[pointer], :void
+      attach_function :OGRContourWriter,
+        %i[double int pointer pointer pointer],
         CPL::Error::CPLErr
       attach_function :GDALContourGenerate,
         [
