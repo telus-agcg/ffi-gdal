@@ -2,6 +2,7 @@ require 'json'
 require 'narray'
 require_relative '../raster_band'
 require_relative '../warp_operation'
+require_relative '../../ogr/driver'
 require_relative '../../ogr/layer'
 require_relative '../../ogr/spatial_reference'
 

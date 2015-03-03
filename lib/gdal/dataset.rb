@@ -169,7 +169,7 @@ module GDAL
 
     # @return [String]
     def projection
-      FFI::GDAL.GDALGetProjectionRef(@dataset_pointer)
+      FFI::GDAL.GDALGetProjectionRef(@dataset_pointer) || ''
     end
 
     # @param new_projection [String]
