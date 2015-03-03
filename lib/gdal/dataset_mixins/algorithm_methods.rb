@@ -145,20 +145,34 @@ module GDAL
         success ? GDAL::Dataset.new(destination_dataset_ptr) : nil
       end
 
-      # def suggested_warp_output(transformer, transform_arg)
       def suggested_warp_output(transformer)
         geo_transform = GDAL::GeoTransform.new
         pixels_ptr = FFI::MemoryPointer.new(:int)
         lines_ptr = FFI::MemoryPointer.new(:int)
-        FFI::GDAL::Alg.GDALSuggestedWarpOutput(
+        extents_ptr = FFI::MemoryPointer.new(:double, 4)
+        options = 0     # C code says this isn't used yet.
+
+        FFI::GDAL::Alg.GDALSuggestedWarpOutput2(
           @dataset_pointer,
           transformer.function,
           transformer.c_pointer,
           geo_transform.c_pointer,
           pixels_ptr,
-          lines_ptr)
+          lines_ptr,
+          extents_ptr,
+          options)
+
+        extents_array = extents_ptr.read_array_of_double(4)
+
+        extents = {
+          min_x: extents_array[0],
+          min_y: extents_array[1],
+          max_x: extents_array[2],
+          max_y: extents_array[3]
+        }
 
         {
+          extents: extents,
           geo_transform: geo_transform,
           lines: lines_ptr.read_int,
           pixels: pixels_ptr.read_int
