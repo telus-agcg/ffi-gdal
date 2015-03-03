@@ -326,7 +326,7 @@ module GDAL
       !!FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
     end
 
-    # This value (in combination with the GetScale() value) is used to
+    # This value (in combination with the #scale value) is used to
     # transform raw pixel values into the units returned by #units. For example
     # this might be used to store elevations in GUInt16 bands with a precision
     # of 0.1, and starting from -100.

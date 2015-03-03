@@ -5,16 +5,18 @@ module GDAL
     class ApproximateTransformer
       # @return [FFI::Function]
       def self.function
-        FFI::GDAL::Alg.ApproxTransform
+        FFI::GDAL::Alg::ApproxTransform
       end
 
       attr_reader :c_pointer
 
-      # @param base_transformer_function [FFI::Function, Proc]
-      # @param transformer_arg_ptr [FFI::Pointer]
+      # @param base_transformer [GDAL::Transformer]
       # @param max_error [Float] The maximum cartesian error in the "output" space
       #   that will be accepted in the linear approximation.
-      def initialize(base_transformer_function, transformer_arg_ptr, max_error)
+      def initialize(base_transformer, max_error)
+        base_transformer_function = base_transformer.function
+        transformer_arg_ptr = base_transformer.c_pointer
+
         @c_pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
           base_transformer_function,
           transformer_arg_ptr,
