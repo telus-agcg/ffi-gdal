@@ -9,7 +9,7 @@ require_relative 'exceptions'
 require_relative 'major_object'
 require_relative 'dataset_mixins/extensions'
 require_relative 'dataset_mixins/matching'
-require_relative 'dataset_mixins/warp_methods'
+require_relative 'dataset_mixins/algorithm_methods'
 require_relative 'options'
 
 module GDAL
@@ -20,7 +20,7 @@ module GDAL
     include MajorObject
     include DatasetMixins::Extensions
     include DatasetMixins::Matching
-    include DatasetMixins::WarpMethods
+    include DatasetMixins::AlgorithmMethods
     include GDAL::Logger
 
     ACCESS_FLAGS = {

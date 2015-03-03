@@ -1,6 +1,6 @@
 module GDAL
   module DatasetMixins
-    module WarpMethods
+    module AlgorithmMethods
 
       # Rasterizes the geometric objects +geometries+ into this raster dataset.
       # +transformer+ can be nil as long as the +geometries+ are within the
@@ -145,15 +145,15 @@ module GDAL
         success ? GDAL::Dataset.new(destination_dataset_ptr) : nil
       end
 
-      def suggested_warp_output(transformer, transform_arg)
+      # def suggested_warp_output(transformer, transform_arg)
+      def suggested_warp_output(transformer)
         geo_transform = GDAL::GeoTransform.new
         pixels_ptr = FFI::MemoryPointer.new(:int)
         lines_ptr = FFI::MemoryPointer.new(:int)
-
         FFI::GDAL::Alg.GDALSuggestedWarpOutput(
           @dataset_pointer,
-          transformer,
-          transform_arg,
+          transformer.function,
+          transformer.c_pointer,
           geo_transform.c_pointer,
           pixels_ptr,
           lines_ptr)

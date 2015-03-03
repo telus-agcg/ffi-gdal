@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'narray'
+require_relative '../ffi/gdal/alg'
 require_relative 'grid_types'
 require_relative 'geo_transform'
 
@@ -63,7 +64,7 @@ module GDAL
       log "corner x1 (gdal_grid.cpp): #{x_end}"
       log "corner y1 (gdal_grid.cpp): #{y_end}"
 
-      FFI::GDAL::GDALGridCreate(
+      FFI::GDAL::Alg.GDALGridCreate(
         @gridder.algorithm,                             # eAlgorithm
         @gridder.options.to_ptr,                        # poOptions
         point_count,                                    # nPoints
