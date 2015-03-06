@@ -140,26 +140,6 @@ module OGR
       FFI::OGR::API.OGR_F_SetFieldRaw(@feature_pointer, index, value)
     end
 
-    # TODO: this seems really wonky...
-    def valid_raw_field?(index, raw_field)
-      field_def = field_definition(index)
-
-      case field_def.type
-      when :OFTInteger then !raw_field[:integer].nil?
-      when :OFTIntegerList then !raw_field[:integer_list].nil?
-      when :OFTInteger64 then !raw_field[:integer64].nil?
-      when :OFTInteger64List then !raw_field[:integer64_list].nil?
-      when :OFTReal then !raw_field[:real].nil?
-      when :OFTRealList then !raw_field[:real_list].nil?
-      when :OFTString then !raw_field[:string].nil?
-      when :OFTStringList then !raw_field[:string_list].nil?
-      when :OFTBinary then !raw_field[:binary].nil?
-      when :OFTDate then !raw_field[:date].nil?
-      else
-        fail OGR::Failure, "Not sure how to set raw type: #{field_def.type}"
-      end
-    end
-
     # @param index [Fixnum]
     # @param value [String]
     def set_field_binary(index, value)
@@ -298,7 +278,7 @@ module OGR
       geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@feature_pointer, index)
       return nil if geometry_ptr.nil? || geometry_ptr.null?
 
-      geometry = OGR::Geometry.new(geometry_ptr)
+      geometry = OGR::Geometry.factory(geometry_ptr)
       geometry.read_only = true
 
       geometry
@@ -413,15 +393,26 @@ module OGR
 
       formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
 
-      DateTime.new(
-        year_ptr.read_int,
-        month_ptr.read_int,
-        day_ptr.read_int,
-        hour_ptr.read_int,
-        minute_ptr.read_int,
-        second_ptr.read_int,
-        formatted_tz
-        )
+      if formatted_tz
+        DateTime.new(
+          year_ptr.read_int,
+          month_ptr.read_int,
+          day_ptr.read_int,
+          hour_ptr.read_int,
+          minute_ptr.read_int,
+          second_ptr.read_int,
+          formatted_tz
+          )
+      else
+        DateTime.new(
+          year_ptr.read_int,
+          month_ptr.read_int,
+          day_ptr.read_int,
+          hour_ptr.read_int,
+          minute_ptr.read_int,
+          second_ptr.read_int
+          )
+      end
     end
 
     # @return [String]
