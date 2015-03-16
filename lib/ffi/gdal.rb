@@ -69,4 +69,3 @@ require_relative 'cpl/conv'
 require_relative 'gdal/gdal'
 require_relative 'gdal/version'
 require_relative '../ext/to_bool'
-

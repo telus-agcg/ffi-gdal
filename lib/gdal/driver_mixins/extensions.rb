@@ -1,6 +1,43 @@
 module GDAL
   module DriverMixins
     module Extensions
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+
+      module ClassMethods
+
+        # @return [Array<String>]
+        def short_names
+          names = 0.upto(count - 1).map do |i|
+            driver = at_index(i)
+            driver.short_name
+          end
+
+          names.compact.sort
+        end
+
+        # @return [Array<String>]
+        def long_names
+          names = 0.upto(count - 1).map do |i|
+            at_index(i).long_name
+          end
+
+          names.compact.sort
+        end
+
+        # @return [Hash{String => String}] Keys are driver short names, values are
+        #   driver long names.
+        def self.names
+          names = 0.upto(count - 1).each_with_object({}) do |i, obj|
+            driver = at_index(i)
+            obj[driver.short_name] = driver.long_name
+          end
+
+          Hash[names.sort]
+        end
+      end
+
       # The things that this driver can do, as reported by its metadata.
       # Possibilities include:
       #   * :open

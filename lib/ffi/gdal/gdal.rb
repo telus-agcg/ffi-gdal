@@ -452,8 +452,8 @@ module FFI
       FFI::CPL::Error::CPLErr
     attach_function :GDALComputeRasterStatistics,
       %i[
-        GDALRasterBandH,
-        bool,
+        GDALRasterBandH
+        bool
         pointer
         pointer
         pointer

@@ -18,6 +18,12 @@ module GDAL
   class InvalidColorTable < StandardError
   end
 
+  class InvalidDriverIndex < StandardError
+  end
+
+  class InvalidDriverName < StandardError
+  end
+
   class InvalidRasterBand < StandardError
   end
 
