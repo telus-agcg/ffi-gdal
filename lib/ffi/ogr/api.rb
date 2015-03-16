@@ -13,9 +13,9 @@ module FFI
       extend ::FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Typedefs
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # TODO: Use the typedefs for creating pointers throughout the app.
       typedef :pointer, :OGRGeometryH
       typedef :pointer, :OGRFieldDefnH
@@ -29,9 +29,9 @@ module FFI
       typedef :pointer, :OGRStyleMgrH
       typedef :pointer, :OGRStyleToolH
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Functions
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       attach_function :OGR_G_CreateFromWkb,
         [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
         FFI::OGR::Core::Err
@@ -42,9 +42,9 @@ module FFI
         [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int, :pointer],
         FFI::OGR::Core::Err
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Geometry-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_G_DestroyGeometry, %i[OGRGeometryH], :void
       attach_function :OGR_G_CreateGeometry, [FFI::OGR::Core::WKBGeometryType], :OGRGeometryH
       attach_function :OGR_G_ApproximateArcAngles,
@@ -212,9 +212,9 @@ module FFI
         %i[OGRGeometryH bool bool double pointer],
         :OGRGeometryH
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Field-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_Fld_Create, [:string, FFI::OGR::Core::FieldType], :OGRFieldDefnH
       attach_function :OGR_Fld_Destroy, %i[OGRFieldDefnH], :void
       attach_function :OGR_Fld_SetName, %i[OGRFieldDefnH string], :void
@@ -236,9 +236,9 @@ module FFI
 
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :string
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Geometry Field-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_GFld_Create,
         [:string, FFI::OGR::Core::WKBGeometryType],
         :OGRGeomFieldDefnH
@@ -258,9 +258,9 @@ module FFI
       attach_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
       attach_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Feature Definition-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_FD_Create, %i[string], :OGRFeatureDefnH
       attach_function :OGR_FD_Destroy, %i[OGRFeatureDefnH], :void
       attach_function :OGR_FD_Release, %i[OGRFeatureDefnH], :void
@@ -306,9 +306,9 @@ module FFI
         %i[OGRFeatureDefnH OGRFeatureDefnH],
         :bool
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Feature-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_F_Create, %i[OGRFeatureDefnH], :OGRFeatureH
       attach_function :OGR_F_Destroy, %i[OGRFeatureH], :void
       attach_function :OGR_F_GetDefnRef, %i[OGRFeatureH], :OGRFeatureDefnH
@@ -372,9 +372,9 @@ module FFI
       attach_function :OGR_F_SetStyleTableDirectly, %i[OGRFeatureH OGRStyleTableH], :void
       attach_function :OGR_F_SetStyleTable, %i[OGRFeatureH OGRStyleTableH], :void
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Layer-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_L_GetName, %i[OGRLayerH], :string
       attach_function :OGR_L_GetGeomType, %i[OGRLayerH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_L_GetSpatialFilter, %i[OGRLayerH], :OGRGeometryH
@@ -453,9 +453,9 @@ module FFI
         [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # DataSource-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
       attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string
       attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
@@ -487,9 +487,9 @@ module FFI
         :void
       attach_function :OGR_DS_SetStyleTable, %i[OGRDataSourceH OGRStyleTableH], :void
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Driver-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_Dr_GetName, %i[OGRSFDriverH], :string
       attach_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
       attach_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :int
@@ -499,9 +499,9 @@ module FFI
         :OGRDataSourceH
       attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Style Manager-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_SM_Create, %i[OGRStyleTableH], :OGRStyleMgrH
       attach_function :OGR_SM_Destroy, %i[OGRStyleTableH], :void
       attach_function :OGR_SM_InitFromFeature, %i[OGRStyleTableH OGRFeatureH], :string
@@ -513,9 +513,9 @@ module FFI
       attach_function :OGR_SM_AddPart, %i[OGRStyleTableH OGRStyleToolH], :int
       attach_function :OGR_SM_AddStyle, %i[OGRStyleTableH string string], :int
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Style Tool-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_ST_Create, [FFI::OGR::Core::STClassId], :OGRStyleToolH
       attach_function :OGR_ST_Destroy, %i[OGRStyleToolH], :void
       attach_function :OGR_ST_GetType, %i[OGRStyleToolH], FFI::OGR::Core::STClassId
@@ -532,9 +532,9 @@ module FFI
         %i[OGRStyleToolH string pointer pointer pointer pointer],
         :bool
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Style Table-related
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_STBL_Create, [], :OGRStyleTableH
       attach_function :OGR_STBL_Destroy, %i[OGRStyleTableH], :void
       attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :bool
@@ -545,9 +545,9 @@ module FFI
       attach_function :OGR_STBL_GetNextStyle, %i[OGRStyleTableH], :string
       attach_function :OGR_STBL_GetLastStyleName, %i[OGRStyleTableH], :string
 
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       # Main functions
-      #~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~
       attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
       attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
       attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err

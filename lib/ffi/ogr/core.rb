@@ -162,8 +162,8 @@ module FFI
       # Functions
       #------------------------------------------------------------------------
       attach_function :OGRMalloc, [:size_t], :pointer
-      attach_function :OGRCalloc, [:size_t, :size_t], :pointer
-      attach_function :OGRRealloc, [:pointer, :size_t], :pointer
+      attach_function :OGRCalloc, %i[size_t size_t], :pointer
+      attach_function :OGRRealloc, %i[pointer size_t], :pointer
       attach_function :OGRStrdup, [:string], :string
       attach_function :OGRFree, [:pointer], :void
 

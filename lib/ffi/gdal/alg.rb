@@ -11,9 +11,9 @@ module FFI
       extend FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Enums
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       GridAlgorithm = enum :GGA_InverseDistanceToAPower, 1,
         :GGA_MovingAverage, 2,
         :GGA_NearestNeighbor, 3,
@@ -24,9 +24,9 @@ module FFI
         :GGA_MetricAverageDistance, 8,
         :GGA_MetricAverageDistancePts, 9
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Typedefs
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       callback :GDALTransformerFunc,
         %i[pointer bool int pointer pointer pointer pointer],
         :int
@@ -35,9 +35,9 @@ module FFI
         CPL::Error::CPLErr
       typedef :pointer, :GDALContourGeneratorH
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Functions
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       attach_function :GDALChecksumImage,
         [GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
         :int
@@ -63,9 +63,9 @@ module FFI
         ],
         CPL::Error::CPLErr
 
-      #~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~
       # Contour functions
-      #~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~
       attach_function :GDAL_CG_Create,
         %i[
           int
@@ -102,9 +102,9 @@ module FFI
         ],
         CPL::Error::CPLErr
 
-      #~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~
       # Transformer functions
-      #~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~
       attach_function :GDALSetTransformerDstGeoTransform,
         %i[pointer pointer],
         :void
@@ -149,9 +149,9 @@ module FFI
         ],
         CPL::Error::CPLErr
 
-      #~~~~
+      # ~~~
       # Approx
-      #~~~~
+      # ~~~
       attach_function :GDALCreateApproxTransformer,
         %i[GDALTransformerFunc pointer double],
         :pointer
@@ -163,9 +163,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :int
 
-      #~~~~
+      # ~~~
       # GCP Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateGCPTransformer, %i[int pointer int int], :pointer
       attach_function :GDALCreateGCPRefineTransformer,
         %i[int pointer int int double int],
@@ -175,9 +175,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :bool
 
-      #~~~~
+      # ~~~
       # GeoLoc Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateGeoLocTransformer,
         [GDAL.find_type(:GDALDatasetH), :pointer, :bool],
         :pointer
@@ -186,9 +186,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :bool
 
-      #~~~~
+      # ~~~
       # GenImgProj Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateGenImgProjTransformer,
         [
           GDAL.find_type(:GDALDatasetH),
@@ -214,9 +214,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :bool
 
-      #~~~~
+      # ~~~
       # Reprojection Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateReprojectionTransformer,
         %i[string string],
         :pointer
@@ -225,9 +225,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :int
 
-      #~~~~
+      # ~~~
       # RPC Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateRPCTransformer,
         [RPCInfo.ptr, :int, :double, :pointer],
         :pointer
@@ -237,9 +237,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :int
 
-      #~~~~
+      # ~~~
       # TPS Transform
-      #~~~~
+      # ~~~
       attach_function :GDALCreateTPSTransformer, %i[int pointer int], :pointer
       attach_function :GDALDestroyTPSTransformer, %i[pointer], :void
       TPSTransform = attach_function :GDALTPSTransform,
@@ -292,9 +292,9 @@ module FFI
         ],
         CPL::Error::CPLErr
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Dataset-related
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       attach_function :GDALGridCreate,
         [
           GridAlgorithm,

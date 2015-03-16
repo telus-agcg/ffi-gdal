@@ -49,18 +49,18 @@ module FFI
         [:CPLErrorHandler],
         :CPLErrorHandler
       attach_function :CPLSetErrorHandlerEx,
-        [:CPLErrorHandler, :pointer],
+        %i[CPLErrorHandler pointer],
         :CPLErrorHandler
       attach_function :CPLPushErrorHandler,
         [:CPLErrorHandler],
         :void
       attach_function :CPLPushErrorHandlerEx,
-        [:CPLErrorHandler, :pointer],
+        %i[CPLErrorHandler pointer],
         :void
       attach_function :CPLPopErrorHandler, [], :void
 
-      attach_function :CPLDebug, [:string, :string], :void
-      attach_function :_CPLAssert, [:string, :string, :int], :void
+      attach_function :CPLDebug, %i[string string], :void
+      attach_function :_CPLAssert, %i[string string int], :void
     end
   end
 end
