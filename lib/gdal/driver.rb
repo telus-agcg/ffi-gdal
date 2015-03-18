@@ -114,7 +114,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def copy_dataset_files(old_name, new_name)
-      !!FFI::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      FFI::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -157,15 +157,7 @@ module GDAL
     #   FFI::GDAL::GDALProgressFunc signature.
     def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
-
-      source_dataset_ptr = if source_dataset.is_a? GDAL::Dataset
-                             source_dataset.c_pointer
-                           elsif source_dataset.is_a? String
-                             GDAL::Dataset.open(source_dataset, 'r').c_pointer
-                           else
-                             source_dataset
-      end
-
+      source_dataset_ptr = make_dataset_pointer(source_dataset)
       fail "Source dataset couldn't be read" if source_dataset_ptr.null?
 
       destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@c_pointer,
@@ -193,7 +185,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      !!FFI::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      FFI::GDAL.GDALDeleteDataset(@c_pointer, file_name)
     end
 
     # @param new_name [String]
@@ -201,7 +193,22 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      !!FFI::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      FFI::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+    end
+
+    private
+
+    # @param [GDAL::Dataset, FFI::Pointer, String] dataset Can be another
+    #   dataset, the pointer to another dataset, or the path to a dataset.
+    # @return [GDAL::Dataset]
+    def make_dataset_pointer(dataset)
+      if dataset.is_a? GDAL::Dataset
+        dataset.c_pointer
+      elsif dataset.is_a? String
+        GDAL::Dataset.open(dataset, 'r').c_pointer
+      else
+        dataset
+      end
     end
   end
 end

@@ -7,6 +7,10 @@ RSpec.describe GDAL::Driver do
     it { is_expected.to be > 0 }
   end
 
+  it 'fails' do
+    fail 'meow'
+  end
+
   describe '.by_name' do
     context 'not a driver' do
       it 'raises a GDAL::InvalidDriverName' do
@@ -24,7 +28,7 @@ RSpec.describe GDAL::Driver do
   describe '.at_index' do
     context 'invalid index' do
       it 'raises a GDAL::InvalidDriverIndex' do
-        expect { described_class.at_index 123456 }.
+        expect { described_class.at_index 123_456 }.
           to raise_exception GDAL::InvalidDriverIndex
       end
     end
