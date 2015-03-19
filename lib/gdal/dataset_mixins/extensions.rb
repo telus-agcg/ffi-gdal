@@ -27,8 +27,9 @@ module GDAL
       # @return [GDAL::Dataset] The new NDVI dataset. *Be sure to call #close on
       #   this object or the data may not persist!*
       def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil,
-        output_data_type: :GDT_Byte, remove_negatives: false, no_data_value: -9999.0,
-        **options)
+                       output_data_type: :GDT_Byte, remove_negatives: false,
+                       no_data_value: -9999.0,
+                       **options)
         original_bands =
           if band_order
             bands_with_labels(band_order)
@@ -188,7 +189,8 @@ module GDAL
                            }
                          end
 
-        driver.create_dataset(destination, columns, rows, band_count: 3, data_type: output_data_type, **options) do |new_dataset|
+        driver.create_dataset(destination, columns, rows,
+                              band_count: 3, data_type: output_data_type, **options) do |new_dataset|
           new_dataset.geo_transform = geo_transform
           new_dataset.projection = projection
 
@@ -225,13 +227,13 @@ module GDAL
 
         # Convert to output data type
         final_array = case output_data_type
-        when :GDT_Byte
-          calculate_ndvi_byte(ndvi)
-        when :GDT_UInt16
-          calculate_ndvi_uint16(ndvi)
-        else
-          ndvi
-        end
+                      when :GDT_Byte
+                        calculate_ndvi_byte(ndvi)
+                      when :GDT_UInt16
+                        calculate_ndvi_uint16(ndvi)
+                      else
+                        ndvi
+                      end
 
         remove_negatives ? remove_negatives_from(final_array) : final_array
       end
@@ -252,13 +254,13 @@ module GDAL
       def bands_with_labels(order)
         order.each_with_object({}).each_with_index do |(band_label, obj), i|
           label = case band_label.to_s
-          when 'N', 'nir' then :nir
-          when 'R', 'red' then :red
-          when 'G', 'green' then :green
-          when 'B', 'blue' then :blue
-          else
-            band_label
-          end
+                  when 'N', 'nir' then :nir
+                  when 'R', 'red' then :red
+                  when 'G', 'green' then :green
+                  when 'B', 'blue' then :blue
+                  else
+                    band_label
+                  end
 
           obj[label] = raster_band(i + 1)
         end
@@ -476,7 +478,7 @@ module GDAL
       #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
       # @return NArray
       def to_na(to_data_type = nil)
-        na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type)})
+        na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
 
         NArray[*na.transpose]
       end
