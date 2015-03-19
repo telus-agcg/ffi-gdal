@@ -57,7 +57,8 @@ module GDAL
           output_data_type)
         driver = GDAL::Driver.by_name(driver_name)
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: output_data_type, **options) do |ndvi_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |ndvi_dataset|
           ndvi_dataset.geo_transform = geo_transform
           ndvi_dataset.projection = projection
 
@@ -112,7 +113,8 @@ module GDAL
           no_data_value, remove_negatives, output_data_type)
         driver = GDAL::Driver.by_name(driver_name)
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: output_data_type, **options) do |gndvi_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |gndvi_dataset|
           gndvi_dataset.geo_transform = geo_transform
           gndvi_dataset.projection = projection
 
@@ -148,7 +150,8 @@ module GDAL
           fail InvalidBandNumber, "Band #{band_number} found but was nil."
         end
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: output_data_type, **options) do |nir_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |nir_dataset|
           nir_dataset.geo_transform = geo_transform
           nir_dataset.projection = projection
 
@@ -169,7 +172,8 @@ module GDAL
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
       # @return [GDAL::Dataset]
-      def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil, output_data_type: :GDT_Byte, **options)
+      def extract_natural_color(destination, driver_name: 'GTiff',
+                                band_order: nil, output_data_type: :GDT_Byte, **options)
         rows = raster_y_size
         columns = raster_x_size
         driver = GDAL::Driver.by_name(driver_name)

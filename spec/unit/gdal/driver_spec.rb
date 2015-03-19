@@ -7,10 +7,6 @@ RSpec.describe GDAL::Driver do
     it { is_expected.to be > 0 }
   end
 
-  it 'fails' do
-    fail 'meow'
-  end
-
   describe '.by_name' do
     context 'not a driver' do
       it 'raises a GDAL::InvalidDriverName' do

@@ -6,7 +6,6 @@ module GDAL
       end
 
       module ClassMethods
-
         # @return [Array<String>]
         def short_names
           names = 0.upto(count - 1).map do |i|

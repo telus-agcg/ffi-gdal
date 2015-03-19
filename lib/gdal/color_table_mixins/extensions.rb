@@ -31,7 +31,7 @@ module GDAL
       end
 
       # @return [Hash]
-      def as_json(options = nil)
+      def as_json(_options = nil)
         {
           color_entry_count: color_entry_count,
           color_entries: color_entries.map(&:as_json),

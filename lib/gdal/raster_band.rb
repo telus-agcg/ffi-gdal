@@ -492,7 +492,7 @@ module GDAL
                    []
                  else
                    histogram_pointer.read_array_of_int(buckets)
-        end
+                 end
 
         {
           minimum: min,
