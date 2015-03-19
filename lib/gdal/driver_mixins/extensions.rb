@@ -8,7 +8,7 @@ module GDAL
       module ClassMethods
         # @return [Array<String>]
         def short_names
-          names = 0.upto(count - 1).map do |i|
+          names = count.times.map do |i|
             driver = at_index(i)
             driver.short_name
           end
@@ -18,7 +18,7 @@ module GDAL
 
         # @return [Array<String>]
         def long_names
-          names = 0.upto(count - 1).map do |i|
+          names = count.times.map do |i|
             at_index(i).long_name
           end
 
@@ -28,7 +28,7 @@ module GDAL
         # @return [Hash{String => String}] Keys are driver short names, values are
         #   driver long names.
         def self.names
-          names = 0.upto(count - 1).each_with_object({}) do |i, obj|
+          names = count.times.each_with_object({}) do |i, obj|
             driver = at_index(i)
             obj[driver.short_name] = driver.long_name
           end

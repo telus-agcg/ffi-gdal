@@ -5,7 +5,7 @@ module OGR
     # @return [Array] Uses each FieldDefinition to determine the field type at
     #   each index and returns maps the field as that value type.
     def fields
-      0.upto(field_count - 1).map do |i|
+      field_count.times.map do |i|
         case field_definition(i).type
         when :OFTInteger        then field_as_integer(i)
         when :OFTIntegerList    then field_as_integer_list(i)
@@ -27,7 +27,7 @@ module OGR
 
     # @return [Array<OGR::Geometry>]
     def geometry_fields
-      0.upto(geometry_field_count - 1).map do |i|
+      geometry_field_count.times.map do |i|
         geometry_field(i)
       end
     end

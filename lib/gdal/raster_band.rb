@@ -553,7 +553,7 @@ module GDAL
       line_space = 0
       scan_line = GDAL._pointer_from_data_type(data_type, x_size)
 
-      the_array = 0.upto(y_size - 1).map do |y|
+      the_array = y_size.times.map do |y|
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
           :GF_Read,
           x_offset,

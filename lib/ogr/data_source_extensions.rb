@@ -2,7 +2,7 @@ module OGR
   module DataSourceExtensions
     # @return [Array<OGR::Layer>]
     def layers
-      l = 0.upto(layer_count - 1).map do |i|
+      l = layer_count.times.map do |i|
         layer(i)
       end
 

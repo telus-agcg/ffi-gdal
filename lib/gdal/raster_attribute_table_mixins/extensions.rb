@@ -17,7 +17,7 @@ module GDAL
 
       # @return [Array<Hash>]
       def columns
-        0.upto(column_count - 1).map do |i|
+        column_count.times.map do |i|
           column(i)
         end
       end

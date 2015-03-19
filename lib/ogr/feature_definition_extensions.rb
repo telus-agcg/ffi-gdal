@@ -6,7 +6,7 @@ module OGR
     def field_definitions
       return [] if field_count.zero?
 
-      0.upto(field_count - 1).map do |i|
+      field_count.times.map do |i|
         field_definition(i)
       end
     end
@@ -15,7 +15,7 @@ module OGR
     def geometry_field_definitions
       return [] if geometry_field_count.zero?
 
-      0.upto(geometry_field_count - 1).map do |i|
+      geometry_field_count.times.map do |i|
         geometry_field_definition(i)
       end
     end
