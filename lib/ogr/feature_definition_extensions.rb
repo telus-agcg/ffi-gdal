@@ -11,6 +11,15 @@ module OGR
       end
     end
 
+    # @return [Array<OGR::GeometryFieldDefinition>]
+    def geometry_field_definitions
+      return [] if geometry_field_count.zero?
+
+      0.upto(geometry_field_count - 1).map do |i|
+        geometry_field_definition(i)
+      end
+    end
+
     # @param name [String]
     # @return [OGR::FieldDefinition]
     def field_definition_by_name(name)
