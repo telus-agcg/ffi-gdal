@@ -40,7 +40,7 @@ module OGR
           path_or_pointer
         end
 
-      fail OGR::OpenFailure.new(file_path) if @c_pointer.null?
+      fail OGR::OpenFailure, file_path if @c_pointer.null?
 
       @layers = []
       ObjectSpace.define_finalizer self, -> { destroy! }

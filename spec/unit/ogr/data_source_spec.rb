@@ -19,7 +19,7 @@ RSpec.describe OGR::DataSource do
   end
 
   describe '#name' do
-    subject { data_source.name}
+    subject { data_source.name }
     it { is_expected.to eq 'spec' }
   end
 
