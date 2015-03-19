@@ -1,9 +1,9 @@
 require_relative '../ffi/gdal'
-require_relative 'geo_transform_extensions'
+require_relative 'geo_transform_mixins/extensions'
 
 module GDAL
   class GeoTransform
-    include GeoTransformExtensions
+    include GeoTransformMixins::Extensions
 
     # @return [FFI::Pointer] A pointer that can be used to hold a GeoTransform.
     def self.new_pointer

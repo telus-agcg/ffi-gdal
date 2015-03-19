@@ -1,11 +1,15 @@
 require 'ffi'
+require_relative 'gdal'
+require_relative 'alg'
 
 module FFI
   module GDAL
+    autoload :Warper, File.expand_path('warper', __dir__)
+
     class WarpOptions < FFI::Struct
       layout :warp_options, :pointer,
         :warp_memory_limit, :double,
-        :resample_alg, FFI::GDAL::ResampleAlg,
+        :resample_alg, FFI::GDAL::Warper::ResampleAlg,
         :working_data_type, FFI::GDAL::DataType,
         :source_dataset, :GDALDatasetH,
         :destination_dataset, :GDALDatasetH,
@@ -20,7 +24,7 @@ module FFI
         :destination_no_data_imaginary, :pointer,
         :progress, :GDALProgressFunc,
         :progress_arg, :pointer,
-        :transformer, :GDALTransformerFunc,
+        :transformer, GDAL::Alg.find_type(:GDALTransformerFunc),
         :transformer_arg, :pointer,
         :source_per_band_validity_mask_function, :pointer,
         :source_per_band_validity_mask_function_arg, :pointer,

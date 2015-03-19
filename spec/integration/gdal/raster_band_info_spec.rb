@@ -44,9 +44,9 @@ TIF_FILES.each do |file|
       end
 
       describe '#color_interpretation' do
-        it 'is a Symbol; one of FFI::GDAL::GDALColorInterp' do
+        it 'is a Symbol; one of FFI::GDAL::ColorInterp' do
           expect(subject.color_interpretation).to be_a Symbol
-          expect(FFI::GDAL::GDALColorInterp.symbols).to include subject.color_interpretation
+          expect(FFI::GDAL::ColorInterp.symbols).to include subject.color_interpretation
         end
       end
 
@@ -59,9 +59,9 @@ TIF_FILES.each do |file|
       end
 
       describe '#data_type' do
-        it 'is a Symbol; one of FFI::GDAL::GDALDataType' do
+        it 'is a Symbol; one of FFI::GDAL::DataType' do
           expect(subject.data_type).to be_a Symbol
-          expect(FFI::GDAL::GDALDataType.symbols).to include subject.data_type
+          expect(FFI::GDAL::DataType.symbols).to include subject.data_type
         end
       end
 

@@ -53,10 +53,6 @@ module OGR
         end
       end
 
-      def base
-        @base ||= nil
-      end
-
       # @return [OGR::Geometry]
       # @param wkt_data [String]
       # @param spatial_reference [FFI::Pointer] Optional spatial reference
@@ -109,16 +105,30 @@ module OGR
         factory(geometry_pointer)
       end
 
+      # The human-readable string for the geometry type.
+      #
+      # @param type [FFI::OGR::WKBGeometryType]
       # @return [String]
       def type_to_name(type)
         FFI::OGR::Core.OGRGeometryTypeToName(type)
+      end
+
+      # Finds the most specific common geometry type from the two given types.
+      # Useful when trying to figure out what geometry type to report for an
+      # entire layer, when the layer uses multiple types.
+      #
+      # @param main [FFI::OGR::WKBGeometryType]
+      # @param extra [FFI::OGR::WKBGeometryType]
+      # @return [FFI::OGR::WKBGeometryType] Returns :wkbUnknown when there is
+      #   no type in common.
+      def merge_geometry_types(main, extra)
+        FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
       end
     end
 
     extend ClassMethods
 
     def self.included(base)
-      @base = base
       base.send(:include, GDAL::Logger)
       base.send(:include, GeometryExtensions)
     end

@@ -1,5 +1,6 @@
 require 'forwardable'
 require 'narray'
+require_relative '../ffi/gdal/alg'
 require_relative 'grid_types'
 require_relative 'geo_transform'
 
@@ -15,13 +16,13 @@ module GDAL
     # @return [GDAL::GeoTransform]
     attr_reader :geo_transform
 
-    # @return [FFI::GDAL::GDALDataType]
+    # @return [FFI::GDAL::DataType]
     attr_accessor :data_type
 
     def_delegator :@gridder, :options, :options
 
     # @param algorithm [Symbol]
-    # @param data_type [FFI::GDAL::GDALDataType]
+    # @param data_type [FFI::GDAL::DataType]
     def initialize(algorithm, data_type: :GDT_Byte)
       @data_type = data_type
       @gridder = init_gridder(algorithm)
@@ -63,7 +64,7 @@ module GDAL
       log "corner x1 (gdal_grid.cpp): #{x_end}"
       log "corner y1 (gdal_grid.cpp): #{y_end}"
 
-      FFI::GDAL::GDALGridCreate(
+      FFI::GDAL::Alg.GDALGridCreate(
         @gridder.algorithm,                             # eAlgorithm
         @gridder.options.to_ptr,                        # poOptions
         point_count,                                    # nPoints

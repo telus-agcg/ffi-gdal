@@ -1,7 +1,7 @@
 require_relative '../ffi/gdal'
 require_relative '../ffi/ogr/api'
 require_relative 'raster_band_mixins/algorithm_methods'
-require_relative 'raster_band_extensions'
+require_relative 'raster_band_mixins/extensions'
 require_relative 'color_table'
 require_relative 'major_object'
 require_relative 'raster_attribute_table'
@@ -12,7 +12,7 @@ module GDAL
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
-    include RasterBandExtensions
+    include RasterBandMixins::Extensions
 
     ALL_VALID = 0x01
     PER_DATASET = 0x02
@@ -80,12 +80,12 @@ module GDAL
       @dataset = GDAL::Dataset.new(dataset_ptr)
     end
 
-    # @return [Symbol] One of FFI::GDAL::GDALColorInterp.
+    # @return [Symbol] One of FFI::GDAL::ColorInterp.
     def color_interpretation
       FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
     end
 
-    # @param new_color_interp [FFI::GDAL::GDALColorInterp]
+    # @param new_color_interp [FFI::GDAL::ColorInterp]
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
       !!FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer,
@@ -108,7 +108,7 @@ module GDAL
 
     # The pixel data type for this band.
     #
-    # @return [Symbol] One of FFI::GDAL::GDALDataType.
+    # @return [Symbol] One of FFI::GDAL::DataType.
     def data_type
       FFI::GDAL.GDALGetRasterDataType(@raster_band_pointer)
     end
@@ -326,7 +326,7 @@ module GDAL
       !!FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
     end
 
-    # This value (in combination with the GetScale() value) is used to
+    # This value (in combination with the #scale value) is used to
     # transform raw pixel values into the units returned by #units. For example
     # this might be used to store elevations in GUInt16 bands with a precision
     # of 0.1, and starting from -100.
@@ -492,7 +492,7 @@ module GDAL
                    []
                  else
                    histogram_pointer.read_array_of_int(buckets)
-        end
+                 end
 
         {
           minimum: min,
@@ -553,7 +553,7 @@ module GDAL
       line_space = 0
       scan_line = GDAL._pointer_from_data_type(data_type, x_size)
 
-      the_array = 0.upto(y_size - 1).map do |y|
+      the_array = y_size.times.map do |y|
         FFI::GDAL.GDALRasterIO(@raster_band_pointer,
           :GF_Read,
           x_offset,
@@ -585,7 +585,7 @@ module GDAL
     # @param pixel_array [NArray] The list of pixels.
     # @param x_offset [Fixnum] The left-most pixel to start writing.
     # @param y_offset [Fixnum] The top-most pixel to start writing.
-    # @param data_type [FFI::GDAL::GDALDataType] The type of pixel contained in
+    # @param data_type [FFI::GDAL::DataType] The type of pixel contained in
     #   the +pixel_array+.
     # @param line_space [Fixnum]
     # @param pixel_space [Fixnum]

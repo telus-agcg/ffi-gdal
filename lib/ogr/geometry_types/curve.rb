@@ -74,7 +74,7 @@ module OGR
           z_buffer,
           z_stride)
 
-        0.upto(num_points - 1).map do |i|
+        num_points.times.map do |i|
           point(i)
         end
       end

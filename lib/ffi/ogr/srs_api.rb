@@ -6,9 +6,9 @@ module FFI
       extend ::FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Enums
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       AxisOrientation = enum :OAO_Other, 0,
         :OAO_North, 1,
         :OAO_South, 2,
@@ -34,9 +34,9 @@ module FFI
         :ODT_LD_Min, 10_000,
         :ODT_LD_Max, 32_767
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Constants
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       SRS_UL = FFI::ConstGenerator.new('SRS_UL') do |gen|
         gen.include FFI::GDAL._file_with_constants('ogr_srs_api.h')
         gen.const :SRS_UL_METER,              '%s', nil, :METER_LABEL, &:inspect
@@ -103,23 +103,23 @@ module FFI
       end
       SRS_UA.calculate
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Typedefs
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       typedef :pointer, :OGRSpatialReferenceH
       typedef :pointer, :OGRCoordinateTransformationH
 
-      #------------------------------------------------------------------------
+      # -----------------------------------------------------------------------
       # Functions
-      #------------------------------------------------------------------------
-      #~~~~~~~~~~~~~~
+      # -----------------------------------------------------------------------
+      # ~~~~~~~~~~~~~
       # AxisOrientations
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       attach_function :OSRAxisEnumToName, [AxisOrientation], :string
 
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       # SpatialReference
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       attach_function :OSRNewSpatialReference, %i[string], :OGRSpatialReferenceH
       attach_function :OSRCloneGeogCS, %i[OGRSpatialReferenceH], :OGRSpatialReferenceH
       attach_function :OSRClone, %i[OGRSpatialReferenceH], :OGRSpatialReferenceH
@@ -207,7 +207,7 @@ module FFI
       attach_function :OSREPSGTreatsAsLatLong, %i[OGRSpatialReferenceH], :bool
       attach_function :OSREPSGTreatsAsNorthingEasting, %i[OGRSpatialReferenceH], :bool
       attach_function :OSRGetAxis,
-        [:OGRSpatialReferenceH, :string, :int, :pointer],
+        %i[OGRSpatialReferenceH string int pointer],
         :string
 
       attach_function :OSRSetACEA,
@@ -370,9 +370,9 @@ module FFI
 
       attach_function :OSRCleanup, [], :void
 
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       # CoordinateTransformations
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       attach_function :OCTDestroyCoordinateTransformation,
         %i[OGRCoordinateTransformationH],
         :void
@@ -387,9 +387,9 @@ module FFI
         :bool
       attach_function :OCTProj4Normalize, %i[string], :string
 
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       # Parameters
-      #~~~~~~~~~~~~~~
+      # ~~~~~~~~~~~~~
       attach_function :OPTGetProjectionMethods, %i[], :pointer
       attach_function :OPTGetParameterList, %i[string pointer], :pointer
       attach_function :OPTGetParameterInfo,

@@ -1,6 +1,7 @@
 require_relative '../ffi/gdal/vrt'
 require_relative '../ffi/cpl/minixml'
 require_relative 'major_object'
+require_relative 'options'
 
 module GDAL
   class VirtualDataset

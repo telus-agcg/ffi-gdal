@@ -1,7 +1,10 @@
 require 'ffi'
+require_relative '../cpl/error'
 
 module FFI
   module GDAL
+    autoload :WarpOptions, File.expand_path('warp_options', __dir__)
+
     module Warper
       extend ::FFI::Library
       ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
@@ -11,7 +14,18 @@ module FFI
       #------------------------------------------------------------------------
       typedef :pointer, :GDALWarpOperationH
       callback :GDALMaskFunc,
-        [:pointer, :int, FFI::GDAL::GDALDataType, :int, :int, :int, :int, :pointer, :int, :pointer],
+        [
+          :pointer,
+          :int,
+          FFI::GDAL::DataType,
+          :int,
+          :int,
+          :int,
+          :int,
+          :pointer,
+          :int,
+          :pointer
+        ],
         :pointer
 
       #------------------------------------------------------------------------
@@ -28,28 +42,28 @@ module FFI
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :GDALCreateWarpOptions, [], FFI::GDAL::GDALWarpOptions.ptr
+      attach_function :GDALCreateWarpOptions, [], FFI::GDAL::WarpOptions.ptr
       attach_function :GDALSerializeWarpOptions,
-        [FFI::GDAL::GDALWarpOptions.ptr],
-        FFI::GDAL::CPLXMLNode.ptr
+        [FFI::GDAL::WarpOptions.ptr],
+        FFI::CPL::XMLNode.ptr
 
       attach_function :GDALCreateWarpOperation,
-        [FFI::GDAL::GDALWarpOptions.ptr],
+        [FFI::GDAL::WarpOptions.ptr],
         :GDALWarpOperationH
       attach_function :GDALDestroyWarpOperation, [:GDALWarpOperationH], :void
 
       attach_function :GDALChunkAndWarpImage,
         %i[GDALWarpOperationH int int int int],
-        CPLErr
+        CPL::Error::CPLErr
       attach_function :GDALChunkAndWarpMulti,
         %i[GDALWarpOperationH int int int int],
-        CPLErr
+        CPL::Error::CPLErr
       attach_function :GDALWarpRegion,
         %i[GDALWarpOperationH int int int int int int int int],
-        CPLErr
+        CPL::Error::CPLErr
       attach_function :GDALWarpRegionToBuffer,
-        [:GDALWarpOperationH, :int, :int, :int, :int, :pointer, GDALDataType, :int, :int, :int, :int],
-        CPLErr
+        [:GDALWarpOperationH, :int, :int, :int, :int, :pointer, DataType, :int, :int, :int, :int],
+        CPL::Error::CPLErr
     end
   end
 end

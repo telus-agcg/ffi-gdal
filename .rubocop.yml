@@ -1,5 +1,15 @@
+Metrics/ClassLength:
+  Max: 300
+
 Metrics/LineLength:
   Max: 120
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/ParameterLists:
+  Exclude:
+    - lib/gdal/driver.rb
 
 Style/AlignParameters:
   EnforcedStyle: with_fixed_indentation

@@ -44,7 +44,7 @@ module OGR
 
     # @return [Array<String>]
     def self.names
-      0.upto(count - 1).map do |i|
+      count.times.map do |i|
         at_index(i).name
       end.sort
     end

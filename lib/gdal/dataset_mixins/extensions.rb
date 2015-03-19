@@ -2,6 +2,7 @@ require 'json'
 require 'narray'
 require_relative '../raster_band'
 require_relative '../warp_operation'
+require_relative '../../ogr/driver'
 require_relative '../../ogr/layer'
 require_relative '../../ogr/spatial_reference'
 
@@ -16,9 +17,19 @@ module GDAL
       # @param driver_name [String] The type of dataset to create.
       # @param band_order [Array<String>] The list of band types, i.e. ['red',
       #   'green', 'blue'].
+      # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
+      #   in this data type.
+      # @param remove_negatives [Boolean] Remove negative values after
+      #   calculating NDVI.
+      # @param no_data_value [Float]
+      # @param options [Hash] Options that get used for creating the new NDVI
+      #   dataset. See docs for GDAL::Driver#create_dataset.
+      # @return [GDAL::Dataset] The new NDVI dataset. *Be sure to call #close on
+      #   this object or the data may not persist!*
       def extract_ndvi(destination, driver_name: 'GTiff', band_order: nil,
-        data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
-        **options)
+                       output_data_type: :GDT_Byte, remove_negatives: false,
+                       no_data_value: -9999.0,
+                       **options)
         original_bands =
           if band_order
             bands_with_labels(band_order)
@@ -40,19 +51,20 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = calculate_ndvi(red.to_na(data_type),
-          nir.to_na(data_type),
+        the_array = calculate_ndvi(red.to_na,
+          nir.to_na,
           no_data_value,
           remove_negatives,
-          data_type)
+          output_data_type)
         driver = GDAL::Driver.by_name(driver_name)
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type, **options) do |ndvi_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |ndvi_dataset|
           ndvi_dataset.geo_transform = geo_transform
           ndvi_dataset.projection = projection
 
           ndvi_band = ndvi_dataset.raster_band(1)
-          ndvi_band.write_array(the_array, data_type: data_type)
+          ndvi_band.write_array(the_array, data_type: output_data_type)
           ndvi_band.no_data_value = no_data_value
         end
       end
@@ -65,8 +77,17 @@ module GDAL
       # @param driver_name [String] The type of dataset to create.
       # @param band_order [Array<String>] The list of band types, i.e. ['red',
       #   'green', 'blue'].
+      # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
+      #   in this data type.
+      # @param remove_negatives [Boolean] Remove negative values after
+      #   calculating NDVI.
+      # @param no_data_value [Float]
+      # @param options [Hash] Options that get used for creating the new NDVI
+      #   dataset. See docs for GDAL::Driver#create_dataset.
+      # @return [GDAL::Dataset] The new NDVI dataset. *Be sure to call #close on
+      #   this object or the data may not persist!*
       def extract_gndvi(destination, driver_name: 'GTiff', band_order: nil,
-        data_type: :GDT_Float32, remove_negatives: false, no_data_value: -9999.0,
+        output_data_type: :GDT_Byte, remove_negatives: false, no_data_value: -9999.0,
         **options)
         original_bands =
           if band_order
@@ -89,16 +110,17 @@ module GDAL
           fail RequiredBandNotFound, 'Near-infrared'
         end
 
-        the_array = calculate_ndvi(green.to_na(data_type), nir.to_na(data_type),
-          no_data_value, remove_negatives, data_type)
+        the_array = calculate_ndvi(green.to_na, nir.to_na,
+          no_data_value, remove_negatives, output_data_type)
         driver = GDAL::Driver.by_name(driver_name)
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type, **options) do |gndvi_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |gndvi_dataset|
           gndvi_dataset.geo_transform = geo_transform
           gndvi_dataset.projection = projection
 
           gndvi_band = gndvi_dataset.raster_band(1)
-          gndvi_band.write_array(the_array, data_type: data_type)
+          gndvi_band.write_array(the_array, data_type: output_data_type)
           gndvi_band.no_data_value = no_data_value
         end
       end
@@ -112,8 +134,16 @@ module GDAL
       #   Remember that raster bands are 1-indexed, not 0-indexed.
       # @param driver_name [String] the GDAL::Driver short name to use for the
       #   new dataset.
-      # @return [GDAL::Dataset]
-      def extract_nir(destination, band_number, driver_name: 'GTiff', data_type: :GDT_Byte)
+      # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
+      #   in this data type.
+      # @param remove_negatives [Boolean] Remove negative values after
+      #   calculating NDVI.
+      # @param no_data_value [Float]
+      # @param options [Hash] Options that get used for creating the new NDVI
+      #   dataset. See docs for GDAL::Driver#create_dataset.
+      # @return [GDAL::Dataset] The new NIR dataset. *Be sure to call #close on
+      #   this object or the data may not persist!*
+      def extract_nir(destination, band_number, driver_name: 'GTiff', output_data_type: :GDT_Byte, **options)
         driver = GDAL::Driver.by_name(driver_name)
         original_nir_band = raster_band(band_number)
 
@@ -121,7 +151,8 @@ module GDAL
           fail InvalidBandNumber, "Band #{band_number} found but was nil."
         end
 
-        driver.create_dataset(destination, raster_x_size, raster_y_size, data_type: data_type) do |nir_dataset|
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
+                              data_type: output_data_type, **options) do |nir_dataset|
           nir_dataset.geo_transform = geo_transform
           nir_dataset.projection = projection
 
@@ -139,8 +170,11 @@ module GDAL
       #   new dataset.
       # @param band_order [Array<String>] The list of band types, i.e. ['red',
       #   'green', 'blue'].
+      # @param options [Hash] Options that get used for creating the new NDVI
+      #   dataset. See docs for GDAL::Driver#create_dataset.
       # @return [GDAL::Dataset]
-      def extract_natural_color(destination, driver_name: 'GTiff', band_order: nil, data_type: :GDT_Byte)
+      def extract_natural_color(destination, driver_name: 'GTiff',
+                                band_order: nil, output_data_type: :GDT_Byte, **options)
         rows = raster_y_size
         columns = raster_x_size
         driver = GDAL::Driver.by_name(driver_name)
@@ -155,7 +189,8 @@ module GDAL
                            }
                          end
 
-        driver.create_dataset(destination, columns, rows, band_count: 3, data_type: data_type) do |new_dataset|
+        driver.create_dataset(destination, columns, rows,
+                              band_count: 3, data_type: output_data_type, **options) do |new_dataset|
           new_dataset.geo_transform = geo_transform
           new_dataset.projection = projection
 
@@ -175,13 +210,11 @@ module GDAL
       # @param remove_negatives [Fixnum] Value to replace negative values with.
       # @return [NArray]
       def calculate_ndvi(red_band_array, nir_band_array, no_data_value,
-        remove_negatives = false, data_type = nil)
+        remove_negatives = false, output_data_type = nil)
 
-        # convert based on data type
-        if data_type != :GDT_Float32
-          nir_band_array = nir_band_array.to_type(NArray::DFLOAT)
-          red_band_array = red_band_array.to_type(NArray::DFLOAT)
-        end
+        # convert to float32 for calculating
+        nir_band_array = nir_band_array.to_type(NArray::DFLOAT)
+        red_band_array = red_band_array.to_type(NArray::DFLOAT)
 
         numerator = nir_band_array - red_band_array
         denominator = (nir_band_array + red_band_array)
@@ -192,14 +225,15 @@ module GDAL
           ndvi[i] = no_data_value if ndvi[i].is_a?(Float) && ndvi[i].nan?
         end
 
-        final_array = case data_type
-        when :GDT_Byte
-          calculate_ndvi_byte(ndvi)
-        when :GDT_UInt16
-          calculate_ndvi_uint16(ndvi)
-        else
-          ndvi
-        end
+        # Convert to output data type
+        final_array = case output_data_type
+                      when :GDT_Byte
+                        calculate_ndvi_byte(ndvi)
+                      when :GDT_UInt16
+                        calculate_ndvi_uint16(ndvi)
+                      else
+                        ndvi
+                      end
 
         remove_negatives ? remove_negatives_from(final_array) : final_array
       end
@@ -220,13 +254,13 @@ module GDAL
       def bands_with_labels(order)
         order.each_with_object({}).each_with_index do |(band_label, obj), i|
           label = case band_label.to_s
-          when 'N', 'nir' then :nir
-          when 'R', 'red' then :red
-          when 'G', 'green' then :green
-          when 'B', 'blue' then :blue
-          else
-            band_label
-          end
+                  when 'N', 'nir' then :nir
+                  when 'R', 'red' then :red
+                  when 'G', 'green' then :green
+                  when 'B', 'blue' then :blue
+                  else
+                    band_label
+                  end
 
           obj[label] = raster_band(i + 1)
         end
@@ -443,8 +477,8 @@ module GDAL
       #   # This array would look like:
       #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
       # @return NArray
-      def to_na
-        na = NMatrix.to_na(raster_bands.map(&:to_na))
+      def to_na(to_data_type = nil)
+        na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
 
         NArray[*na.transpose]
       end
@@ -482,7 +516,7 @@ module GDAL
       # @param ndvi [NArray]
       # @return [NArray]
       def calculate_ndvi_uint16(ndvi)
-        ((ndvi + 1) * (65_535.0 / 2)).to_type(NArray::SINT)
+        ((ndvi + 1) * (65_535.0 / 2)).to_type(NArray::INT)
       end
 
       # Sets any negative values in the NArray to 0.

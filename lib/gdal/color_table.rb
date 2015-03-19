@@ -1,5 +1,5 @@
 require_relative '../ffi/gdal'
-require_relative 'color_table_extensions'
+require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
 module GDAL
@@ -15,9 +15,9 @@ module GDAL
   end
 
   class ColorTable
-    include ColorTableExtensions
+    include ColorTableMixins::Extensions
 
-    # @param palette_interp_or_pointer [FFI::GDAL::GDALPaletteInterp,
+    # @param palette_interp_or_pointer [FFI::GDAL::PaletteInterp,
     #   FFI::Pointer]
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
@@ -65,7 +65,7 @@ module GDAL
 
     # Usually :GPI_RGB.
     #
-    # @return [Symbol] One of FFI::GDAL::GDALPaletteInterp.
+    # @return [Symbol] One of FFI::GDAL::PaletteInterp.
     def palette_interpretation
       FFI::GDAL.GDALGetPaletteInterpretation(@color_table_pointer)
     end

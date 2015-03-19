@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'support/integration_help'
 require 'ffi-gdal'
+require 'gdal/dataset'
 
 TIF_FILES.each do |file|
   dataset =  GDAL::Dataset.open(file, 'r')
@@ -33,7 +34,7 @@ TIF_FILES.each do |file|
     end
 
     describe '#color_entry' do
-      it 'returns a FFI::GDAL::GDALColorEntry' do
+      it 'returns a GDAL::ColorEntry' do
         next if subject.nil?
 
         expect(subject.color_entry(0)).to be_a GDAL::ColorEntry
