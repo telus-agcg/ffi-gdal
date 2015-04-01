@@ -8,7 +8,7 @@ module OGR
       def features
         return [] if feature_count.zero?
 
-        feature_list = 0.upto(feature_count - 1).map do |i|
+        feature_list = feature_count.times.map do |i|
           feature(i)
         end
 
