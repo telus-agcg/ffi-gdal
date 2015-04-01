@@ -51,9 +51,9 @@ RSpec.describe GDAL::RasterBandClassifier do
     end
   end
 
-  describe '#equal_value_ranges' do
+  describe '#equal_count_ranges' do
     context 'band type is :GDT_Byte' do
-      subject { classifier.equal_value_ranges(4) }
+      subject { classifier.equal_count_ranges(4) }
 
       it 'is an Array of Hashes' do
         expect(subject).to be_an Array
@@ -78,7 +78,7 @@ RSpec.describe GDAL::RasterBandClassifier do
         driver.create_dataset 'test dataset', 640, 480, data_type: :GDT_Float32
       end
 
-      subject { classifier.equal_value_ranges(4) }
+      subject { classifier.equal_count_ranges(4) }
 
       it 'is an Array of Hashes' do
         expect(subject).to be_an Array
@@ -94,7 +94,7 @@ RSpec.describe GDAL::RasterBandClassifier do
 
   describe '#classify!' do
     before do
-      ranges = subject.equal_value_ranges(10)
+      ranges = subject.equal_count_ranges(10)
       subject.add_ranges(ranges)
     end
 

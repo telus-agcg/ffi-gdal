@@ -45,19 +45,25 @@ module GDAL
     # max end of the values, those get lumped in with the last range.
     #
     # @param range_count [Fixnum] The number of ranges to create.
-    def equal_value_ranges(range_count)
-      raster_min_max = @raster_band.min_max
-      range_size = (raster_min_max[:max] - raster_min_max[:min]) / range_count
-      ranges = []
+    def equal_count_ranges(range_count)
+      sorted_pixels = @raster_band.to_na.sort
+      range_size = (sorted_pixels.size / range_count).to_i
+      log "Pixel count: #{sorted_pixels.size}"
+      log "Min pixel value: #{sorted_pixels.min}"
+      log "Max pixel value: #{sorted_pixels.max}"
+      log "Range size: #{range_size}"
+      log 'Break offsets:'
+      break_values = range_count.times.map { |i| log "\t#{range_size * i}"; sorted_pixels[range_size * i] }
+      log "Break values: #{break_values}"
 
       breakpoint_calculator = lambda do |range_number|
-        min = raster_min_max[:min] + (range_size * range_number)
-        max = raster_min_max[:min] + (range_size * (range_number + 1))
+        min = break_values[range_number]
+        max = break_values[range_number + 1] || sorted_pixels.max
 
         range_for_type(min, max)
       end
 
-      range_count.times do |i|
+      range_count.times.each_with_object([]) do |i, ranges|
         range = breakpoint_calculator.call(i)
 
         ranges << {
@@ -65,8 +71,6 @@ module GDAL
           map_to: (i + 1).to_data_type(@raster_band.data_type)
         }
       end
-
-      ranges
     end
 
     # Uses the ranges that have been added to remap ranges to map_to values.
