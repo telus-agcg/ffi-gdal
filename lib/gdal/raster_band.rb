@@ -591,7 +591,7 @@ module GDAL
     # @param pixel_space [Fixnum]
     # TODO: Write using #buffer_size to write most efficiently.
     # TODO: Return a value!
-    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: :GDT_Byte,
+    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: self.data_type,
       line_space: 0, pixel_space: 0)
       line_size = 1
       x_size = pixel_array.sizes.first
