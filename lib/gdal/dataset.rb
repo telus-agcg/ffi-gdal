@@ -135,6 +135,10 @@ module GDAL
     # @param raster_index [Fixnum]
     # @return [GDAL::RasterBand]
     def raster_band(raster_index)
+      if raster_index > raster_count
+        fail GDAL::InvalidRasterBand, "Invalid raster band number '#{raster_index}'. Must be <= #{raster_count}"
+      end
+
       @raster_bands ||= Array.new(raster_count)
       zero_index = raster_index - 1
 
