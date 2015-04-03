@@ -1,36 +1,45 @@
 require 'ffi'
 require 'ffi/tools/const_generator'
+require_relative 'gdal/exceptions'
 
 module FFI
   module GDAL
     extend ::FFI::Library
 
-    def self.search_paths
-      @search_paths ||= begin
-        return if ENV['GDAL_LIBRARY_PATH']
-
-        if FFI::Platform.windows?
-          ENV['PATH'].split(File::PATH_SEPARATOR)
-        else
-          %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib} /usr/lib/{x86_64,i386}-linux-gnu]
-        end
-      end
-    end
-
-    def self.find_lib(lib)
-      if ENV['GDAL_LIBRARY_PATH'] && File.file?(ENV['GDAL_LIBRARY_PATH'])
-        ENV['GDAL_LIBRARY_PATH']
-      else
-        Dir.glob(search_paths.map do |path|
-          File.expand_path(File.join(path, "#{lib}.#{FFI::Platform::LIBSUFFIX}"))
-        end).first
-      end
-    end
-
+    # @return [String]
     def self.gdal_library_path
-      return @gdal_library_path if @gdal_library_path
+      @gdal_library_path ||= find_lib('{lib,}gdal*')
+    end
 
-      @gdal_library_path = find_lib('{lib,}gdal*')
+    # @param [String] lib Name of the library file to find.
+    # @return [String] Path to the library file.
+    def self.find_lib(lib)
+      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}"
+
+      if ENV['GDAL_LIBRARY_PATH']
+        return File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)
+      end
+
+      search_paths.map do |search_path|
+        Dir.glob(search_path).map do |path|
+          Dir.glob(File.expand_path(File.join(path, lib_file_name)))
+        end
+      end.flatten.uniq.first
+    end
+
+    # @return [Array<String>] List of paths to search for libs in.
+    def self.search_paths
+      return ENV['GDAL_LIBRARY_PATH'] if ENV['GDAL_LIBRARY_PATH']
+
+      @search_paths ||= begin
+        paths = ENV['PATH'].split(File::PATH_SEPARATOR)
+
+        unless FFI::Platform.windows?
+          paths += %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib} /usr/lib/{x86_64,i386}-linux-gnu]
+        end
+
+        paths
+      end
     end
 
     # @return [Array<String>] Related files that contain C constants.
@@ -56,6 +65,10 @@ module FFI
     # @return [String] Full path to +file_name+.
     def self._file_with_constants(file_name)
       _files_with_constants.find { |f| f.end_with?(file_name) }
+    end
+
+    if gdal_library_path.nil? || gdal_library_path.empty?
+      fail FFI::GDAL::LibraryNotFound, "Can't find required gdal library using path: '#{gdal_library_path}'"
     end
 
     ffi_lib(gdal_library_path)
