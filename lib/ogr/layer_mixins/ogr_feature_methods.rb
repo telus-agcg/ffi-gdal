@@ -52,21 +52,6 @@ module OGR
         FFI::OGR::API.OGR_L_GetFeatureCount(@layer_pointer, force)
       end
 
-      # @param index [Fixnum] The 0-based index of the feature to get.  It should
-      #   be <= +feature_count+, but no checking is done to ensure.
-      # @return [OGR::Feature, nil]
-      def feature(index)
-        @features.fetch(index) do
-          feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@layer_pointer, index)
-          return nil if feature_pointer.null?
-
-          feature = OGR::Feature.new(feature_pointer)
-          @features.insert(index, feature)
-
-          feature
-        end
-      end
-
       # Rewrites an existing feature using the ID within the given Feature.
       #
       # @param [OGR::Feature, FFI::Pointer]
@@ -78,6 +63,16 @@ module OGR
         ogr_err = FFI::OGR::API.OGR_L_SetFeature(@layer_pointer, new_feature_ptr)
 
         ogr_err.handle_result
+      end
+
+      # @param index [Fixnum] The 0-based index of the feature to get.  It should
+      #   be <= +feature_count+, but no checking is done to ensure.
+      # @return [OGR::Feature, nil]
+      def feature(index)
+        feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@layer_pointer, index)
+        return nil if feature_pointer.null?
+
+        OGR::Feature.new(feature_pointer)
       end
 
       # The next available feature in this layer.  Only features matching the
@@ -101,6 +96,7 @@ module OGR
 
         ogr_err.handle_result "Unable to set next feature index to #{feature_index}"
       end
+      alias_method :set_next_by_index, :next_feature_index=
 
       # @return [Fixnum]
       def features_read

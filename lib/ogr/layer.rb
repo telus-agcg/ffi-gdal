@@ -2,6 +2,7 @@ require_relative '../ffi/ogr'
 require_relative '../gdal/major_object'
 require_relative 'envelope'
 require_relative 'layer_mixins/extensions'
+require_relative 'layer_mixins/capability_methods'
 require_relative 'layer_mixins/ogr_feature_methods'
 require_relative 'layer_mixins/ogr_field_methods'
 require_relative 'layer_mixins/ogr_layer_method_methods'
@@ -12,6 +13,7 @@ module OGR
   class Layer
     include GDAL::MajorObject
     include LayerMixins::Extensions
+    include LayerMixins::CapabilityMethods
     include LayerMixins::OGRFeatureMethods
     include LayerMixins::OGRFieldMethods
     include LayerMixins::OGRLayerMethodMethods
