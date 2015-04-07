@@ -1,6 +1,7 @@
 require_relative '../ffi/ogr'
 require_relative '../gdal/major_object'
 require_relative '../gdal/options'
+require_relative 'driver_mixins/capability_methods'
 require_relative 'data_source'
 
 module OGR
@@ -12,6 +13,7 @@ module OGR
   class Driver
     include GDAL::MajorObject
     include GDAL::Logger
+    include DriverMixins::CapabilityMethods
 
     # @return [Fixnum]
     def self.count
