@@ -50,9 +50,9 @@ module OGR
 
     # Closes opened data source and releases allocated resources.
     def destroy!
-      return unless @data_source_pointer
+      return unless @c_pointer
 
-      FFI::OGR::API.OGR_DS_Destroy(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
       @c_pointer = nil
     end
     alias_method :close, :destroy!
@@ -105,7 +105,6 @@ module OGR
     #   geometry type.
     # @param spatial_reference [FFI::Pointer, OGR::SpatialReference] The coordinate system
     # @param options [Hash] Driver-specific options.
-    #   to use for the new layer or nil if none is available.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
