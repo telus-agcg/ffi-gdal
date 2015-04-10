@@ -3,23 +3,17 @@ module OGR
     module OGRSQLMethods
       # @return [Boolean]
       def start_transaction
-        ogr_err = FFI::OGR::API.OGR_L_StartTransaction(@c_pointer)
-
-        ogr_err.handle_result
+        transact { FFI::OGR::API.OGR_L_StartTransaction(@c_pointer) }
       end
 
       # @return [Boolean]
       def commit_transaction
-        ogr_err = FFI::OGR::API.OGR_L_CommitTransaction(@c_pointer)
-
-        ogr_err.handle_result
+        transact { FFI::OGR::API.OGR_L_CommitTransaction(@c_pointer) }
       end
 
       # @return [Boolean]
       def rollback_transaction
-        ogr_err = FFI::OGR::API.OGR_L_RollbackTransaction(@c_pointer)
-
-        ogr_err.handle_result
+        transact { FFI::OGR::API.OGR_L_RollbackTransaction(@c_pointer) }
       end
 
       # The name of the underlying database column or "" if not supported.
@@ -35,6 +29,19 @@ module OGR
       # @return [String]
       def geometry_column
         FFI::OGR::API.OGR_L_GetGeometryColumn(@c_pointer)
+      end
+
+      private
+
+      # @return [Boolean]
+      def transact
+        unless supports_transactions?
+          fail OGR::UnsupportedOperation, 'This layer does not support transactions.'
+        end
+
+        ogr_err = yield
+
+        ogr_err.handle_result
       end
     end
   end

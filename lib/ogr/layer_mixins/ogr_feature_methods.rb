@@ -26,6 +26,10 @@ module OGR
       # @param feature [OGR::Feature] [description]
       # @return [Boolean]
       def create_feature(feature)
+        unless can_sequential_write?
+          fail OGR::UnsupportedOperation, 'This layer does not support feature creation.'
+        end
+
         ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
 
         ogr_err.handle_result
@@ -37,8 +41,11 @@ module OGR
       # @return +true+ if successful, otherwise raises an OGR exception.
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
-      # TODO: Use OGR_L_TestCapability before trying to delete.
       def delete_feature(feature_id)
+        unless can_delete_feature?
+          fail OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
+        end
+
         ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
 
         ogr_err.handle_result "Unable to delete feature with ID '#{feature_id}'"
@@ -56,8 +63,11 @@ module OGR
       # Rewrites an existing feature using the ID within the given Feature.
       #
       # @param [OGR::Feature, FFI::Pointer]
-      # TODO: Use OGR_L_TestCapability(OLCRandomWrite) to establish if this layer supports random access writing
       def feature=(new_feature)
+        unless can_random_write?
+          fail OGR::UnsupportedOperation, '#feature= not supported by this Layer'
+        end
+
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         fail OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
@@ -70,6 +80,10 @@ module OGR
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
+        unless can_random_read?
+          fail OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
+        end
+
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)
         return nil if feature_pointer.null?
 

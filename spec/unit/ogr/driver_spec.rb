@@ -89,26 +89,40 @@ RSpec.describe OGR::Driver do
   end
 
   describe '#create_data_source' do
-    context 'block given' do
-      it 'yields the new DataSource to the block' do
-        expect do |b|
-          subject.create_data_source('test source', &b)
-        end.to yield_with_args OGR::DataSource
+    context 'creation not supported' do
+      before do
+        expect(subject).to receive(:can_create_data_source?).and_return false
+      end
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.create_data_source('test') }.to raise_exception OGR::UnsupportedOperation
       end
     end
 
-    context 'no block given' do
-      it 'returns the new data source' do
-        expect(subject.create_data_source('test source')).
-          to be_a OGR::DataSource
+    context 'creation supported' do
+      context 'block given' do
+        it 'yields the new DataSource to the block' do
+          expect do |b|
+            subject.create_data_source('test source', &b)
+          end.to yield_with_args OGR::DataSource
+        end
+      end
+
+      context 'no block given' do
+        it 'returns the new data source' do
+          expect(subject.create_data_source('test source')).
+            to be_a OGR::DataSource
+        end
       end
     end
   end
 
   describe '#delete_data_source' do
-    context 'data source does not exist' do
-      it "raises a GDAL::UnsupportedOperation (Memory driver doesn't support)" do
-        expect { subject.delete_data_source('we no here') }.to raise_exception GDAL::UnsupportedOperation
+    context 'does not support deleting' do
+      context 'data source does not exist' do
+        it "raises a OGR::UnsupportedOperation (Memory driver doesn't support)" do
+          expect { subject.delete_data_source('we no here') }.to raise_exception OGR::UnsupportedOperation
+        end
       end
     end
   end

@@ -14,6 +14,7 @@ RSpec.describe OGR::DataSource do
   end
 
   let(:driver) { OGR::Driver.by_name 'Memory' }
+
   subject(:data_source) do
     driver.create_data_source('spec')
   end
@@ -60,44 +61,56 @@ RSpec.describe OGR::DataSource do
   end
 
   describe '#create_layer' do
-    context 'geometry type is :wkbUnknown' do
-      it 'adds a new OGR::Layer to @layers' do
-        expect do
-          data_source.create_layer('unknown layer')
-        end.to change { data_source.layers.size }.by 1
+    context 'cannot create layer' do
+      before do
+        expect(subject).to receive(:can_create_layer?).and_return false
       end
 
-      it 'has a layer that is the given geometry type' do
-        layer = data_source.create_layer('unknown layer', geometry_type: :wkbUnknown)
-        expect(layer.geometry_type).to eq :wkbUnknown
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.create_layer('test') }.to raise_exception OGR::UnsupportedOperation
       end
     end
 
-    context 'geometry type is *not* :wkbUnknown' do
-      it 'adds a new OGR::Layer to @layers' do
-        expect do
-          data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
-        end.to change { data_source.layers.size }.by 1
+    context 'can create layer' do
+      context 'geometry type is :wkbUnknown' do
+        it 'adds a new OGR::Layer to @layers' do
+          expect do
+            data_source.create_layer('unknown layer')
+          end.to change { data_source.layers.size }.by 1
+        end
+
+        it 'has a layer that is the given geometry type' do
+          layer = data_source.create_layer('unknown layer', geometry_type: :wkbUnknown)
+          expect(layer.geometry_type).to eq :wkbUnknown
+        end
       end
 
-      it 'has a layer that is the given geometry type' do
-        layer = data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
-        expect(layer.geometry_type).to eq :wkbPolygon
-      end
-    end
+      context 'geometry type is *not* :wkbUnknown' do
+        it 'adds a new OGR::Layer to @layers' do
+          expect do
+            data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
+          end.to change { data_source.layers.size }.by 1
+        end
 
-    context 'spatial reference is passed in' do
-      let(:spatial_reference) { OGR::SpatialReference.new_from_epsg(4326) }
-
-      it 'adds a new OGR::Layer to @layers' do
-        expect do
-          data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
-        end.to change { data_source.layers.size }.by 1
+        it 'has a layer that is the given geometry type' do
+          layer = data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
+          expect(layer.geometry_type).to eq :wkbPolygon
+        end
       end
 
-      it 'has a layer that uses that spatial reference' do
-        layer = data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
-        expect(layer.spatial_reference.to_wkt).to eq spatial_reference.to_wkt
+      context 'spatial reference is passed in' do
+        let(:spatial_reference) { OGR::SpatialReference.new_from_epsg(4326) }
+
+        it 'adds a new OGR::Layer to @layers' do
+          expect do
+            data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
+          end.to change { data_source.layers.size }.by 1
+        end
+
+        it 'has a layer that uses that spatial reference' do
+          layer = data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
+          expect(layer.spatial_reference.to_wkt).to eq spatial_reference.to_wkt
+        end
       end
     end
   end
@@ -118,18 +131,30 @@ RSpec.describe OGR::DataSource do
   end
 
   describe '#delete_layer' do
-    context 'no layers' do
-      it 'raises a OGR::Failure' do
-        expect do
-          data_source.delete_layer(0)
-        end.to raise_exception OGR::Failure
+    context 'deleting not supported' do
+      before do
+        expect(subject).to receive(:can_delete_layer?).and_return false
+      end
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.delete_layer(0) }.to raise_exception OGR::UnsupportedOperation
       end
     end
 
-    context '1 layer' do
-      before { data_source.create_layer 'unknown layer' }
-      subject { data_source.delete_layer(0) }
-      it { is_expected.to eq true }
+    context 'deleting is supported' do
+      context 'no layers' do
+        it 'raises a OGR::Failure' do
+          expect do
+            data_source.delete_layer(0)
+          end.to raise_exception OGR::Failure
+        end
+      end
+
+      context '1 layer' do
+        before { data_source.create_layer 'unknown layer' }
+        subject { data_source.delete_layer(0) }
+        it { is_expected.to eq true }
+      end
     end
   end
 

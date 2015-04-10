@@ -90,6 +90,10 @@ module OGR
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
     def create_data_source(file_name, **options)
+      unless can_create_data_source?
+        fail OGR::UnsupportedOperation, 'This driver does not support data source creation.'
+      end
+
       options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@c_pointer,
@@ -105,6 +109,10 @@ module OGR
     # @param file_name [String]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_data_source(file_name)
+      unless can_delete_data_source?
+        fail OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
+      end
+
       ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
 
       ogr_err.handle_result
