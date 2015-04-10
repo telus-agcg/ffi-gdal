@@ -1,3 +1,4 @@
+require_relative '../../ext/ffi_library_function_checks'
 require_relative '../cpl/conv'
 require_relative 'core'
 require_relative 'envelope'

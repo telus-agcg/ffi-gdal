@@ -1,5 +1,6 @@
 require 'ffi'
 # require_relative 'xml_node'
+require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
   module CPL

@@ -1,6 +1,7 @@
 require 'ffi'
 require 'ffi/tools/const_generator'
 require_relative 'gdal/exceptions'
+require_relative '../ext/ffi_library_function_checks'
 
 module FFI
   module GDAL
