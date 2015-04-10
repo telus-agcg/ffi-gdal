@@ -2,6 +2,7 @@ require 'date'
 
 module OGR
   class Field
+    # @return [FFI::OGR::Point]
     attr_reader :c_struct
 
     # @param [FFI::OGR::Point, FFI::Pointer]

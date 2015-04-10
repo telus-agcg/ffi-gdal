@@ -3,7 +3,7 @@ module OGR
     # Helper methods for checking what the Layer is capable of.
     module CapabilityMethods
       # @return [Boolean] +true+ if #feature() is implemented in an optimized
-      #   manner for this layer (as opposed to using #next_feature and 
+      #   manner for this layer (as opposed to using #next_feature and
       #   #reset_reading).
       def can_random_read?
         test_capability('RandomRead')

@@ -10,6 +10,7 @@ module GDAL
         @options = FFI::GDAL::GridInverseDistanceToAPowerOptions.new
       end
 
+      # @return [Symbol]
       def algorithm
         :GGA_InverseDistanceToAPower
       end

@@ -8,6 +8,7 @@ module GDAL
         FFI::GDAL::Alg::RPCTransform
       end
 
+      # @return [FFI::Pointer] C pointer to the C RPC transformer.
       attr_reader :c_pointer
 
       # @param rpc_info [GDAL::RPCInfo]

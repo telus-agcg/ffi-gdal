@@ -131,7 +131,8 @@ module GDAL
     def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
-      dataset_pointer = FFI::GDAL.GDALCreate(@c_pointer,
+      dataset_pointer = FFI::GDAL.GDALCreate(
+        @c_pointer,
         filename,
         x_size,
         y_size,
@@ -160,7 +161,8 @@ module GDAL
       source_dataset_ptr = make_dataset_pointer(source_dataset)
       fail "Source dataset couldn't be read" if source_dataset_ptr.null?
 
-      destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(@c_pointer,
+      destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(
+        @c_pointer,
         destination_path,
         source_dataset_ptr,
         strict,

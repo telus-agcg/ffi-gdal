@@ -31,8 +31,7 @@ module OGR
         when 0 then nil
         when 1 then (Time.now.getlocal.utc_offset / 3600).to_s
         when 100 then '+0'
-        else
-          raise "Unable to process time zone: #{time_zone}"
+        else fail "Unable to process time zone: #{time_zone}"
         end
       end
 

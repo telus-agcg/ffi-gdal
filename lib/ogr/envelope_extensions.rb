@@ -92,7 +92,7 @@ module OGR
         y_max: y_max
       }
 
-      if @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      if @c_struct.is_a? FFI::GDAL::OGREnvelope3D
         json.merge!(z_min: z_min, z_max: z_max)
       end
 

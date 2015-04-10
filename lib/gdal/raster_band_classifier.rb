@@ -28,7 +28,7 @@ module GDAL
     # @param range [Range] The range of values to map to a new value.
     # @param map_to_value [Number]
     def add_range(range, map_to_value)
-      fail "range must be a Ruby Range" unless range.is_a? Range
+      fail 'range must be a Ruby Range' unless range.is_a? Range
 
       @ranges << { range: range, map_to: map_to_value }
     end

@@ -8,6 +8,7 @@ module GDAL
         FFI::GDAL::Alg::ReprojectionTransform
       end
 
+      # @return [FFI::Pointer] C pointer to the C reprojection transformer.
       attr_reader :c_pointer
 
       # @param source_wkt [String]

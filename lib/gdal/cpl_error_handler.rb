@@ -55,7 +55,12 @@ module GDAL
     def initialize
       @on_none = SUCCESS_PROC
       @on_debug = SUCCESS_PROC
-      @on_warning = ->(_, message) { warn(message); false }
+
+      @on_warning = lambda do |_, message|
+        warn(message)
+        false
+      end
+
       @on_failure = FAIL_PROC
       @on_fatal = FAIL_PROC
     end
@@ -90,9 +95,8 @@ module GDAL
       FFI::CPL::Error.CPLPopErrorHandler
 
       result(FFI::CPL::Error.CPLGetLastErrorType,
-             FFI::CPL::Error.CPLGetLastErrorNo,
-             FFI::CPL::Error.CPLGetLastErrorMsg
-      )
+        FFI::CPL::Error.CPLGetLastErrorNo,
+        FFI::CPL::Error.CPLGetLastErrorMsg)
     end
 
     private

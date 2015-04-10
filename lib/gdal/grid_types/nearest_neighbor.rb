@@ -10,6 +10,7 @@ module GDAL
         @options = FFI::GDAL::GridNearestNeighborOptions.new
       end
 
+      # @return [Symbol]
       def algorithm
         :GGA_NearestNeighbor
       end

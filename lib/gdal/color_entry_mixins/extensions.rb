@@ -14,7 +14,7 @@ module GDAL
         end
       end
 
-      def as_json(options = nil)
+      def as_json(_options = nil)
         {
           color1: color1,
           color2: color2,

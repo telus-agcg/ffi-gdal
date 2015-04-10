@@ -88,8 +88,8 @@ module GDAL
       # @param y_size [Fixnum]
       # @return [Fixnum] The checksum value.
       def checksum_image(x_offset, y_offset, x_size, y_size)
-        FFI::GDAL::Alg.GDALChecksumImage(
-          @raster_band_pointer,
+        !!FFI::GDAL::Alg.GDALChecksumImage(
+          @c_pointer,
           x_offset,
           y_offset,
           x_size,
@@ -123,7 +123,7 @@ module GDAL
         options_ptr = GDAL::Options.pointer(options)
 
         FFI::GDAL::Alg.GDALComputeProximity(
-          @raster_band_pointer,
+          @c_pointer,
           proximity_band_ptr,
           options_ptr,
           progress,
@@ -159,9 +159,9 @@ module GDAL
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
-        FFI::GDAL.GDALFillNodata(@raster_band_pointer,
+        !!FFI::GDAL.GDALFillNodata(@c_pointer,
           mask_band_ptr,
-          max_search_dist,
+          max_search_distance,
           0,                    # deprecated option in GDAL
           smoothing_iterations,
           options_ptr,
@@ -212,14 +212,15 @@ module GDAL
 
         function = use_integer_function ? :GDALPolygonize : :GDALFPolygonize
 
-        FFI::GDAL::Alg.send(function,
-          @raster_band_pointer,                           # hSrcBand
-          mask_band_ptr,                                  # hMaskBand
-          layer_ptr,                                      # hOutLayer
-          pixel_value_field,                              # iPixValField
-          options_ptr,                                    # papszOptions
-          progress,                                       # pfnProgress
-          nil                                             # pProgressArg
+        FFI::GDAL::Alg.send(
+          function,
+          @c_pointer,             # hSrcBand
+          mask_band_ptr,          # hMaskBand
+          layer_ptr,              # hOutLayer
+          pixel_value_field,      # iPixValField
+          options_ptr,            # papszOptions
+          progress,               # pfnProgress
+          nil                     # pProgressArg
         )
 
         layer_ptr.instance_of?(OGR::Layer) ? layer_ptr : OGR::Layer.new(layer_ptr)
@@ -243,7 +244,7 @@ module GDAL
       #   inclusion in polygons.
       # @param options [Hash] None supported in GDAL as of this writing.
       def sieve_filter!(size_threshold, connectedness, mask_band: nil, **options, &progress)
-        _sieve_filter(size_threshold, connectedness, @raster_band_pointer,
+        _sieve_filter(size_threshold, connectedness, @c_pointer,
           mask_band: mask_band, **options, &progress)
       end
 
@@ -256,7 +257,7 @@ module GDAL
         mask_band: nil, **options, &progress)
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
         if destination_band.nil? || destination_band.null?
-          raise GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
+          fail GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
         end
 
         _sieve_filter(size_threshold, connectedness, destination_band_ptr,
@@ -277,7 +278,7 @@ module GDAL
         options_ptr = GDAL::Options.pointer(options)
 
         FFI::GDAL::Alg.GDALSieveFilter(
-          @raster_band_pointer,
+          @c_pointer,
           mask_band_ptr,
           destination_band_ptr,
           size_threshold,

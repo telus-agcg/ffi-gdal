@@ -59,7 +59,7 @@ module GDAL
         driver = GDAL::Driver.by_name(driver_name)
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-                              data_type: output_data_type, **options) do |ndvi_dataset|
+          data_type: output_data_type, **options) do |ndvi_dataset|
           ndvi_dataset.geo_transform = geo_transform
           ndvi_dataset.projection = projection
 
@@ -115,7 +115,7 @@ module GDAL
         driver = GDAL::Driver.by_name(driver_name)
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-                              data_type: output_data_type, **options) do |gndvi_dataset|
+          data_type: output_data_type, **options) do |gndvi_dataset|
           gndvi_dataset.geo_transform = geo_transform
           gndvi_dataset.projection = projection
 
@@ -152,7 +152,7 @@ module GDAL
         end
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-                              data_type: output_data_type, **options) do |nir_dataset|
+          data_type: output_data_type, **options) do |nir_dataset|
           nir_dataset.geo_transform = geo_transform
           nir_dataset.projection = projection
 
@@ -190,7 +190,7 @@ module GDAL
                          end
 
         driver.create_dataset(destination, columns, rows,
-                              band_count: 3, data_type: output_data_type, **options) do |new_dataset|
+          band_count: 3, data_type: output_data_type, **options) do |new_dataset|
           new_dataset.geo_transform = geo_transform
           new_dataset.projection = projection
 
@@ -446,7 +446,7 @@ module GDAL
         error_threshold = 0.0
         order = 0
 
-        _transformer_ptr = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(@dataset_pointer,
+        _transformer_ptr = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(@c_pointer,
           projection,
           destination_dataset.c_pointer,
           destination.projection,

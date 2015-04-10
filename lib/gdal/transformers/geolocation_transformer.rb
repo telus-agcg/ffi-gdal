@@ -8,6 +8,7 @@ module GDAL
         FFI::GDAL::Alg::GeoLocTransform
       end
 
+      # @return [FFI::Pointer] C pointer to the C geolocation transformer.
       attr_reader :c_pointer
 
       # @param base_dataset [GDAL::Dataset]

@@ -3,21 +3,21 @@ module OGR
     module OGRSQLMethods
       # @return [Boolean]
       def start_transaction
-        ogr_err = FFI::OGR::API.OGR_L_StartTransaction(@layer_pointer)
+        ogr_err = FFI::OGR::API.OGR_L_StartTransaction(@c_pointer)
 
         ogr_err.handle_result
       end
 
       # @return [Boolean]
       def commit_transaction
-        ogr_err = FFI::OGR::API.OGR_L_CommitTransaction(@layer_pointer)
+        ogr_err = FFI::OGR::API.OGR_L_CommitTransaction(@c_pointer)
 
         ogr_err.handle_result
       end
 
       # @return [Boolean]
       def rollback_transaction
-        ogr_err = FFI::OGR::API.OGR_L_RollbackTransaction(@layer_pointer)
+        ogr_err = FFI::OGR::API.OGR_L_RollbackTransaction(@c_pointer)
 
         ogr_err.handle_result
       end
@@ -26,7 +26,7 @@ module OGR
       #
       # @return [String]
       def fid_column
-        FFI::OGR::API.OGR_L_GetFIDColumn(@layer_pointer)
+        FFI::OGR::API.OGR_L_GetFIDColumn(@c_pointer)
       end
 
       # The name of the underlying database column being used as the geometry
@@ -34,7 +34,7 @@ module OGR
       #
       # @return [String]
       def geometry_column
-        FFI::OGR::API.OGR_L_GetGeometryColumn(@layer_pointer)
+        FFI::OGR::API.OGR_L_GetGeometryColumn(@c_pointer)
       end
     end
   end
