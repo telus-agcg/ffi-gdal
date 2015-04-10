@@ -47,18 +47,19 @@ module GDAL
     # @param range_count [Fixnum] The number of ranges to create.
     def equal_count_ranges(range_count)
       sorted_pixels = @raster_band.to_na.sort
-      range_size = (sorted_pixels.size / range_count).to_i
-      log "Pixel count: #{sorted_pixels.size}"
-      log "Min pixel value: #{sorted_pixels.min}"
-      log "Max pixel value: #{sorted_pixels.max}"
+      sorted_and_masked_pixels = sorted_pixels[sorted_pixels.ne(@raster_band.no_data_value[:value])]
+      range_size = (sorted_and_masked_pixels.size / range_count).to_i
+      log "Pixel count: #{sorted_and_masked_pixels.size}"
+      log "Min pixel value: #{sorted_and_masked_pixels.min}"
+      log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
       log 'Break offsets:'
-      break_values = range_count.times.map { |i| log "\t#{range_size * i}"; sorted_pixels[range_size * i] }
+      break_values = range_count.times.map { |i| sorted_and_masked_pixels[range_size * i] }
       log "Break values: #{break_values}"
 
       breakpoint_calculator = lambda do |range_number|
         min = break_values[range_number]
-        max = break_values[range_number + 1] || sorted_pixels.max
+        max = break_values[range_number + 1] || sorted_and_masked_pixels.max
 
         range_for_type(min, max)
       end
