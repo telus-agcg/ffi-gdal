@@ -15,7 +15,7 @@ module FFI
     # @param [String] lib Name of the library file to find.
     # @return [String] Path to the library file.
     def self.find_lib(lib)
-      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}"
+      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}.*"
 
       if ENV['GDAL_LIBRARY_PATH']
         return File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)
@@ -23,7 +23,7 @@ module FFI
 
       search_paths.map do |search_path|
         Dir.glob(search_path).map do |path|
-          Dir.glob(File.expand_path(File.join(path, lib_file_name)))
+          Dir.glob(File.join(path, lib_file_name))
         end
       end.flatten.uniq.first
     end
@@ -51,7 +51,7 @@ module FFI
         ogr_core.h ogr_srs_api.h
       ]
 
-      header_search_paths = %w[/usr/local/include /usr/include]
+      header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal]
 
       header_files.map do |file|
         dir = header_search_paths.find do |d|
