@@ -1,5 +1,6 @@
 require_relative 'envelope'
 require_relative 'geometry_extensions'
+require_relative '../gdal'
 require_relative '../gdal/options'
 require_relative '../gdal/logger'
 
@@ -28,30 +29,21 @@ module OGR
           end
 
         new_pointer = geometry.c_pointer
-        geometry.c_pointer.autorelease = true
+        # geometry.c_pointer.autorelease = true
 
-        _ = case geometry.type
-            when :wkbPoint, :wkbPoint25D
-              OGR::Point.new(new_pointer)
-            when :wkbLineString, :wkbLineString25D
-              OGR::LineString.new(new_pointer)
-            when :wkbLinearRing
-              OGR::LinearRing.new(new_pointer)
-            when :wkbPolygon, :wkbPolygon25D
-              OGR::Polygon.new(new_pointer)
-            when :wkbMultiPoint, :wkbMultiPoint25D
-              OGR::MultiPoint.new(new_pointer)
-            when :wkbMultiLineString, :wkbMultiLineString25D
-              OGR::MultiLineString.new(new_pointer)
-            when :wkbMultiPolygon, :wkbMultiPolygon25D
-              OGR::MultiPolygon.new(new_pointer)
-            when :wkbGeometryCollection
-              OGR::GeometryCollection.new(new_pointer)
-            when :wkbNone
-              OGR::NoneGeometry.new(new_pointer)
-            else
-              geometry
-            end
+        case geometry.type
+        when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
+        when :wkbLineString, :wkbLineString25D then OGR::LineString.new(new_pointer)
+        when :wkbLinearRing then OGR::LinearRing.new(new_pointer)
+        when :wkbPolygon, :wkbPolygon25D then OGR::Polygon.new(new_pointer)
+        when :wkbMultiPoint, :wkbMultiPoint25D then OGR::MultiPoint.new(new_pointer)
+        when :wkbMultiLineString, :wkbMultiLineString25D then OGR::MultiLineString.new(new_pointer)
+        when :wkbMultiPolygon, :wkbMultiPolygon25D then OGR::MultiPolygon.new(new_pointer)
+        when :wkbGeometryCollection then OGR::GeometryCollection.new(new_pointer)
+        when :wkbNone then OGR::NoneGeometry.new(new_pointer)
+        else
+          geometry
+        end
       end
 
       # @return [OGR::Geometry]
@@ -59,20 +51,19 @@ module OGR
       # @param spatial_reference [FFI::Pointer] Optional spatial reference
       #   to assign to the new geometry.
       # @return [OGR::Geometry]
-      def create_from_wkt(wkt_data, spatial_reference = nil)
+      def create_from_wkt(wkt_data, spatial_ref = nil)
         wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
         spatial_ref_pointer =
-          if spatial_reference
-            GDAL._pointer(OGR::SpatialReference, spatial_reference)
+          if spatial_ref
+            GDAL._pointer(OGR::SpatialReference, spatial_ref)
           else
             nil
           end
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
-
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr.write_pointer(geometry_ptr)
 
@@ -84,7 +75,6 @@ module OGR
         geometry_ptr_ptr.read_pointer.nil?
 
         geometry = factory(geometry_ptr_ptr.read_pointer)
-
         ObjectSpace.define_finalizer(geometry) { destroy! }
 
         geometry
@@ -192,8 +182,7 @@ module OGR
       when 3
         envelope = FFI::OGR::Envelope3D.new
         FFI::OGR::API.OGR_G_GetEnvelope3D(@c_pointer, envelope)
-      when 0
-        return nil
+      when 0 then return nil
       else
         fail 'Unknown envelope dimension.'
       end
@@ -633,6 +622,7 @@ module OGR
       fail OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
       @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
       @read_only = false
+      @spatial_reference = nil
     end
 
     def build_geometry
