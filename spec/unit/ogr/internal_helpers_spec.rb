@@ -13,7 +13,7 @@ RSpec.describe OGR::InternalHelpers do
       it { is_expected.to eq false }
     end
 
-    context "when anything else" do
+    context 'when anything else' do
       it 'raises a RuntimeError' do
         expect { OGR._boolean_access_flag('a') }.to raise_exception RuntimeError
       end

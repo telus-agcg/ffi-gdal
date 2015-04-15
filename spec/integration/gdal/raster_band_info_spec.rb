@@ -278,9 +278,7 @@ TIF_FILES.each do |file|
         it 'returns a GDAL::RasterAttributeTable' do
           rat = subject.default_raster_attribute_table
 
-          if rat
-            expect(rat).to be_a GDAL::RasterAttributeTable
-          end
+          expect(rat).to be_a GDAL::RasterAttributeTable if rat
         end
       end
 

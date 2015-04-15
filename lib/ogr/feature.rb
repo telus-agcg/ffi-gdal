@@ -16,9 +16,9 @@ module OGR
     #   case a handle to a C OGR Feature needs to be wrapped with this object).
     def initialize(fd_or_pointer)
       @c_pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
-                           FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
-                         else
-                           fd_or_pointer
+                     FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
+                   else
+                     fd_or_pointer
                          end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
@@ -60,7 +60,7 @@ module OGR
     #   despite lacking output fields matching some of the source fields.
     # @param with_map [Array<Fixnum>]
     # TODO: Implement +with_map+
-    def set_from!(other_feature, be_forgiving = false, with_map: nil)
+    def set_from!(_other_feature, _be_forgiving = false, with_map: nil)
       fail NotImplementedError, 'with_map: is not yet supported' if with_map
 
       ogr_err = FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
@@ -232,7 +232,7 @@ module OGR
     # @return [OGR::Geometry]
     def steal_geometry
       geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@c_pointer)
-      fail OGR::Failure, "Unable to steal geometry." if geometry_ptr.nil?
+      fail OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil?
 
       OGR::Geometry.factory(geometry_ptr)
     end
@@ -408,7 +408,7 @@ module OGR
           minute_ptr.read_int,
           second_ptr.read_int,
           formatted_tz
-          )
+        )
       else
         DateTime.new(
           year_ptr.read_int,
@@ -417,7 +417,7 @@ module OGR
           hour_ptr.read_int,
           minute_ptr.read_int,
           second_ptr.read_int
-          )
+        )
       end
     end
 

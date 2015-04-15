@@ -18,7 +18,7 @@ RSpec.describe OGR::SpatialReference do
 
     context 'invalid code' do
       it 'raises a GDAL::UnsupportedOperation' do
-        expect { subject.import_from_epsg 1231234 }.to raise_exception GDAL::UnsupportedOperation
+        expect { subject.import_from_epsg 1_231_234 }.to raise_exception GDAL::UnsupportedOperation
       end
     end
   end

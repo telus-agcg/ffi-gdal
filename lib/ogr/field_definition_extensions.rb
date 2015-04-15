@@ -3,7 +3,7 @@ require 'json'
 module OGR
   module FieldDefinitionExtensions
     # @return [Hash]
-    def as_json(options = nil)
+    def as_json(_options = nil)
       {
         is_ignored: ignored?,
         justification: justification,

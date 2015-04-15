@@ -84,7 +84,7 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json(options = nil)
+    def as_json(_options = nil)
       json = {
         x_min: x_min,
         x_max: x_max,

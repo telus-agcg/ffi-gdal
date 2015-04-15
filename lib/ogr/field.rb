@@ -127,9 +127,7 @@ module OGR
       sl = @c_struct[:string_list]
       return [] if sl[:count].zero?
 
-      sl[:list].read_array_of_pointer(sl[:count]).map do |ptr|
-        ptr.read_string
-      end
+      sl[:list].read_array_of_pointer(sl[:count]).map(&:read_string)
     end
 
     # @param new_string_list [Array<String>]

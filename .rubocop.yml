@@ -39,7 +39,8 @@ Style/DoubleNegation:
   Enabled: false
 
 Style/FileName:
-  Exclude: lib/ffi-gdal.rb
+  Exclude:
+    - lib/ffi-gdal.rb
 
 Style/FormatString:
   EnforcedStyle: percent

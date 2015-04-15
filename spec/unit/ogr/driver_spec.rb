@@ -22,7 +22,7 @@ RSpec.describe OGR::Driver do
 
     context 'invalid index' do
       it 'raises an OGR::DriverNotFound' do
-        expect { described_class.at_index(123456) }.
+        expect { described_class.at_index(123_456) }.
           to raise_exception OGR::DriverNotFound
       end
     end

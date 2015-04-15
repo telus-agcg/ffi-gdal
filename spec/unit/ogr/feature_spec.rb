@@ -266,7 +266,7 @@ RSpec.describe OGR::Feature do
   describe '#set_field_binary + #field_as_binary' do
     context 'to a valid index' do
       it 'adds the field' do
-        subject.set_field_binary(6, [65, 66, 67, 68, 69].pack('C*') )
+        subject.set_field_binary(6, [65, 66, 67, 68, 69].pack('C*'))
         expect(subject.field_as_binary(6)).to eq [65, 66, 67, 68, 69]
       end
     end
