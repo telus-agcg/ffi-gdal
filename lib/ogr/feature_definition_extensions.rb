@@ -39,7 +39,7 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json(options = nil)
+    def as_json(_options = nil)
       {
         field_count: field_count,
         field_definitions: field_definitions.map(&:as_json),

@@ -1,4 +1,5 @@
 require 'ffi'
+require_relative '../../ext/ffi_library_function_checks'
 require_relative '../ogr/core'
 require_relative '../ogr/srs_api'
 require_relative 'color_entry'

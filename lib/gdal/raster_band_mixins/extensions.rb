@@ -45,29 +45,29 @@ module GDAL
         0.upto(block_count[:y]).each do |y_block_number|
           0.upto(block_count[:x] - 1).each do |x_block_number|
             y_block_size = if y_block_number == block_count[:y] && !block_count[:y_remainder].zero?
-              block_count[:y_remainder]
-            elsif y_block_number == block_count[:y]
-              0
-            else
-              block_size[:y]
-            end
+                             block_count[:y_remainder]
+                           elsif y_block_number == block_count[:y]
+                             0
+                           else
+                             block_size[:y]
+                           end
 
-            unless y_block_size.zero?
-              read_block(x_block_number, y_block_number, data_pointer)
+            next if y_block_size.zero?
 
-              0.upto(y_block_size - 1).each do |block_index|
-                x_read_offset = block_size[:x] * block_index
+            read_block(x_block_number, y_block_number, data_pointer)
 
-                pixels = if data_type == :GDT_Byte
-                           data_pointer.get_array_of_uint8(x_read_offset, block_size[:x])
-                         elsif data_type == :GDT_UInt16
-                           data_pointer.get_array_of_uint16(x_read_offset, block_size[:x])
-                         else
-                           data_pointer.get_array_of_float(x_read_offset, block_size[:x])
-                         end
+            0.upto(y_block_size - 1).each do |block_index|
+              x_read_offset = block_size[:x] * block_index
 
-                yield(pixels)
-              end
+              pixels = if data_type == :GDT_Byte
+                         data_pointer.get_array_of_uint8(x_read_offset, block_size[:x])
+                       elsif data_type == :GDT_UInt16
+                         data_pointer.get_array_of_uint16(x_read_offset, block_size[:x])
+                       else
+                         data_pointer.get_array_of_float(x_read_offset, block_size[:x])
+                       end
+
+              yield(pixels)
             end
           end
         end
@@ -200,7 +200,7 @@ module GDAL
       end
 
       # @return [Hash]
-      def as_json(options = nil)
+      def as_json(_options = nil)
         {
           raster_band: {
             block_size: block_size,

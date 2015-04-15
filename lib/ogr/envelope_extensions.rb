@@ -84,7 +84,7 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json(options = nil)
+    def as_json(_options = nil)
       json = {
         x_min: x_min,
         x_max: x_max,
@@ -92,7 +92,7 @@ module OGR
         y_max: y_max
       }
 
-      if @ogr_envelope_struct.is_a? FFI::GDAL::OGREnvelope3D
+      if @c_struct.is_a? FFI::GDAL::OGREnvelope3D
         json.merge!(z_min: z_min, z_max: z_max)
       end
 

@@ -21,9 +21,9 @@ module OGR
     include SpatialReferenceMixins::ParameterGetterSetters
     include SpatialReferenceMixins::TypeChecks
 
-    eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
+    class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
     METER_TO_METER = 1.0
-    eval FFI::OGR::SRSAPI::SRS_UA.to_ruby
+    class_eval FFI::OGR::SRSAPI::SRS_UA.to_ruby
     RADIAN_TO_RADIAN = 1.0
 
     # @return [Array<String>]
@@ -59,7 +59,7 @@ module OGR
                nil
              else
                name_ptr_ptr.read_pointer.read_string
-      end
+             end
 
       {
         parameters: pointer_array.map(&:read_string).sort,
@@ -117,6 +117,9 @@ module OGR
       FFI::OGR::SRSAPI.OSRCleanup
     end
 
+    # @return [FFI::Pointer] C pointer to the C Spatial Reference.
+    attr_reader :c_pointer
+
     # Builds a spatial reference object using either the passed-in WKT string,
     # OGR::SpatialReference object, or a pointer to an in-memory
     # SpatialReference object.  If nothing is passed in, an empty
@@ -126,7 +129,7 @@ module OGR
     # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
     #   String]
     def initialize(spatial_reference_or_wkt = nil)
-      @ogr_spatial_ref_pointer =
+      @c_pointer =
         case spatial_reference_or_wkt.class.name
         when 'OGR::SpatialReference'
           spatial_reference_or_wkt.c_pointer
@@ -138,27 +141,23 @@ module OGR
           log "Dunno what to do with #{spatial_reference_or_wkt}"
         end
 
-      if @ogr_spatial_ref_pointer.nil? || @ogr_spatial_ref_pointer.null?
-        fail OGR::CreateFailure, "Unable to create SpatialReference."
-      end
-    end
+      return if @c_pointer && !@c_pointer.null?
 
-    def c_pointer
-      @ogr_spatial_ref_pointer
+      fail OGR::CreateFailure, 'Unable to create SpatialReference.'
     end
 
     def destroy!
-      return unless @ogr_spatial_ref_pointer
+      return unless @c_pointer
 
-      FFI::OGR::SRSAPI.OSRDestroySpatialReference(@ogr_spatial_ref_pointer)
-      @ogr_spatial_ref_pointer = nil
+      FFI::OGR::SRSAPI.OSRDestroySpatialReference(@c_pointer)
+      @c_pointer = nil
     end
 
     # Uses the C-API to clone this spatial reference object.
     #
     # @return [OGR::SpatialReference]
     def clone
-      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRClone(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRClone(@c_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
@@ -167,7 +166,7 @@ module OGR
     #
     # @return [OGR::SpatialReference]
     def clone_geog_cs
-      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRCloneGeogCS(@ogr_spatial_ref_pointer)
+      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRCloneGeogCS(@c_pointer)
 
       self.class.new(new_spatial_ref_ptr)
     end
@@ -179,28 +178,28 @@ module OGR
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
       fail OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
 
-      ogr_err = FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@ogr_spatial_ref_pointer, other_spatial_ref_ptr)
+      ogr_err = FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def validate
-      ogr_err = FFI::OGR::SRSAPI.OSRValidate(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
-      ogr_err = FFI::OGR::SRSAPI.OSRFixupOrdering(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
 
       ogr_err.handle_result
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
-      ogr_err = FFI::OGR::SRSAPI.OSRFixup(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
 
       ogr_err.handle_result
     end
@@ -209,7 +208,7 @@ module OGR
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
-      ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
 
       ogr_err.handle_result
     end
@@ -218,26 +217,26 @@ module OGR
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def auto_identify_epsg!
-      ogr_err = FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@ogr_spatial_ref_pointer)
+      ogr_err = FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@c_pointer)
 
-      ogr_err.handle_result "Unable to determine SRS from EPSG"
+      ogr_err.handle_result 'Unable to determine SRS from EPSG'
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as
     #   having lat/long coordinate ordering.
     def epsg_treats_as_lat_long?
-      FFI::OGR::SRSAPI.OSREPSGTreatsAsLatLong(@ogr_spatial_ref_pointer)
+      FFI::OGR::SRSAPI.OSREPSGTreatsAsLatLong(@c_pointer)
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as
     #   having northing/easting coordinate ordering.
     def epsg_treats_as_northing_easting?
-      FFI::OGR::SRSAPI.OSREPSGTreatsAsNorthingEasting(@ogr_spatial_ref_pointer)
+      FFI::OGR::SRSAPI.OSREPSGTreatsAsNorthingEasting(@c_pointer)
     end
 
     # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.
     def create_coordinate_transformation(destination_spatial_ref)
-      OGR::CoordinateTransformation.new(@ogr_spatial_ref_pointer, destination_spatial_ref)
+      OGR::CoordinateTransformation.new(@c_pointer, destination_spatial_ref)
     end
   end
 end

@@ -1,6 +1,7 @@
 require_relative '../ffi/ogr'
 require_relative '../gdal/major_object'
 require_relative '../gdal/options'
+require_relative 'driver_mixins/capability_methods'
 require_relative 'data_source'
 
 module OGR
@@ -12,6 +13,7 @@ module OGR
   class Driver
     include GDAL::MajorObject
     include GDAL::Logger
+    include DriverMixins::CapabilityMethods
 
     # @return [Fixnum]
     def self.count
@@ -49,22 +51,20 @@ module OGR
       end.sort
     end
 
+    # @return [FFI::Pointer] C pointer that represents the Driver.
+    attr_reader :c_pointer
+
     # You probably don't want to use this directly--see .by_name and .at_index
     # to instantiate a OGR::Driver object.
     #
     # @param driver [OGR::Driver, FFI::Pointer]
     def initialize(driver)
-      @driver_pointer = GDAL._pointer(OGR::Driver, driver)
-    end
-
-    # @return [FFI::Pointer]
-    def c_pointer
-      @driver_pointer
+      @c_pointer = GDAL._pointer(OGR::Driver, driver)
     end
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_Dr_GetName(@driver_pointer)
+      FFI::OGR::API.OGR_Dr_GetName(@c_pointer)
     end
 
     # @param file_name [String]
@@ -73,7 +73,7 @@ module OGR
     def open(file_name, access_flag = 'r')
       update = OGR._boolean_access_flag(access_flag)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@driver_pointer, file_name, update)
+      data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
 
       if data_source_ptr.null?
         fail OGR::InvalidDataSource, "Unable to open data source at #{file_name}"
@@ -90,9 +90,13 @@ module OGR
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
     def create_data_source(file_name, **options)
+      unless can_create_data_source?
+        fail OGR::UnsupportedOperation, 'This driver does not support data source creation.'
+      end
+
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@driver_pointer,
+      data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@c_pointer,
         file_name, options_ptr)
       return nil if data_source_ptr.null?
 
@@ -105,7 +109,11 @@ module OGR
     # @param file_name [String]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_data_source(file_name)
-      ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@driver_pointer, file_name)
+      unless can_delete_data_source?
+        fail OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
+      end
+
+      ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
 
       ogr_err.handle_result
     end
@@ -123,7 +131,7 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_CopyDataSource(@driver_pointer,
+      data_source_ptr = FFI::OGR::API.OGR_Dr_CopyDataSource(@c_pointer,
         source_ptr, new_file_name, options_ptr)
       return nil if data_source_ptr.null?
 
@@ -133,7 +141,7 @@ module OGR
     # @param [String] capability
     # @return [Boolean]
     def test_capability(capability)
-      FFI::OGR::API.OGR_Dr_TestCapability(@driver_pointer, capability)
+      FFI::OGR::API.OGR_Dr_TestCapability(@c_pointer, capability)
     end
   end
 end

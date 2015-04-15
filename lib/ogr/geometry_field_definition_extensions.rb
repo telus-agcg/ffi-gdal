@@ -8,7 +8,7 @@ module OGR
         is_ignored: ignored?,
         name: name,
         spatial_reference: spatial_reference ? spatial_reference.as_json(options) : nil,
-        type: type,
+        type: type
       }
     end
 

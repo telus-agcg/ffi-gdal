@@ -66,6 +66,7 @@ module OGR
   class ReadOnlyObject < StandardError
     def initialize(msg = nil)
       message = msg || "The object you're accessing is read-only.  Probably because it's internally managed by OGR."
+      super(message)
     end
   end
 

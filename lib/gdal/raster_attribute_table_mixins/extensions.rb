@@ -23,7 +23,7 @@ module GDAL
       end
 
       # @return [Hash]
-      def as_json(options = nil)
+      def as_json(_options = nil)
         {
           column_count: column_count,
           columns: columns,

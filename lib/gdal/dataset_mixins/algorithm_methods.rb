@@ -1,7 +1,6 @@
 module GDAL
   module DatasetMixins
     module AlgorithmMethods
-
       # Rasterizes the geometric objects +geometries+ into this raster dataset.
       # +transformer+ can be nil as long as the +geometries+ are within the
       # georeferenced coordinates of this raster's dataset.
@@ -40,7 +39,7 @@ module GDAL
         burn_values_ptr = FFI::MemoryPointer.new(:pointer, burn_values.size)
         burn_values_ptr.write_array_of_double(burn_values)
 
-        !!FFI::GDAL.GDALRasterizeGeometries(@dataset_pointer,
+        FFI::GDAL.GDALRasterizeGeometries(@c_pointer,
           band_numbers.size,
           band_numbers_ptr,
           geometries.size,
@@ -94,7 +93,7 @@ module GDAL
         burn_values_ptr.write_array_of_double(burn_values)
         log "burn value ptr null? #{burn_values_ptr.null?}"
 
-        !!FFI::GDAL.GDALRasterizeLayers(@dataset_pointer,     # hDS
+        FFI::GDAL.GDALRasterizeLayers(@c_pointer,     # hDS
           band_numbers.size,                                # nBandCount
           band_numbers_ptr,                                 # panBandList
           layers.size,                                      # nLayerCount
@@ -132,7 +131,7 @@ module GDAL
         bands_ptr.write_array_of_int(band_numbers)
         log "band numbers ptr null? #{bands_ptr.null?}"
 
-        success = FFI::GDAL.GDALSimpleImageWarp(@dataset_pointer,
+        success = FFI::GDAL.GDALSimpleImageWarp(@c_pointer,
           destination_dataset_ptr,
           band_numbers.size,
           bands_ptr,
@@ -153,7 +152,7 @@ module GDAL
         options = 0     # C code says this isn't used yet.
 
         FFI::GDAL::Alg.GDALSuggestedWarpOutput2(
-          @dataset_pointer,
+          @c_pointer,
           transformer.function,
           transformer.c_pointer,
           geo_transform.c_pointer,

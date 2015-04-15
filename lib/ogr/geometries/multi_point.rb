@@ -5,6 +5,7 @@ module OGR
     include OGR::Geometry
     include GeometryTypes::Container
 
+    # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbMultiPoint)
       initialize_from_pointer(geometry_ptr)

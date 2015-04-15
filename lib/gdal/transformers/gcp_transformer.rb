@@ -8,6 +8,7 @@ module GDAL
         FFI::GDAL::Alg::GCPTransform
       end
 
+      # @return [FFI::Pointer] C pointer to the GCP transformer.
       attr_reader :c_pointer
 
       # @param gcp_list [Array<FFI::GDAL::GCP>]
@@ -22,18 +23,18 @@ module GDAL
         end
 
         @c_pointer = if tolerance || minimum_gcps
-          FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
-            gcp_list.size,
-            gcp_list_ptr,
-            requested_polynomial_order,
-            reversed)
-        else
-          FFI::GDAL::Alg.GDALCreateGCPTransformer(
-            gcp_list.size,
-            gcp_list_ptr,
-            requested_polynomial_order,
-            reversed)
-        end
+                       FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
+                         gcp_list.size,
+                         gcp_list_ptr,
+                         requested_polynomial_order,
+                         reversed)
+                     else
+                       FFI::GDAL::Alg.GDALCreateGCPTransformer(
+                         gcp_list.size,
+                         gcp_list_ptr,
+                         requested_polynomial_order,
+                         reversed)
+                     end
 
         ObjectSpace.define_finalizer self, -> { destroy! }
       end

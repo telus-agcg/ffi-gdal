@@ -16,11 +16,9 @@ module OGR
       z_buffer = if coordinate_dimension == 3
                    z_size = FFI::Type::DOUBLE.size * point_count
                    FFI::MemoryPointer.new(:buffer_out, z_size)
-                 else
-                   nil
-      end
+                 end
 
-      _num_points = FFI::OGR::API.OGR_G_GetPoints(@geometry_pointer,
+      _num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
         x_buffer,
         x_stride,
         y_buffer,

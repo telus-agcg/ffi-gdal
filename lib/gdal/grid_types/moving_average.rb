@@ -10,6 +10,7 @@ module GDAL
         @options = FFI::GDAL::GridMovingAverageOptions.new
       end
 
+      # @return [Symbol]
       def algorithm
         :GGA_MovingAverage
       end

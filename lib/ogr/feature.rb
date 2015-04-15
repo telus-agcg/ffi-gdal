@@ -8,32 +8,38 @@ module OGR
   class Feature
     include FeatureExtensions
 
+    # @return [FFI::Pointer] C pointer of the C Feature.
+    attr_reader :c_pointer
+
     # @param fd_or_pointer [OGR::FeatureDefinition, FFI::Pointer] Must either be
     #   a FeatureDefinition (i.e. normal Feature creation) or a Pointer (in the
     #   case a handle to a C OGR Feature needs to be wrapped with this object).
     def initialize(fd_or_pointer)
-      @feature_pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
-                           FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
-                         else
-                           fd_or_pointer
+      @c_pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
+                     FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
+                   else
+                     fd_or_pointer
                          end
 
-      if !@feature_pointer.is_a?(FFI::Pointer) || @feature_pointer.null?
+      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
         fail OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
       end
 
-      close_me = -> { FFI::OGR::API.OGR_F_Destroy(@feature_pointer) }
+      close_me = -> { destroy! }
       ObjectSpace.define_finalizer self, close_me
     end
 
-    def c_pointer
-      @feature_pointer
+    def destroy!
+      return unless @c_pointer
+
+      FFI::OGR::API.OGR_F_Destroy(@c_pointer)
+      @c_pointer = nil
     end
 
     # @return [OGR::Feature]
     # @raise [OGR::Failure] If, for some reason, the clone fails.
     def clone
-      feature_ptr = FFI::OGR::API.OGR_F_Clone(@feature_pointer)
+      feature_ptr = FFI::OGR::API.OGR_F_Clone(@c_pointer)
       fail OGR::Failure, 'Unable to clone feature' if feature_ptr.nil?
 
       OGR::Feature.new(feature_ptr)
@@ -43,7 +49,7 @@ module OGR
     #
     # @param file_name [String]
     def dump_readable(file_name)
-      FFI::OGR::API.OGR_F_DumpReadable(@feature_pointer, file_name)
+      FFI::OGR::API.OGR_F_DumpReadable(@c_pointer, file_name)
     end
 
     # Overwrites the contents of this feature from the geometry and attributes
@@ -54,10 +60,10 @@ module OGR
     #   despite lacking output fields matching some of the source fields.
     # @param with_map [Array<Fixnum>]
     # TODO: Implement +with_map+
-    def set_from!(other_feature, be_forgiving = false, with_map: nil)
+    def set_from!(_other_feature, _be_forgiving = false, with_map: nil)
       fail NotImplementedError, 'with_map: is not yet supported' if with_map
 
-      ogr_err = FFI::OGR::API.OGR_F_SetFrom(@feature_pointer, other_feature_ptr)
+      ogr_err = FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
 
       ogr_err.handle_result
     end
@@ -67,25 +73,25 @@ module OGR
     #
     # @return [Fixnum]
     def field_count
-      FFI::OGR::API.OGR_F_GetFieldCount(@feature_pointer)
+      FFI::OGR::API.OGR_F_GetFieldCount(@c_pointer)
     end
 
     # @param index [Fixnum]
     # @param value [String]
     def set_field_string(index, value)
-      FFI::OGR::API.OGR_F_SetFieldString(@feature_pointer, index, value)
+      FFI::OGR::API.OGR_F_SetFieldString(@c_pointer, index, value)
     end
 
     # @param index [Fixnum]
     # @param value [Fixnum]
     def set_field_integer(index, value)
-      FFI::OGR::API.OGR_F_SetFieldInteger(@feature_pointer, index, value)
+      FFI::OGR::API.OGR_F_SetFieldInteger(@c_pointer, index, value)
     end
 
     # @param index [Fixnum]
     # @param value [Float]
     def set_field_double(index, value)
-      FFI::OGR::API.OGR_F_SetFieldDouble(@feature_pointer, index, value)
+      FFI::OGR::API.OGR_F_SetFieldDouble(@c_pointer, index, value)
     end
 
     # @param index [Fixnum]
@@ -95,7 +101,7 @@ module OGR
       values_ptr = GDAL._string_array_to_pointer(values)
 
       FFI::OGR::API.OGR_F_SetFieldStringList(
-        @feature_pointer,
+        @c_pointer,
         index,
         values_ptr)
     end
@@ -107,7 +113,7 @@ module OGR
       values_ptr.write_array_of_int(values)
 
       FFI::OGR::API.OGR_F_SetFieldIntegerList(
-        @feature_pointer,
+        @c_pointer,
         index,
         values.size,
         values_ptr)
@@ -120,7 +126,7 @@ module OGR
       values_ptr.write_array_of_double(values)
 
       FFI::OGR::API.OGR_F_SetFieldDoubleList(
-        @feature_pointer,
+        @c_pointer,
         index,
         values.size,
         values_ptr)
@@ -137,7 +143,7 @@ module OGR
           "Raw field is not of required field type: #{field_definition(index).type}"
       end
 
-      FFI::OGR::API.OGR_F_SetFieldRaw(@feature_pointer, index, value)
+      FFI::OGR::API.OGR_F_SetFieldRaw(@c_pointer, index, value)
     end
 
     # @param index [Fixnum]
@@ -149,7 +155,7 @@ module OGR
       value_ptr.put_bytes(0, value)
 
       FFI::OGR::API.OGR_F_SetFieldBinary(
-        @feature_pointer,
+        @c_pointer,
         index,
         value.length,
         value_ptr)
@@ -161,7 +167,7 @@ module OGR
       time = value.to_time
       zone = OGR._format_time_zone_for_ogr(time.zone)
 
-      FFI::OGR::API.OGR_F_SetFieldDateTime(@feature_pointer, index,
+      FFI::OGR::API.OGR_F_SetFieldDateTime(@c_pointer, index,
         time.year,
         time.month,
         time.day,
@@ -174,7 +180,7 @@ module OGR
     # @param index [Fixnum]
     # @return [OGR::FieldDefinition]
     def field_definition(index)
-      field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@feature_pointer, index)
+      field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@c_pointer, index)
       return nil if field_pointer.null?
 
       OGR::FieldDefinition.new(field_pointer, nil)
@@ -183,7 +189,7 @@ module OGR
     # @param name [String]
     # @return [Fixnum, nil]
     def field_index(name)
-      result = FFI::OGR::API.OGR_F_GetFieldIndex(@feature_pointer, name)
+      result = FFI::OGR::API.OGR_F_GetFieldIndex(@c_pointer, name)
 
       result < 0 ? nil : result
     end
@@ -191,17 +197,17 @@ module OGR
     # @param index [Fixnum]
     # @return [Boolean]
     def field_set?(index)
-      FFI::OGR::API.OGR_F_IsFieldSet(@feature_pointer, index)
+      FFI::OGR::API.OGR_F_IsFieldSet(@c_pointer, index)
     end
 
     # @param index [Fixnum]
     def unset_field(index)
-      FFI::OGR::API.OGR_F_UnsetField(@feature_pointer, index)
+      FFI::OGR::API.OGR_F_UnsetField(@c_pointer, index)
     end
 
     # @return [OGR::FeatureDefinition,nil]
     def definition
-      feature_defn_ptr = FFI::OGR::API.OGR_F_GetDefnRef(@feature_pointer)
+      feature_defn_ptr = FFI::OGR::API.OGR_F_GetDefnRef(@c_pointer)
       return nil if feature_defn_ptr.null?
 
       OGR::FeatureDefinition.new(feature_defn_ptr)
@@ -209,7 +215,7 @@ module OGR
 
     # @return [OGR::Geometry]
     def geometry
-      geometry_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(@feature_pointer)
+      geometry_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(@c_pointer)
       return nil if geometry_ptr.null?
 
       OGR::Geometry.factory(geometry_ptr)
@@ -218,28 +224,28 @@ module OGR
     # @param new_geometry [OGR::Geometry]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def geometry=(new_geometry)
-      ogr_err = FFI::OGR::API.OGR_F_SetGeometryDirectly(@feature_pointer, new_geometry.c_pointer)
+      ogr_err = FFI::OGR::API.OGR_F_SetGeometryDirectly(@c_pointer, new_geometry.c_pointer)
 
       ogr_err.handle_result
     end
 
     # @return [OGR::Geometry]
     def steal_geometry
-      geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@feature_pointer)
-      fail OGR::Failure, "Unable to steal geometry." if geometry_ptr.nil?
+      geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@c_pointer)
+      fail OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil?
 
       OGR::Geometry.factory(geometry_ptr)
     end
 
     # @return [Fixnum]
     def fid
-      FFI::OGR::API.OGR_F_GetFID(@feature_pointer)
+      FFI::OGR::API.OGR_F_GetFID(@c_pointer)
     end
 
     # @param new_fid [Fixnum]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fid=(new_fid)
-      ogr_err = FFI::OGR::API.OGR_F_SetFID(@feature_pointer, new_fid)
+      ogr_err = FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
 
       ogr_err.handle_result
     end
@@ -248,7 +254,7 @@ module OGR
     #
     # @return [Fixnum]
     def geometry_field_count
-      FFI::OGR::API.OGR_F_GetGeomFieldCount(@feature_pointer)
+      FFI::OGR::API.OGR_F_GetGeomFieldCount(@c_pointer)
     end
 
     # @param index [Fixnum]
@@ -257,7 +263,7 @@ module OGR
     # @raise [OGR::InvalidGeometryFieldDefinition] If there isn't one at
     #   +index+.
     def geometry_field_definition(index)
-      gfd_ptr = FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@feature_pointer, index)
+      gfd_ptr = FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@c_pointer, index)
       return nil if gfd_ptr.nil?
 
       gfd = OGR::GeometryFieldDefinition.new(gfd_ptr)
@@ -269,13 +275,13 @@ module OGR
     # @param name [String]
     # @return index [Fixnum]
     def geometry_field_index(name)
-      FFI::OGR::API.OGR_F_GetGeomFieldIndex(@feature_pointer, name)
+      FFI::OGR::API.OGR_F_GetGeomFieldIndex(@c_pointer, name)
     end
 
     # @param index [Fixnum]
     # @return [OGR::Geometry, nil] A read-only OGR::Geometry.
     def geometry_field(index)
-      geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@feature_pointer, index)
+      geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@c_pointer, index)
       return nil if geometry_ptr.nil? || geometry_ptr.null?
 
       geometry = OGR::Geometry.factory(geometry_ptr)
@@ -291,22 +297,22 @@ module OGR
       fail OGR::InvalidGeometry if geometry_ptr.nil?
 
       ogr_err =
-        # FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@feature_pointer, index, geometry_ptr)
-        FFI::OGR::API.OGR_F_SetGeomField(@feature_pointer, index, geometry_ptr)
+        # FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)
+        FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
 
       ogr_err.handle_result
     end
 
     # @return [Boolean]
     def equal?(other_feature)
-      FFI::OGR::API.OGR_F_Equal(@feature_pointer, feature_pointer_from(other_feature))
+      FFI::OGR::API.OGR_F_Equal(@c_pointer, c_pointer_from(other_feature))
     end
     alias_method :equals?, :equal?
 
     # @param index [Fixnum]
     # @return [Fixnum]
     def field_as_integer(index)
-      FFI::OGR::API.OGR_F_GetFieldAsInteger(@feature_pointer, index)
+      FFI::OGR::API.OGR_F_GetFieldAsInteger(@c_pointer, index)
     end
 
     # @param index [Fixnum]
@@ -314,7 +320,7 @@ module OGR
     def field_as_integer_list(index)
       list_size_ptr = FFI::MemoryPointer.new(:int)
       list_ptr =
-        FFI::OGR::API.OGR_F_GetFieldAsIntegerList(@feature_pointer, index, list_size_ptr)
+        FFI::OGR::API.OGR_F_GetFieldAsIntegerList(@c_pointer, index, list_size_ptr)
       return [] if list_ptr.null?
 
       list_ptr.read_array_of_int(list_size_ptr.read_int)
@@ -323,7 +329,7 @@ module OGR
     # @param index [Fixnum]
     # @return [Float]
     def field_as_double(index)
-      FFI::OGR::API.OGR_F_GetFieldAsDouble(@feature_pointer, index)
+      FFI::OGR::API.OGR_F_GetFieldAsDouble(@c_pointer, index)
     end
 
     # @param index [Fixnum]
@@ -331,7 +337,7 @@ module OGR
     def field_as_double_list(index)
       list_size_ptr = FFI::MemoryPointer.new(:int)
       list_ptr =
-        FFI::OGR::API.OGR_F_GetFieldAsDoubleList(@feature_pointer, index, list_size_ptr)
+        FFI::OGR::API.OGR_F_GetFieldAsDoubleList(@c_pointer, index, list_size_ptr)
       return [] if list_ptr.null?
 
       list_ptr.read_array_of_double(list_size_ptr.read_int)
@@ -340,14 +346,14 @@ module OGR
     # @param index [Fixnum]
     # @return [String]
     def field_as_string(index)
-      FFI::OGR::API.OGR_F_GetFieldAsString(@feature_pointer, index)
+      FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index)
     end
 
     # @param index [Fixnum]
     # @return [Array<String>]
     def field_as_string_list(index)
       list_ptr =
-        FFI::OGR::API.OGR_F_GetFieldAsStringList(@feature_pointer, index)
+        FFI::OGR::API.OGR_F_GetFieldAsStringList(@c_pointer, index)
       return [] if list_ptr.null?
 
       list_ptr.get_array_of_string(0)
@@ -358,7 +364,7 @@ module OGR
     def field_as_binary(index)
       byte_count_ptr = FFI::MemoryPointer.new(:int)
       binary_data = FFI::OGR::API.OGR_F_GetFieldAsBinary(
-        @feature_pointer,
+        @c_pointer,
         index,
         byte_count_ptr
       )
@@ -379,7 +385,7 @@ module OGR
       time_zone_flag_ptr = FFI::MemoryPointer.new(:int)
 
       result = FFI::OGR::API.OGR_F_GetFieldAsDateTime(
-        @feature_pointer,
+        @c_pointer,
         index,
         year_ptr,
         month_ptr,
@@ -402,7 +408,7 @@ module OGR
           minute_ptr.read_int,
           second_ptr.read_int,
           formatted_tz
-          )
+        )
       else
         DateTime.new(
           year_ptr.read_int,
@@ -411,23 +417,23 @@ module OGR
           hour_ptr.read_int,
           minute_ptr.read_int,
           second_ptr.read_int
-          )
+        )
       end
     end
 
     # @return [String]
     def style_string
-      FFI::OGR::API.OGR_F_GetStyleString(@feature_pointer)
+      FFI::OGR::API.OGR_F_GetStyleString(@c_pointer)
     end
 
     # @param new_style [String]
     def style_string=(new_style)
-      FFI::OGR::API.OGR_F_SetStyleString(@feature_pointer, new_style)
+      FFI::OGR::API.OGR_F_SetStyleString(@c_pointer, new_style)
     end
 
     # @return [OGR::StyleTable]
     def style_table
-      style_table_ptr = FFI::OGR::API.OGR_F_GetStyleTable(@feature_pointer)
+      style_table_ptr = FFI::OGR::API.OGR_F_GetStyleTable(@c_pointer)
       return nil if style_table_ptr.nil? || style_table_ptr.null?
 
       OGR::StyleTable.new(style_table_ptr)
@@ -438,12 +444,12 @@ module OGR
       new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
       fail OGR::InvalidStyleTable unless new_style_table_ptr
 
-      FFI::OGR::API.OGR_F_SetStyleTableDirectly(@field_pointer, new_style_table_ptr)
+      FFI::OGR::API.OGR_F_SetStyleTableDirectly(@c_pointer, new_style_table_ptr)
     end
 
     private
 
-    def feature_pointer_from(feature)
+    def c_pointer_from(feature)
       if feature.is_a? OGR::Feature
         feature.c_pointer
       elsif feature.is_a? FFI::Pointer

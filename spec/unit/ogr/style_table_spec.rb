@@ -126,7 +126,7 @@ RSpec.describe OGR::StyleTable do
     end
 
     it 'returns the styles' do
-      expect(subject.to_json).to eq(%q[{"style1":"12345","style2":"67890"}])
+      expect(subject.to_json).to eq('{"style1":"12345","style2":"67890"}')
     end
   end
 end

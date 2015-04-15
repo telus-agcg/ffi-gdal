@@ -8,6 +8,7 @@ module GDAL
         FFI::GDAL::Alg::TPSTransform
       end
 
+      # @return [FFI::Pointer] C pointer to the C TPS transformer.
       attr_reader :c_pointer
 
       # @param gcp_list [Array<FFI::GDAL::GCP>]

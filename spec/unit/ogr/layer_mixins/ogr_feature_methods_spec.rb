@@ -11,24 +11,45 @@ RSpec.describe OGR::Layer do
   end
 
   describe '#create_feature' do
-    it 'returns true' do
-      feature = OGR::Feature.new(subject.feature_definition)
-      expect(subject.create_feature(feature)).to eq true
+    let(:feature) { OGR::Feature.new(subject.feature_definition) }
+
+    context 'creation is not supported' do
+      before { expect(subject).to receive(:can_sequential_write?).and_return(false) }
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.create_feature(feature) }.to raise_exception OGR::UnsupportedOperation
+      end
+    end
+
+    context 'creation is supported' do
+      it 'returns true' do
+        expect(subject.create_feature(feature)).to eq true
+      end
     end
   end
 
   describe '#delete_feature' do
-    context 'no features' do
-      it 'raises an OGR::Failure' do
-        expect { subject.delete_feature(0) }.to raise_exception OGR::Failure
+    context 'deletion is not supported' do
+      before { expect(subject).to receive(:can_delete_feature?).and_return(false) }
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.delete_feature(0) }.to raise_exception OGR::UnsupportedOperation
       end
     end
 
-    context 'has a feature' do
-      before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+    context 'deletion is supported' do
+      context 'no features' do
+        it 'raises an OGR::Failure' do
+          expect { subject.delete_feature(0) }.to raise_exception OGR::Failure
+        end
+      end
 
-      it 'returns true' do
-        expect(subject.delete_feature(0)).to eq true
+      context 'has a feature' do
+        before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+
+        it 'returns true' do
+          expect(subject.delete_feature(0)).to eq true
+        end
       end
     end
   end
@@ -40,24 +61,45 @@ RSpec.describe OGR::Layer do
   end
 
   describe '#feature' do
-    context 'no features' do
-      it 'returns nil' do
-        expect(subject.feature(0)).to be_nil
+    context 'cannot random read' do
+      before { expect(subject).to receive(:can_random_read?).and_return(false) }
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.feature(0) }.to raise_exception OGR::UnsupportedOperation
       end
     end
 
-    context 'has a feature' do
-      before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+    context 'can random read' do
+      context 'no features' do
+        it 'returns nil' do
+          expect(subject.feature(0)).to be_nil
+        end
+      end
 
-      it 'returns an OGR::Feature' do
-        expect(subject.feature(0)).to be_a OGR::Feature
+      context 'has a feature' do
+        before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+
+        it 'returns an OGR::Feature' do
+          expect(subject.feature(0)).to be_a OGR::Feature
+        end
       end
     end
   end
 
   describe '#feature=' do
-    it 'adds the feature' do
-      skip
+    context 'cannot random write' do
+      before { expect(subject).to receive(:can_random_write?).and_return(false) }
+
+      it 'raises an OGR::UnsupportedOperation' do
+        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }.
+          to raise_exception OGR::UnsupportedOperation
+      end
+    end
+
+    context 'can random write' do
+      it 'adds the feature' do
+        skip
+      end
     end
   end
 

@@ -10,6 +10,9 @@ module GDAL
       FFI::MemoryPointer.new(:double, 6)
     end
 
+    # @return [FFI::Pointer] C pointer to the C geo-transform.
+    attr_reader :c_pointer
+
     # @param [String] filename
     # @param [String] extension The file extension to use.  When nil, GDAL will
     #   try to derive it from the +filename+.
@@ -30,13 +33,13 @@ module GDAL
 
     # @param geo_transform [FFI::Pointer]
     def initialize(geo_transform = nil)
-      @geo_transform_pointer = if geo_transform.is_a? GDAL::GeoTransform
-                                 geo_transform.c_pointer
-                               elsif geo_transform
-                                 geo_transform
-                               else
-                                 self.class.new_pointer
-                               end
+      @c_pointer = if geo_transform.is_a? GDAL::GeoTransform
+                     geo_transform.c_pointer
+                   elsif geo_transform
+                     geo_transform
+                   else
+                     self.class.new_pointer
+                   end
 
       self.pixel_width ||= 1.0
       self.pixel_height ||= 1.0
@@ -46,12 +49,8 @@ module GDAL
       to_a
     end
 
-    def c_pointer
-      @geo_transform_pointer
-    end
-
     def null?
-      @geo_transform_pointer.null?
+      @c_pointer.null?
     end
 
     # X-coordinate of the center of the upper left pixel.
@@ -61,12 +60,12 @@ module GDAL
     def x_origin
       return nil if null?
 
-      @geo_transform_pointer[0].read_double
+      @c_pointer[0].read_double
     end
 
     # @param new_x_origin [Float]
     def x_origin=(new_x_origin)
-      @geo_transform_pointer[0].write_double(new_x_origin)
+      @c_pointer[0].write_double(new_x_origin)
     end
 
     # AKA X-pixel size.
@@ -76,12 +75,12 @@ module GDAL
     def pixel_width
       return nil if null?
 
-      @geo_transform_pointer[1].read_double
+      @c_pointer[1].read_double
     end
 
     # @param new_pixel_width [Float]
     def pixel_width=(new_pixel_width)
-      @geo_transform_pointer[1].write_double(new_pixel_width)
+      @c_pointer[1].write_double(new_pixel_width)
     end
 
     # Rotation about the x-axis.
@@ -91,12 +90,12 @@ module GDAL
     def x_rotation
       return nil if null?
 
-      @geo_transform_pointer[2].read_double
+      @c_pointer[2].read_double
     end
 
     # @param new_x_rotation [Float]
     def x_rotation=(new_x_rotation)
-      @geo_transform_pointer[2].write_double(new_x_rotation)
+      @c_pointer[2].write_double(new_x_rotation)
     end
 
     # Y-coordinate of the center of the upper left pixel.
@@ -106,12 +105,12 @@ module GDAL
     def y_origin
       return nil if null?
 
-      @geo_transform_pointer[3].read_double
+      @c_pointer[3].read_double
     end
 
     # @param new_y_origin [Float]
     def y_origin=(new_y_origin)
-      @geo_transform_pointer[3].write_double(new_y_origin)
+      @c_pointer[3].write_double(new_y_origin)
     end
 
     # Rotation about the y-axis.
@@ -121,12 +120,12 @@ module GDAL
     def y_rotation
       return nil if null?
 
-      @geo_transform_pointer[4].read_double
+      @c_pointer[4].read_double
     end
 
     # @param new_y_rotation [Float]
     def y_rotation=(new_y_rotation)
-      @geo_transform_pointer[4].write_double(new_y_rotation)
+      @c_pointer[4].write_double(new_y_rotation)
     end
 
     # AKA Y-pixel size.
@@ -136,12 +135,12 @@ module GDAL
     def pixel_height
       return nil if null?
 
-      @geo_transform_pointer[5].read_double
+      @c_pointer[5].read_double
     end
 
     # @param new_pixel_height [Float]
     def pixel_height=(new_pixel_height)
-      @geo_transform_pointer[5].write_double(new_pixel_height)
+      @c_pointer[5].write_double(new_pixel_height)
     end
 
     # Converts a (pixel, line) coordinate to a georeferenced (geo_x, geo_y)
@@ -161,7 +160,7 @@ module GDAL
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
-      FFI::GDAL.GDALApplyGeoTransform(@geo_transform_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
+      FFI::GDAL.GDALApplyGeoTransform(@c_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
       { x_geo: geo_x_ptr.read_double, y_geo: geo_y_ptr.read_double }
     end
@@ -180,7 +179,7 @@ module GDAL
       end
 
       new_gt_ptr = self.class.new_pointer
-      FFI::GDAL.GDALComposeGeoTransforms(@geo_transform_pointer, other_ptr, new_gt_ptr)
+      FFI::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)
       return nil if new_gt_ptr.null?
 
       GDAL::GeoTransform.new(new_gt_ptr)
@@ -193,7 +192,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def invert
       new_geo_transform_ptr = self.class.new_pointer
-      success = FFI::GDAL.GDALInvGeoTransform(@geo_transform_pointer, new_geo_transform_ptr)
+      success = FFI::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
       return nil unless success
 
       self.class.new(new_geo_transform_ptr)
@@ -203,7 +202,7 @@ module GDAL
     # @param world_extension [String]
     # @return [Boolean]
     def to_world_file(raster_filename, world_extension)
-      FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @geo_transform_pointer)
+      FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @c_pointer)
     end
   end
 end

@@ -2,7 +2,6 @@ require 'json'
 
 module OGR
   module SpatialReferenceExtensions
-
     # @param unit_label [Symbol, String] Must match one of the known angular
     #   unit types from FFI::GDAL::SRS_UA.  Since there are only two, pick either
     #   :radian or :degree.
@@ -31,7 +30,7 @@ module OGR
     end
 
     # @return [Hash]
-    def as_json(options = nil)
+    def as_json(_options = nil)
       {
         angular_units: angular_units,
         epsg_treats_as_lat_long: epsg_treats_as_lat_long?,

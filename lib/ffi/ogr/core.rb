@@ -1,4 +1,5 @@
 require 'ffi'
+require_relative '../../ext/ffi_library_function_checks'
 require_relative 'field'
 
 module FFI

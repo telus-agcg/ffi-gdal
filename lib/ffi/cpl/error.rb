@@ -1,4 +1,5 @@
 require_relative '../../ext/error_symbols'
+require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
   module CPL

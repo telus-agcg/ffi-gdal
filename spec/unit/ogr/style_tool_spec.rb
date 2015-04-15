@@ -144,17 +144,13 @@ RSpec.describe OGR::StyleTool do
   describe '#rgb_from_string' do
     context 'nil passed in' do
       it 'returns a Hash with all nil values' do
-        expect(subject.rgb_from_string(nil)).to eq({
-          red: nil, green: nil, blue: nil, alpha: nil
-        })
+        expect(subject.rgb_from_string(nil)).to eq(red: nil, green: nil, blue: nil, alpha: nil)
       end
     end
 
     context 'an RGBA color passed in' do
       it do
-        expect(subject.rgb_from_string('#123456AB')).to eq({
-          red: 18, green: 52, blue: 86, alpha: 171
-        })
+        expect(subject.rgb_from_string('#123456AB')).to eq(red: 18, green: 52, blue: 86, alpha: 171)
       end
     end
   end

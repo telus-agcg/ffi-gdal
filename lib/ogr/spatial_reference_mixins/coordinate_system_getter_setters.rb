@@ -6,7 +6,7 @@ module OGR
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def set_local_cs(name)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetLocalCS(@ogr_spatial_ref_pointer, name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetLocalCS(@c_pointer, name)
 
         ogr_err.handle_result
       end
@@ -17,7 +17,7 @@ module OGR
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def set_proj_cs(name)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetProjCS(@ogr_spatial_ref_pointer, name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetProjCS(@c_pointer, name)
 
         ogr_err.handle_result
       end
@@ -28,7 +28,7 @@ module OGR
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def set_geoc_cs(name)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetGeocCS(@ogr_spatial_ref_pointer, name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetGeocCS(@c_pointer, name)
 
         ogr_err.handle_result
       end
@@ -41,7 +41,7 @@ module OGR
       # @raise [NotImplementedError] If your version of GDAL/OGR doesn't define
       #   the C function needed for this.
       def set_well_known_geog_cs(name)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@ogr_spatial_ref_pointer, name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@c_pointer, name)
 
         ogr_err.handle_result
       end
@@ -49,7 +49,7 @@ module OGR
 
       # @param definition [String]
       def set_from_user_input(definition)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetFromUserInput(@ogr_spatial_ref_pointer, definition)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetFromUserInput(@c_pointer, definition)
 
         ogr_err.handle_result 'Invalid projection info given.'
       end
@@ -57,7 +57,7 @@ module OGR
       # @return [Array<Float>]
       def towgs84
         coefficients = FFI::MemoryPointer.new(:double, 7)
-        ogr_err = FFI::OGR::SRSAPI.OSRGetTOWGS84(@ogr_spatial_ref_pointer, coefficients, 7)
+        ogr_err = FFI::OGR::SRSAPI.OSRGetTOWGS84(@c_pointer, coefficients, 7)
         ogr_err.handle_result
 
         coefficients.read_array_of_double(0)
@@ -75,7 +75,7 @@ module OGR
                       scaling_factor: 0.0)
 
         ogr_err = FFI::OGR::SRSAPI.OSRSetTOWGS84(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           x_distance, y_distance, z_distance,
           x_rotation, y_rotation, z_rotation,
           scaling_factor)
@@ -92,7 +92,7 @@ module OGR
         vertical_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, vertical_spatial_ref)
 
         ogr_err = FFI::OGR::SRSAPI.OSRSetCompoundCS(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           name,
           horizontal_spatial_ref_ptr,
           vertical_spatial_ref_ptr)
@@ -107,12 +107,12 @@ module OGR
       def set_geog_cs(geog_name, datum_name, spheroid_name, semi_major, spheroid_inverse_flattening,
         prime_meridian, offset, angular_unit_label, transform_to_radians)
         ogr_err = FFI::OGR::SRSAPI.OSRSetGeogCS(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           geog_name, datum_name, spheroid_name,
           semi_major, spheroid_inverse_flattening,
           prime_meridian, offset,
           angular_unit_label, transform_to_radians
-          )
+        )
 
         ogr_err.handle_result
       end
@@ -124,7 +124,7 @@ module OGR
       #   to have this match the EPSG name.
       # @param datum_type [String] The OGC datum type, usually 2005.
       def set_vert_cs(name, datum_name, datum_type)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetVertCS(@ogr_spatial_ref_pointer, name, datum_name, datum_type)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetVertCS(@c_pointer, name, datum_name, datum_type)
 
         ogr_err.handle_result
       end
@@ -136,7 +136,7 @@ module OGR
       # @return [Float]
       def semi_major(return_wgs84_on_nil = false)
         err_ptr = FFI::MemoryPointer.new(:int)
-        value = FFI::OGR::SRSAPI.OSRGetSemiMajor(@ogr_spatial_ref_pointer, err_ptr)
+        value = FFI::OGR::SRSAPI.OSRGetSemiMajor(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
         wgs84_value = return_wgs84_on_nil ? value : nil
 
@@ -150,7 +150,7 @@ module OGR
       # @return [Float]
       def semi_minor(return_wgs84_on_nil = false)
         err_ptr = FFI::MemoryPointer.new(:int)
-        value = FFI::OGR::SRSAPI.OSRGetSemiMinor(@ogr_spatial_ref_pointer, err_ptr)
+        value = FFI::OGR::SRSAPI.OSRGetSemiMinor(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
         wgs84_value = return_wgs84_on_nil ? value : nil
 
@@ -164,7 +164,7 @@ module OGR
       # @return [Float]
       def spheroid_inverse_flattening(return_wgs84_on_nil = false)
         err_ptr = FFI::MemoryPointer.new(:int)
-        value = FFI::OGR::SRSAPI.OSRGetInvFlattening(@ogr_spatial_ref_pointer, err_ptr)
+        value = FFI::OGR::SRSAPI.OSRGetInvFlattening(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
         wgs84_value = return_wgs84_on_nil ? value : nil
 
@@ -177,7 +177,7 @@ module OGR
       # @param code [Fixnum] Code value for the authority.
       def set_authority(target_key, authority, code)
         ogr_err = FFI::OGR::SRSAPI.OSRSetAuthority(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           target_key,
           authority,
           code)
@@ -190,7 +190,7 @@ module OGR
       #   search at the root element.
       # @return [String, nil]
       def authority_code(target_key = nil)
-        FFI::OGR::SRSAPI.OSRGetAuthorityCode(@ogr_spatial_ref_pointer, target_key)
+        FFI::OGR::SRSAPI.OSRGetAuthorityCode(@c_pointer, target_key)
       end
 
       # @param target_key [String] The partial or complete path to the node to get
@@ -198,13 +198,13 @@ module OGR
       #   search at the root element.
       # @return [String, nil]
       def authority_name(target_key = nil)
-        FFI::OGR::SRSAPI.OSRGetAuthorityName(@ogr_spatial_ref_pointer, target_key)
+        FFI::OGR::SRSAPI.OSRGetAuthorityName(@c_pointer, target_key)
       end
 
       # @param projection_name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def set_projection(projection_name)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetProjection(@ogr_spatial_ref_pointer, projection_name)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetProjection(@c_pointer, projection_name)
 
         ogr_err.handle_result
       end
@@ -213,7 +213,7 @@ module OGR
       # @param param_name [String]
       # @param value [Float]
       def set_projection_parameter(param_name, value)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetProjParm(@ogr_spatial_ref_pointer, param_name, value)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetProjParm(@c_pointer, param_name, value)
 
         ogr_err.handle_result
       end
@@ -222,13 +222,13 @@ module OGR
       # @param default_value [Float] The value to return if the parameter
       #   doesn't exist.
       def projection_parameter(name, default_value = 0.0)
-        FFI::OGR::SRSAPI.OSRGetProjParm(@ogr_spatial_ref_pointer, name, default_value, nil)
+        FFI::OGR::SRSAPI.OSRGetProjParm(@c_pointer, name, default_value, nil)
       end
 
       # @param param_name [String]
       # @param value [Float]
       def set_normalized_projection_parameter(param_name, value)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetNormProjParm(@ogr_spatial_ref_pointer, param_name, value)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetNormProjParm(@c_pointer, param_name, value)
 
         ogr_err.handle_result
       end
@@ -238,13 +238,13 @@ module OGR
       # @param default_value [Float] The value to return if the parameter
       #   doesn't exist.
       def normalized_projection_parameter(name, default_value = 0.0)
-        FFI::OGR::SRSAPI.OSRGetNormProjParm(@ogr_spatial_ref_pointer, name, default_value, nil)
+        FFI::OGR::SRSAPI.OSRGetNormProjParm(@c_pointer, name, default_value, nil)
       end
 
       # @param zone [Fixnum]
       # @param north [Boolean] True for northern hemisphere, false for southern.
       def set_utm(zone, north)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetUTM(@ogr_spatial_ref_pointer, zone, north)
+        ogr_err = FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, north)
 
         ogr_err.handle_result
       end
@@ -261,14 +261,14 @@ module OGR
         north_ptr = FFI::MemoryPointer.new(:bool)
         north_ptr.write_bytes(north.to_s)
 
-        FFI::OGR::SRSAPI.OSRGetUTMZone(@ogr_spatial_ref_pointer, north_ptr)
+        FFI::OGR::SRSAPI.OSRGetUTMZone(@c_pointer, north_ptr)
       end
 
       # @param zone [Fixnum] State plane zone number (USGS numbering scheme).
       # @param nad83 [Boolean] Use NAD83 zone definition or not.
       def set_state_plane(zone, nad83 = true, override_unit_label = nil, override_unit_transform = 0.0)
         ogr_err = FFI::OGR::SRSAPI.OSRSetStatePlaneWithUnits(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           zone,
           nad83,
           override_unit_label,
@@ -283,7 +283,7 @@ module OGR
       def axis(axis_number, target_key = nil)
         axis_orientation_ptr = FFI::MemoryPointer.new(:int)
 
-        name = FFI::OGR::SRSAPI.OSRGetAxis(@ogr_spatial_ref_pointer, target_key, axis_number, axis_orientation_ptr)
+        name = FFI::OGR::SRSAPI.OSRGetAxis(@c_pointer, target_key, axis_number, axis_orientation_ptr)
         ao_value = axis_orientation_ptr.read_int
 
         { name: name, orientation: AxisOrientation[ao_value] }
@@ -449,7 +449,7 @@ module OGR
       # @param false_northing [Float]
       def set_transverse_mercator(center_lat, center_long, scale, false_easting, false_northing)
         ogr_err = FFI::OGR::SRSAPI.OSRSetTM(
-          @ogr_spatial_ref_pointer,
+          @c_pointer,
           center_lat, center_long,
           scale,
           false_easting, false_northing)

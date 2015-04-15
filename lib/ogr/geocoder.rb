@@ -3,6 +3,9 @@ require_relative 'layer'
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html
   class Geocoder
+    # @return [FFI::Pointer] C pointer to the C geocoding session.
+    attr_reader :c_pointer
+
     # @param options [Hash]
     # @option options cache_file [String] Name of the file to write the cache
     #   to.
@@ -31,21 +34,20 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(converted_options)
 
-      @geocoding_session_pointer = FFI::GDAL.OGRGeocodeCreateSession(options_ptr)
-    end
-
-    def c_pointer
-      @geocoding_session_pointer
+      @c_pointer = FFI::GDAL.OGRGeocodeCreateSession(options_ptr)
     end
 
     def destroy!
-      FFI::GDAL.OGRGeocodeDestroySession(@geocoding_session_pointer)
+      return unless @c_pointer
+
+      FFI::GDAL.OGRGeocodeDestroySession(@c_pointer)
+      @c_pointer = nil
     end
 
     # @param query [String]
     # @param options [Hash]
     # @option options addressdetails [Boolean] +true+ to include a breakdown of
-    #   the adddress into elements.  Only works with some geocoding services.
+    #   the address into elements.  Only works with some geocoding services.
     # @option options countrycodes [Array<String, Symbol>] Limit the search to a
     #   specific country or countries.  Only works with some geocoding services.
     # @option options limit [Fixnum] Limit the number of records returned.  Only
@@ -56,8 +58,8 @@ module OGR
     # @return [OGR::Layer, nil]
     def geocode(query, **options)
       options_ptr = GDAL::Options.pointer(options)
-      layer_ptr = FFI::GDAL.OGRGeocode(@geocoding_session_pointer, query, nil,
-        options_ptr)
+      layer_ptr =
+        FFI::GDAL.OGRGeocode(@c_pointer, query, nil, options_ptr)
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)
@@ -73,8 +75,8 @@ module OGR
     # @return [OGR::Layer]
     def reverse_geocode(lon, lat, **options)
       options_ptr = GDAL::Options.pointer(options)
-      layer_ptr = FFI::GDAL.OGRGeocodeReverse(@geocoding_session_pointer, lon,
-        lat, options_ptr)
+      layer_ptr =
+        FFI::GDAL.OGRGeocodeReverse(@c_pointer, lon, lat, options_ptr)
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)

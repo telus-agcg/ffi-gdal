@@ -60,7 +60,7 @@ RSpec.describe GDAL::GeoTransform do
   end
 
   context 'a new GeoTransform' do
-   describe '#initialize' do
+    describe '#initialize' do
       it 'sets all attributes to 0.0' do
         expect(subject.x_origin).to eq 0.0
         expect(subject.pixel_width).to eq 0.0
@@ -129,7 +129,7 @@ RSpec.describe GDAL::GeoTransform do
         expect(projected[:y_geo]).to eq(-2000)
       end
 
-      it "returns calculated points" do
+      it 'returns calculated points' do
         projected = subject.apply_geo_transform(100, 100)
         expect(projected[:x_geo]).to eq 1010.0
         expect(projected[:y_geo]).to eq(-1990.0)
@@ -251,12 +251,12 @@ RSpec.describe GDAL::GeoTransform do
 
       it 'converts (0, 0)' do
         result = subject.world_to_pixel(0, 0)
-        expect(result).to eq pixel: -10000, line: -20000
+        expect(result).to eq pixel: -10_000, line: -20_000
       end
 
       it 'converts (100, -100)' do
         result = subject.world_to_pixel(100, -100)
-        expect(result).to eq pixel: -9000, line: -19000
+        expect(result).to eq pixel: -9000, line: -19_000
       end
     end
 

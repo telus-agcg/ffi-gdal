@@ -9,7 +9,22 @@ Metrics/MethodLength:
 
 Metrics/ParameterLists:
   Exclude:
+    - lib/gdal/dataset.rb
+    - lib/gdal/dataset_mixins/algorithm_methods.rb
+    - lib/gdal/dataset_mixins/extensions.rb
     - lib/gdal/driver.rb
+    - lib/gdal/raster_band.rb
+    - lib/gdal/raster_band_mixins/algorithm_methods.rb
+    - lib/gdal/transformers/general_image_projection_transformer.rb
+    - lib/gdal/virtual_dataset.rb
+    - lib/gdal/warp_operation.rb
+    - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
+
+Style/AccessorMethodName:
+  Exclude:
+    - lib/ogr/layer_mixins/ogr_field_methods.rb
+    - lib/ogr/layer_mixins/ogr_query_filter_methods.rb
+    - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
 
 Style/AlignParameters:
   EnforcedStyle: with_fixed_indentation
@@ -19,6 +34,13 @@ Style/Documentation:
 
 Style/DotPosition:
   EnforcedStyle: trailing
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/FileName:
+  Exclude:
+    - lib/ffi-gdal.rb
 
 Style/FormatString:
   EnforcedStyle: percent

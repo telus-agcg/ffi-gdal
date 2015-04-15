@@ -19,18 +19,17 @@ module GDAL
     ALPHA = 0x04
     NODATA = 0x08
 
+    # @return [FFI::Pointer] C pointer to the C raster band.
+    attr_reader :c_pointer
+
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band)
-      @raster_band_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
-    end
-
-    def c_pointer
-      @raster_band_pointer
+      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
     end
 
     # @return [Boolean]
     def flush_cache
-      !!FFI::GDAL.GDALFlushRasterCache(@raster_band_pointer)
+      !!FFI::GDAL.GDALFlushRasterCache(@c_pointer)
     end
 
     # The raster width in pixels.
@@ -39,7 +38,7 @@ module GDAL
     def x_size
       return nil if null?
 
-      FFI::GDAL.GDALGetRasterBandXSize(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterBandXSize(@c_pointer)
     end
 
     # The raster height in pixels.
@@ -48,7 +47,7 @@ module GDAL
     def y_size
       return nil if null?
 
-      FFI::GDAL.GDALGetRasterBandYSize(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterBandYSize(@c_pointer)
     end
 
     # The type of access to the raster band this object currently has.
@@ -57,7 +56,7 @@ module GDAL
     def access_flag
       return nil if null?
 
-      FFI::GDAL.GDALGetRasterAccess(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterAccess(@c_pointer)
     end
 
     # The number of band within the associated dataset that this band
@@ -67,14 +66,14 @@ module GDAL
     def number
       return nil if null?
 
-      FFI::GDAL.GDALGetBandNumber(@raster_band_pointer)
+      FFI::GDAL.GDALGetBandNumber(@c_pointer)
     end
 
     # @return [GDAL::Dataset, nil]
     def dataset
       return @dataset if @dataset
 
-      dataset_ptr = FFI::GDAL.GDALGetBandDataset(@raster_band_pointer)
+      dataset_ptr = FFI::GDAL.GDALGetBandDataset(@c_pointer)
       return nil if dataset_ptr.null?
 
       @dataset = GDAL::Dataset.new(dataset_ptr)
@@ -82,19 +81,19 @@ module GDAL
 
     # @return [Symbol] One of FFI::GDAL::ColorInterp.
     def color_interpretation
-      FFI::GDAL.GDALGetRasterColorInterpretation(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterColorInterpretation(@c_pointer)
     end
 
     # @param new_color_interp [FFI::GDAL::ColorInterp]
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
-      !!FFI::GDAL.GDALSetRasterColorInterpretation(@raster_band_pointer,
+      !!FFI::GDAL.GDALSetRasterColorInterpretation(@c_pointer,
         new_color_interp)
     end
 
     # @return [GDAL::ColorTable]
     def color_table
-      gdal_color_table = FFI::GDAL.GDALGetRasterColorTable(@raster_band_pointer)
+      gdal_color_table = FFI::GDAL.GDALGetRasterColorTable(@c_pointer)
       return nil if gdal_color_table.null?
 
       ColorTable.new(gdal_color_table)
@@ -103,14 +102,14 @@ module GDAL
     # @param new_color_table [GDAL::ColorTable]
     def color_table=(new_color_table)
       color_table_pointer = GDAL._pointer(GDAL::ColorTable, new_color_table)
-      FFI::GDAL.GDALSetRasterColorTable(@raster_band_pointer, color_table_pointer)
+      FFI::GDAL.GDALSetRasterColorTable(@c_pointer, color_table_pointer)
     end
 
     # The pixel data type for this band.
     #
     # @return [Symbol] One of FFI::GDAL::DataType.
     def data_type
-      FFI::GDAL.GDALGetRasterDataType(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterDataType(@c_pointer)
     end
 
     # The natural block size is the block size that is most efficient for
@@ -121,14 +120,14 @@ module GDAL
     def block_size
       x_pointer = FFI::MemoryPointer.new(:int)
       y_pointer = FFI::MemoryPointer.new(:int)
-      FFI::GDAL.GDALGetBlockSize(@raster_band_pointer, x_pointer, y_pointer)
+      FFI::GDAL.GDALGetBlockSize(@c_pointer, x_pointer, y_pointer)
 
       { x: x_pointer.read_int, y: y_pointer.read_int }
     end
 
     # @return [Array<String>]
     def category_names
-      names = FFI::GDAL.GDALGetRasterCategoryNames(@raster_band_pointer)
+      names = FFI::GDAL.GDALGetRasterCategoryNames(@c_pointer)
       return [] if names.null?
 
       names.get_array_of_string(0)
@@ -139,7 +138,7 @@ module GDAL
     def category_names=(names)
       names_pointer = GDAL._string_array_to_pointer(names)
 
-      !!FFI::GDAL.GDALSetRasterCategoryNames(@raster_band_pointer, names_pointer)
+      !!FFI::GDAL.GDALSetRasterCategoryNames(@c_pointer, names_pointer)
     end
 
     # The no data value for a band is generally a special marker value used to
@@ -149,7 +148,7 @@ module GDAL
     # @return [Hash{value => Float, is_associated => Boolean}]
     def no_data_value
       associated = FFI::MemoryPointer.new(:bool)
-      value = FFI::GDAL.GDALGetRasterNoDataValue(@raster_band_pointer, associated)
+      value = FFI::GDAL.GDALGetRasterNoDataValue(@c_pointer, associated)
 
       { value: value, is_associated: associated.read_bytes(1).to_bool }
     end
@@ -159,17 +158,17 @@ module GDAL
     # @param value [Float]
     # @return [Boolean]
     def no_data_value=(value)
-      !!FFI::GDAL.GDALSetRasterNoDataValue(@raster_band_pointer, value)
+      !!FFI::GDAL.GDALSetRasterNoDataValue(@c_pointer, value)
     end
 
     # @return [Fixnum]
     def overview_count
-      FFI::GDAL.GDALGetOverviewCount(@raster_band_pointer)
+      FFI::GDAL.GDALGetOverviewCount(@c_pointer)
     end
 
     # @return [Boolean]
     def arbitrary_overviews?
-      FFI::GDAL.GDALHasArbitraryOverviews(@raster_band_pointer).zero? ? false : true
+      FFI::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero? ? false : true
     end
 
     # @param index [Fixnum] Must be between 0 and (#overview_count - 1).
@@ -177,7 +176,7 @@ module GDAL
     def overview(index)
       return nil if overview_count.zero?
 
-      overview_pointer = FFI::GDAL.GDALGetOverview(@raster_band_pointer, index)
+      overview_pointer = FFI::GDAL.GDALGetOverview(@c_pointer, index)
       return nil if overview_pointer.null?
 
       self.class.new(overview_pointer)
@@ -188,7 +187,7 @@ module GDAL
     # @return [GDAL::RasterBand] An optimal overview or the same raster band if
     #   the raster band has no overviews.
     def raster_sample_overview(desired_samples = 0)
-      band_pointer = FFI::GDAL.GDALGetRasterSampleOverview(@raster_band_pointer, desired_samples)
+      band_pointer = FFI::GDAL.GDALGetRasterSampleOverview(@c_pointer, desired_samples)
       return nil if band_pointer.null?
 
       self.class.new(band_pointer)
@@ -196,7 +195,7 @@ module GDAL
 
     # @return [GDAL::RasterBand]
     def mask_band
-      band_pointer = FFI::GDAL.GDALGetMaskBand(@raster_band_pointer)
+      band_pointer = FFI::GDAL.GDALGetMaskBand(@c_pointer)
       return nil if band_pointer.null?
 
       self.class.new(band_pointer)
@@ -204,7 +203,7 @@ module GDAL
 
     # @return [Array<Symbol>]
     def mask_flags
-      flag_list = FFI::GDAL.GDALGetMaskFlags(@raster_band_pointer).to_s(2).scan(/\d/)
+      flag_list = FFI::GDAL.GDALGetMaskFlags(@c_pointer).to_s(2).scan(/\d/)
       flags = []
 
       flag_list.reverse.each_with_index do |flag, i|
@@ -224,7 +223,7 @@ module GDAL
 
     # @return [Boolean]
     def create_mask_band(flags)
-      !!FFI::GDAL.GDALCreateMaskBand(@raster_band_pointer, flags)
+      !!FFI::GDAL.GDALCreateMaskBand(@c_pointer, flags)
     end
 
     # Fill this band with constant value.  Useful for clearing a band and
@@ -233,7 +232,7 @@ module GDAL
     # @param real_value [Float]
     # @param imaginary_value [Float]
     def fill(real_value, imaginary_value = 0)
-      !!FFI::GDAL.GDALFillRaster(@raster_band_pointer, real_value, imaginary_value)
+      !!FFI::GDAL.GDALFillRaster(@c_pointer, real_value, imaginary_value)
     end
 
     # Returns minimum, maximum, mean, and standard deviation of all pixel values
@@ -263,7 +262,7 @@ module GDAL
       end
 
       handler.custom_handle do
-        FFI::GDAL.GDALGetRasterStatistics(@raster_band_pointer,
+        FFI::GDAL.GDALGetRasterStatistics(@c_pointer,
           approx_ok,
           force,
           min,
@@ -284,14 +283,14 @@ module GDAL
       standard_deviation_ptr = FFI::MemoryPointer.new(:double)
 
       FFI::GDAL::GDALComputeRasterStatistics(
-        @raster_band_pointer,                           # hBand
-        approx_ok,                                      # bApproxOK
-        min_ptr,                                        # pdfMin
-        max_ptr,                                        # pdfMax
-        mean_ptr,                                       # pdfMean
-        standard_deviation_ptr,                         # pdfStdDev
-        progress_block,                                 # pfnProgress
-        nil                                             # pProgressData
+        @c_pointer,                           # hBand
+        approx_ok,                            # bApproxOK
+        min_ptr,                              # pdfMin
+        max_ptr,                              # pdfMax
+        mean_ptr,                             # pdfMean
+        standard_deviation_ptr,               # pdfStdDev
+        progress_block,                       # pfnProgress
+        nil                                   # pProgressData
       )
 
       {
@@ -315,7 +314,7 @@ module GDAL
     # @return [Hash{value => Float, is_meaningful => Boolean}]
     def scale
       meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL.GDALGetRasterScale(@raster_band_pointer, meaningful)
+      result = FFI::GDAL.GDALGetRasterScale(@c_pointer, meaningful)
 
       { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
     end
@@ -323,7 +322,7 @@ module GDAL
     # @param new_scale [Float]
     # @return [Boolean]
     def scale=(new_scale)
-      !!FFI::GDAL.GDALSetRasterScale(@raster_band_pointer, new_scale.to_f)
+      !!FFI::GDAL.GDALSetRasterScale(@c_pointer, new_scale.to_f)
     end
 
     # This value (in combination with the #scale value) is used to
@@ -339,7 +338,7 @@ module GDAL
     # @return [Hash{value => Float, is_meaningful => Boolean}]
     def offset
       meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL.GDALGetRasterOffset(@raster_band_pointer, meaningful)
+      result = FFI::GDAL.GDALGetRasterOffset(@c_pointer, meaningful)
 
       { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
     end
@@ -347,12 +346,12 @@ module GDAL
     # @param new_offset [Float]
     # @return [Boolean]
     def offset=(new_offset)
-      !!FFI::GDAL.GDALSetRasterOffset(@raster_band_pointer, new_offset)
+      !!FFI::GDAL.GDALSetRasterOffset(@c_pointer, new_offset)
     end
 
     # @return [String]
     def unit_type
-      FFI::GDAL.GDALGetRasterUnitType(@raster_band_pointer)
+      FFI::GDAL.GDALGetRasterUnitType(@c_pointer)
     end
 
     # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"
@@ -360,7 +359,7 @@ module GDAL
     # @return [Boolean]
     def unit_type=(new_unit_type)
       if defined? FFI::GDAL::GDALSetRasterUnitType
-        !!FFI::GDAL.GDALSetRasterUnitType(@raster_band_pointer, new_unit_type)
+        !!FFI::GDAL.GDALSetRasterUnitType(@c_pointer, new_unit_type)
       else
         warn "GDALSetRasterUnitType is not defined.  Can't call RasterBand#unit_type="
       end
@@ -368,7 +367,7 @@ module GDAL
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table
-      rat_pointer = FFI::GDAL.GDALGetDefaultRAT(@raster_band_pointer)
+      rat_pointer = FFI::GDAL.GDALGetDefaultRAT(@c_pointer)
       return nil if rat_pointer.null?
 
       GDAL::RasterAttributeTable.new(rat_pointer)
@@ -377,7 +376,7 @@ module GDAL
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
       rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
-      FFI::GDAL.GDALSetDefaultRAT(@raster_band_pointer, rat_table_ptr)
+      FFI::GDAL.GDALSetDefaultRAT(@c_pointer, rat_table_ptr)
     end
 
     # Gets the default raster histogram.  Results are returned as a Hash so some
@@ -450,7 +449,8 @@ module GDAL
       end
 
       handler.custom_handle do
-        FFI::GDAL.GDALGetDefaultHistogram(@raster_band_pointer,
+        FFI::GDAL.GDALGetDefaultHistogram(
+          @c_pointer,
           min_pointer,
           max_pointer,
           buckets_pointer,
@@ -503,7 +503,7 @@ module GDAL
       end
 
       handler.custom_handle do
-        FFI::GDAL.GDALGetRasterHistogram(@raster_band_pointer,
+        FFI::GDAL.GDALGetRasterHistogram(@c_pointer,
           min.to_f,
           max.to_f,
           buckets,
@@ -532,7 +532,7 @@ module GDAL
       destination_pointer = GDAL._pointer(GDAL::RasterBand, destination_band)
       options_ptr = GDAL::Options.pointer(options)
 
-      !!FFI::GDAL.GDALRasterBandCopyWholeRaster(@raster_band_pointer,
+      !!FFI::GDAL.GDALRasterBandCopyWholeRaster(@c_pointer,
         destination_pointer,
         options_ptr,
         progress,
@@ -554,7 +554,8 @@ module GDAL
       scan_line = GDAL._pointer_from_data_type(data_type, x_size)
 
       the_array = y_size.times.map do |y|
-        FFI::GDAL.GDALRasterIO(@raster_band_pointer,
+        FFI::GDAL.GDALRasterIO(
+          @c_pointer,
           :GF_Read,
           x_offset,
           y,
@@ -590,8 +591,7 @@ module GDAL
     # @param line_space [Fixnum]
     # @param pixel_space [Fixnum]
     # TODO: Write using #buffer_size to write most efficiently.
-    # TODO: Return a value!
-    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: :GDT_Byte,
+    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: self.data_type,
       line_space: 0, pixel_space: 0)
       line_size = 1
       x_size = pixel_array.sizes.first
@@ -607,7 +607,8 @@ module GDAL
         meth = "write_array_of_#{ffi_type}".to_sym
         scan_line.send(meth, pixels.to_a)
 
-        FFI::GDAL.GDALRasterIO(@raster_band_pointer,
+        FFI::GDAL.GDALRasterIO(
+          @c_pointer,
           :GF_Write,
           x_offset,     # nXOff
           y,
@@ -636,7 +637,7 @@ module GDAL
     def read_block(x_offset, y_offset, image_buffer = nil)
       image_buffer ||= FFI::MemoryPointer.new(:void)
 
-      FFI::GDAL.GDALReadBlock(@raster_band_pointer, x_offset, y_offset, image_buffer)
+      FFI::GDAL.GDALReadBlock(@c_pointer, x_offset, y_offset, image_buffer)
 
       image_buffer
     end
@@ -646,7 +647,7 @@ module GDAL
     # @return [Hash{min => Float, max => Float}]
     def min_max(approx_ok: false)
       min_max = FFI::MemoryPointer.new(:double, 2)
-      FFI::GDAL.GDALComputeRasterMinMax(@raster_band_pointer, approx_ok, min_max)
+      FFI::GDAL.GDALComputeRasterMinMax(@c_pointer, approx_ok, min_max)
 
       { min: min_max[0].read_double, max: min_max[1].read_double }
     end
@@ -659,7 +660,7 @@ module GDAL
     #   tells whether the minimum is a tight minimum.
     def minimum_value
       is_tight = FFI::MemoryPointer.new(:bool)
-      value = FFI::GDAL.GDALGetRasterMinimum(@raster_band_pointer, is_tight)
+      value = FFI::GDAL.GDALGetRasterMinimum(@c_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
     end
@@ -672,7 +673,7 @@ module GDAL
     #   tells whether the maximum is a tight maximum.
     def maximum_value
       is_tight = FFI::MemoryPointer.new(:bool)
-      value = FFI::GDAL.GDALGetRasterMaximum(@raster_band_pointer, is_tight)
+      value = FFI::GDAL.GDALGetRasterMaximum(@c_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
     end

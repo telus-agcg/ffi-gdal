@@ -1,4 +1,5 @@
 require 'ffi'
+require_relative '../../ext/ffi_library_function_checks'
 require_relative 'rpc_info'
 require_relative '../ogr/api'
 require_relative '../cpl/error'

@@ -36,8 +36,7 @@ module GDAL
     def chunk_and_warp_multi(_x_offset, _y_offset, _x_size, _y_size)
       fail NotImplementedError, '#chunk_and_warp_multi not yet implemented.'
 
-      FFI::GDAL::Warper.GDALChunkAndWarpMulti(@c_pointer
-      )
+      FFI::GDAL::Warper.GDALChunkAndWarpMulti(@c_pointer)
     end
 
     # @param destination_x_offset [Fixnum] X offset of the destination image.

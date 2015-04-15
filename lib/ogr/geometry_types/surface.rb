@@ -8,7 +8,7 @@ module OGR
       #
       # @return [Float] 0.0 for unsupported geometry types.
       def area
-        FFI::OGR::API.OGR_G_Area(@geometry_pointer)
+        FFI::OGR::API.OGR_G_Area(@c_pointer)
       end
 
       # Returns the units used by the associated OGR::SpatialReference.

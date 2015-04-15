@@ -45,10 +45,10 @@ module GDAL
     def add_simple_source(vrt_band, source_band, no_data_value,
       src_x_offset: 0, src_y_offset: 0, src_x_size: nil, src_y_size: nil,
       dst_x_offset: 0, dst_y_offset: 0, dst_x_size: nil, dst_y_size: nil,
-      resampling: ''
-      )
-      FFI::GDAL::VRT.VRTAddSimpleSource(vrt_band,
-        new_source,       # hSrcBand
+      resampling: '')
+      FFI::GDAL::VRT.VRTAddSimpleSource(
+        vrt_band,
+        source_band,      # hSrcBand
         src_x_offset,     # hSrcBand
         src_y_offset,     # hSrcBand
         src_x_size,       # hSrcBand
@@ -59,17 +59,17 @@ module GDAL
         dst_y_size,       # hSrcBand
         resampling,       # pszResampling,
         no_data_value     # dfNoDataValue
-        )
+      )
     end
 
     # @return [Boolean]
     def add_complex_source(vrt_band, source_band, no_data_value,
       src_x_offset: 0, src_y_offset: 0, src_x_size: nil, src_y_size: nil,
       dst_x_offset: 0, dst_y_offset: 0, dst_x_size: nil, dst_y_size: nil,
-      scale_offset: 0.0, scale_ratio: 0.0
-      )
-      FFI::GDAL::VRT.VRTAddComplexSource(vrt_band,
-        new_source,       # hSrcBand
+      scale_offset: 0.0, scale_ratio: 0.0)
+      FFI::GDAL::VRT.VRTAddComplexSource(
+        vrt_band,
+        source_band,      # hSrcBand
         src_x_offset,     # hSrcBand
         src_y_offset,     # hSrcBand
         src_x_size,       # hSrcBand
@@ -79,9 +79,9 @@ module GDAL
         dst_x_size,       # hSrcBand
         dst_y_size,       # hSrcBand
         scale_offset,     # dfScaleOff
-        scale_ration,     # dfScaleRatio
+        scale_ratio,      # dfScaleRatio
         no_data_value     # dfNoDataValue
-        )
+      )
     end
 
     # @param vrt_band [FFI::Pointer]

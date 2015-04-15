@@ -35,7 +35,7 @@ RSpec.describe Numeric do
     context 'complex data types' do
       it 'returns a Complex' do
         complex_data_types.each do |data_type|
-          expect(subject.to_data_type(data_type)).to eql(1+0i).or eql(1.0+0i)
+          expect(subject.to_data_type(data_type)).to eql(1 + 0i).or eql(1.0 + 0i)
           expect(subject.to_data_type(data_type)).to be_a Complex
         end
       end
@@ -85,7 +85,7 @@ RSpec.describe Numeric do
 
   context 'Complexes' do
     context 'subject round down to 1' do
-      subject { 1+0i }
+      subject { 1 + 0i }
 
       it_behaves_like 'a numeric converted to GDAL'
 
@@ -98,7 +98,7 @@ RSpec.describe Numeric do
     end
 
     context 'subject rounds up to 2' do
-      subject { 1.8+0i }
+      subject { 1.8 + 0i }
 
       context 'integer data types' do
         it 'returns an Integer' do

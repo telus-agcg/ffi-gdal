@@ -14,7 +14,7 @@ module GDAL
         gcp_count_ptr = FFI::MemoryPointer.new(:int)
 
         gcp = FFI::GDAL::Matching.GDALComputeMatchingPoints(
-          @dataset_pointer,
+          @c_pointer,
           other_dataset_ptr,
           options_ptr,
           gcp_count_ptr)
