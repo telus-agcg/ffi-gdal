@@ -15,7 +15,7 @@ module FFI
     # @param [String] lib Name of the library file to find.
     # @return [String] Path to the library file.
     def self.find_lib(lib)
-      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}.*"
+      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
       if ENV['GDAL_LIBRARY_PATH']
         return File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)
