@@ -5,6 +5,7 @@ require_relative '../warp_operation'
 require_relative '../../ogr/driver'
 require_relative '../../ogr/layer'
 require_relative '../../ogr/spatial_reference'
+require_relative '../../ogr/coordinate_transformation'
 
 module GDAL
   module DatasetMixins
@@ -397,13 +398,22 @@ module GDAL
         data_source
       end
 
+      # Gets the OGR::Geometry that represents the extent of the dataset.
+      #
+      # @return [OGR::Polygon]
+      def extent
+        raster_data_source = to_vector('memory data source', 'Memory', geometry_type: :wkbLinearRing)
+
+        raster_data_source.layer(0).geometry_from_extent
+      end
+
       # @param wkt_geometry_string [String]
       # @param wkt_srid [Fixnum]
       # @return [Boolean]
       def contains_geometry?(wkt_geometry_string, wkt_srid = 4326)
         source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
         source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
-        @raster_geometry ||= to_geometry
+        @raster_geometry ||= extent
 
         coordinate_transformation = OGR::CoordinateTransformation.new(source_srs,
           @raster_geometry.spatial_reference)
