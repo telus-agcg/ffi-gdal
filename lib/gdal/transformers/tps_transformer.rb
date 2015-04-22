@@ -24,7 +24,6 @@ module GDAL
         ObjectSpace.define_finalizer self, -> { destroy! }
       end
 
-      # @param transform_argument [FFI::Pointer]
       def destroy!
         return unless @c_pointer
 

@@ -28,10 +28,10 @@ module GDAL
         y_size)
     end
 
-    # @param x_offset [Fixnum] X offset of the destination image.
-    # @param y_offset [Fixnum] Y offset of the destination image.
-    # @param x_size [Fixnum] X size (width) of the destination image.
-    # @param y_size [Fixnum] Y size (height) of the destination image.
+    # @param _x_offset [Fixnum] X offset of the destination image.
+    # @param _y_offset [Fixnum] Y offset of the destination image.
+    # @param _x_size [Fixnum] X size (width) of the destination image.
+    # @param _y_size [Fixnum] Y size (height) of the destination image.
     # @todo Implement
     def chunk_and_warp_multi(_x_offset, _y_offset, _x_size, _y_size)
       fail NotImplementedError, '#chunk_and_warp_multi not yet implemented.'

@@ -49,7 +49,7 @@ module OGR
 
     # Stolen from http://www.gdal.org/ogr__core_8h_source.html.
     #
-    # @param [OGR::Envelope] The Envelope to merge self with.
+    # @param other_envelope [OGR::Envelope] The Envelope to merge self with.
     # @return [OGR::Envelope]
     def merge(other_envelope)
       new_envelope = OGR::Envelope.new
@@ -63,7 +63,8 @@ module OGR
 
     # Stolen from http://www.gdal.org/ogr__core_8h_source.html.
     #
-    # @param [OGR::Envelope] The Envelope to check intersection with.
+    # @param other_envelope [OGR::Envelope] The Envelope to check intersection
+    #   with.
     # @return [OGR::Envelope]
     def intersects?(other_envelope)
       x_min <= other_envelope.x_max &&
@@ -74,7 +75,8 @@ module OGR
 
     # Stolen from http://www.gdal.org/ogr__core_8h_source.html.
     #
-    # @param [OGR::Envelope] The Envelope to check containment with.
+    # @param other_envelope [OGR::Envelope] The Envelope to check containment
+    #   with.
     # @return [OGR::Envelope]
     def contains?(other_envelope)
       x_min <= other_envelope.x_min &&

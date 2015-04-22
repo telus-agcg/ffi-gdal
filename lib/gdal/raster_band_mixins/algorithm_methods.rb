@@ -54,7 +54,7 @@ module GDAL
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
         # @param output_band [GDAL::RasterBand, FFI::Pointer]
         # @param color_table [GDAL::ColorTable, FFI::Pointer]
-        # @param [GDAL::RasterBand] +output_band+ with the dithering algorithm
+        # @return [GDAL::RasterBand] +output_band+ with the dithering algorithm
         #   applied.
         def dither_rgb_to_pct(red_band, green_band, blue_band, output_band,
           color_table, &progress)

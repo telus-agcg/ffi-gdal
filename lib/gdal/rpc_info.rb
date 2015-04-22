@@ -11,7 +11,7 @@ module GDAL
     extend Forwardable
     def_delegator :@c_struct, :[]
 
-    # @param [FFI::GDAL::RPCInfo, FFI::Pointer]
+    # @param struct_or_ptr [FFI::GDAL::RPCInfo, FFI::Pointer]
     def initialize(struct_or_ptr = nil)
       @c_struct = if struct_or_ptr.is_a? FFI::GDAL::RPCInfo
                     struct_or_ptr

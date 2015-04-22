@@ -18,7 +18,7 @@ module OGR
       # Creates a new Geometry using the class of the geometry that the type
       # represents.
       #
-      # @param [OGR::Geometry, FFI::Pointer]
+      # @param geometry [OGR::Geometry, FFI::Pointer]
       # @return [OGR::Geometry]
       def factory(geometry)
         geometry =
@@ -48,7 +48,7 @@ module OGR
 
       # @return [OGR::Geometry]
       # @param wkt_data [String]
-      # @param spatial_reference [FFI::Pointer] Optional spatial reference
+      # @param spatial_ref [FFI::Pointer] Optional spatial reference
       #   to assign to the new geometry.
       # @return [OGR::Geometry]
       def create_from_wkt(wkt_data, spatial_ref = nil)

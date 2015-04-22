@@ -62,7 +62,7 @@ module OGR
 
       # Rewrites an existing feature using the ID within the given Feature.
       #
-      # @param [OGR::Feature, FFI::Pointer]
+      # @param new_feature [OGR::Feature, FFI::Pointer]
       def feature=(new_feature)
         unless can_random_write?
           fail OGR::UnsupportedOperation, '#feature= not supported by this Layer'

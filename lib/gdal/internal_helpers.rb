@@ -46,7 +46,7 @@ module GDAL
       # Takes an array of strings (or things that should be converted to
       # strings) and creates a char**.
       #
-      # @param [Array<String>] [description]
+      # @param strings [Array<String>]
       # @return [FFI::MemoryPointer]
       def _string_array_to_pointer(strings)
         string_pointers = strings.map do |string|

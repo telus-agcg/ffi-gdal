@@ -102,7 +102,15 @@ module OGR
 
       # Set the user-visible GEOCCS name.
       #
-      # @param name [String]
+      # @param [String] geog_name
+      # @param [String] datum_name
+      # @param [String] spheroid_name
+      # @param [Float] semi_major
+      # @param [Float] spheroid_inverse_flattening
+      # @param [String] prime_meridian
+      # @param [Double] offset
+      # @param [String] angular_unit_label
+      # @param [Float] transform_to_radians
       # @return +true+ if successful, otherwise raises an OGR exception.
       def set_geog_cs(geog_name, datum_name, spheroid_name, semi_major, spheroid_inverse_flattening,
         prime_meridian, offset, angular_unit_label, transform_to_radians)

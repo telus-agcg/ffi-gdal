@@ -33,7 +33,7 @@ module GDAL
       @ranges << { range: range, map_to: map_to_value }
     end
 
-    # @param [Array<Hash{range => Range, map_to => Number}>]
+    # @param range_array [Array<Hash{range => Range, map_to => Number}>]
     def add_ranges(range_array)
       range_array.each do |range|
         add_range range[:range], range[:map_to]

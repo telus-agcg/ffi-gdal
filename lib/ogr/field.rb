@@ -5,7 +5,7 @@ module OGR
     # @return [FFI::OGR::Point]
     attr_reader :c_struct
 
-    # @param [FFI::OGR::Point, FFI::Pointer]
+    # @param ogr_field_struct [FFI::OGR::Point, FFI::Pointer]
     def initialize(ogr_field_struct = nil)
       @c_struct = ogr_field_struct || ::FFI::OGR::Field.new
     end
@@ -66,7 +66,7 @@ module OGR
       il[:list].read_array_of_int(il[:count])
     end
 
-    # @param integer_list [Array<Fixnum>]
+    # @param new_integer_list [Array<Fixnum>]
     def integer_list=(new_integer_list)
       list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.size)
       list_ptr.write_array_of_int(new_integer_list)
@@ -192,7 +192,7 @@ module OGR
         formatted_tz)
     end
 
-    # @param [Date, Time, DateTime]
+    # @param new_date [Date, Time, DateTime]
     def date=(new_date)
       time = new_date.to_time
       zone = OGR._format_time_zone_for_ogr(time.zone)

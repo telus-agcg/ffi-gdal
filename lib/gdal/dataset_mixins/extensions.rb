@@ -136,9 +136,6 @@ module GDAL
       #   new dataset.
       # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
       #   in this data type.
-      # @param remove_negatives [Boolean] Remove negative values after
-      #   calculating NDVI.
-      # @param no_data_value [Float]
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
       # @return [GDAL::Dataset] The new NIR dataset. *Be sure to call #close on

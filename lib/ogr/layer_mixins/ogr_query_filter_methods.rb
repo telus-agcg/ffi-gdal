@@ -42,7 +42,7 @@ module OGR
       # @param min_x [Float]
       # @param min_y [Float]
       # @param max_x [Float]
-      # @param max_x [Float]
+      # @param max_y [Float]
       def set_spatial_filter_rectangle(min_x, min_y, max_x, max_y)
         FFI::OGR::API.OGR_L_SetSpatialFilterRect(
           @c_pointer,
@@ -62,7 +62,7 @@ module OGR
       # @param min_x [Float]
       # @param min_y [Float]
       # @param max_x [Float]
-      # @param max_x [Float]
+      # @param max_y [Float]
       def set_spatial_filter_rectangle_ex(geometry_field_index, min_x, min_y, max_x, max_y)
         FFI::OGR::API.OGR_L_SetSpatialFilterRectEx(
           @c_pointer,
