@@ -94,7 +94,7 @@ module OGR
       OGR::StyleTable.new(style_table_pointer)
     end
 
-    # @param [OGR::StyleTable, FFI::pointer]
+    # @param new_style_table [OGR::StyleTable, FFI::pointer]
     def style_table=(new_style_table)
       style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
       fail OGR::Failure if style_table_ptr.nil? || style_table_ptr.null?

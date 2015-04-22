@@ -32,7 +32,7 @@ module OGR
       end
 
       # @param unit_label [String]
-      # @param transfor_to_meters [Float] The value to multiply an angle to
+      # @param transform_to_radians [Float] The value to multiply an angle to
       #   transform the value to radians.
       def set_angular_units(unit_label, transform_to_radians)
         ogr_err = FFI::OGR::SRSAPI.OSRSetAngularUnits(@c_pointer, unit_label, transform_to_radians.to_f)
@@ -54,7 +54,7 @@ module OGR
       end
 
       # @param unit_label [String]
-      # @param transfor_to_meters [Float] The value to multiply a length to
+      # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
       def set_linear_units(unit_label, transform_to_meters)
         ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnits(@c_pointer, unit_label, transform_to_meters.to_f)
@@ -66,7 +66,7 @@ module OGR
       # the new units.
       #
       # @param unit_label [String]
-      # @param transfor_to_meters [Float] The value to multiply a length to
+      # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
         ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(

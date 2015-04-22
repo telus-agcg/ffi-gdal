@@ -5,6 +5,7 @@ require_relative '../warp_operation'
 require_relative '../../ogr/driver'
 require_relative '../../ogr/layer'
 require_relative '../../ogr/spatial_reference'
+require_relative '../../ogr/coordinate_transformation'
 
 module GDAL
   module DatasetMixins
@@ -136,9 +137,6 @@ module GDAL
       #   new dataset.
       # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
       #   in this data type.
-      # @param remove_negatives [Boolean] Remove negative values after
-      #   calculating NDVI.
-      # @param no_data_value [Float]
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
       # @return [GDAL::Dataset] The new NIR dataset. *Be sure to call #close on
@@ -400,13 +398,22 @@ module GDAL
         data_source
       end
 
+      # Gets the OGR::Geometry that represents the extent of the dataset.
+      #
+      # @return [OGR::Polygon]
+      def extent
+        raster_data_source = to_vector('memory data source', 'Memory', geometry_type: :wkbLinearRing)
+
+        raster_data_source.layer(0).geometry_from_extent
+      end
+
       # @param wkt_geometry_string [String]
       # @param wkt_srid [Fixnum]
       # @return [Boolean]
       def contains_geometry?(wkt_geometry_string, wkt_srid = 4326)
         source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
         source_geometry = OGR::Geometry.create_from_wkt(wkt_geometry_string, source_srs)
-        @raster_geometry ||= to_geometry
+        @raster_geometry ||= extent
 
         coordinate_transformation = OGR::CoordinateTransformation.new(source_srs,
           @raster_geometry.spatial_reference)

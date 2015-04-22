@@ -7,6 +7,8 @@ require_relative 'options'
 require 'multi_xml'
 
 module GDAL
+  # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working
+  # with GDAL datasets.
   class Driver
     include MajorObject
     include GDAL::Logger

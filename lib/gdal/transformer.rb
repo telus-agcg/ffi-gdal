@@ -7,7 +7,7 @@ module GDAL
       FFI::GDAL::Alg.GDALCreateSimilarTransformer(transformer_arg_ptr, source_ratio_x, source_ratio_y)
     end
 
-    # @param [FFI::Pointer]
+    # @param transformer_arg [FFI::Pointer]
     def self.destroy_transformer(transformer_arg)
       FFI::GDAL::Alg.GDALDestroyTransformer(transformer_arg)
     end

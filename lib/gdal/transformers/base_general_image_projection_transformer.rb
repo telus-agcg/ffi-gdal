@@ -33,7 +33,7 @@ module GDAL
       # For these cases, this function can be used to apply the destination
       # geotransform.
       #
-      # @param [FFI::Pointer, GDAL::GeoTransform]
+      # @param [FFI::Pointer, GDAL::GeoTransform] geo_transform
       def destination_geo_transform=(geo_transform)
         geo_transform_ptr = GDAL._pointer(GDAL::GeoTransform, geo_transform)
 

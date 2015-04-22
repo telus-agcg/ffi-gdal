@@ -20,7 +20,7 @@ module GDAL
     # @return [FFI::Pointer] The C pointer that represents the C RAT.
     attr_reader :c_pointer
 
-    # @param raster_attribute_table [GDAL::RasterAttributeTable, FFI::Pointer]
+    # @param pointer [FFI::Pointer]
     def initialize(pointer = nil)
       @c_pointer = pointer || FFI::GDAL.GDALCreateRasterAttributeTable
     end

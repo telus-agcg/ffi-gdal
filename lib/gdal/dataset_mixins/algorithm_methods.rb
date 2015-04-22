@@ -110,7 +110,7 @@ module GDAL
       # @param driver [String] Name of the driver to use for outputing the new
       #   image.
       # @param transformer [Proc]
-      # @param trasnformer_arg_ptr [FFI::Pointer]
+      # @param transformer_arg_ptr [FFI::Pointer]
       # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
       #   warping.  0 indicates all bands.
       # @param options [Hash]

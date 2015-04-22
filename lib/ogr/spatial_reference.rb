@@ -70,7 +70,7 @@ module OGR
     # Fetch info about a single parameter of a projection method.
     #
     # @param projection_method [String]
-    # @param projection_name [String]
+    # @param parameter_name [String]
     def self.parameter_info(projection_method, parameter_name)
       name_ptr = FFI::MemoryPointer.new(:string)
       name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -106,7 +106,7 @@ module OGR
       }
     end
 
-    # @param [FFI::OGR::SRSAPI::AxisOrientation] [description]
+    # @param orientation [FFI::OGR::SRSAPI::AxisOrientation]
     # @return [String]
     def self.axis_enum_to_name(orientation)
       FFI::OGR::SRSAPI::AxisEnumToName(orientation)

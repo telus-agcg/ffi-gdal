@@ -156,7 +156,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param prj_text [Array<String>]
+      # @param esri_text [Array<String>]
       def import_from_esri(esri_text)
         text_array = esri_text.split("\n")
         esri_ptr_ptr = GDAL._string_array_to_pointer(text_array)
@@ -184,7 +184,7 @@ module OGR
       # @param projection_system_code [Fixnum]
       # @param zone [Fixnum]
       # @param datum [Fixnum]
-      # @param [Array<Float>] [description]
+      # @param proj_params [Array<Float>]
       def import_from_usgs(projection_system_code, zone, datum, *proj_params)
         if proj_params.empty?
           proj_ptr = nil

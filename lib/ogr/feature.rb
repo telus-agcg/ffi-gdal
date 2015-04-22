@@ -55,8 +55,8 @@ module OGR
     # Overwrites the contents of this feature from the geometry and attributes
     # of the +other_feature+.
     #
-    # @param other_feature [OGR::Feature]
-    # @param be_forgiving [Boolean] +true+ if the operation should continue
+    # @param _other_feature [OGR::Feature]
+    # @param _be_forgiving [Boolean] +true+ if the operation should continue
     #   despite lacking output fields matching some of the source fields.
     # @param with_map [Array<Fixnum>]
     # TODO: Implement +with_map+
@@ -162,7 +162,7 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @param [Date, Time, DateTime]
+    # @param value [Date, Time, DateTime]
     def set_field_date_time(index, value)
       time = value.to_time
       zone = OGR._format_time_zone_for_ogr(time.zone)
@@ -273,7 +273,7 @@ module OGR
     end
 
     # @param name [String]
-    # @return index [Fixnum]
+    # @return [Fixnum]
     def geometry_field_index(name)
       FFI::OGR::API.OGR_F_GetGeomFieldIndex(@c_pointer, name)
     end
@@ -291,7 +291,7 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @param [OGR::Geometry]
+    # @param geometry [OGR::Geometry]
     def set_geometry_field(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
       fail OGR::InvalidGeometry if geometry_ptr.nil?
