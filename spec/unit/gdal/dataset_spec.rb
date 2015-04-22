@@ -1,6 +1,7 @@
 require 'spec_helper'
+require 'gdal/dataset'
 
-describe GDAL::Dataset do
+RSpec.describe GDAL::Dataset do
   let(:file_path) do
     File.expand_path('../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__)
   end
@@ -59,12 +60,8 @@ describe GDAL::Dataset do
   end
 
   describe '#add_band' do
-    it 'raises a GDAL::CPLErrFailure' do
-      skip 'Figure out why this causes a segfault'
-
-      expect {
-        subject.add_band(:GDT_Byte)
-      }.to raise_exception(GDAL::CPLErrFailure)
+    it 'raises a GDAL::UnsupportedOperation' do
+      expect { subject.add_band(:GDT_Byte) }.to raise_exception(GDAL::UnsupportedOperation)
     end
   end
 

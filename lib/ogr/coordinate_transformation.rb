@@ -1,33 +1,8 @@
 require 'narray'
-require_relative '../ffi/ogr'
+require_relative '../ffi/ogr/srs_api'
 
 module OGR
   class CoordinateTransformation
-
-    # @param source_srs [OGR::SpatialReference, FFI::Pointer]
-    # @param destination_srs [OGR::SpatialReference, FFI::Pointer]
-    # @return [OGR::CoordinateTransformation]
-    def self.create(source_srs, destination_srs)
-      source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
-      destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
-      ct_ptr = FFI::GDAL.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
-      return nil if ct_ptr.null?
-
-      source = if source_srs.is_a?(OGR::SpatialReference)
-        source_srs
-      else
-        OGR::SpatialReference.new(source_srs)
-      end
-
-      destination = if destination_srs.is_a?(OGR::SpatialReference)
-        destination_srs
-      else
-        OGR::SpatialReference.new(destination_srs)
-      end
-
-      new(ct_ptr, source, destination)
-    end
-
     # @param proj4_source [String]
     # @return [String]
     def self.proj4_normalize(proj4_source)
@@ -42,25 +17,25 @@ module OGR
     # @return [OGR::SpatialReference]
     attr_reader :destination_coordinate_system
 
-    # @param coordinate_transformation [OGR::CoordinateTransformation,
-    #   FFI::Pointer]
-    def initialize(coordinate_transformation, source, destination)
-      @transformation_pointer = GDAL._pointer(OGR::CoordinateTransformation,
-        coordinate_transformation)
-      @source_coordinate_system = source
-      @destination_coordinate_system = destination
+    # @return [FFI::Pointer] C pointer that represents the CoordinateTransformation.
+    attr_reader :c_pointer
+
+    def initialize(source_srs, destination_srs)
+      source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
+      destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
+      @c_pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
+
+      if @c_pointer.null?
+        fail OGR::Failure, 'Unable to create coordinate transformation'
+      end
 
       close_me = -> { destroy! }
       ObjectSpace.define_finalizer self, close_me
     end
 
-    def c_pointer
-      @transformation_pointer
-    end
-
     # Deletes the object and deallocates all related resources.
     def destroy!
-      FFI::GDAL.OCTDestroyCoordinateTransformation(@transformation_pointer)
+      FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(@c_pointer)
     end
 
     # Transforms points in the +source_srs+ space to points in the
@@ -71,7 +46,7 @@ module OGR
     # @param z_vertices [Array<Float>]
     # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, y1], [x2,
     #   y2], etc]
-    def transform(x_vertices, y_vertices, z_vertices=[])
+    def transform(x_vertices, y_vertices, z_vertices = [])
       x_ptr = FFI::MemoryPointer.new(:pointer, x_vertices.size)
       x_ptr.write_array_of_double(x_vertices)
       y_ptr = FFI::MemoryPointer.new(:pointer, y_vertices.size)
@@ -86,7 +61,7 @@ module OGR
 
       point_count = x_vertices.size + y_vertices.size + z_vertices.size
 
-      result = FFI::GDAL.OCTTransform(@transformation_pointer, point_count,
+      result = FFI::OGR::SRSAPI.OCTTransform(@c_pointer, point_count,
         x_ptr, y_ptr, z_ptr)
 
       # maybe this should raise?
@@ -94,7 +69,7 @@ module OGR
 
       x_vals = x_ptr.read_array_of_double
       y_vals = y_ptr.read_array_of_double
-      z_vals = z_ptr.read_array_of_double unless z_vertices.empty?
+      z_vals = z_vertices.empty? ? nil : z_ptr.read_array_of_double
 
       points = if z_vertices.empty?
                  NMatrix[x_vals, y_vals]

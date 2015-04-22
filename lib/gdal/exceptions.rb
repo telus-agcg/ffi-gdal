@@ -1,20 +1,48 @@
 module GDAL
+  class CreateFail < StandardError
+  end
+
+  class Error < ::RuntimeError
+  end
+
   class OpenFailure < StandardError
-    def initialize(file, msg=nil)
+    def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
     end
   end
 
-  class CPLErrFailure < StandardError
+  class InvalidBandNumber < StandardError
   end
 
-  class CreateFail < StandardError
+  class InvalidColorTable < StandardError
+  end
+
+  class InvalidDriverIndex < StandardError
+  end
+
+  class InvalidDriverName < StandardError
+  end
+
+  class InvalidRasterBand < StandardError
+  end
+
+  class NoWriteAccess < RuntimeError
+  end
+
+  class NullObject < TypeError
   end
 
   class RequiredBandNotFound < StandardError
   end
 
-  class InvalidBandNumber < StandardError
+  class UnknownGridAlgorithm < StandardError
+    def initialize(algorithm, msg = nil)
+      message = msg || "Unknown Grid algorithm type '#{algorithm}'."
+      super(message)
+    end
+  end
+
+  class UnsupportedOperation < StandardError
   end
 end

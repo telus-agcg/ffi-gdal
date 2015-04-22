@@ -2,15 +2,31 @@ require 'json'
 
 module OGR
   module StyleTableExtensions
+    # Gets all of the styles as Hash.  Note that this calls
+    # #reset_style_string_reading.
+    #
+    # @return [Hash{name => style}]
+    def styles
+      styles = {}
+      reset_style_string_reading
 
-    # @return [String]
-    def as_json
-      'StyleTable interface not yet wrapped with ffi-ruby'
+      while style = next_style
+        styles[last_style_name] = style
+      end
+
+      reset_style_string_reading
+
+      styles
+    end
+
+    # @return [Hash]
+    def as_json(_options = nil)
+      styles
     end
 
     # @return [String]
-    def to_json
-      as_json.to_json
+    def to_json(options = nil)
+      as_json(options).to_json
     end
   end
 end

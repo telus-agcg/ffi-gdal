@@ -1,35 +1,81 @@
 module OGR
-  class OpenFailure < RuntimeError
-    def initialize(file, msg=nil)
-      message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
+  class CorruptData < RuntimeError
+  end
+
+  class CreateFailure < RuntimeError
+  end
+
+  class DriverNotFound < RuntimeError
+    def initialize(driver, msg = nil)
+      message =
+        if msg
+          msg
+        elsif driver.is_a? String
+          "Driver not found with name '#{driver}'."
+        elsif driver.is_a? Fixnum
+          "Driver at index #{driver} not found."
+        end
+
       super(message)
     end
   end
 
-  class InvalidLayer < RuntimeError
+  class Failure < StandardError
+  end
+
+  class InvalidDataSource < StandardError
+  end
+
+  class InvalidFeature < StandardError
+  end
+
+  class InvalidFeatureDefinition < StandardError
+  end
+
+  class InvalidFieldDefinition < StandardError
+  end
+
+  class InvalidGeometry < StandardError
+  end
+
+  class InvalidGeometryFieldDefinition < StandardError
+  end
+
+  class InvalidHandle < RuntimeError
+  end
+
+  class InvalidLayer < StandardError
+  end
+
+  class InvalidStyleTable < StandardError
+  end
+
+  class InvalidSpatialReference < StandardError
   end
 
   class NotEnoughData < RuntimeError
   end
 
-  class NotEnoughMemory < RuntimeError
+  class OpenFailure < RuntimeError
+    def initialize(file, msg = nil)
+      message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
+      super(message)
+    end
   end
 
-  class UnsupportedGeometryType < RuntimeError
+  class ReadOnlyObject < StandardError
+    def initialize(msg = nil)
+      message = msg || "The object you're accessing is read-only.  Probably because it's internally managed by OGR."
+      super(message)
+    end
   end
 
-  class UnsupportedOperation < RuntimeError
+  class UnsupportedGeometryType < StandardError
   end
 
-  class CorruptData < RuntimeError
+  class UnsupportedOperation < StandardError
   end
 
-  class Failure < RuntimeError
-  end
-
-  class UnsupportedSRS < RuntimeError
-  end
-
-  class InvalidHandle < RuntimeError
+  class UnsupportedSRS < StandardError
   end
 end

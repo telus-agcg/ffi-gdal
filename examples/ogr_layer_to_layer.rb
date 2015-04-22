@@ -12,7 +12,7 @@ data_source = OGR::DataSource.open('../spec/support/shapefiles/states_21basic/st
 layer = data_source.layer(0)
 extent = layer.extent
 
-# extent = geometry.envelope.world_to_pixel(floyd.geo_transform)
+# extent = geometry.envelope.world_to_pixels(floyd.geo_transform)
 # x_min = extent[:x_origin]
 # x_max = extent[:x_max]
 # y_min = extent[:y_origin]

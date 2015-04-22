@@ -1,20 +1,19 @@
 module OGR
   module GeometryTypes
     module Curve
-
       # @return [Float]
       def x(point_number)
-        FFI::GDAL.OGR_G_GetX(@geometry_pointer, point_number)
+        FFI::OGR::API.OGR_G_GetX(@c_pointer, point_number)
       end
 
       # @return [Float]
       def y(point_number)
-        FFI::GDAL.OGR_G_GetY(@geometry_pointer, point_number)
+        FFI::OGR::API.OGR_G_GetY(@c_pointer, point_number)
       end
 
       # @return [Float]
       def z(point_number)
-        FFI::GDAL.OGR_G_GetZ(@geometry_pointer, point_number)
+        FFI::OGR::API.OGR_G_GetZ(@c_pointer, point_number)
       end
 
       # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
@@ -23,7 +22,7 @@ module OGR
         y_ptr = FFI::MemoryPointer.new(:double)
         z_ptr = FFI::MemoryPointer.new(:double)
 
-        FFI::GDAL.OGR_G_GetPoint(@geometry_pointer, number, x_ptr, y_ptr, z_ptr)
+        FFI::OGR::API.OGR_G_GetPoint(@c_pointer, number, x_ptr, y_ptr, z_ptr)
 
         if coordinate_dimension == 2
           [x_ptr.read_double, y_ptr.read_double]
@@ -37,16 +36,16 @@ module OGR
       # @param x [Float]
       # @param y [Float]
       # @param z [Float]
-      def add_point(x, y, z=0)
+      def add_point(x, y, z = 0)
         if coordinate_dimension == 3
-          FFI::GDAL.OGR_G_AddPoint(@geometry_pointer, x, y, z)
+          FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
         else
-          FFI::GDAL.OGR_G_AddPoint_2D(@geometry_pointer, x, y)
+          FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
         end
       end
 
-      def set_point(index, x, y, z=0)
-        FFI::GDAL.OGR_G_SetPoint(@geometry_pointer, index, x, y, z)
+      def set_point(index, x, y, z = 0)
+        FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
       end
 
       # @return [Array<Array>] An array of (x, y) or (x, y, z) points.
@@ -61,21 +60,19 @@ module OGR
         y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
 
         z_buffer = if coordinate_dimension == 3
-          z_size = FFI::Type::DOUBLE.size * point_count
-          FFI::MemoryPointer.new(:buffer_out, z_size)
-        else
-          nil
-        end
+                     z_size = FFI::Type::DOUBLE.size * point_count
+                     FFI::MemoryPointer.new(:buffer_out, z_size)
+                   end
 
-        num_points = FFI::GDAL.OGR_G_GetPoints(@geometry_pointer,
-        x_buffer,
-        x_stride,
-        y_buffer,
-        y_stride,
-        z_buffer,
-        z_stride)
+        num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
+          x_buffer,
+          x_stride,
+          y_buffer,
+          y_stride,
+          z_buffer,
+          z_stride)
 
-        0.upto(num_points - 1).map do |i|
+        num_points.times.map do |i|
           point(i)
         end
       end
@@ -87,13 +84,13 @@ module OGR
         points.map do |x_and_y|
           result = geo_transform.world_to_pixel(*x_and_y)
 
-          [result[:x].to_i.abs, result[:y].to_i.abs]
+          [result[:pixel].to_i.abs, result[:line].to_i.abs]
         end
       end
 
       # @param new_count [Fixnum]
       def point_count=(new_count)
-        FFI::GDAL.OGR_G_SetPointCount(@geometry_pointer, new_count)
+        FFI::OGR::API.OGR_G_SetPointCount(@c_pointer, new_count)
       end
 
       # Computes the length for this geometry.  Computes area for Curve or
@@ -101,7 +98,7 @@ module OGR
       #
       # @return [Float] 0.0 for unsupported geometry types.
       def length
-        FFI::GDAL.OGR_G_Length(@geometry_pointer)
+        FFI::OGR::API.OGR_G_Length(@c_pointer)
       end
 
       def start_point

@@ -1,29 +1,27 @@
 require 'spec_helper'
+require 'gdal/color_table'
 
-
-describe GDAL::ColorTable do
-  describe '.create' do
+RSpec.describe GDAL::ColorTable do
+  describe '#initialize' do
     context 'with a valid PaletteInterpretation' do
       it 'creates a new ColorTable' do
-        expect(described_class.create(:GPI_RGB)).to be_a(described_class)
+        expect(described_class.new(:GPI_RGB)).to be_a(described_class)
       end
     end
 
     context 'with an invalid PaletteInterpretation' do
-      it 'raises an ArgumentError' do
-        expect {
-          described_class.create(:MEOW)
-        }.to raise_exception(ArgumentError)
+      it 'raises an GDAL::InvalidColorTable' do
+        expect do
+          described_class.new(:MEOW)
+        end.to raise_exception(GDAL::InvalidColorTable)
       end
     end
-  end
 
-  describe '#initialize' do
     context ':GPI_RGB' do
       it 'extends the new object with the ColorTableTypes::RGB module' do
         expect_any_instance_of(described_class).to receive(:extend).
           with(GDAL::ColorTableTypes::RGB)
-        described_class.create(:GPI_RGB)
+        described_class.new(:GPI_RGB)
       end
     end
 
@@ -31,7 +29,7 @@ describe GDAL::ColorTable do
       it 'extends the new object with the ColorTableTypes::Gray module' do
         expect_any_instance_of(described_class).to receive(:extend).
           with(GDAL::ColorTableTypes::Gray)
-        described_class.create(:GPI_Gray)
+        described_class.new(:GPI_Gray)
       end
     end
 
@@ -39,7 +37,7 @@ describe GDAL::ColorTable do
       it 'extends the new object with the ColorTableTypes::CMYK module' do
         expect_any_instance_of(described_class).to receive(:extend).
           with(GDAL::ColorTableTypes::CMYK)
-        described_class.create(:GPI_CMYK)
+        described_class.new(:GPI_CMYK)
       end
     end
 
@@ -47,13 +45,13 @@ describe GDAL::ColorTable do
       it 'extends the new object with the ColorTableTypes::HLS module' do
         expect_any_instance_of(described_class).to receive(:extend).
           with(GDAL::ColorTableTypes::HLS)
-        described_class.create(:GPI_HLS)
+        described_class.new(:GPI_HLS)
       end
     end
   end
 
   subject do
-    described_class.create(:GPI_RGB)
+    described_class.new(:GPI_RGB)
   end
 
   describe '#palette_interpretation' do
@@ -136,7 +134,7 @@ describe GDAL::ColorTable do
     context 'color entries that exist' do
       it 'returns nil' do
         entry0 = subject.add_color_entry(0, 0, 0, 0, 0)
-        entry1 = subject.add_color_entry(1, 10, 10, 10, 10)
+        _entry1 = subject.add_color_entry(1, 10, 10, 10, 10)
         entry2 = subject.add_color_entry(2, 100, 100, 100, 100)
 
         expect(subject.create_color_ramp!(0, entry0, 2, entry2)).to be_nil

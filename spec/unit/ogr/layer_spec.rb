@@ -1,97 +1,96 @@
 require 'spec_helper'
+require 'ogr/layer'
 
-describe OGR::Layer do
-  let(:data_source) do
-    OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
-  end
-
-  let(:layer0) do
-    data_source.layer(0)
-  end
-
-  subject do
-    layer0
-  end
+RSpec.describe OGR::Layer do
+  include_context 'OGR::Layer, spatial_reference'
 
   describe '#name' do
-    subject { layer0.name }
-    it { is_expected.to eq 'states' }
-  end
-
-  describe '#geometry_type' do
-    subject { layer0.geometry_type }
-    it { is_expected.to eq :wkbPolygon }
-  end
-
-  describe '#feature_count' do
-    subject { layer0.feature_count }
-    it { is_expected.to eq 51 }
-  end
-
-  describe '#feature' do
-    subject { layer0.feature(0) }
-    it { is_expected.to be_a OGR::Feature }
-  end
-
-  describe '#next_feature' do
-    subject { layer0.next_feature }
-    it { is_expected.to be_a OGR::Feature }
-  end
-
-  describe '#features_read' do
-    subject { layer0.features_read }
-    it { is_expected.to be >= 0 }
-  end
-
-  describe '#features' do
-    subject { layer0.features }
-    it { is_expected.to be_an Array }
-    specify { expect(subject.first).to be_a OGR::Feature }
-    specify { expect(subject.size).to eq layer0.feature_count }
-  end
-
-  describe '#feature_definition' do
-    subject { layer0.feature_definition }
-    it { is_expected.to be_a OGR::FeatureDefinition }
-  end
-
-  describe '#spatial_reference' do
-    subject { layer0.spatial_reference }
-    it { is_expected.to be_a OGR::SpatialReference }
-  end
-
-  describe '#extent' do
-    subject { layer0.extent }
-    it { is_expected.to be_a OGR::Envelope }
-  end
-
-  describe '#fid_column' do
-    subject { layer0.fid_column }
-    it { is_expected.to be_a String }
-    it { is_expected.to be_empty }
-  end
-
-  describe '#geometry_column' do
-    subject { layer0.geometry_column }
-    it { is_expected.to be_a String }
-    it { is_expected.to be_empty }
-  end
-
-  describe '#style_table' do
-    subject { layer0.style_table }
-    it { is_expected.to be_nil }
-  end
-
-  describe '#geometry_from_extent' do
-    it 'is a Polygon' do
-      geometry = subject.geometry_from_extent
-      expect(geometry).to be_a OGR::Polygon
+    it 'returns the name given to it' do
+      expect(subject.name).to eq 'spec layer'
     end
   end
 
-  describe '#as_json' do
-    specify do
-      expect { subject.as_json }.to_not raise_exception
+  describe '#geometry_type' do
+    it 'returns the type it was created with' do
+      expect(subject.geometry_type).to eq :wkbMultiPoint
+    end
+  end
+
+  describe '#sync_to_disk' do
+    it 'does not die' do
+      expect { subject.sync_to_disk }.to_not raise_exception
+    end
+  end
+
+  describe '#test_capability' do
+    context 'some supported capabilities to check' do
+      let(:capabilities) do
+        %w[OLCRandomRead OLCCreateField OLCCurveGeometries]
+      end
+
+      # I don't get why these return false...
+      it 'returns false' do
+        capabilities.each do |capability|
+          expect(subject.test_capability(capability)).to eq false
+        end
+      end
+    end
+
+    context 'unsupported capabilities to check' do
+      it 'returns false' do
+        expect(subject.test_capability('meow')).to eq false
+      end
+    end
+  end
+
+  describe '#spatial_reference' do
+    context 'no spatial ref' do
+      include_context 'OGR::Layer, no spatial_reference'
+
+      it 'returns nil' do
+        expect(subject.spatial_reference).to be_nil
+      end
+    end
+
+    context 'with a spatial ref' do
+      it 'returns an OGR::SpatialReference' do
+        expect(subject.spatial_reference).to be_a OGR::SpatialReference
+      end
+    end
+  end
+
+  describe '#extent' do
+    it 'returns an OGR::Envelope' do
+      expect(subject.extent).to be_a OGR::Envelope
+    end
+  end
+
+  describe '#extent_by_geometry' do
+    context 'force is false' do
+      it 'returns an OGR::Envelope' do
+        expect(subject.extent_by_geometry(0, false)).to be_a OGR::Envelope
+      end
+    end
+
+    context 'force is true' do
+      it 'returns an OGR::Envelope' do
+        expect(subject.extent_by_geometry(0, true)).to be_a OGR::Envelope
+      end
+    end
+  end
+
+  describe '#style_table= + #style_table' do
+    context 'one is not set' do
+      it 'returns nil' do
+        expect(subject.style_table).to be_nil
+      end
+    end
+
+    context 'one is set' do
+      it 'returns an OGR::StyleTable' do
+        subject.style_table = OGR::StyleTable.new
+        expect(subject.style_table).to be_a OGR::StyleTable
+      end
     end
   end
 end

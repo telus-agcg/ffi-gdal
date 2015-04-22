@@ -4,85 +4,84 @@ require_relative '../ffi/gdal'
 require_relative '../ffi/ogr'
 require_relative 'data_source_extensions'
 require_relative 'exceptions'
-require_relative 'layer'
+require_relative 'driver'
+require_relative 'data_source_mixins/capability_methods'
 require_relative 'style_table'
-
+require_relative 'layer'
+require_relative '../gdal/major_object'
 
 module OGR
   class DataSource
     include GDAL::MajorObject
     include GDAL::Logger
     include DataSourceExtensions
+    include DataSourceMixins::CapabilityMethods
 
-    # @param path [String] Path/URL to the file to open.
+    # Same as +.new+.
+    #
+    # @param path [String]
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      uri = URI.parse(path)
-      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
-
-      pointer = FFI::GDAL.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
-      raise OGR::OpenFailure.new(file_path) if pointer.null?
-
-      new(pointer)
+      new(path, access_flag)
     end
 
-    # @param data_source_pointer [FFI::Pointer]
-    def initialize(data_source_pointer)
-      @data_source_pointer = data_source_pointer
-      @file_name = name
+    # @return [FFI::Pointer]
+    attr_reader :c_pointer
+
+    # @param path_or_pointer [String, FFI::Pointer] Path/URL to the file to
+    #   open or the Pointer to an already existing data soruce.
+    # @param access_flag [String] 'r' for read, 'w', for write.
+    def initialize(path_or_pointer, access_flag)
+      @c_pointer =
+        if path_or_pointer.is_a? String
+          uri = URI.parse(path_or_pointer)
+          file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
+          FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+        else
+          path_or_pointer
+        end
+
+      fail OGR::OpenFailure, file_path if @c_pointer.null?
+
       @layers = []
-
-      close_me = -> { destroy }
-      ObjectSpace.define_finalizer self, close_me
-    end
-
-    def c_pointer
-      @data_source_pointer
-    end
-
-    def reopen(access_flag)
-      if driver.name == 'Memory'
-        raise "Can't reopen DataSources that were created and closed using the 'Memory' driver."
-      end
-
-      @data_source_pointer = FFI::GDAL.OGROpen(@file_path,
-        OGR._boolean_access_flag(access_flag), nil)
+      ObjectSpace.define_finalizer self, -> { destroy! }
     end
 
     # Closes opened data source and releases allocated resources.
-    def destroy
-      FFI::GDAL.OGR_DS_Destroy(@data_source_pointer)
+    def destroy!
+      return unless @c_pointer
+
+      FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
+      @c_pointer = nil
     end
-    alias_method :close, :destroy
+    alias_method :close, :destroy!
 
     # Name of the file represented by this object.
     #
     # @return [String]
     def name
-      FFI::GDAL.OGR_DS_GetName(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_GetName(@c_pointer)
     end
 
     # @return [OGR::Driver]
     def driver
-      return @driver if @driver
-
-      driver_ptr = FFI::GDAL.OGR_DS_GetDriver(@data_source_pointer)
+      driver_ptr = FFI::OGR::API.OGR_DS_GetDriver(@c_pointer)
       return nil if driver_ptr.nil?
 
-      @driver = OGR::Driver.new(driver_ptr)
+      OGR::Driver.new(driver_ptr)
     end
 
     # @return [Fixnum]
     def layer_count
-      FFI::GDAL.OGR_DS_GetLayerCount(@data_source_pointer)
+      FFI::OGR::API.OGR_DS_GetLayerCount(@c_pointer)
     end
 
     # @param index [Fixnum] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
       @layers.fetch(index) do
-        layer_pointer = FFI::GDAL.OGR_DS_GetLayer(@data_source_pointer, index)
+        layer_pointer = FFI::OGR::API.OGR_DS_GetLayer(@c_pointer, index)
         return nil if layer_pointer.null?
 
         l = OGR::Layer.new(layer_pointer)
@@ -95,27 +94,36 @@ module OGR
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)
-      layer_pointer = FFI::GDAL.OGR_DS_GetLayerByName(@data_source_pointer, name)
+      layer_pointer = FFI::OGR::API.OGR_DS_GetLayerByName(@c_pointer, name)
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
     end
 
     # @param name [String] The name for the new layer.
-    # @param geometry_type [FFI::GDAL::OGRwkbGeometryType]
-    # @param spatial_reference [OGR::SpatialReference] The coordinate system
-    #   to use for the new layer or nil if none is available.
+    # @param geometry_type [FFI::OGR::API::WKBGeometryType] Constrain to this
+    #   geometry type.
+    # @param spatial_reference [FFI::Pointer, OGR::SpatialReference] The coordinate system
+    # @param options [Hash] Driver-specific options.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference)
+      unless can_create_layer?
+        fail OGR::UnsupportedOperation, 'This data source does not support creating layers.'
+      end
+
+      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::GDAL.OGR_DS_CreateLayer(@data_source_pointer, name,
+      layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name,
         spatial_ref_ptr, geometry_type, options_obj)
 
-      return nil if layer_ptr.null?
+      unless layer_ptr
+        fail OGR::InvalidLayer, "Unable to create layer '#{name}'."
+      end
 
-      OGR::Layer.new(layer_ptr)
+      @layers << OGR::Layer.new(layer_ptr)
+
+      @layers.last
     end
 
     # @param source_layer [OGR::Layer, FFI::Pointer]
@@ -126,7 +134,7 @@ module OGR
       source_layer_ptr = GDAL._pointer(OGR::Layer, source_layer)
       options_ptr = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::GDAL.OGR_DS_CopyLayer(@data_source_pointer, source_layer_ptr,
+      layer_ptr = FFI::OGR::API.OGR_DS_CopyLayer(@c_pointer, source_layer_ptr,
         new_name, options_ptr)
       return nil if layer_ptr.null?
 
@@ -136,9 +144,13 @@ module OGR
     # @param index [Fixnum]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
-      ogr_err = FFI::GDAL.OGR_DS_DeleteLayer(@data_source_pointer, index)
+      unless can_delete_layer?
+        fail OGR::UnsupportedOperation, 'This data source does not support deleting layers.'
+      end
 
-      ogr_err.to_ruby
+      ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
+
+      ogr_err.handle_result "Unable to delete layer #{index}"
     end
 
     # @param command [String] The SQL to execute.
@@ -147,11 +159,10 @@ module OGR
     #   default OGRSQL dialect.
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
-    # TODO: not sure how to handle the call to OGR_DS_ReleaseResultSet here...
-    def execute_sql(command, spatial_filter=nil, dialect=nil)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter)
+    def execute_sql(command, spatial_filter = nil, dialect = nil)
+      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
-      layer_ptr = FFI::GDAL.OGR_DS_ExecuteSQL(@data_source_pointer, command, geometry_ptr,
+      layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr,
         dialect)
 
       return nil if layer_ptr.null?
@@ -159,14 +170,48 @@ module OGR
       OGR::Layer.new(layer_ptr)
     end
 
+    # Use to release the resulting data pointer from #execute_sql.
+    #
+    # @param layer [OGR::Layer, FFI::Pointer]
+    def release_result_set(layer)
+      layer_ptr = GDAL._pointer(OGR::Layer, layer)
+      FFI::OGR::API.OGR_DS_ReleaseResultSet(@c_pointer, layer_ptr)
+    end
+
     # @return [OGR::StyleTable, nil]
     def style_table
-      return @style_table if @style_table
-
-      style_table_ptr = FFI::GDAL.OGR_DS_GetStyleTable(@data_source_pointer)
+      style_table_ptr = FFI::OGR::API.OGR_DS_GetStyleTable(@c_pointer)
       return nil if style_table_ptr.null?
 
-      @style_table = OGR::StyleTable.new(style_table_ptr)
+      OGR::StyleTable.new(style_table_ptr)
+    end
+
+    # @param new_style_table [OGR::StyleTable, FFI::Pointer]
+    def style_table=(new_style_table)
+      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
+
+      FFI::OGR::API.OGR_DS_SetStyleTable(@c_pointer, new_style_table_ptr)
+
+      if new_style_table.instance_of? OGR::StyleTable
+        new_style_table
+      else
+        OGR::StyleTable.new(new_style_table_ptr)
+      end
+    end
+
+    # @param capability [String] Must be one of: ODsCCreateLayer,
+    #   ODsCDeleteLayer, ODsCCreateGeomFieldAfterCreateLayer,
+    #   ODsCCurveGeometries.
+    # @return [Boolean]
+    def test_capability(capability)
+      FFI::OGR::API.OGR_DS_TestCapability(@c_pointer, capability)
+    end
+
+    # @return [Boolean]
+    def sync_to_disk
+      ogr_err = FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
+
+      ogr_err.handle_result
     end
   end
 end

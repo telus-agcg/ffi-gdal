@@ -1,6 +1,5 @@
 require_relative '../ffi/gdal'
 
-
 module GDAL
   module MajorObject
     # @return [Array<String>]
@@ -20,7 +19,7 @@ module GDAL
 
     # @param domain [String] Name of the domain to get metadata for.
     # @return [Hash]
-    def metadata(domain='')
+    def metadata(domain = '')
       m = FFI::GDAL.GDALGetMetadata(c_pointer, domain)
       return {} if m.null?
 
@@ -40,14 +39,12 @@ module GDAL
     # @param name [String]
     # @param domain [String]
     # @return [String]
-    def metadata_item(name, domain='')
+    def metadata_item(name, domain = '')
       FFI::GDAL.GDALGetMetadataItem(c_pointer, name, domain)
     end
 
-    def set_metadata_item(name, value, domain='')
-      cpl_err = FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
-
-      cpl_err.to_bool
+    def set_metadata_item(name, value, domain = '')
+      FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
     end
 
     # @return [Hash{domain => Array<String>}]

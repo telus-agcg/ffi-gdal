@@ -40,6 +40,12 @@ To distinguish this gem from the already-existing gdal gem, you
 Following RubyGem conventions, to get access to the FFI wrapper, you
 `require ffi/gdal`.
 
+### Logging
+
+For classes that are enabled with logging capabilities, you can turn logging on
+and off like `GDAL::RasterBand.logging_enabled = true`. If you're using ffi-gdal
+in Rails, you can `GDAL::Logger.logger = Rails.logger`.
+
 
 Testing
 -------
