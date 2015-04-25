@@ -36,8 +36,6 @@ module GDAL
     #
     # @return [Fixnum]
     def x_size
-      return nil if null?
-
       FFI::GDAL.GDALGetRasterBandXSize(@c_pointer)
     end
 
@@ -45,8 +43,6 @@ module GDAL
     #
     # @return [Fixnum]
     def y_size
-      return nil if null?
-
       FFI::GDAL.GDALGetRasterBandYSize(@c_pointer)
     end
 
@@ -54,8 +50,6 @@ module GDAL
     #
     # @return [Symbol] Either :GA_Update or :GA_ReadOnly.
     def access_flag
-      return nil if null?
-
       FFI::GDAL.GDALGetRasterAccess(@c_pointer)
     end
 
@@ -64,8 +58,6 @@ module GDAL
     #
     # @return [Fixnum]
     def number
-      return nil if null?
-
       FFI::GDAL.GDALGetBandNumber(@c_pointer)
     end
 
@@ -583,47 +575,112 @@ module GDAL
       NArray.to_na(the_array)
     end
 
-    # @param pixel_array [NArray] The list of pixels.
+    # Writes an NArray of pixels to the raster band using {#raster_io}. It
+    # determines +x_size+ and +y_size+ for the {#raster_io} call using the
+    # dimensions of the array.
+    #
+    # @param pixel_array [NArray] The 2d list of pixels.
     # @param x_offset [Fixnum] The left-most pixel to start writing.
-    # @param y_offset [Fixnum] The top-most pixel to start writing.
-    # @param data_type [FFI::GDAL::DataType] The type of pixel contained in
+    # @param y_offset [Fixnum] The top-most line to start writing.
+    # @param buffer_data_type [FFI::GDAL::DataType] The type of pixel contained in
     #   the +pixel_array+.
     # @param line_space [Fixnum]
     # @param pixel_space [Fixnum]
     # TODO: Write using #buffer_size to write most efficiently.
-    def write_array(pixel_array, x_offset: 0, y_offset: 0, data_type: self.data_type,
+    def write_array(pixel_array, x_offset: 0, y_offset: 0, x_size: nil, y_size: nil,
+      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: self.data_type,
       line_space: 0, pixel_space: 0)
-      line_size = 1
-      x_size = pixel_array.sizes.first
-      y_size = pixel_array.sizes.last
+      x_size ||= pixel_array.sizes.first
+      y_size ||= pixel_array.sizes.last
 
       columns_to_write = x_size - x_offset
       lines_to_write = y_size - y_offset
-      scan_line = GDAL._pointer_from_data_type(data_type, columns_to_write)
+      scan_line = GDAL._pointer_from_data_type(buffer_data_type, columns_to_write * lines_to_write)
 
-      (y_offset).upto(lines_to_write - 1) do |y|
-        pixels = pixel_array[true, y]
-        ffi_type = GDAL._gdal_data_type_to_ffi(data_type)
+      (y_offset).upto(lines_to_write - 1) do |line_number|
+        pixels = pixel_array[true, line_number]
+        ffi_type = GDAL._gdal_data_type_to_ffi(buffer_data_type)
         meth = "write_array_of_#{ffi_type}".to_sym
         scan_line.send(meth, pixels.to_a)
 
-        FFI::GDAL.GDALRasterIO(
-          @c_pointer,
-          :GF_Write,
-          x_offset,     # nXOff
-          y,
-          x_size,       # nXSize
-          line_size,    # nYSize
-          scan_line,    # pData
-          x_size,       # nBufXSize
-          line_size,    # nBufYSize
-          data_type,    # eBufType
-          pixel_space,  # nPixelSpace
-          line_space    # nLineSpace
-        )
+        raster_io('w', scan_line, x_size: x_size, y_size: 1, x_offset: x_offset, y_offset: line_number,
+          buffer_x_size: x_size, buffer_y_size: line_number, buffer_data_type: buffer_data_type,
+          pixel_space: pixel_space, line_space: line_space)
       end
 
       flush_cache
+    end
+
+    # IO access for raster data in this band. Default values are set up to
+    # operate on one line at a time, keeping the same aspect ratio.
+    #
+    # On buffers... You can use different size buffers from the original x and
+    # y size to allow for resampling. Using larger buffers will upsample the
+    # raster data; smaller buffers will downsample it.
+    #
+    # On +pixel_space+ and +line_space+.... These values control how data is
+    # organized in the buffer.
+    #
+    # @param [Symbol] access_flag Must be 'r' or 'w'.
+    # @param [FFI::MemoryPointer] buffer Allows for passing in your own buffer,
+    #   which is really only useful when writing.
+    # @param [Fixnum] x_size The number of pixels per line to operate on.
+    #   Defaults to the value of {#x_size} - +x_offset+.
+    # @param [Fixnum] y_size The number of lines to operate on. Defaults to 1.
+    # @param [Fixnum] x_offset The pixel number in the line to start operating
+    #   on. Note that when using this, {#x_size} - +x_offset+ should be >= 0,
+    #   otherwise this means you're telling the method to read past the end of
+    #   the line. Defaults to 0.
+    # @param [Fixnum] y_offset The line number to start operating on. Note that
+    #   when using this, {#y_size} - +y_offset+ should be >= 0, otherwise this
+    #   means you're telling the method to read more lines than the raster has.
+    #   Defaults to 0.
+    # @param [Fixnum] buffer_x_size The width of the buffer image in which to
+    #   read/write the raster data into/from. Typically this should be the same
+    #   size as +x_size+; if it's different, GDAL will resample accordingly.
+    # @param [Fixnum] buffer_y_size The height of the buffer image in which to
+    #   read/write the raster data into/from. Typically this should be the same
+    #   size as +y_size+; if it's different, GDAL will resample accordingly.
+    # @param [FFI::GDAL::DataType] buffer_data_type Can be used to convert the
+    #   data to a different type. You must account for this when reading/writing
+    #   to/from your buffer--your buffer size must be +buffer_x_size+ * 
+    #   +buffer_y_size+. Defaults to {#data_type}.
+    # @param [Fixnum] pixel_space The byte offset from the start of one pixel
+    #   value in the buffer to the start of the next pixel value within a line.
+    #   If defaulted (0), the size of +buffer_data_type+ is used.
+    # @param [Fixnum] line_space The byte offset from the start of one line in
+    #   the buffer to the start of the next. If defaulted (0), the size of
+    #   +buffer_data_type+ * +buffer_x_size* is used.
+    # @return [FFI::MemoryPointer] Pointer to the data that was read/written.
+    def raster_io(access_flag, buffer = nil,
+      x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
+      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: self.data_type,
+      pixel_space: 0, line_space: 0)
+      x_size ||= self.x_size
+      y_size ||= self.y_size
+      pixels_to_io = x_size - x_offset
+      lines_to_io = y_size - y_offset
+
+      buffer_x_size ||= pixels_to_io
+      buffer_y_size ||= lines_to_io
+      buffer ||= GDAL._pointer_from_data_type(buffer_data_type, buffer_x_size * buffer_y_size)
+
+      FFI::GDAL.GDALRasterIO(
+        @c_pointer,
+        GDAL._gdal_access_flag(access_flag),
+        x_offset,
+        y_offset,
+        x_size,
+        y_size,
+        buffer,
+        buffer_x_size,
+        buffer_y_size,
+        buffer_data_type,
+        pixel_space,
+        line_space
+      )
+
+      buffer
     end
 
     # Read a block of image data, more efficiently than #read.  Doesn't

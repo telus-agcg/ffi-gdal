@@ -5,6 +5,7 @@ module GDAL
     include LogSwitch
   end
 
+  # @private
   module InternalHelpers
     def self.included(base)
       base.extend(ClassMethods)
@@ -88,6 +89,17 @@ module GDAL
       def _supported?(function_name)
         !FFI::GDAL.unsupported_gdal_functions.include?(function_name) &&
           FFI::GDAL.respond_to?(function_name)
+      end
+
+      # @param char [String] 'r' or 'w'
+      # @return [Symbol] :GF_Read if 'r' or :GF_Write if 'w'.
+      # @raise [GDAL::InvalidAccessFlag] If +char+ is not 'r' or 'w'.
+      def _gdal_access_flag(char)
+        case char
+        when 'r' then :GF_Read
+        when 'w' then :GF_Write
+        else fail GDAL::InvalidAccessFlag, "Invalid access flag: #{char}"
+        end
       end
     end
   end

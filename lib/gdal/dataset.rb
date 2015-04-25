@@ -299,13 +299,7 @@ module GDAL
       x_size ||= raster_x_size
       y_size ||= raster_y_size
 
-      gdal_access_flag =
-        case access_flag
-        when 'r' then :GF_Read
-        when 'w' then :GF_Write
-        else fail "Invalid access flag: #{access_flag}"
-        end
-
+      gdal_access_flag = GDAL._gdal_access_flag(access_flag)
       x_buffer_size = x_size
       y_buffer_size = y_size
 
