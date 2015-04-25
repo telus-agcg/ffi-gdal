@@ -121,25 +121,24 @@ module GDAL
       def colorize!(*colors)
         return if colors.empty?
 
+        self.color_interpretation ||= :GCI_PaletteIndex
         table = GDAL::ColorTable.new(:GPI_RGB)
+        table.add_color_entry(0, 0, 0, 0, 255)
 
-        color_entry_index_count =
-          if data_type == :GDT_Byte
-            256
-          elsif data_type == :GDT_UInt16
-            65_536
-          else
-            fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
+        # Start at 1 instead of 0 because we manually set the first color entry
+        # to white.
+        color_entry_index_range =
+          if data_type == :GDT_Byte then 1..255
+          elsif data_type == :GDT_UInt16 then 1..65_535
+          else fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
           end
 
-        self.color_interpretation ||= :GCI_PaletteIndex
-        table.add_color_entry(0, 0, 0, 0, 255)
-        bin_count = color_entry_index_count / colors.size.to_f
+        bin_count = (color_entry_index_range.last + 1) / colors.size.to_f
 
-        1.upto(color_entry_index_count - 1) do |color_entry_index|
-          color_number = (color_entry_index / bin_count).to_i
-
+        color_entry_index_range.step do |color_entry_index|
+          color_number = (color_entry_index / bin_count).floor.to_i
           color = colors[color_number]
+
           # TODO: Fix possible uninitialized rgb_array
           rgb_array = hex_to_rgb(color) unless color.is_a?(Array)
           table.add_color_entry(color_entry_index,
