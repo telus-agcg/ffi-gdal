@@ -95,7 +95,7 @@ module GDAL
         end
       end
 
-      @raster_band.write_array(narray, data_type: @raster_band.data_type)
+      @raster_band.write_array(narray, buffer_data_type: @raster_band.data_type)
     end
 
     private
