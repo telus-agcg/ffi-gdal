@@ -66,6 +66,7 @@ module GDAL
       ObjectSpace.define_finalizer self, -> { close }
 
       @geo_transform = nil
+      @raster_bands = Array.new(raster_count)
     end
 
     # Close the dataset.
@@ -137,18 +138,9 @@ module GDAL
         fail GDAL::InvalidRasterBand, "Invalid raster band number '#{raster_index}'. Must be <= #{raster_count}"
       end
 
-      @raster_bands ||= Array.new(raster_count)
-      zero_index = raster_index - 1
-
-      if @raster_bands[zero_index] && !@raster_bands[zero_index].null?
-        return @raster_bands[zero_index]
-      end
-
       raster_band_ptr = FFI::GDAL.GDALGetRasterBand(@c_pointer, raster_index)
-      @raster_bands[zero_index] = GDAL::RasterBand.new(raster_band_ptr)
-      @raster_bands.compact!
 
-      @raster_bands[zero_index]
+      GDAL::RasterBand.new(raster_band_ptr)
     end
 
     # @param type [FFI::GDAL::DataType]
@@ -177,7 +169,7 @@ module GDAL
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      !!FFI::GDAL.GDALSetProjection(@c_pointer, new_projection)
+      FFI::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
     end
 
     # @return [GDAL::GeoTransform]
@@ -299,13 +291,7 @@ module GDAL
       x_size ||= raster_x_size
       y_size ||= raster_y_size
 
-      gdal_access_flag =
-        case access_flag
-        when 'r' then :GF_Read
-        when 'w' then :GF_Write
-        else fail "Invalid access flag: #{access_flag}"
-        end
-
+      gdal_access_flag = GDAL._gdal_access_flag(access_flag)
       x_buffer_size = x_size
       y_buffer_size = y_size
 
