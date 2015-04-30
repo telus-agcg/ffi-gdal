@@ -122,6 +122,7 @@ module OGR
     def self.included(base)
       base.send(:include, GDAL::Logger)
       base.send(:include, GeometryExtensions)
+      base.send(:extend, ClassMethods)
     end
 
     #--------------------------------------------------------------------------
