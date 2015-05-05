@@ -165,7 +165,7 @@ module GDAL
                       else ndvi        # Already in Float32
                       end
 
-        remove_negatives ? remove_negatives_from(final_array) : final_array
+        remove_negatives ? remove_negatives_from(final_array, no_data_value) : final_array
       end
 
       # @return [Array<GDAL::RasterBand>]
@@ -394,6 +394,7 @@ module GDAL
         NArray[*na.transpose]
       end
 
+      # @return [Hash]
       def as_json(options = nil)
         {
           dataset: {
@@ -430,14 +431,14 @@ module GDAL
         ((ndvi + 1) * (65_535.0 / 2)).to_type(NArray::INT)
       end
 
-      # Sets any negative values in the NArray to 0.
+      # Sets any negative values in the NArray to +replace_with+.
       #
       # @param narray [NArray]
+      # @param replace_with [Number] Replace negative values with this. Useful
+      #   for setting to a NODATA value.
       # @return [NArray]
-      def remove_negatives_from(narray, replace_with = 0)
-        0.upto(narray.size - 1) do |i|
-          narray[i] = replace_with if narray[i] < 0
-        end
+      def remove_negatives_from(narray, replace_with)
+        narray[narray.lt(0)] = replace_with
 
         narray
       end
