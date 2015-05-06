@@ -90,6 +90,11 @@ RSpec.describe GDAL::RasterBandClassifier do
         expect(map_to_values).to contain_exactly(1.0, 2.0, 3.0, 4.0)
       end
     end
+
+    context 'not enough values between breaks to generate unique break values' do
+      subject { classifier.equal_count_ranges(1_000) }
+      it { is_expected.to be_nil }
+    end
   end
 
   describe '#classify!' do

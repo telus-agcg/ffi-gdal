@@ -1,3 +1,23 @@
+### x.x.x / 2015-xx-xx
+
+* Improvements
+    * `GDAL::RasterBandClassifier#equal_count_ranges` now returns `nil` if there
+      aren't enough points per group/class to return the requested number of
+      breaks.
+    * Simplified NDVI (and related) methods in
+      `GDAL::DatasetMixins::Extensions`.
+    * NDVI and related methods in `GDAL::DatasetMixins::Extensions` now close
+      the newly created dataset instead of leaving it open. It's been far too
+      easy to forget to close the dataset after creation, leaving seemingly
+      incorrect resulting datasets (since GDAL doesn't flush writes until the
+      dataset is closed).
+    * NDVI methods in `GDAL::DatasetMixins::Extensions` no longer check for
+      NaNs after doing the NDVI calculations, thus speeding up the algorithm.
+    * `GDAL::DatasetMixins::Extensions#remove_negatives_from` now uses an NArray
+      mask to remove the negative values instead of looping through each value.
+    * Added `GDAL::RasterBand#raster_io` and refactored
+      `GDAL::RasterBand#write_array` to use it.
+
 ### 1.0.0.beta4 / 2015-04-22
 
 Whoa there's lots of changes here... Many are outlined below, but there's really

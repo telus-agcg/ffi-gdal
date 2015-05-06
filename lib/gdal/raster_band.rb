@@ -588,7 +588,7 @@ module GDAL
     # @param pixel_space [Fixnum]
     # TODO: Write using #buffer_size to write most efficiently.
     def write_array(pixel_array, x_offset: 0, y_offset: 0, x_size: nil, y_size: nil,
-      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: self.data_type,
+      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
       line_space: 0, pixel_space: 0)
       x_size ||= pixel_array.sizes.first
       y_size ||= pixel_array.sizes.last
@@ -604,8 +604,8 @@ module GDAL
         scan_line.send(meth, pixels.to_a)
 
         raster_io('w', scan_line, x_size: x_size, y_size: 1, x_offset: x_offset, y_offset: line_number,
-          buffer_x_size: x_size, buffer_y_size: line_number, buffer_data_type: buffer_data_type,
-          pixel_space: pixel_space, line_space: line_space)
+                                  buffer_x_size: x_size, buffer_y_size: line_number, buffer_data_type: buffer_data_type,
+                                  pixel_space: pixel_space, line_space: line_space)
       end
 
       flush_cache
@@ -643,7 +643,7 @@ module GDAL
     #   size as +y_size+; if it's different, GDAL will resample accordingly.
     # @param [FFI::GDAL::DataType] buffer_data_type Can be used to convert the
     #   data to a different type. You must account for this when reading/writing
-    #   to/from your buffer--your buffer size must be +buffer_x_size+ * 
+    #   to/from your buffer--your buffer size must be +buffer_x_size+ *
     #   +buffer_y_size+. Defaults to {#data_type}.
     # @param [Fixnum] pixel_space The byte offset from the start of one pixel
     #   value in the buffer to the start of the next pixel value within a line.
@@ -654,7 +654,7 @@ module GDAL
     # @return [FFI::MemoryPointer] Pointer to the data that was read/written.
     def raster_io(access_flag, buffer = nil,
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
-      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: self.data_type,
+      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
       pixel_space: 0, line_space: 0)
       x_size ||= self.x_size
       y_size ||= self.y_size
