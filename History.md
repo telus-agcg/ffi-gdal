@@ -17,6 +17,7 @@
       mask to remove the negative values instead of looping through each value.
     * Added `GDAL::RasterBand#raster_io` and refactored
       `GDAL::RasterBand#write_array` to use it.
+    * `GDAL::DatasetMixins::Extensions` NDVI methods now default to NODATA of -9999.0.
 
 ### 1.0.0.beta4 / 2015-04-22
 

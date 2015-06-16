@@ -29,14 +29,14 @@ module GDAL
       #   in this data type. Defaults to use the current data type.
       # @param remove_negatives [Boolean] Remove negative values after
       #   calculating NDVI. Defaults to +false+.
-      # @param no_data_value [Float] Value to set each band's NODATA value to.
-      #   Defaults to +nil+ (which doesn't set the value).
+      # @param no_data_value [Float] Value to set the band's NODATA value to.
+      #   Defaults to -9999.0.
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
       # @return [GDAL::Dataset] The new NDVI dataset. *Be sure to call #close on
       #   this object or the data may not persist!*
       def extract_ndvi(destination, red_band_number, nir_band_number, driver_name: 'GTiff',
-        output_data_type: nil, remove_negatives: false, no_data_value: nil, **options)
+        output_data_type: nil, remove_negatives: false, no_data_value: -9999.0, **options)
         red = raster_band(red_band_number)
         nir = raster_band(nir_band_number)
         fail RequiredBandNotFound, 'Red band not found.' if red.nil?
@@ -53,7 +53,7 @@ module GDAL
 
           ndvi_band = ndvi_dataset.raster_band(1)
           ndvi_band.write_array(the_array)
-          ndvi_band.no_data_value = no_data_value if no_data_value
+          ndvi_band.no_data_value = no_data_value
         end
 
         ndvi.close
@@ -145,7 +145,7 @@ module GDAL
 
       # @param red_band_array [NArray]
       # @param nir_band_array [NArray]
-      # @param remove_negatives [Fixnum] Value to replace negative values with.
+      # @param no_data_value [Number] Value to represent NODATA.
       # @return [NArray]
       def calculate_ndvi(red_band_array, nir_band_array, no_data_value,
         remove_negatives = false, output_data_type = nil)
@@ -157,6 +157,8 @@ module GDAL
         numerator = nir_band_array - red_band_array
         denominator = nir_band_array + red_band_array
         ndvi = numerator / denominator
+        mask = nir_band_array.and(red_band_array).not
+        ndvi[mask] = no_data_value
 
         # Convert to output data type
         final_array = case output_data_type
