@@ -1,4 +1,8 @@
-### x.x.x / 2015-xx-xx
+# Change Log
+
+Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
+
+## 1.0.0.beta5 / 2015-06-16
 
 * Improvements
     * `GDAL::RasterBandClassifier#equal_count_ranges` now returns `nil` if there
@@ -19,7 +23,7 @@
       `GDAL::RasterBand#write_array` to use it.
     * `GDAL::DatasetMixins::Extensions` NDVI methods now default to NODATA of -9999.0.
 
-### 1.0.0.beta4 / 2015-04-22
+## 1.0.0.beta4 / 2015-04-22
 
 Whoa there's lots of changes here... Many are outlined below, but there's really
 a ton more.
@@ -45,20 +49,20 @@ a ton more.
     * Fixed regular crashes when dealing with OGR Geometries and
       SpatialReferences.
 
-### 1.0.0.beta3 / 2014-11-11
+## 1.0.0.beta3 / 2014-11-11
 
 * Bug fixes
     * `ogr/exceptions` wasn't being required for `ext/error_symbols.rb`, thus
       any use of an OGR exception was causing a `NameError`.
 
-### 1.0.0.beta2 / 2014-10-23
+## 1.0.0.beta2 / 2014-10-23
 
 * Improvements
     * Added more documentation
     * Uncommented `attach_function` calls that had been commented out due to
       lack of support in versions I'd tested on.  These get handled now on load.
 
-### 1.0.0.beta1 / 2014-10-23
+## 1.0.0.beta1 / 2014-10-23
 
 Lots of changes, so just the highlights here...
 
@@ -78,12 +82,12 @@ Lots of changes, so just the highlights here...
     * Renamed files under ffi/ that were derived from GDAL/OGR header files to
       include `_h` in the name.
 
-### 0.0.4 / 2014-09-27
+## 0.0.4 / 2014-09-27
 
 * Bug fixes
     * Fixed failure to load on Ubuntu 12.04 (GDAL v1.7.3).
 
-### 0.0.3 / 2014-09-26
+## 0.0.3 / 2014-09-26
 
 * Improvements
     * The `approx_ok` param for `RasterBand#histogram` should default to
@@ -95,11 +99,11 @@ Lots of changes, so just the highlights here...
     * `RasterBand#default_histogram` died if the band didn't have any values.
     * `RasterBand#histogram` wasn't returning totals.
 
-### 0.0.2 / 2014-09-26
+## 0.0.2 / 2014-09-26
 
 * New things
     * Added ability to pass a URL into `GDAL::Dataset`.
 
-### 0.0.1 / 2014-09-26
+## 0.0.1 / 2014-09-26
 
 * Happy Birthday!
