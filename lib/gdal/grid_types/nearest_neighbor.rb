@@ -1,4 +1,4 @@
-require_relative '../../ffi/gdal/gdal_grid_nearest_neighbor_options'
+require_relative '../../ffi/gdal/grid_nearest_neighbor_options'
 
 module GDAL
   module GridTypes

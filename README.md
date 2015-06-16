@@ -52,7 +52,7 @@ Testing
 
 You'll need some images to run the integration specs against, and instead of
 keeping those as part of this repo, there's a Rake task that will pull OSGeo's
-set of sample geotiffs down via FTP.  Running `rake get_tifs` will pull
+set of sample geotiffs down via FTP.  Running `rake get_tiffs` will pull
 everything down from ftp://downloads.osgeo.org/geotiff/samples and put the
 files under spec/support/images/osgeo/geotiff.
 

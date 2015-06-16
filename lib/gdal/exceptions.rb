@@ -30,6 +30,9 @@ module GDAL
   class NoWriteAccess < RuntimeError
   end
 
+  class InvalidAccessFlag < RuntimeError
+  end
+
   class NullObject < TypeError
   end
 

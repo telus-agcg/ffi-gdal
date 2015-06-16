@@ -29,7 +29,6 @@ module OGR
           end
 
         new_pointer = geometry.c_pointer
-        # geometry.c_pointer.autorelease = true
 
         case geometry.type
         when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
@@ -122,6 +121,7 @@ module OGR
     def self.included(base)
       base.send(:include, GDAL::Logger)
       base.send(:include, GeometryExtensions)
+      base.send(:extend, ClassMethods)
     end
 
     #--------------------------------------------------------------------------

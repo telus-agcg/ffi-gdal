@@ -6,6 +6,7 @@ module OGR
       base.extend(ClassMethods)
     end
 
+    # @private
     module ClassMethods
       # Makes the interface consistent with the access flags for GDAL.
       #
