@@ -1,4 +1,4 @@
-require_relative '../../ffi/gdal/gdal_grid_data_metrics_options'
+require_relative '../../ffi/gdal/grid_data_metrics_options'
 
 module GDAL
   module GridTypes

@@ -1,4 +1,4 @@
-require_relative '../../ffi/gdal/gdal_grid_moving_average_options'
+require_relative '../../ffi/gdal/grid_moving_average_options'
 
 module GDAL
   module GridTypes

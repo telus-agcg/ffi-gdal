@@ -29,7 +29,6 @@ module OGR
           end
 
         new_pointer = geometry.c_pointer
-        # geometry.c_pointer.autorelease = true
 
         case geometry.type
         when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
