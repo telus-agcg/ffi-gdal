@@ -100,7 +100,7 @@ module OGR
         file_name, options_ptr)
       return nil if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr, nil)
+      ds = OGR::DataSource.new(data_source_ptr, 'w')
       yield ds if block_given?
 
       ds
