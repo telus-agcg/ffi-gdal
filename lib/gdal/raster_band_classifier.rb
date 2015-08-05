@@ -82,23 +82,28 @@ module GDAL
     # values, so if you don't want to overwrite the Dataset you're working with,
     # you should copy it first.
     def classify!
-      narray = @raster_band.to_na.dup
+      pixel_buffer_size = @raster_band.x_size
 
-      0.upto(narray.size - 1) do |pixel_number|
-        next if narray[pixel_number] == @raster_band.no_data_value[:value]
+      @raster_band.y_size.times do |row_number|
+        pixel_buffer = @raster_band.raster_io('r', x_size: @raster_band.x_size,
+                                                   y_size: 1,
+                                                   y_offset: row_number)
 
-        range = @ranges.find do |r|
-          r[:range].member? narray[pixel_number]
-        end
+        pixels = pixel_buffer.read_array_of_float(pixel_buffer_size - 1)
+        pixel_buffer.clear
 
-        if range
-          narray[pixel_number] = range[:map_to]
-        else
-          log "pixel #{pixel_number} (value: #{narray[pixel_number]}) not in any given range"
+        pixels.each_with_index do |pixel, pixel_number|
+          next if pixel == @raster_band.no_data_value[:value]
+
+          range = @ranges.find { |r| r[:range].member?(pixel) }
+
+          if range
+            @raster_band.set_value(pixel_number, row_number, range[:map_to])
+          else
+            log "pixel #{pixel_number} (value: #{pixel}) not in any given range"
+          end
         end
       end
-
-      @raster_band.write_array(narray, buffer_data_type: @raster_band.data_type)
     end
 
     private

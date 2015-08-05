@@ -67,6 +67,42 @@ module GDAL
         end
       end
 
+      # Convenience method for directly setting a single pixel value.
+      #
+      # @param x [Fixnum] Pixel number in the row to set.
+      # @param y [Fixnum] Row number of the pixel to set.
+      # @param new_value [Number] The value to set the pixel to.
+      def set_value(x, y, new_value)
+        data_pointer = GDAL._pointer_from_data_type(data_type)
+        data_pointer.write_float(new_value)
+        data_pointer_pointer = FFI::MemoryPointer.new(:buffer_inout, 1)
+        data_pointer_pointer.write_pointer(data_pointer)
+
+        raster_io('w', data_pointer, x_size: 1,
+                                     y_size: 1,
+                                     x_offset: x,
+                                     y_offset: y,
+                                     buffer_x_size: 1,
+                                     buffer_y_size: 1)
+      end
+
+      # Convenience method for directly getting a single pixel value.
+      #
+      # @param x [Fixnum] Pixel number in the row to get.
+      # @param y [Fixnum] Row number of the pixel to get.
+      # @return [Number]
+      def value_at(x, y)
+        output = raster_io('r', x_size: 1,
+                                y_size: 1,
+                                x_offset: x,
+                                y_offset: y,
+                                buffer_x_size: 1,
+                                buffer_y_size: 1)
+
+        # TODO: this should read according to #data_type.
+        output.read_bytes(1)
+      end
+
       # @return [Hash{x => Fixnum, y => Fixnum}]
       def block_count
         x_blocks = (x_size + block_size[:x]).divmod(block_size[:x])
