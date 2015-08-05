@@ -73,32 +73,33 @@ module GDAL
         end
       end
 
+      # @return [Array]
+      def to_a
+        each_by_block.map { |pixels| pixels }
+      end
+
       # Iterates through all lines and builds an NArray of pixels.
       #
       # @return [NArray]
       def to_na(to_data_type = nil)
-        values = each_by_block.map do |pixels|
-          pixels
-        end
+        narray = NArray.to_na(to_a)
 
-        if to_data_type
-          case to_data_type
-          when :GDT_Byte then NArray.to_na(values).to_type(NArray::BYTE)
-          when :GDT_Int16 then NArray.to_na(values).to_type(NArray::SINT)
-          when :GDT_UInt16 then NArray.to_na(values).to_type(NArray::INT)
-          when :GDT_Int32 then NArray.to_na(values).to_type(NArray::INT)
-          when :GDT_UInt32 then NArray.to_na(values).to_type(NArray::INT)
-          when :GDT_Float32 then NArray.to_na(values).to_type(NArray::SFLOAT)
-          when :GDT_Float64 then NArray.to_na(values).to_type(NArray::DFLOAT)
-          when :GDT_CInt16 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
-          when :GDT_CInt32 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
-          when :GDT_CFloat32 then NArray.to_na(values).to_type(NArray::SCOMPLEX)
-          when :GDT_CFloat64 then NArray.to_na(values).to_type(NArray::DCOMPLEX)
-          else
-            fail "Unknown data type: #{to_data_type}"
-          end
+        return narray unless to_data_type
+
+        case to_data_type
+        when :GDT_Byte then narray.to_type(NArray::BYTE)
+        when :GDT_Int16 then narray.to_type(NArray::SINT)
+        when :GDT_UInt16 then narray.to_type(NArray::INT)
+        when :GDT_Int32 then narray.to_type(NArray::INT)
+        when :GDT_UInt32 then narray.to_type(NArray::INT)
+        when :GDT_Float32 then narray.to_type(NArray::SFLOAT)
+        when :GDT_Float64 then narray.to_type(NArray::DFLOAT)
+        when :GDT_CInt16 then narray.to_type(NArray::SCOMPLEX)
+        when :GDT_CInt32 then narray.to_type(NArray::DCOMPLEX)
+        when :GDT_CFloat32 then narray.to_type(NArray::SCOMPLEX)
+        when :GDT_CFloat64 then narray.to_type(NArray::DCOMPLEX)
         else
-          NArray.to_na(values)
+          fail "Unknown data type: #{to_data_type}"
         end
       end
 
