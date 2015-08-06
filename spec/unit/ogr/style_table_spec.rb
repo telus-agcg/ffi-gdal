@@ -5,7 +5,7 @@ RSpec.describe OGR::StyleTable do
   describe '#destroy!' do
     it 'cleans up the pointer and sets it to nil' do
       subject.destroy!
-      expect(subject.instance_variable_get(:@style_table_pointer)).to be_nil
+      expect(subject.instance_variable_get(:@c_pointer)).to be_nil
     end
   end
 

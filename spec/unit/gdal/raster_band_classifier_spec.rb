@@ -6,14 +6,15 @@ RSpec.describe GDAL::RasterBandClassifier do
   let(:driver) { GDAL::Driver.by_name('MEM') }
 
   let(:dataset) do
-    driver.create_dataset 'test dataset', 640, 480
+    driver.create_dataset('test dataset', 640, 480) do |d|
+      band = d.raster_band 1
+      new_values = band.to_na.indgen!
+      band.write_array(new_values)
+    end
   end
 
   let(:raster_band) do
-    band = dataset.raster_band 1
-    new_values = band.to_na.indgen!
-    band.write_array(new_values)
-    band
+    dataset.raster_band 1
   end
 
   subject(:classifier) { described_class.new(raster_band) }

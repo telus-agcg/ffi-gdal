@@ -56,7 +56,7 @@ module GDAL
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
-      break_values = range_count.times.map { |i| sorted_and_masked_pixels[range_size * i] }
+      break_values = range_count.times.map { |i| sorted_and_masked_pixels[range_size * i] }.uniq
       log "Break values: #{break_values}"
       return if break_values.uniq.size != range_count
 
@@ -82,23 +82,14 @@ module GDAL
     # values, so if you don't want to overwrite the Dataset you're working with,
     # you should copy it first.
     def classify!
-      pixel_buffer_size = @raster_band.x_size
-
-      @raster_band.y_size.times do |row_number|
-        pixel_buffer = @raster_band.raster_io('r', x_size: @raster_band.x_size,
-                                                   y_size: 1,
-                                                   y_offset: row_number)
-
-        pixels = pixel_buffer.read_array_of_float(pixel_buffer_size - 1)
-        pixel_buffer.clear
-
+      @raster_band.each_by_block.with_index do |pixels, row_number|
         pixels.each_with_index do |pixel, pixel_number|
           next if pixel == @raster_band.no_data_value[:value]
 
           range = @ranges.find { |r| r[:range].member?(pixel) }
 
           if range
-            @raster_band.set_value(pixel_number, row_number, range[:map_to])
+            @raster_band.set_pixel_value(pixel_number, row_number, range[:map_to])
           else
             log "pixel #{pixel_number} (value: #{pixel}) not in any given range"
           end

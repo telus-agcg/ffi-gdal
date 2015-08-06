@@ -611,7 +611,7 @@ module GDAL
     #   top-most block, 1 the next block, etc.
     # @return [FFI::MemoryPointer] The image buffer.
     def read_block(x_offset, y_offset, image_buffer = nil)
-      image_buffer ||= FFI::MemoryPointer.new(:buffer_in)
+      image_buffer ||= FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
 
       FFI::GDAL.GDALReadBlock(@c_pointer, x_offset, y_offset, image_buffer)
 

@@ -115,13 +115,13 @@ RSpec.describe GDAL::InternalHelpers do
     context 'length is > 1' do
       let(:pointer) do
         p = FFI::MemoryPointer.new(:int16, 2)
-        p.write_array_of_int16(12_345, 222)
+        p.write_array_of_int16([12_345, 222])
 
         p
       end
 
       it 'returns the data value' do
-        expect(GDAL._read_pointer(pointer, :GDT_Int16)).to eq([12_345, 222])
+        expect(GDAL._read_pointer(pointer, :GDT_Int16, 2)).to eq([12_345, 222])
       end
     end
   end
