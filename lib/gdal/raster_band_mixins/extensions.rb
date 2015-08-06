@@ -38,33 +38,21 @@ module GDAL
       # dimensions of the array.
       #
       # @param pixel_array [NArray] The 2d list of pixels.
-      # @param x_offset [Fixnum] The left-most pixel to start writing.
-      # @param y_offset [Fixnum] The top-most line to start writing.
-      # @param buffer_data_type [FFI::GDAL::DataType] The type of pixel contained in
-      #   the +pixel_array+.
-      # @param line_space [Fixnum]
-      # @param pixel_space [Fixnum]
-      # TODO: Write using #buffer_size to write most efficiently.
-      def write_array(pixel_array, x_offset: 0, y_offset: 0, x_size: nil, y_size: nil,
-        buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
-        line_space: 0, pixel_space: 0)
-        x_size ||= pixel_array.sizes.first
-        y_size ||= pixel_array.sizes.last
+      def write_array(pixel_array)
+        x_size = pixel_array.sizes.first
+        y_size = pixel_array.sizes.last
+        scan_line = FFI::MemoryPointer.new(:buffer_out, x_size)
 
-        columns_to_write = x_size - x_offset
-        lines_to_write = y_size - y_offset
-        scan_line = GDAL._pointer_from_data_type(buffer_data_type, columns_to_write * lines_to_write)
-
-        (y_offset).upto(lines_to_write - 1) do |line_number|
+        y_size.times do |line_number|
           pixels = pixel_array[true, line_number]
-          ffi_type = GDAL._gdal_data_type_to_ffi(buffer_data_type)
-          meth = "write_array_of_#{ffi_type}".to_sym
-          scan_line.send(meth, pixels.to_a)
+          GDAL._write_pointer(scan_line, data_type, pixels.to_a)
 
-          raster_io('w', scan_line, x_size: x_size, y_size: 1, x_offset: x_offset, y_offset: line_number,
-                                    buffer_x_size: x_size, buffer_y_size: line_number, buffer_data_type: buffer_data_type,
-                                    pixel_space: pixel_space, line_space: line_space)
+          raster_io('w', scan_line, x_size: x_size, y_size: 1,
+                                    y_offset: line_number,
+                                    buffer_x_size: x_size, buffer_y_size: line_number)
         end
+
+        flush_cache
       end
 
       # Convenience method for directly setting a single pixel value.

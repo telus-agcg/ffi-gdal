@@ -89,7 +89,7 @@ module GDAL
       #   determines what FFI type to use when reading.
       # @param length [Fixnum] The amount of data to read from the pointer. If
       #   > 1, the "read_array_of_" method will be called.
-      # @return [Number, Arra<Number>]
+      # @return [Number, Array<Number>]
       def _read_pointer(pointer, data_type, length = 1)
         if length == 1
           pointer.send("read_#{_gdal_data_type_to_ffi(data_type)}")
