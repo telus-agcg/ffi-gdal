@@ -81,6 +81,40 @@ module GDAL
         end
       end
 
+      # Helper method for reading an FFI pointer based on the GDAL DataType of
+      # the pointer.
+      #
+      # @param pointer [FFI::Pointer] The pointer to read from.
+      # @param data_type [FFI::GDAL::DataType] The GDAL data type that
+      #   determines what FFI type to use when reading.
+      # @param length [Fixnum] The amount of data to read from the pointer. If
+      #   > 1, the "read_array_of_" method will be called.
+      # @return [Number, Array<Number>]
+      def _read_pointer(pointer, data_type, length = 1)
+        if length == 1
+          pointer.send("read_#{_gdal_data_type_to_ffi(data_type)}")
+        else
+          pointer.send("read_array_of_#{_gdal_data_type_to_ffi(data_type)}", length)
+        end
+      end
+
+      # Helper method for writing data to an FFI pointer based on the GDAL
+      # DataType of the pointer.
+      #
+      # @param pointer [FFI::Pointer] The pointer to write to.
+      # @param data_type [FFI::GDAL::DataType] The GDAL data type that
+      #   determines what FFI type to use when writing.
+      # @param data [Fixnum] The data to write to the pointer. If it's an Array
+      #   with size > 1, the "write_array_of_" method will be called.
+      def _write_pointer(pointer, data_type, data)
+        if data.is_a?(Array) && data.size > 1
+          pointer.send("write_array_of_#{_gdal_data_type_to_ffi(data_type)}", data)
+        else
+          data = data.first if data.is_a?(Array)
+          pointer.send("write_#{_gdal_data_type_to_ffi(data_type)}", data)
+        end
+      end
+
       # Check to see if the function is supported in the version of GDAL that we're
       # using.
       #

@@ -98,6 +98,54 @@ RSpec.describe GDAL::InternalHelpers do
     end
   end
 
+  describe '._read_pointer' do
+    context 'length is 1' do
+      let(:pointer) do
+        p = FFI::MemoryPointer.new(:int16)
+        p.write_int16(12_345)
+
+        p
+      end
+
+      it 'returns the data value' do
+        expect(GDAL._read_pointer(pointer, :GDT_Int16)).to eq(12_345)
+      end
+    end
+
+    context 'length is > 1' do
+      let(:pointer) do
+        p = FFI::MemoryPointer.new(:int16, 2)
+        p.write_array_of_int16([12_345, 222])
+
+        p
+      end
+
+      it 'returns the data value' do
+        expect(GDAL._read_pointer(pointer, :GDT_Int16, 2)).to eq([12_345, 222])
+      end
+    end
+  end
+
+  describe '._write_pointer' do
+    context 'data is not an Array' do
+      let(:pointer) { FFI::MemoryPointer.new(:int16) }
+
+      it 'writes the single value to the pointer' do
+        expect(pointer).to receive(:write_int16).with(12_345)
+        GDAL._write_pointer(pointer, :GDT_Int16, 12_345)
+      end
+    end
+
+    context 'data is an Array' do
+      let(:pointer) { FFI::MemoryPointer.new(:int16, 2) }
+
+      it 'writes the values to the pointer' do
+        expect(pointer).to receive(:write_array_of_int16).with([12_345, 222])
+        GDAL._write_pointer(pointer, :GDT_Int16, [12_345, 222])
+      end
+    end
+  end
+
   describe '._supported?' do
     context 'function is supported' do
       subject { tester._supported?(:GDALAllRegister) }
