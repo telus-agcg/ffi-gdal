@@ -1,5 +1,5 @@
 require_relative 'envelope'
-require_relative 'geometry_extensions'
+require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
 require_relative '../gdal/options'
 require_relative '../gdal/logger'
@@ -121,7 +121,7 @@ module OGR
 
     def self.included(base)
       base.send(:include, GDAL::Logger)
-      base.send(:include, GeometryExtensions)
+      base.send(:include, OGR::GeometryMixins::Extensions)
       base.send(:extend, ClassMethods)
     end
 
@@ -131,13 +131,6 @@ module OGR
 
     # @return [FFI::Pointer]
     attr_reader :c_pointer
-
-    # @param value [Boolean]
-    attr_writer :read_only
-
-    def read_only?
-      @read_only || false
-    end
 
     def destroy!
       return unless @c_pointer
