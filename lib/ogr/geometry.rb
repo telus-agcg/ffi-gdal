@@ -602,6 +602,26 @@ module OGR
     def to_line_string
       build_geometry { FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer) }
     end
+
+    # Since GDAL doesn't provide converting to a LinearRing, this is a hackish
+    # method for doing so.
+    #
+    # @return [OGR::LinearRing]
+    def to_linear_ring(close_rings = false)
+      line_string = to_line_string
+
+      return line_string unless line_string.is_a?(OGR::LineString)
+
+      linear_ring = OGR::LinearRing.new
+
+      if line_string.spatial_reference
+        linear_ring.spatial_reference = line_string.spatial_reference.clone
+      end
+
+      linear_ring.import_from_wkt(line_string.to_wkt.tr('LINESTRING', 'LINEARRING'))
+      linear_ring.close_rings! if close_rings
+
+      linear_ring
     end
 
     # Converts the current geometry to a Polygon geometry.  The returned object

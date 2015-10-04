@@ -32,6 +32,18 @@ module OGR
       initialize_from_pointer(geometry_ptr)
       self.spatial_reference = spatial_reference if spatial_reference
     end
+
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    # @param z [Float]
+    def add_point(x, y, z = nil)
+      if z
+        FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
+      else
+        FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
+      end
     end
   end
 end
