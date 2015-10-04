@@ -33,9 +33,9 @@ module GDAL
         end
       end
 
-      # Writes an NArray of pixels to the raster band using {#raster_io}. It
-      # determines +x_size+ and +y_size+ for the {#raster_io} call using the
-      # dimensions of the array.
+      # Writes an NArray of pixels to the raster band using
+      # {GDAL::RasterBand#raster_io}. It determines +x_size+ and +y_size+ for
+      # the {GDAL::RasterBand#raster_io} call using the dimensions of the array.
       #
       # @param pixel_array [NArray] The 2d list of pixels.
       def write_array(pixel_array)

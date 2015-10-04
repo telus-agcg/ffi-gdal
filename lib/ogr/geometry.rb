@@ -32,14 +32,26 @@ module OGR
         return if new_pointer.nil? || new_pointer.null?
 
         case geometry.type
-        when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
-        when :wkbLineString, :wkbLineString25D then OGR::LineString.new(new_pointer)
+        when :wkbPoint then OGR::Point.new(new_pointer)
+        when :wkbPoint25D then OGR::Point25D.new(new_pointer)
+        when :wkbLineString
+          if geometry.to_wkt =~ /^LINEARRING/
+            OGR::LinearRing.new(new_pointer)
+          else
+            OGR::LineString.new(new_pointer)
+          end
+        when :wkbLineString25D then OGR::LineString25D.new(new_pointer)
         when :wkbLinearRing then OGR::LinearRing.new(new_pointer)
-        when :wkbPolygon, :wkbPolygon25D then OGR::Polygon.new(new_pointer)
-        when :wkbMultiPoint, :wkbMultiPoint25D then OGR::MultiPoint.new(new_pointer)
-        when :wkbMultiLineString, :wkbMultiLineString25D then OGR::MultiLineString.new(new_pointer)
-        when :wkbMultiPolygon, :wkbMultiPolygon25D then OGR::MultiPolygon.new(new_pointer)
+        when :wkbPolygon then OGR::Polygon.new(new_pointer)
+        when :wkbPolygon25D then OGR::Polygon25D.new(new_pointer)
+        when :wkbMultiPoint then OGR::MultiPoint.new(new_pointer)
+        when :wkbMultiPoint25D then OGR::MultiPoint25D.new(new_pointer)
+        when :wkbMultiLineString then OGR::MultiLineString.new(new_pointer)
+        when :wkbMultiLineString25D then OGR::MultiLineString25D.new(new_pointer)
+        when :wkbMultiPolygon then OGR::MultiPolygon.new(new_pointer)
+        when :wkbMultiPolygon25D then OGR::MultiPolygon25D.new(new_pointer)
         when :wkbGeometryCollection then OGR::GeometryCollection.new(new_pointer)
+        when :wkbGeometryCollection25D then OGR::GeometryCollection25D.new(new_pointer)
         when :wkbNone then OGR::NoneGeometry.new(new_pointer)
         else
           geometry

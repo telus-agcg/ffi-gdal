@@ -44,24 +44,36 @@ module OGR
         end
       end
 
+      # @param index [Fixnum] The index of the vertex to assign.
+      # @param x [Number]
+      # @param y [Number]
+      # @param z [Number]
       def set_point(index, x, y, z = 0)
         FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
       end
 
-      # @return [Array<Array>] An array of (x, y) or (x, y, z) points.
       def points
-        x_stride = 2
-        y_stride = 2
-        z_stride = coordinate_dimension == 3 ? 1 : 0
+        require_relative '../geometries/point'
 
-        buffer_size = FFI::Type::DOUBLE.size * 2 * point_count
+        point_values.map.with_index do |coords, i|
+          point = OGR::Point.new
+          point.set_point(i, *coords)
+          point
+        end
+      end
 
+      # @return [Array<Array>] An array of (x, y) or (x, y, z) points.
+      def point_values
+        x_stride = FFI::Type::DOUBLE.size
+        y_stride = FFI::Type::DOUBLE.size
+        z_stride = coordinate_dimension == 3 ? FFI::Type::DOUBLE.size : 0
+
+        buffer_size = point_count
         x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
         y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
 
         z_buffer = if coordinate_dimension == 3
-                     z_size = FFI::Type::DOUBLE.size * point_count
-                     FFI::MemoryPointer.new(:buffer_out, z_size)
+                     FFI::MemoryPointer.new(:buffer_out, buffer_size)
                    end
 
         num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
@@ -72,8 +84,15 @@ module OGR
           z_buffer,
           z_stride)
 
-        num_points.times.map do |i|
-          point(i)
+        x_array = x_buffer.read_array_of_double(buffer_size)
+        y_array = y_buffer.read_array_of_double(buffer_size)
+
+        if z_buffer
+          z_array = z_buffer.read_array_of_double(buffer_size)
+
+          [x_array, y_array, z_array].transpose
+        else
+          [x_array, y_array].transpose
         end
       end
 
