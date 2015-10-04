@@ -43,10 +43,11 @@ module OGR
       # @param sub_geometry_index [Fixnum]
       # @return [OGR::Geometry]
       def geometry_at(sub_geometry_index)
-        build_geometry do |ptr|
-          FFI::OGR::API.OGR_G_GetGeometryRef(ptr, sub_geometry_index)
+        build_geometry do
+          FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
         end
       end
+      alias_method :geometry_ref, :geometry_at
 
       # Build a ring from a bunch of arcs.  The collection must be
       # a MultiLineString or GeometryCollection.

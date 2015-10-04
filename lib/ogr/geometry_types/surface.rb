@@ -1,5 +1,3 @@
-require_relative '../../ffi/ogr/api'
-
 module OGR
   module GeometryTypes
     module Surface
