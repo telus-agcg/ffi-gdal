@@ -501,6 +501,13 @@ module OGR
       build_geometry { |ptr| FFI::OGR::API.OGR_G_ConvexHull(ptr) }
     end
 
+    # Returns a point that's guaranteed to lie on the surface.
+    #
+    # @return [OGR::Point]
+    def point_on_surface
+      build_geometry { |ptr| FFI::OGR::API.OGR_G_PointOnSurface(ptr) }
+    end
+
     # @param wkb_data [String] Binary WKB data.
     # @return +true+ if successful, otherwise raises an OGR exception.
     def import_from_wkb(wkb_data)
