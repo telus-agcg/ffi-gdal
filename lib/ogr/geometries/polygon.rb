@@ -4,6 +4,7 @@ module OGR
   class Polygon
     include OGR::Geometry
     include GeometryTypes::Surface
+    include GeometryTypes::Container
 
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)

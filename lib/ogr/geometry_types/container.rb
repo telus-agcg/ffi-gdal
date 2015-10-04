@@ -1,6 +1,10 @@
+require_relative '../geometry_mixins/container_mixins'
+
 module OGR
   module GeometryTypes
     module Container
+      include OGR::GeometryMixins::ContainerMixins
+
       def collection?
         true
       end
@@ -21,7 +25,7 @@ module OGR
 
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def add_directly(sub_geometry)
+      def add_geometry_directly(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
         ogr_err = FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
 
