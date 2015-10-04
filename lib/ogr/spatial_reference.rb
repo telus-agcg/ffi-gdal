@@ -1,4 +1,5 @@
 require_relative '../ffi/ogr'
+require_relative '../ffi/cpl/string'
 require_relative '../gdal/logger'
 require_relative 'spatial_reference_extensions'
 require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
@@ -36,9 +37,8 @@ module OGR
       pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
 
       list = pointer_array.map(&:read_string).sort
-      list.map! { |l| l.gsub(/_/, ' ') } if strip_underscores
 
-      list
+      strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
     end
 
     # @param projection_method [String] One of
