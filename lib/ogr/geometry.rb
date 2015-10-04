@@ -224,6 +224,7 @@ module OGR
     def geometry_count
       FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
     end
+    alias_method :count, :geometry_count
 
     # @return [Fixnum]
     def point_count
@@ -235,11 +236,11 @@ module OGR
     # @return [Fixnum]
     # @todo This regularly crashes, so disabling it.
     def centroid
-      fail NotImplementedError, '#centroid not yet implemented.'
+      point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 
-      point = OGR::Geometry.create(:wkbPoint)
-      FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
-      return nil if point.c_pointer.null?
+      ogr_err = FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
+      puts "OGR ERR: #{ogr_err}"
+      return if point.c_pointer.null? || ogr_err > 0
 
       point
     end
@@ -483,8 +484,11 @@ module OGR
     # Modify the geometry so that it has no segments longer than +max_length+.
     #
     # @param max_length [Float]
+    # @return [OGR::Geometry] Returns self that's been segmentized.
     def segmentize!(max_length)
       FFI::OGR::API.OGR_G_Segmentize(@c_pointer, max_length)
+
+      self
     end
 
     # @return [OGR::Geometry]
