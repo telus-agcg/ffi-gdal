@@ -19,6 +19,21 @@ module OGR
       ((self_as_4326.point_on_surface.x + 180) / 6.to_f).floor + 1
     end
 
+    # @return [Boolean]
+    def container?
+      self.class.ancestors.include? OGR::GeometryTypes::Container
+    end
+
+    # @return [Boolean]
+    def curve?
+      self.class.ancestors.include? OGR::GeometryTypes::Curve
+    end
+
+    # @return [Boolean]
+    def surface?
+      self.class.ancestors.include? OGR::GeometryTypes::Surface
+    end
+
     # @return [Hash]
     def as_json(options = nil)
       json = {
