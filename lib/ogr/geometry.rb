@@ -29,6 +29,7 @@ module OGR
           end
 
         new_pointer = geometry.c_pointer
+        return if new_pointer.nil? || new_pointer.null?
 
         case geometry.type
         when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
