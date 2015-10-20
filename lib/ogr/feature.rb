@@ -19,7 +19,7 @@ module OGR
                      FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
                    else
                      fd_or_pointer
-                         end
+                   end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
         fail OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
