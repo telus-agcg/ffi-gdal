@@ -5,7 +5,7 @@ module FFI
     class TransformerInfo < FFI::Struct
       layout :signature, :string,
         :class_name, :string,
-        :transform, :GDALTransformerFunc,
+        :transform, Alg.find_type(:GDALTransformerFunc),
         :cleanup, :pointer,
         :serialize, :pointer
     end

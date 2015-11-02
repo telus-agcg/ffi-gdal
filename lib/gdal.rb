@@ -10,7 +10,7 @@ module GDAL
   include InternalHelpers
 
   # Register all drivers!
-  ::FFI::GDAL.GDALAllRegister
+  ::FFI::GDAL::GDAL.GDALAllRegister
 
   FFI_GDAL_ERROR_HANDLER = GDAL::CPLErrorHandler.handle_error
   ::FFI::CPL::Error.CPLSetErrorHandler(FFI_GDAL_ERROR_HANDLER)

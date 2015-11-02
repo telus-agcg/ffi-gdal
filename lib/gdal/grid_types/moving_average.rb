@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/grid_moving_average_options'
-
 module GDAL
   module GridTypes
     class MovingAverage

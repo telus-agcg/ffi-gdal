@@ -1,4 +1,4 @@
-require_relative '../ffi/gdal'
+require_relative '../ffi-gdal'
 require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
@@ -25,8 +25,8 @@ module GDAL
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
       @c_pointer =
-        if FFI::GDAL::PaletteInterp[palette_interp_or_pointer]
-          FFI::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
+        if FFI::GDAL::GDAL::PaletteInterp[palette_interp_or_pointer]
+          FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
         else
           palette_interp_or_pointer
         end
@@ -51,7 +51,7 @@ module GDAL
     def destroy!
       return unless @c_pointer
 
-      FFI::GDAL.GDALDestroyColorTable(@c_pointer)
+      FFI::GDAL::GDAL.GDALDestroyColorTable(@c_pointer)
       @c_pointer = nil
     end
 
@@ -59,7 +59,7 @@ module GDAL
     #
     # @return [GDAL::ColorTable]
     def clone
-      ct_ptr = FFI::GDAL.GDALCloneColorTable(@c_pointer)
+      ct_ptr = FFI::GDAL::GDAL.GDALCloneColorTable(@c_pointer)
       return nil if ct_ptr.null?
 
       GDAL::ColorTable.new(ct_ptr)
@@ -67,21 +67,21 @@ module GDAL
 
     # Usually :GPI_RGB.
     #
-    # @return [Symbol] One of FFI::GDAL::PaletteInterp.
+    # @return [Symbol] One of FFI::GDAL::GDAL::PaletteInterp.
     def palette_interpretation
-      FFI::GDAL.GDALGetPaletteInterpretation(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetPaletteInterpretation(@c_pointer)
     end
 
     # @return [Fixnum]
     def color_entry_count
-      FFI::GDAL.GDALGetColorEntryCount(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetColorEntryCount(@c_pointer)
     end
 
     # @param index [Fixnum]
     # @return [GDAL::ColorEntry]
     def color_entry(index)
       @color_entries.fetch(index) do
-        color_entry = FFI::GDAL.GDALGetColorEntry(@c_pointer, index)
+        color_entry = FFI::GDAL::GDAL.GDALGetColorEntry(@c_pointer, index)
         return nil if color_entry.null?
 
         GDAL::ColorEntry.new(color_entry)
@@ -94,7 +94,7 @@ module GDAL
       entry = color_entry(index)
       return unless entry
 
-      FFI::GDAL.GDALGetColorEntryAsRGB(@c_pointer, index, entry.c_pointer)
+      FFI::GDAL::GDAL.GDALGetColorEntryAsRGB(@c_pointer, index, entry.c_pointer)
       return nil if entry.c_pointer.null?
 
       entry
@@ -123,7 +123,7 @@ module GDAL
       entry.color3 = three if three
       entry.color4 = four if four
 
-      FFI::GDAL.GDALSetColorEntry(@c_pointer, index, entry.c_struct)
+      FFI::GDAL::GDAL.GDALSetColorEntry(@c_pointer, index, entry.c_struct)
       @color_entries.insert(index, entry)
 
       entry
@@ -142,7 +142,7 @@ module GDAL
       start_color_ptr = start_color.c_struct
       end_color_ptr = end_color.c_struct
 
-      FFI::GDAL.GDALCreateColorRamp(@c_pointer, start_index,
+      FFI::GDAL::GDAL.GDALCreateColorRamp(@c_pointer, start_index,
         start_color_ptr,
         end_index,
         end_color_ptr)

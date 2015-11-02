@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/grid_nearest_neighbor_options'
-
 module GDAL
   module GridTypes
     class NearestNeighbor

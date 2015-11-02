@@ -1,7 +1,6 @@
 require_relative '../field_definition'
 require_relative '../field'
 require_relative '../geometry_field_definition'
-require_relative '../../ffi/ogr/api'
 
 module OGR
   module LayerMixins

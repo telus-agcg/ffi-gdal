@@ -1,5 +1,3 @@
-require_relative '../ffi/gdal/alg'
-
 module GDAL
   class Transformer
     # @return [FFI::Pointer]

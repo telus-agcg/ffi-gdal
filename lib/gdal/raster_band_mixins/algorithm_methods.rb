@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module RasterBandMixins
     module AlgorithmMethods
@@ -18,7 +16,7 @@ module GDAL
         # @param green_band [GDAL::RasterBand, FFI::Pointer]
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
         # @param colors [Fixnum] Number of colors to return; 2-256.
-        # @param color_interpretation [FFI::GDAL::PaletteInterp] The type
+        # @param color_interpretation [FFI::GDAL::GDAL::PaletteInterp] The type
         #   of ColorTable to return.
         # @return [GDAL::ColorTable]
         def compute_median_cut_pct(red_band, green_band, blue_band,
@@ -159,7 +157,7 @@ module GDAL
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
-        !!FFI::GDAL.GDALFillNodata(@c_pointer,
+        !!FFI::GDAL::GDAL.GDALFillNodata(@c_pointer,
           mask_band_ptr,
           max_search_distance,
           0,                    # deprecated option in GDAL

@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/grid_inverse_distance_to_a_power_options'
-
 module GDAL
   module GridTypes
     class InverseDistanceToAPower

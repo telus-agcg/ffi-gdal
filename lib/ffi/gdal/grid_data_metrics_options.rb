@@ -6,7 +6,7 @@ module FFI
       layout :radius1, :double,
         :radius2, :double,
         :angle, :double,
-        :min_points, :GUInt32,
+        :min_points, CPL::Port.find_type(:GUInt32),
         :no_data_value, :double
     end
   end

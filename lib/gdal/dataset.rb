@@ -1,6 +1,5 @@
 require 'uri'
-require_relative '../ffi/gdal'
-require_relative '../ffi/cpl/string'
+require_relative '../ffi-gdal'
 require_relative '../ogr/spatial_reference'
 require_relative 'driver'
 require_relative 'geo_transform'
@@ -57,7 +56,7 @@ module GDAL
             path_or_pointer
           end
 
-          FFI::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+          FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
         else
           path_or_pointer
         end
@@ -73,7 +72,7 @@ module GDAL
     def close
       return unless @c_pointer
 
-      FFI::GDAL.GDALClose(@c_pointer)
+      FFI::GDAL::GDAL.GDALClose(@c_pointer)
       @c_pointer = nil
     end
 
@@ -81,15 +80,15 @@ module GDAL
     def access_flag
       return nil if null?
 
-      flag = FFI::GDAL.GDALGetAccess(@c_pointer)
+      flag = FFI::GDAL::GDAL.GDALGetAccess(@c_pointer)
 
-      FFI::GDAL::Access[flag]
+      FFI::GDAL::GDAL::Access[flag]
     end
 
     # @return [GDAL::Driver] The driver to be used for working with this
     #   dataset.
     def driver
-      driver_ptr = FFI::GDAL.GDALGetDatasetDriver(@c_pointer)
+      driver_ptr = FFI::GDAL::GDAL.GDALGetDatasetDriver(@c_pointer)
 
       Driver.new(driver_ptr)
     end
@@ -97,7 +96,7 @@ module GDAL
     # Fetches all files that form the dataset.
     # @return [Array<String>]
     def file_list
-      list_pointer = FFI::GDAL.GDALGetFileList(@c_pointer)
+      list_pointer = FFI::GDAL::GDAL.GDALGetFileList(@c_pointer)
       return [] if list_pointer.null?
       file_list = list_pointer.get_array_of_string(0)
       FFI::CPL::String.CSLDestroy(list_pointer)
@@ -107,28 +106,28 @@ module GDAL
 
     # Flushes all write-cached data to disk.
     def flush_cache
-      FFI::GDAL.GDALFlushCache(@c_pointer)
+      FFI::GDAL::GDAL.GDALFlushCache(@c_pointer)
     end
 
     # @return [Fixnum]
     def raster_x_size
       return nil if null?
 
-      FFI::GDAL.GDALGetRasterXSize(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetRasterXSize(@c_pointer)
     end
 
     # @return [Fixnum]
     def raster_y_size
       return nil if null?
 
-      FFI::GDAL.GDALGetRasterYSize(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetRasterYSize(@c_pointer)
     end
 
     # @return [Fixnum]
     def raster_count
       return 0 if null?
 
-      FFI::GDAL.GDALGetRasterCount(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetRasterCount(@c_pointer)
     end
 
     # @param raster_index [Fixnum]
@@ -138,17 +137,17 @@ module GDAL
         fail GDAL::InvalidRasterBand, "Invalid raster band number '#{raster_index}'. Must be <= #{raster_count}"
       end
 
-      raster_band_ptr = FFI::GDAL.GDALGetRasterBand(@c_pointer, raster_index)
+      raster_band_ptr = FFI::GDAL::GDAL.GDALGetRasterBand(@c_pointer, raster_index)
 
       GDAL::RasterBand.new(raster_band_ptr)
     end
 
-    # @param type [FFI::GDAL::DataType]
+    # @param type [FFI::GDAL::GDAL::DataType]
     # @param options [Hash]
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
       options_ptr = GDAL::Options.pointer(options)
-      FFI::GDAL.GDALAddBand(@c_pointer, type, options_ptr)
+      FFI::GDAL::GDAL.GDALAddBand(@c_pointer, type, options_ptr)
 
       raster_band(raster_count)
     end
@@ -158,18 +157,18 @@ module GDAL
     # @param flags [Fixnum] Any of of the GDAL::RasterBand flags.
     # @return [Boolean]
     def create_mask_band(flags)
-      !!FFI::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flags)
+      !!FFI::GDAL::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flags)
     end
 
     # @return [String]
     def projection
-      FFI::GDAL.GDALGetProjectionRef(@c_pointer) || ''
+      FFI::GDAL::GDAL.GDALGetProjectionRef(@c_pointer) || ''
     end
 
     # @param new_projection [String]
     # @return [Boolean]
     def projection=(new_projection)
-      FFI::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
+      FFI::GDAL::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
     end
 
     # @return [GDAL::GeoTransform]
@@ -177,7 +176,7 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
-      FFI::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
+      FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
     end
@@ -186,7 +185,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
-      FFI::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
+      FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
 
       @geo_transform = GeoTransform.new(new_pointer)
     end
@@ -195,21 +194,21 @@ module GDAL
     def gcp_count
       return 0 if null?
 
-      FFI::GDAL.GDALGetGCPCount(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetGCPCount(@c_pointer)
     end
 
     # @return [String]
     def gcp_projection
       return '' if null?
 
-      FFI::GDAL.GDALGetGCPProjection(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetGCPProjection(@c_pointer)
     end
 
     # @return [FFI::GDAL::GCP]
     def gcps
       return FFI::GDAL::GCP.new if null?
 
-      gcp_array_pointer = FFI::GDAL.GDALGetGCPs(@c_pointer)
+      gcp_array_pointer = FFI::GDAL::GDAL.GDALGetGCPs(@c_pointer)
 
       if gcp_array_pointer.null?
         FFI::GDAL::GCP.new
@@ -222,7 +221,7 @@ module GDAL
     def layer_count
       fail GDAL::UnsupportedOperation unless GDAL._supported?(:GDALDatasetGetLayerCount)
 
-      FFI::GDAL.GDALDatasetGetLayerCount(@c_pointer)
+      FFI::GDAL::GDAL.GDALDatasetGetLayerCount(@c_pointer)
     end
 
     # @param resampling [String, Symbol] One of:
@@ -256,7 +255,7 @@ module GDAL
         band_count = nil
       end
 
-      !!FFI::GDAL.GDALBuildOverviews(
+      !!FFI::GDAL::GDAL.GDALBuildOverviews(
         @c_pointer,
         resampling_string,
         overview_levels.size,
@@ -273,7 +272,7 @@ module GDAL
     #   the dataset.
     # @param x_size [Fixnum] If not given, uses #raster_x_size.
     # @param y_size [Fixnum] If not given, uses #raster_y_size.
-    # @param data_type [FFI::GDAL::DataType]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
     # @param band_count [Fixnum] The number of bands to create in the raster.
     # @param pixel_space
     def raster_io(access_flag, data_ptr,
@@ -295,7 +294,7 @@ module GDAL
       x_buffer_size = x_size
       y_buffer_size = y_size
 
-      !!FFI::GDAL::GDALDatasetRasterIO(
+      !!FFI::GDAL::GDAL::GDALDatasetRasterIO(
         @c_pointer,                     # hDS
         gdal_access_flag,               # eRWFlag
         x_offset,                       # nXOff

@@ -32,7 +32,7 @@ module GDAL
         end
       end
 
-      # @param data_type [FFI::GDAL::DataType]
+      # @param data_type [FFI::GDAL::GDAL::DataType]
       # @return [Symbol] The FFI Symbol that represents a data type.
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -66,7 +66,7 @@ module GDAL
 
       # Maps GDAL DataTypes to FFI types.
       #
-      # @param data_type [FFI::GDAL::DataType]
+      # @param data_type [FFI::GDAL::GDAL::DataType]
       def _gdal_data_type_to_ffi(data_type)
         case data_type
         when :GDT_Byte then :uchar
@@ -85,7 +85,7 @@ module GDAL
       # the pointer.
       #
       # @param pointer [FFI::Pointer] The pointer to read from.
-      # @param data_type [FFI::GDAL::DataType] The GDAL data type that
+      # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when reading.
       # @param length [Fixnum] The amount of data to read from the pointer. If
       #   > 1, the "read_array_of_" method will be called.
@@ -102,7 +102,7 @@ module GDAL
       # DataType of the pointer.
       #
       # @param pointer [FFI::Pointer] The pointer to write to.
-      # @param data_type [FFI::GDAL::DataType] The GDAL data type that
+      # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when writing.
       # @param data [Fixnum] The data to write to the pointer. If it's an Array
       #   with size > 1, the "write_array_of_" method will be called.
@@ -120,6 +120,8 @@ module GDAL
       #
       # @param function_name [Symbol]
       # @return [Boolean]
+      # TODO: Should the #respond_to? check all FFI::GDAL::* classes? What about
+      #   OGR?
       def _supported?(function_name)
         !FFI::GDAL.unsupported_gdal_functions.include?(function_name) &&
           FFI::GDAL.respond_to?(function_name)

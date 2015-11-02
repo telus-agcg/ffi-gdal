@@ -1,4 +1,5 @@
-require_relative '../ffi/gdal'
+require_relative '../ffi-gdal'
+require_relative '../gdal'
 require_relative 'major_object'
 require_relative 'exceptions'
 require_relative 'driver_mixins/extensions'
@@ -18,7 +19,7 @@ module GDAL
 
     # @return [Fixnum]
     def self.count
-      FFI::GDAL.GDALGetDriverCount
+      FFI::GDAL::GDAL.GDALGetDriverCount
     end
 
     # @param name [String] Short name of the registered GDALDriver.
@@ -26,7 +27,7 @@ module GDAL
     # @raise [GDAL::InvalidDriverName] If +name+ does not represent a valid
     #   driver name.
     def self.by_name(name)
-      driver_ptr = FFI::GDAL.GDALGetDriverByName(name)
+      driver_ptr = FFI::GDAL::GDAL.GDALGetDriverByName(name)
 
       if driver_ptr.null?
         fail InvalidDriverName, "'#{name}' is not a valid driver name."
@@ -44,7 +45,7 @@ module GDAL
         fail InvalidDriverIndex, "index must be between 0 and #{count - 1}."
       end
 
-      driver_ptr = FFI::GDAL.GDALGetDriver(index)
+      driver_ptr = FFI::GDAL::GDAL.GDALGetDriver(index)
 
       new(driver_ptr)
     end
@@ -52,7 +53,7 @@ module GDAL
     # @param file_path [String] File to get the driver for.
     # @return [GDAL::Driver] Returns nil if the file is unsupported.
     def self.identify_driver(file_path)
-      driver_ptr = FFI::GDAL.GDALIdentifyDriver(::File.expand_path(file_path), nil)
+      driver_ptr = FFI::GDAL::GDAL.GDALIdentifyDriver(::File.expand_path(file_path), nil)
       return nil if driver_ptr.null?
 
       new(driver_ptr)
@@ -67,17 +68,17 @@ module GDAL
 
     # @return [String]
     def short_name
-      FFI::GDAL.GDALGetDriverShortName(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetDriverShortName(@c_pointer)
     end
 
     # @return [String]
     def long_name
-      FFI::GDAL.GDALGetDriverLongName(@c_pointer)
+      FFI::GDAL::GDAL.GDALGetDriverLongName(@c_pointer)
     end
 
     # @return [String]
     def help_topic
-      "#{GDAL_DOCS_URL}/#{FFI::GDAL.GDALGetDriverHelpTopic(@c_pointer)}"
+      "#{GDAL_DOCS_URL}/#{FFI::GDAL::GDAL.GDALGetDriverHelpTopic(@c_pointer)}"
     end
 
     # Lists and describes the options that can be used when calling
@@ -87,7 +88,7 @@ module GDAL
     def creation_option_list
       return [] unless @c_pointer
 
-      creation_option_list_xml = FFI::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
+      creation_option_list_xml = FFI::GDAL::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
       root = MultiXml.parse(creation_option_list_xml)
       return [] if root.nil? || root.empty?
 
@@ -106,7 +107,7 @@ module GDAL
                           GDAL::Options.pointer(options)
                         end
 
-      FFI::GDAL.GDALValidateCreationOptions(@c_pointer, options_pointer).to_bool
+      FFI::GDAL::GDAL.GDALValidateCreationOptions(@c_pointer, options_pointer)
     end
 
     # Copy all of the associated files of a dataset from one file to another.
@@ -116,7 +117,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def copy_dataset_files(old_name, new_name)
-      FFI::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      FFI::GDAL::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -127,13 +128,13 @@ module GDAL
     # @param x_size [Fixnum] Width of created raster in pixels.
     # @param y_size [Fixnum] Height of created raster in pixels.
     # @param band_count [Fixnum]
-    # @param data_type [FFI::GDAL::DataType]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
     # @return [GDAL::Dataset] Returns the *open* dataset.  You'll need to
     #   close it.
     def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
-      dataset_pointer = FFI::GDAL.GDALCreate(
+      dataset_pointer = FFI::GDAL::GDAL.GDALCreate(
         @c_pointer,
         filename,
         x_size,
@@ -157,13 +158,13 @@ module GDAL
     #   the output format.
     # @param options [Hash]
     # @param progress [Proc] For outputting copy progress.  Conforms to the
-    #   FFI::GDAL::GDALProgressFunc signature.
+    #   FFI::GDAL::GDAL::GDALProgressFunc signature.
     def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
       fail "Source dataset couldn't be read" if source_dataset_ptr.null?
 
-      destination_dataset_ptr = FFI::GDAL.GDALCreateCopy(
+      destination_dataset_ptr = FFI::GDAL::GDAL.GDALCreateCopy(
         @c_pointer,
         destination_path,
         source_dataset_ptr,
@@ -189,7 +190,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def delete_dataset(file_name)
-      FFI::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
     end
 
     # @param new_name [String]
@@ -197,7 +198,7 @@ module GDAL
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
     def rename_dataset(new_name, old_name)
-      FFI::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
     end
 
     private

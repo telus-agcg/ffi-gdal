@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/grid_data_metrics_options'
-
 module GDAL
   module GridTypes
     class DataMetricsBase

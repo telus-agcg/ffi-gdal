@@ -16,13 +16,13 @@ module GDAL
     # @return [GDAL::GeoTransform]
     attr_reader :geo_transform
 
-    # @return [FFI::GDAL::DataType]
+    # @return [FFI::GDAL::GDAL::DataType]
     attr_accessor :data_type
 
     def_delegator :@gridder, :options, :options
 
     # @param algorithm [Symbol]
-    # @param data_type [FFI::GDAL::DataType]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
     def initialize(algorithm, data_type: :GDT_Byte)
       @data_type = data_type
       @gridder = init_gridder(algorithm)

@@ -1,11 +1,8 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
-require_relative '../cpl/error'
 
 module FFI
   module GDAL
-    autoload :WarpOptions, File.expand_path('warp_options', __dir__)
-
     module Warper
       extend ::FFI::Library
       ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
@@ -18,7 +15,7 @@ module FFI
         [
           :pointer,
           :int,
-          FFI::GDAL::DataType,
+          FFI::GDAL::GDAL::DataType,
           :int,
           :int,
           :int,
@@ -63,7 +60,7 @@ module FFI
         %i[GDALWarpOperationH int int int int int int int int],
         CPL::Error::CPLErr
       attach_function :GDALWarpRegionToBuffer,
-        [:GDALWarpOperationH, :int, :int, :int, :int, :pointer, DataType, :int, :int, :int, :int],
+        [:GDALWarpOperationH, :int, :int, :int, :int, :pointer, GDAL::DataType, :int, :int, :int, :int],
         CPL::Error::CPLErr
     end
   end

@@ -9,6 +9,7 @@ end
 
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
 require 'ffi-gdal'
+require 'byebug'
 
 require './spec/support/shared_contexts'
 Dir['./spec/support/shared_examples/**/*.rb'].sort.each { |f| require f }

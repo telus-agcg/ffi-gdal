@@ -1,6 +1,4 @@
 require 'ffi'
-require_relative 'error'
-require_relative 'port'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
