@@ -142,7 +142,7 @@ module FFI
       attach_function :GDALCreateCopy,
         %i[GDALDriverH string GDALDatasetH bool pointer GDALProgressFunc pointer],
         :GDALDatasetH
-      attach_function :GDALValidateCreationOptions, %i[GDALDriverH pointer], FFI::CPL::Error::CPLErr
+      attach_function :GDALValidateCreationOptions, %i[GDALDriverH pointer], :bool
       attach_function :GDALGetDriverShortName, [:GDALDriverH], :string
       attach_function :GDALGetDriverLongName, [:GDALDriverH], :string
       attach_function :GDALGetDriverHelpTopic, [:GDALDriverH], :string
