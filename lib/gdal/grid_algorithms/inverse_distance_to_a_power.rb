@@ -1,5 +1,5 @@
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class InverseDistanceToAPower
       # @return [FFI::GDAL::GridInverseDistanceToAPowerOptions]
       attr_reader :options
@@ -9,7 +9,7 @@ module GDAL
       end
 
       # @return [Symbol]
-      def algorithm
+      def c_identifier
         :GGA_InverseDistanceToAPower
       end
     end

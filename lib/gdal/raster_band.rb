@@ -609,13 +609,23 @@ module GDAL
     #   the left-most block, 1 the next block, etc.
     # @param y_offset [Fixnum] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
-    # @return [FFI::MemoryPointer] The image buffer.
+    # @param image_buffer [FFI::Pointer] Optional pointer to use for reading
+    #   the data into. If not provided, one will be created and returned.
+    # @return [FFI::MemoryPointer] The image buffer that contains the read data.
     def read_block(x_offset, y_offset, image_buffer = nil)
       image_buffer ||= FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
 
       FFI::GDAL::GDAL.GDALReadBlock(@c_pointer, x_offset, y_offset, image_buffer)
 
       image_buffer
+    end
+
+    # @param x_offset [Fixnum] The horizontal block offset, with 0 indicating
+    #   the left-most block, 1 the next block, etc.
+    # @param y_offset [Fixnum] The vertical block offset, with 0 indicating the
+    #   top-most block, 1 the next block, etc.
+    def write_block(x_offset, y_offset, data_pointer)
+      FFI::GDAL::GDAL.GDALWriteBlock(@c_pointer, x_offset, y_offset, data_pointer)
     end
 
     # The minimum and maximum values for this band.

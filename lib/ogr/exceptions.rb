@@ -35,6 +35,9 @@ module OGR
   class InvalidFieldDefinition < StandardError
   end
 
+  class InvalidFieldName < StandardError
+  end
+
   class InvalidGeometry < StandardError
   end
 
@@ -68,6 +71,9 @@ module OGR
       message = msg || "The object you're accessing is read-only.  Probably because it's internally managed by OGR."
       super(message)
     end
+  end
+
+  class UnsupportedFieldType < StandardError
   end
 
   class UnsupportedGeometryType < StandardError

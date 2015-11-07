@@ -10,6 +10,16 @@ module OGR
       end
     end
 
+    # Retrieves a field using +index+, but uses its type from the associated
+    # {OGR::FieldDefinition} to determine it's core type to return as. This
+    # saves from having to find out the type then call the associated
+    # +field_as_[type]+ method if you just want the data in it's originally
+    # intended form.
+    #
+    # @param index [Fixnum] Index of the field to retrieve the data for.
+    # @return [Number, String, Array]
+    # @raise [OGR::UnsupportedFieldType] if the associated FieldDefinition's
+    #   type has not yet been mapped here (to know how to return the value).
     def field(index)
       field_type = field_definition(index).type
 
@@ -27,7 +37,8 @@ module OGR
       when :OFTInteger64      then field_as_integer(index)
       when :OFTInteger64List  then field_as_integer_lsit(index)
       when :OFTMaxType        then field_as_date_time(index)
-      else fail "not sure about field type: #{field_type}"
+      else fail OGR::UnsupportedFieldType,
+        "Don't know how to fetch field for field type: #{field_type}"
       end
     end
 

@@ -1,5 +1,5 @@
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class DataMetricsBase
       # @return [FFI::GDAL::GridDataMetricsOptions]
       attr_reader :options

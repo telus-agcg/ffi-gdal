@@ -1,106 +1,107 @@
 require 'bundler/setup'
-require 'pry'
-require 'ffi-gdal'
+require './lib/ffi-gdal'
+require './lib/gdal/gridder'
+require './lib/ogr/data_source'
+require './lib/ogr/spatial_reference'
 
 GDAL::Logger.logging_enabled = true
 
-test_points_file = File.expand_path('points.txt', __dir__)
-test_points = File.read(test_points_file).split.map { |point_group| point_group.split(',').map(&:to_f) }
+module Examples
+  module Gridding
+    class << self
+      # IDW Test
+      def make_idtap_options
+        gridder_options = GDAL::GridderOptions.new(:inverse_distance_to_a_power)
 
-output_formatter = lambda do |d, _, _|
-  print "#{Time.now}: #{(d * 100).round(2)}%\r"
-  true
-end
+        gridder_options.algorithm_options[:angle] = 10
+        gridder_options.algorithm_options[:max_points] = 5
+        gridder_options.algorithm_options[:min_points] = 1
+        gridder_options.algorithm_options[:no_data_value] = -9999
+        gridder_options.algorithm_options[:power] = 2
+        gridder_options.algorithm_options[:radius1] = 20
+        gridder_options.algorithm_options[:radius2] = 15
+        gridder_options.algorithm_options[:smoothing] = 5
 
-# IDW Test
-def idtap(test_points)
-  grid = GDAL::Grid.new(:inverse_distance_to_a_power, data_type: :GDT_Float32)
-  grid.points = NArray[*test_points]
+        [gridder_options, 'gridded-idtap.tif']
+      end
 
-  grid.options[:angle] = 10
-  # grid.options[:max_points] = 5
-  # grid.options[:min_points] = 1
-  grid.options[:no_data_value] = -9999
-  grid.options[:power] = 2
-  grid.options[:radius1] = 20
-  grid.options[:radius2] = 15
-  grid.options[:smoothing] = 5
+      def make_moving_average_options
+        gridder_options = GDAL::GridderOptions.new(:moving_average)
 
-  [grid, 'gridded-idtap.tif']
-end
+        gridder_options.algorithm_options[:angle] = 20
+        gridder_options.algorithm_options[:min_points] = 2
+        gridder_options.algorithm_options[:no_data_value] = -9999
+        gridder_options.algorithm_options[:radius1] = 20
+        gridder_options.algorithm_options[:radius2] = 51
 
-def moving_average(test_points)
-  grid = GDAL::Grid.new(:moving_average, data_type: :GDT_Float32)
-  grid.points = NArray[*test_points]
+        [gridder_options, 'gridded-ma.tif']
+      end
 
-  grid.options[:angle] = 20
-  grid.options[:min_points] = 2
-  grid.options[:no_data_value] = -9999
-  grid.options[:radius1] = 20
-  grid.options[:radius2] = 51
+      def make_nearest_neighbor_options
+        gridder_options = GDAL::GridderOptions.new(:nearest_neighbor)
 
-  [grid, 'gridded-ma.tif']
-end
+        gridder_options.algorithm_options[:angle] = 30
+        gridder_options.algorithm_options[:no_data_value] = -9999
+        gridder_options.algorithm_options[:radius1] = 20
+        gridder_options.algorithm_options[:radius2] = 15
 
-def nearest_neighbor(test_points)
-  grid = GDAL::Grid.new(:nearest_neighbor, data_type: :GDT_Float32)
-  grid.points = NArray[*test_points]
+        [gridder_options, 'gridded-nn.tif']
+      end
 
-  grid.options[:angle] = 30
-  grid.options[:no_data_value] = -9999
-  grid.options[:radius1] = 20
-  grid.options[:radius2] = 15
+      def make_metric_range_options
+        gridder_options = GDAL::GridderOptions.new(:metric_range)
 
-  [grid, 'gridded-nn.tif']
-end
+        gridder_options.algorithm_options[:angle] = 30
+        gridder_options.algorithm_options[:no_data_value] = -9999
+        gridder_options.algorithm_options[:radius1] = 20
+        gridder_options.algorithm_options[:radius2] = 15
 
-def metric_range(test_points)
-  grid = GDAL::Grid.new(:metric_range, data_type: :GDT_Float32)
-  grid.points = NArray[*test_points]
+        [gridder_options, 'gridded-metric-range.tif']
+      end
 
-  grid.options[:angle] = 30
-  # grid.options[:no_data_value] = -9999
-  grid.options[:radius1] = 20
-  grid.options[:radius2] = 15
-  [grid, 'gridded-metric-range.tif']
-end
+      def make_file(source_layer, file_name, gridder_options)
+        start = Time.now
 
-def make_file(file_name, grid, data)
-  driver = GDAL::Driver.by_name('GTiff')
-  dataset = driver.create_dataset(
-    file_name,
-    grid.x_size.round.to_i,
-    grid.y_size.round.to_i,
-    data_type: grid.data_type
-  )
+        output_formatter = lambda do |d, _, _|
+          print "Duration: #{(Time.now - start).to_i}s\t| #{(d * 100).round(2)}%\r"
+          true
+        end
 
-  dataset.geo_transform = grid.geo_transform
-  dataset.projection = OGR::SpatialReference.new_from_epsg(32_632).to_wkt
+        gridder_options.input_field_name = 'STATE_FIPS'
+        gridder_options.progress_formatter = output_formatter
+        gridder_options.output_size = { width: 1600, height: 1480 }
 
-  dataset.raster_io('w', data, data_type: grid.data_type)
-  if grid.options[:no_data_value]
-    dataset.raster_band(1).no_data_value = grid.options[:no_data_value]
+        gridder = GDAL::Gridder.new(source_layer, file_name, gridder_options)
+        gridder.grid!
+
+        puts ''
+        puts "Duration for #{file_name}: #{Time.now - start}"
+      end
+    end
   end
-  dataset.close
-  puts "\nDone writing #{file_name}"
 end
 
-grid, output_file_name = idtap(test_points)
-output = grid.create(&output_formatter)
-puts ''
-make_file(output_file_name, grid, output)
+if $PROGRAM_NAME == __FILE__
+  shp_path = './spec/support/shapefiles/states_21basic'
+  ds = OGR::DataSource.open(shp_path, 'r')
 
-grid, output_file_name = moving_average(test_points)
-output = grid.create(&output_formatter)
-puts ''
-make_file(output_file_name, grid, output)
+  # Inverse Distance To A Power
+  gridder_options, output_file_name = Examples::Gridding.make_idtap_options
+  puts ''
+  Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 
-grid, output_file_name = nearest_neighbor(test_points)
-output = grid.create(&output_formatter)
-puts ''
-make_file(output_file_name, grid, output)
+  # Moving Average
+  gridder_options, output_file_name = Examples::Gridding.make_moving_average_options
+  puts ''
+  Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 
-grid, output_file_name = metric_range(test_points)
-output = grid.create(&output_formatter)
-puts ''
-make_file(output_file_name, grid, output)
+  # Nearest Neighbor
+  gridder_options, output_file_name = Examples::Gridding.make_nearest_neighbor_options
+  puts ''
+  Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
+
+  # Metric Range
+  gridder_options, output_file_name = Examples::Gridding.make_metric_range_options
+  puts ''
+  Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
+end

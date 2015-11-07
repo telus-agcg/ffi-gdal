@@ -2,6 +2,35 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## Unreleased / yyyy-mm-dd
+
+* New Features
+    * Added wrappers for the Grid API. It uses `GDAL::Gridder`, which is the
+      programmatic equivalent to the `gdal_grid` command-line utility,
+      `GDAL::GridderOptions`, which is an object used to mimic the options you
+      pass to `gdal_grid`, and `GDAL::Grid`, which is the simple object that
+      performs the gridding.
+* Improvements
+    * Added `OGR::FeatureExtensions#field()` which gets the field using the
+      associated `OGR::FieldDefinition#type`. Makes so you don't always have to
+      request the field by its type (`field_as_double`).
+    * Added `OGR::LayerMixins::Extensions#point_values()` which gets values for
+      all of the points in the layer. It also allows you to specify getting
+      field values with that, which helps retrieving data for the Grid API. You
+      can also pass it a block to filter out points that don't match some
+      criteria defined in the block.
+    * Added `OGR::LayerMixins::Extensions#any_geometries_with_z?` which simply
+      checks to see if the layer has any geometries with Z values.
+    * `GDAL::DataType.by_name` always calls `#to_s` on the param now, letting
+      you pass in Symbols.
+    * Added `GDAL::GeoTransformMixins::Extensions.new_from_envelope` which lets
+      you create a `GDAL::GeoTransform` using the points from an `OGR::Envelope`
+      and the destination raster's width and height. It's convenient because it
+      calculates the pixel size for you.
+    * Renamed `GDAL::GridTypes` to `GDAL::GridAlgorithms`.
+    * Added `GDAL::RasterBand#write_block`. Somehow this went missing from
+      previous `RasterBand` wrapping.
+
 ## 1.0.0.beta5 / 2015-06-16
 
 * Improvements

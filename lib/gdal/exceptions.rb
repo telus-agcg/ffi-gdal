@@ -12,10 +12,16 @@ module GDAL
     end
   end
 
+  class InvalidAccessFlag < RuntimeError
+  end
+
   class InvalidBandNumber < StandardError
   end
 
   class InvalidColorTable < StandardError
+  end
+
+  class InvalidDataType < StandardError
   end
 
   class InvalidDriverIndex < StandardError
@@ -24,13 +30,18 @@ module GDAL
   class InvalidDriverName < StandardError
   end
 
+  class InvalidGeoTransform < StandardError
+  end
+
   class InvalidRasterBand < StandardError
   end
 
   class NoWriteAccess < RuntimeError
   end
 
-  class InvalidAccessFlag < RuntimeError
+  # Indicates that neither field attributes were selected nor Z fields were
+  # provided to allow for gridding.
+  class NoValuesToGrid < RuntimeError
   end
 
   class NullObject < TypeError

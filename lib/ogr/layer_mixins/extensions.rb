@@ -41,7 +41,7 @@ module OGR
       #   # => [[100, 100], [100, 120], [110, 110], [110, 100], [100, 100]]
       #
       # @example With +with_attributes+
-      #   points = layer.point_values('Moisture', 'Color')
+      #   points = layer.point_values('Moisture' => :double, 'Color' => :string)
       #   # => [[100, 100, 74.2, 'Red'],
       #         [100, 120, 19.0, 'Blue'],
       #         [110, 110, 21.1, 'Red'],
@@ -50,14 +50,22 @@ module OGR
       #
       # @param with_attributes [String, Array<String>]
       # @return [Array<Array>]
-      def point_values(*with_attributes)
+      # @raise [OGR::UnsupportedGeometryType] if a geometry of some type is
+      #   encountered that the method doesn't know how to extract point values
+      #   from.
+      def point_values(with_attributes = {})
         return [] if feature_count.zero?
 
-        field_indeces = with_attributes.map { |field_name| find_field_index(field_name) }
-
+        field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = []
+
         features.each do |feature|
-          field_values = field_indeces.map { |i| feature.field(i) }
+          next unless yield(feature.geometry) if block_given?
+
+          field_values = field_indices.map.with_index do |i, attribute_index|
+            feature.send("field_as_#{with_attributes.values[attribute_index]}", i)
+          end
+
           feature.geometry.flatten_to_2d! if feature.geometry.is_3d?
 
           case feature.geometry
@@ -66,48 +74,40 @@ module OGR
           when OGR::LineString, OGR::LineString25D, OGR::LinearRing
             values += feature.geometry.point_values + field_values
           when OGR::Polygon, OGR::Polygon25D
-            feature.geometry.each { |ring| values += ring.point_values + field_values }
+            feature.geometry.each do |ring|
+              values += ring.point_values.map { |pv| pv + field_values }
+            end
           when OGR::MultiPoint, OGR::MultiPoint25D, OGR::MultiLineString, OGR::MultiLineString
-            feature.geometry.each { |ls| values += ls.point_values + field_values }
+            feature.geometry.each do |ls|
+              values += ls.point_values.map { |pv| pv + field_values }
+            end
           when OGR::MultiPolygon, OGR::MultiPolygon25D
             feature.geometry.each do |polygon|
-              polygon.each { |ring| values += ring.point_values + field_values }
+              polygon.each do |ring|
+                values += ring.point_values.map { |pv| pv + field_values }
+              end
             end
-          else fail RuntimeError, "Got geometry #{feature.geometry.class}"
+          else fail OGR::UnsupportedGeometryType,
+            "Not sure how to extract point_values for a #{feature.geometry.class}"
           end
         end
 
         values
       end
 
-      # Builds a {GDAL::GeoTransform} that can be used for creating a raster
-      # using points from this Layer. It assumes north-up and uses the current
-      # Layer's SpatialReference. If you want anything different, you must
-      # create the GeoTransform yourself.
+      # Iterates through features to see if any of them are 3d.
       #
-      # @param raster_width [Fixnum]
-      # @param raster_height [Fixnum]
-      # @return [GDAL::GeoTransform]
-      def geo_transform_for_raster(raster_width, raster_height)
-        return if feature_count.zero?
+      # @return [Boolean]
+      def any_geometries_with_z?
+        found_z_geom = false
+        feature = next_feature
 
-        points = point_values
-        return if points.empty?
+        until found_z_geom || feature.nil?
+          found_z_geom = feature.geometry.is_3d?
+          feature = next_feature
+        end
 
-        x_points = points.collect { |p| p[0] }
-        y_points = points.collect { |p| p[1] }
-        x_min = x_points.min
-        x_max = x_points.max
-        y_min = y_points.min
-        y_max = y_points.max
-
-        geo_transform = GDAL::GeoTransform.new
-        geo_transform.x_origin = x_min
-        geo_transform.y_origin = y_min
-        geo_transform.pixel_width = (x_max - x_min) / raster_width
-        geo_transform.pixel_height = (y_max - y_min) / raster_height
-
-        geo_transform
+        found_z_geom
       end
 
       # @return [Hash]
