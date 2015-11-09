@@ -1,5 +1,4 @@
 require 'ffi'
-require_relative '../ffi/cpl/string'
 
 module GDAL
   # A wrapper for the way GDAL does key/value pair options for methods.
