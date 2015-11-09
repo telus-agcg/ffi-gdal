@@ -1,3 +1,4 @@
+require_relative '../ogr'
 require_relative 'envelope'
 require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
