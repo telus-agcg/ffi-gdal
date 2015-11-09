@@ -78,6 +78,38 @@ module OGR
         end
 
         values
+      end
+
+      # Builds a {GDAL::GeoTransform} that can be used for creating a raster
+      # using points from this Layer. It assumes north-up and uses the current
+      # Layer's SpatialReference. If you want anything different, you must
+      # create the GeoTransform yourself.
+      #
+      # @param raster_width [Fixnum]
+      # @param raster_height [Fixnum]
+      # @return [GDAL::GeoTransform]
+      def geo_transform_for_raster(raster_width, raster_height)
+        return if feature_count.zero?
+
+        points = point_values
+        return if points.empty?
+
+        x_points = points.collect { |p| p[0] }
+        y_points = points.collect { |p| p[1] }
+        x_min = x_points.min
+        x_max = x_points.max
+        y_min = y_points.min
+        y_max = y_points.max
+
+        geo_transform = GDAL::GeoTransform.new
+        geo_transform.x_origin = x_min
+        geo_transform.y_origin = y_min
+        geo_transform.pixel_width = (x_max - x_min) / raster_width
+        geo_transform.pixel_height = (y_max - y_min) / raster_height
+
+        geo_transform
+      end
+
       # @return [Hash]
       def as_json(options = nil)
         {
