@@ -123,8 +123,8 @@ module GDAL
       # @return [Enumerator, nil] Returns an Enumerable if no block is given,
       #   allowing to chain with other Enumerable methods.  Returns nil if a
       #   block is given.
-      def each_by_block
-        return enum_for(:each_by_block) unless block_given?
+      def read_by_block
+        return enum_for(:read_by_block) unless block_given?
 
         data_pointer = FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
 
@@ -146,7 +146,7 @@ module GDAL
 
       # @return [Array]
       def to_a
-        each_by_block.map { |pixels| pixels }
+        read_by_block.map { |pixels| pixels }
       end
 
       # Iterates through all lines and builds an NArray of pixels.
