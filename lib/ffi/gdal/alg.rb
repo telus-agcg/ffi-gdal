@@ -34,6 +34,8 @@ module FFI
       # -----------------------------------------------------------------------
       # Functions
       # -----------------------------------------------------------------------
+      attach_function :GDALDestroyTransformer, %i[pointer], :void
+
       attach_function :GDALChecksumImage,
         [FFI::GDAL::GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
         :int
@@ -242,6 +244,9 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :int
 
+      # ~~~
+      # RasterBand related functions
+      # ~~~
       attach_function :GDALDitherRGB2PCT,
         [
           FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -281,6 +286,18 @@ module FFI
           FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           OGR::API.find_type(:OGRLayerH),
+          :int,
+          :pointer,
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
+          :pointer
+        ],
+        CPL::Error::CPLErr
+      attach_function :GDALSieveFilter,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          :int,
           :int,
           :pointer,
           FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
@@ -375,6 +392,15 @@ module FFI
           :pointer
         ],
         :bool
+
+      attach_function :GDALComputeMatchingPoints,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          :pointer,
+          :pointer
+        ],
+        FFI::GDAL::GCP.ptr
     end
   end
 end

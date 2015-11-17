@@ -4,14 +4,16 @@ module GDAL
   module Transformers
     class GeneralImageProjectionTransformer < BaseGeneralImageProjectionTransformer
       # @param source_dataset [GDAL::Dataset, FFI::Pointer]
-      # @param source_wkt [String]
       # @param destination_dataset [GDAL::Dataset, FFI::Pointer]
+      # @param source_wkt [String]
       # @param destination_wkt [String]
-      # @return [FFI::Pointer]
-      def initialize(source_dataset, source_wkt, destination_dataset, destination_wkt,
-        gcp_use_ok: false, gcp_error_threshold: 0, order: 1)
+      # @param gcp_use_ok [Boolean]
+      # @param gcp_error_threshold [Fixnum]
+      # @param order [Fixnum]
+      def initialize(source_dataset, destination_dataset: nil, source_wkt: nil, destination_wkt: nil,
+        gcp_use_ok: false, order: 0)
         source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
-        dest_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset)
+        dest_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, false)
 
         @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(
           source_ptr,
@@ -19,7 +21,7 @@ module GDAL
           dest_ptr,
           destination_wkt,
           gcp_use_ok,
-          gcp_error_threshold,
+          0.0,
           order
         )
         fail if @c_pointer.null?

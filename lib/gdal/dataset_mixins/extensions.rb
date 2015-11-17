@@ -328,56 +328,6 @@ module GDAL
         @raster_geometry.contains? source_geometry
       end
 
-      def image_warp(destination_file, driver, band_numbers, **warp_options)
-        fail NotImplementedError, '#image_warp not yet implemented.'
-
-        _options_ptr = GDAL::Options.pointer(warp_options)
-        driver = GDAL::Driver.by_name(driver)
-        destination_dataset = driver.create_dataset(destination_file, raster_x_size, raster_y_size)
-
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-        log "band numbers: #{band_numbers}"
-
-        bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
-        bands_ptr.write_array_of_int(band_numbers)
-        log "band numbers ptr null? #{bands_ptr.null?}"
-
-        warp_options_struct = FFI::GDAL::WarpOptions.new
-
-        warp_options.each do |k, _|
-          warp_options_struct[k] = warp_options[k]
-        end
-
-        warp_options[:source_dataset] = c_pointer
-        warp_options[:destination_dataset] = destination_dataset.c_pointer
-        warp_options[:band_count] = band_numbers.size
-        warp_options[:source_bands] = bands_ptr
-        warp_options[:transformer] = transformer
-        warp_options[:transformer_arg] = transformer_arg
-
-        log "transformer: #{transformer}"
-        error_threshold = 0.0
-        order = 0
-
-        _transformer_ptr = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(@c_pointer,
-          projection,
-          destination_dataset.c_pointer,
-          destination.projection,
-          false,
-          error_threshold,
-          order)
-
-        warp_operation = GDAL::WarpOperation.new(warp_options)
-        warp_operation.chunk_and_warp_image(0, 0, raster_x_size, raster_y_size)
-        transformer.destroy!
-        warp_operation.destroy!
-
-        destination = GDAL::Dataset.new(destination_dataset_ptr)
-        destination.close
-
-        destination
-      end
-
       # Retrieves pixels from each raster band and converts this to an array of
       # points per pixel.  For example:
       #
