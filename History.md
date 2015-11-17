@@ -27,9 +27,16 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
       you create a `GDAL::GeoTransform` using the points from an `OGR::Envelope`
       and the destination raster's width and height. It's convenient because it
       calculates the pixel size for you.
-    * Renamed `GDAL::GridTypes` to `GDAL::GridAlgorithms`.
+    * Renamed `GDAL::GridTypes` to `GDAL::GridAlgorithms`. This shouldn't impact
+      anyone/thing since it's only relative to the newly added Grid API wrapper.
+      There just happened to me some Grid cruft that had been laying around for
+      some time.
     * Added `GDAL::RasterBand#write_block`. Somehow this went missing from
       previous `RasterBand` wrapping.
+    * Renamed `GDAL::RasterBandMixins::Extenions#each_by_block` to
+      `#read_by_block`. It's functionality was doing reading, yet implied
+      reading or writing; since writing by block isn't needed anywhere internally
+      yet, I just renamed this.
 
 ## 1.0.0.beta5 / 2015-06-16
 
