@@ -65,6 +65,7 @@ module GDAL
       ObjectSpace.define_finalizer self, -> { close }
 
       @geo_transform = nil
+      @spatial_reference = nil
       @raster_bands = Array.new(raster_count)
     end
 

@@ -124,7 +124,7 @@ module GDAL
       #   OGR?
       def _supported?(function_name)
         !FFI::GDAL.unsupported_gdal_functions.include?(function_name) &&
-          FFI::GDAL.respond_to?(function_name)
+          FFI::GDAL::GDAL.respond_to?(function_name)
       end
 
       # @param char [String] 'r' or 'w'

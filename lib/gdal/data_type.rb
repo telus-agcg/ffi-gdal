@@ -25,7 +25,7 @@ module GDAL
     # @param name [String]
     # @return [FFI::GDAL::GDAL::DataType]
     def self.by_name(name)
-      FFI::GDAL::GDAL.GDALGetDataTypeByName(name)
+      FFI::GDAL::GDAL.GDALGetDataTypeByName(name.to_s)
     end
 
     # @param gdal_data_type1 [FFI::GDAL::GDAL::DataType]

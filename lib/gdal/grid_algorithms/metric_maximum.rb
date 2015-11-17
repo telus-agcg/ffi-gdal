@@ -1,10 +1,10 @@
 require_relative 'data_metrics_base'
 
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class MetricMaximum < DataMetricsBase
       # @return [Symbol]
-      def algorithm
+      def c_identifier
         :GGA_MetricMaximum
       end
     end
