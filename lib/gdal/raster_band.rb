@@ -217,7 +217,17 @@ module GDAL
 
     # @return [Boolean]
     def create_mask_band(flags)
-      !!FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flags)
+      flag_value = flags.each_with_object(0) do |flag, result|
+        result += case flag
+                  when :GMF_ALL_VALID then 0x01
+                  when :GMF_PER_DATASET then 0x02
+                  when :GMF_PER_ALPHA then 0x04
+                  when :GMF_NODATA then 0x08
+                  else 0
+                  end
+      end
+
+      !!FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flag_value)
     end
 
     # Fill this band with constant value.  Useful for clearing a band and
