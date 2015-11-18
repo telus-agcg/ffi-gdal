@@ -1,5 +1,7 @@
 require_relative '../ffi-gdal'
 require_relative 'internal_helpers'
+require_relative 'dataset'
+require_relative 'raster_band_mixins/algorithm_extensions'
 require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'raster_band_mixins/coloring_extensions'
 require_relative 'raster_band_mixins/extensions'
@@ -13,6 +15,7 @@ module GDAL
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
+    include RasterBandMixins::AlgorithmExtensions
     include RasterBandMixins::ColoringExtensions
     include RasterBandMixins::Extensions
 
@@ -617,27 +620,35 @@ module GDAL
     # Read a block of image data, more efficiently than #read.  Doesn't
     # resample or do data type conversion.
     #
-    # @param x_offset [Fixnum] The horizontal block offset, with 0 indicating
+    # @param x_block_number [Fixnum] The horizontal block offset, with 0 indicating
     #   the left-most block, 1 the next block, etc.
-    # @param y_offset [Fixnum] The vertical block offset, with 0 indicating the
+    # @param y_block_number [Fixnum] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
     # @param image_buffer [FFI::Pointer] Optional pointer to use for reading
     #   the data into. If not provided, one will be created and returned.
     # @return [FFI::MemoryPointer] The image buffer that contains the read data.
-    def read_block(x_offset, y_offset, image_buffer = nil)
+    #   If you passed in +image_buffer+ you don't need to bother with this
+    #   return value since that original buffer will contain the data.
+    def read_block(x_block_number, y_block_number, image_buffer = nil)
       image_buffer ||= FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
 
-      FFI::GDAL::GDAL.GDALReadBlock(@c_pointer, x_offset, y_offset, image_buffer)
+      FFI::GDAL::GDAL.GDALReadBlock(@c_pointer, x_block_number, y_block_number, image_buffer)
 
       image_buffer
     end
 
-    # @param x_offset [Fixnum] The horizontal block offset, with 0 indicating
+    # @param x_block_number [Fixnum] The horizontal block offset, with 0 indicating
     #   the left-most block, 1 the next block, etc.
-    # @param y_offset [Fixnum] The vertical block offset, with 0 indicating the
+    # @param y_block_number [Fixnum] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
-    def write_block(x_offset, y_offset, data_pointer)
-      FFI::GDAL::GDAL.GDALWriteBlock(@c_pointer, x_offset, y_offset, data_pointer)
+    # @param data_pointer [FFI::Pointer] Optional pointer to write the data to.
+    #   If not provided, one will be created and returned.
+    def write_block(x_block_number, y_block_number, data_pointer = nil)
+      data_pointer ||= FFI::Buffer.alloc_inout(block_buffer_size)
+
+      FFI::GDAL::GDAL.GDALWriteBlock(@c_pointer, x_block_number, y_block_number, data_pointer)
+
+      data_pointer
     end
 
     # The minimum and maximum values for this band.

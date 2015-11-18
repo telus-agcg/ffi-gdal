@@ -36,12 +36,17 @@ module GDAL
   class InvalidRasterBand < StandardError
   end
 
-  class NoWriteAccess < RuntimeError
+  # Used when a RasterBand erase operation can't find a value to use to set for
+  # values to erase.
+  class NoRasterEraseValue < RuntimeError
   end
 
   # Indicates that neither field attributes were selected nor Z fields were
   # provided to allow for gridding.
   class NoValuesToGrid < RuntimeError
+  end
+
+  class NoWriteAccess < RuntimeError
   end
 
   class NullObject < TypeError
