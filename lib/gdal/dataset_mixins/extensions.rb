@@ -52,7 +52,7 @@ module GDAL
           ndvi_dataset.projection = projection
 
           ndvi_band = ndvi_dataset.raster_band(1)
-          ndvi_band.write_array(the_array)
+          ndvi_band.write_xy_narray(the_array)
           ndvi_band.no_data_value = no_data_value
         end
 

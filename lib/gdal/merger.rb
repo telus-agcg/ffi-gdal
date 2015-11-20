@@ -95,11 +95,11 @@ module GDAL
       dataset.projection = @datasets.first.projection
       dataset
       # new_band = dataset.raster_band(1)
-      # new_band.write_array(raster_band.to_na)
+      # new_band.write_xy_narray(raster_band.to_na)
 
       # @datasets.each do |d|
       #   dataset.raster_band(1).copy_whole_raster(new_band)
-      #   new_band.write_array(dataset.raster_band(1).to_na)
+      #   new_band.write_xy_narray(dataset.raster_band(1).to_na)
       # end
     end
 
