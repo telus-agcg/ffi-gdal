@@ -31,3 +31,5 @@ vendor/bundle
 .rake_tasks
 valgrind_output.log
 *.xsd
+
+*.swp

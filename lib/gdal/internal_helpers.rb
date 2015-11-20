@@ -33,7 +33,8 @@ module GDAL
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @return [Symbol] The FFI Symbol that represents a data type.
+      # @param size [Fixnum] Size of the pointer to allocate.
+      # @return [FFI::MemoryPointer]
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
 
@@ -41,6 +42,19 @@ module GDAL
           FFI::MemoryPointer.new(pointer_type, size)
         else
           FFI::MemoryPointer.new(pointer_type)
+        end
+      end
+
+      # @param data_type [FFI::GDAL::GDAL::DataType]
+      # @param size [Fixnum] Size of the pointer to allocate.
+      # @return [FFI::Buffer]
+      def _buffer_from_data_type(data_type, size = nil)
+        pointer_type = _gdal_data_type_to_ffi(data_type)
+
+        if size
+          FFI::Buffer.alloc_inout(pointer_type, size)
+        else
+          FFI::Buffer.alloc_inout(pointer_type)
         end
       end
 
