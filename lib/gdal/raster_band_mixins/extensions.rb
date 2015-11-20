@@ -117,16 +117,39 @@ module GDAL
         block_size[:x] * block_size[:y]
       end
 
-      # Reads through the raster, block-by-block and yields the pixel data that
-      # it gathered.
+      # Reads through the raster, block-by-block then line-by-line and yields
+      # the pixel data that it gathered.
       #
+      # @yieldparam row [Array<Number>] The Array of pixels for the current
+      #   line.
       # @return [Enumerator, nil] Returns an Enumerable if no block is given,
       #   allowing to chain with other Enumerable methods.  Returns nil if a
       #   block is given.
-      def read_by_block
-        return enum_for(:read_by_block) unless block_given?
+      def read_lines_by_block
+        return enum_for(:read_lines_by_block) unless block_given?
 
-        data_pointer = FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
+        read_blocks_by_block do |pixels, x_block_size, y_block_size|
+          pixels.each_slice(x_block_size).with_index do |row, block_row_number|
+            yield row
+            break if block_row_number == y_block_size - 1
+          end
+        end
+      end
+
+      # Reads through the raster block-by-block and yields all pixel values for
+      # the block.
+      #
+      # @yieldparam pixels [Array<Number>] An Array the same size as
+      #   {#block_buffer_size} containing all pixel values in the current block.
+      # @yieldparam x_block_size [Fixnum] Instead of using only #{block_size},
+      #   it will tell you the size of each block--handy for when the last block
+      #   is smaller than the rest.
+      # @yieldparam y_block_size [Fixnum] Same as +x_block_siz+ but for y.
+      # @return [Enumerator, nil]
+      def read_blocks_by_block
+        return enum_for(:read_blocks_by_block) unless block_given?
+
+        data_pointer = FFI::MemoryPointer.new(:buffer_inout, block_buffer_size)
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
@@ -136,17 +159,14 @@ module GDAL
             read_block(x_block_number, y_block_number, data_pointer)
             pixels = GDAL._read_pointer(data_pointer, data_type, block_buffer_size)
 
-            pixels.each_slice(x_block_size).with_index do |row, i|
-              yield row
-              break if i == y_block_size - 1
-            end
+            yield(pixels, x_block_size, y_block_size)
           end
         end
       end
 
       # @return [Array]
       def to_a
-        read_by_block.map { |pixels| pixels }
+        read_lines_by_block.map { |pixels| pixels }
       end
 
       # Iterates through all lines and builds an NArray of pixels.
