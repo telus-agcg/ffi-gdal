@@ -6,10 +6,11 @@ module OGR
     module Extensions
       # @return [Array<OGR::Feature>]
       def features
-        return [] if feature_count.zero?
+        feature_list = []
 
-        feature_list = feature_count.times.map do |i|
-          feature(i)
+        loop do
+          break unless feature = next_feature
+          feature_list << feature
         end
 
         @features = feature_list
