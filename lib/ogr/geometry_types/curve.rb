@@ -48,8 +48,12 @@ module OGR
       # @param x [Number]
       # @param y [Number]
       # @param z [Number]
-      def set_point(index, x, y, z = 0)
-        FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
+      def set_point(index, x, y, z = nil)
+        if is_3d?
+          FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
+        else
+          FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
+        end
       end
 
       def points

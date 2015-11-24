@@ -212,7 +212,7 @@ RSpec.describe OGR::Point do
     describe '#set_point' do
       it 'changes the x & y values' do
         expect do
-          subject.set_point(5, 6)
+          subject.set_point(0, 5, 6)
         end.to change { subject.points }.
           from([[1, 2]]).to([[5.0, 6.0, 0.0]])
       end
@@ -291,7 +291,7 @@ RSpec.describe OGR::Point do
     describe '#set_point' do
       it 'changes the x & y values' do
         expect do
-          subject.set_point(5, 6)
+          subject.set_point(0, 5, 6)
         end.to change { subject.points }.
           from([[]]).to([[5.0, 6.0, 0.0]])
       end

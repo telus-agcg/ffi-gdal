@@ -26,7 +26,7 @@ module OGR
       FFI::OGR::API.OGR_G_GetY(@c_pointer, 0)
     end
 
-    # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
+    # @return [Array<Float, Float>] [x, y].
     def point_values
       return [] if empty?
 
@@ -38,8 +38,11 @@ module OGR
       [x_ptr.read_double, y_ptr.read_double]
     end
 
-    def set_point(x, y, z = 0)
-      FFI::OGR::API.OGR_G_SetPoint(@c_pointer, 0, x, y, z)
+    # @param index [Fixnum]
+    # @param x [Number]
+    # @param y [Number]
+    def set_point(index, x, y)
+      FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
     end
   end
 end
