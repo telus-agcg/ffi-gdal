@@ -519,7 +519,7 @@ module OGR
     #
     # @return [OGR::Point]
     def point_on_surface
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_PointOnSurface(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer) }
     end
 
     # @param wkb_data [String] Binary WKB data.
