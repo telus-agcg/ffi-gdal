@@ -45,5 +45,17 @@ module OGR
         FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
       end
     end
+
+    # Wrapper for {#add_point} to allow passing in an {OGR::Point} instead of
+    # individual coordinates.
+    #
+    # @param point [OGR::Point]
+    def add_geometry(point)
+      if point.is_3d?
+        add_point(point.x, point.y, point.z)
+      else
+        add_point(point.x, point.y)
+      end
+    end
   end
 end
