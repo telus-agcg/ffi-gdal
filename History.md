@@ -61,6 +61,16 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `GDAL::Options` values all have `#to_s` called on them to ensure they're
   Strings before handing them over to GDAL. The GDAL options "hash" requires
   that both keys and values be Strings.
+* `OGR::LayerMixins::Extensions#geometry_from_extent` now builds an
+  `OGR::Polygon` using the same algorithm that
+  `GDAL::DatasetMixins::Extensions#extent` uses. One could argue that there was
+  also a bug here in that `geometry_from_extent` used to return the convex hull
+  of the extent, not the extent itself.
+* Extracted `OGR::LayerMixins::Extensions#each_feature` from
+  `OGR::LayerMixins::Extensions#features` to provide an Enumerator. This lets
+  consumers utilize yielded `OGR::Feature`s as they're retrieved instead of
+  after the `features` Array has been built.
+  `OGR::LayerMixins::Extensions#features` now uses this too.
 
 ### Bug Fixes
 

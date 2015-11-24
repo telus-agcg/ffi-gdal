@@ -1,9 +1,6 @@
-require_relative 'point_extensions'
-
 module OGR
   class Point
     include OGR::Geometry
-    include PointExtensions
 
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)
@@ -26,8 +23,8 @@ module OGR
       FFI::OGR::API.OGR_G_GetY(@c_pointer, 0)
     end
 
-    # @return [Array<Float, Float>] [x, y].
-    def point_values
+    # @return [<Array<Float, Float>] [x, y].
+    def point_value
       return [] if empty?
 
       x_ptr = FFI::MemoryPointer.new(:double)
@@ -38,11 +35,27 @@ module OGR
       [x_ptr.read_double, y_ptr.read_double]
     end
 
+    # Wrapper around {#point_value} to provide API parity with other geometries
+    # that can have multiple points.
+    #
+    # @return [Array<Array<Float, Float>>]
+    def point_values
+      [point_value]
+    end
+
     # @param index [Fixnum]
     # @param x [Number]
     # @param y [Number]
     def set_point(index, x, y)
       FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
+    end
+
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    def add_point(x, y)
+      FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
     end
   end
 end

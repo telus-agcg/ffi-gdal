@@ -30,7 +30,6 @@ module OGR
     # @param layer_ptr [FFI::Pointer]
     def initialize(layer_ptr)
       @c_pointer = layer_ptr
-      @features = []
     end
 
     # @return [String]

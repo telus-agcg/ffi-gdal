@@ -1,4 +1,6 @@
 require_relative '../ffi/ogr'
+require_relative '../ogr'
+require_relative '../gdal'
 require_relative 'feature_extensions'
 require_relative 'feature_definition'
 require_relative 'field_definition'
@@ -133,17 +135,11 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @param value [OGR::Field]
-    def set_field_raw(index, value)
-      raw_field_ptr = value.c_pointer
-      usable_raw_field = value.c_struct
+    # @param field [OGR::Field]
+    def set_field_raw(index, field)
+      usable_raw_field = field.c_struct
 
-      unless valid_raw_field?(index, usable_raw_field)
-        fail TypeError,
-          "Raw field is not of required field type: #{field_definition(index).type}"
-      end
-
-      FFI::OGR::API.OGR_F_SetFieldRaw(@c_pointer, index, value)
+      FFI::OGR::API.OGR_F_SetFieldRaw(@c_pointer, index, usable_raw_field)
     end
 
     # @param index [Fixnum]
@@ -304,8 +300,8 @@ module OGR
     end
 
     # @return [Boolean]
-    def equal?(other_feature)
-      FFI::OGR::API.OGR_F_Equal(@c_pointer, c_pointer_from(other_feature))
+    def equal?(other)
+      FFI::OGR::API.OGR_F_Equal(@c_pointer, c_pointer_from(other))
     end
     alias_method :equals?, :equal?
 

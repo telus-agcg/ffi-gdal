@@ -49,26 +49,6 @@ module OGR
       end
     end
 
-    # TODO: this seems really wonky...
-    def valid_raw_field?(index, raw_field)
-      field_def = field_definition(index)
-
-      case field_def.type
-      when :OFTInteger then !raw_field[:integer].nil?
-      when :OFTIntegerList then !raw_field[:integer_list].nil?
-      when :OFTInteger64 then !raw_field[:integer64].nil?
-      when :OFTInteger64List then !raw_field[:integer64_list].nil?
-      when :OFTReal then !raw_field[:real].nil?
-      when :OFTRealList then !raw_field[:real_list].nil?
-      when :OFTString then !raw_field[:string].nil?
-      when :OFTStringList then !raw_field[:string_list].nil?
-      when :OFTBinary then !raw_field[:binary].nil?
-      when :OFTDate then !raw_field[:date].nil?
-      else
-        fail OGR::Failure, "Not sure how to set raw type: #{field_def.type}"
-      end
-    end
-
     # @return [Hash]
     def as_json(options = nil)
       fields_with_nested_json = fields.map do |f|

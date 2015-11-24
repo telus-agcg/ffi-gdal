@@ -69,7 +69,7 @@ module OGR
 
     # @param new_integer_list [Array<Fixnum>]
     def integer_list=(new_integer_list)
-      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.size)
+      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.length)
       list_ptr.write_array_of_int(new_integer_list)
 
       il = FFI::OGR::FieldTypes::IntegerList.new

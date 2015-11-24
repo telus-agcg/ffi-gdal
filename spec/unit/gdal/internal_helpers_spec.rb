@@ -93,8 +93,10 @@ RSpec.describe GDAL::InternalHelpers do
     end
 
     context 'data type is not one listed' do
-      subject { tester._gdal_data_type_to_ffi(:blargh) }
-      it { is_expected.to eq :float }
+      it 'raises a GDAL::InvalidDataType' do
+        expect { tester._gdal_data_type_to_ffi(:blargh) }.
+          to raise_exception(GDAL::InvalidDataType)
+      end
     end
   end
 

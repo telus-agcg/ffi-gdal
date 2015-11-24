@@ -15,3 +15,5 @@
 * Make sure extensions are in their extension files.
 * Extract non-core-GDAL/OGR things into another gem?
 * Fix circular dependencies. Autoload things.
+* Make Enumerators for classes that do iterating over child objects
+* Tame down integration tests--don't need to test so many files now.
