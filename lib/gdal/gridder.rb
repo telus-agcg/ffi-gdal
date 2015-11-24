@@ -1,5 +1,6 @@
 require 'narray'
 require_relative '../ffi-gdal'
+require_relative '../gdal'
 require_relative 'gridder_options'
 require_relative 'driver'
 require_relative 'dataset'
@@ -147,7 +148,7 @@ module GDAL
     # @param data_type [FFI::GDAL::GDAL::DataType]
     # @param creation_options [Hash]
     # @return [GDAL::Dataset]
-    def build_dataset(driver, dest_file_name, data_type, creation_options)
+    def build_dataset(driver, dest_file_name, data_type, creation_options = {})
       dataset = driver.create_dataset(dest_file_name,
         output_width,
         output_height,
