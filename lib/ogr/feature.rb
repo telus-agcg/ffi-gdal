@@ -133,10 +133,10 @@ module OGR
     end
 
     # @param index [Fixnum]
-    # @param value [FFI::OGR::Field]
+    # @param value [OGR::Field]
     def set_field_raw(index, value)
-      raw_field_ptr = FFI::MemoryPointer.new(value)
-      usable_raw_field = FFI::OGR::Field.new(raw_field_ptr)
+      raw_field_ptr = value.c_pointer
+      usable_raw_field = value.c_struct
 
       unless valid_raw_field?(index, usable_raw_field)
         fail TypeError,

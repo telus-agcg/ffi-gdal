@@ -4,7 +4,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ## Unreleased / yyyy-mm-dd
 
-## New Features
+### New Features
 
 * Added wrappers for the Grid API. It uses `GDAL::Gridder`, which is the
   programmatic equivalent to the `gdal_grid` command-line utility,
