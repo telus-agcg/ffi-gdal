@@ -139,7 +139,7 @@ Lots of changes, so just the highlights here...
     * Allow loading, even when C functions aren't defined in the version of
       GDAL that you're using.
     * Split out additions to GDAL/OGR in `*_extensions.rb` modules.  Methods
-      contained in `Extentions` modules don't directly wrap GDAL/OGR functions,
+      contained in `Extensions` modules don't directly wrap GDAL/OGR functions,
       but either provide new functionality or attempt to make library usage more
       Rubyesque.
     * Added `#as_json`, `#to_json` to many classes.

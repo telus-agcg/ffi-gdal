@@ -58,6 +58,16 @@ module GDAL
         end
       end
 
+      # @param data_type [FFI::GDAL::GDAL::DataType]
+      # @param narray_args Args to pass to the NArray initializer.
+      # @return [NArray]
+      def _narray_from_data_type(data_type, *narray_args)
+        init_meth = _gdal_data_type_to_narray(data_type)
+        narray_args = 0 if narray_args.empty?
+
+        NArray.send(init_meth, *narray_args)
+      end
+
       # Takes an array of strings (or things that should be converted to
       # strings) and creates a char**.
       #
@@ -81,17 +91,37 @@ module GDAL
       # Maps GDAL DataTypes to FFI types.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]
+      # @return [Symbol]
       def _gdal_data_type_to_ffi(data_type)
         case data_type
-        when :GDT_Byte then :uchar
-        when :GDT_UInt16 then :uint16
-        when :GDT_Int16 then :int16
-        when :GDT_UInt32 then :uint32
-        when :GDT_Int32 then :int32
-        when :GDT_Float32 then :float
-        when :GDT_Float64 then :double
+        when :GDT_Byte                    then :uchar
+        when :GDT_UInt16                  then :uint16
+        when :GDT_Int16, :GDT_CInt16      then :int16
+        when :GDT_UInt32                  then :uint32
+        when :GDT_Int32, :GDT_CInt32      then :int32
+        when :GDT_Float32, :GDT_CFloat32  then :float
+        when :GDT_Float64, :GDT_CFloat64  then :double
         else
-          :float
+          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
+        end
+      end
+
+      # Maps GDAL DataTypes to NArray types.
+      #
+      # @param data_type [FFI::GDAL::GDAL::DataType]
+      # @return [Symbol]
+      def _gdal_data_type_to_narray(data_type)
+        case data_type
+        when :GDT_Byte                                then :byte
+        when :GDT_Int16                               then :sint
+        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32     then :int
+        when :GDT_Float32                             then :float
+        when :GDT_Float64                             then :dfloat
+        when :GDT_CInt16, :GDT_CInt32                 then :scomplex
+        when :GDT_CFloat32                            then :complex
+        when :GDT_CFloat64                            then :dcomplex
+        else
+          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end
       end
 

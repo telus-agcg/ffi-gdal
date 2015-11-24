@@ -141,7 +141,7 @@ module GDAL
       #
       # @yieldparam pixels [Array<Number>] An Array the same size as
       #   {#block_buffer_size} containing all pixel values in the current block.
-      # @yieldparam x_block_size [Fixnum] Instead of using only #{block_size},
+      # @yieldparam x_block_size [Fixnum] Instead of using only #{RasterBand#block_size},
       #   it will tell you the size of each block--handy for when the last block
       #   is smaller than the rest.
       # @yieldparam y_block_size [Fixnum] Same as +x_block_siz+ but for y.
@@ -178,35 +178,34 @@ module GDAL
         return narray unless to_data_type
 
         case to_data_type
-        when :GDT_Byte then narray.to_type(NArray::BYTE)
-        when :GDT_Int16 then narray.to_type(NArray::SINT)
-        when :GDT_UInt16 then narray.to_type(NArray::INT)
-        when :GDT_Int32 then narray.to_type(NArray::INT)
-        when :GDT_UInt32 then narray.to_type(NArray::INT)
-        when :GDT_Float32 then narray.to_type(NArray::SFLOAT)
-        when :GDT_Float64 then narray.to_type(NArray::DFLOAT)
-        when :GDT_CInt16 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CInt32 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat32 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat64 then narray.to_type(NArray::DCOMPLEX)
+        when :GDT_Byte                            then narray.to_type(NArray::BYTE)
+        when :GDT_Int16                           then narray.to_type(NArray::SINT)
+        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then narray.to_type(NArray::INT)
+        when :GDT_Float32                         then narray.to_type(NArray::FLOAT)
+        when :GDT_Float64                         then narray.to_type(NArray::DFLOAT)
+        when :GDT_CInt16, :GDT_CInt32             then narray.to_type(NArray::SCOMPLEX)
+        when :GDT_CFloat32                        then narray.to_type(NArray::COMPLEX)
+        when :GDT_CFloat64                        then narray.to_type(NArray::DCOMPLEX)
         else
           fail "Unknown data type: #{to_data_type}"
         end
       end
 
       # Each pixel of the raster projected using the dataset's geo_transform.
+      # The output NArray is a 3D array where the inner-most array is a the
+      # lat an lon, those are contained in an array per pixel line, and finally
+      # the outter array contains each of the pixel lines.
       #
       # @return [NArray]
       def projected_points
-        point_count = (y_size) * (x_size)
-        narray = NArray.object(2, point_count)
+        narray = GDAL._narray_from_data_type(data_type, 2, x_size, y_size)
+        geo_transform = dataset.geo_transform
 
-        0.upto(y_size - 1).each do |y_point|
-          0.upto(x_size - 1).each do |x_point|
-            hash = dataset.geo_transform.apply_geo_transform(y_point, x_point)
-            point_number = y_point * x_point
-            narray[0, point_number] = hash[:y_geo] || 0
-            narray[1, point_number] = hash[:x_geo] || 0
+        y_size.times do |y_point|
+          x_size.times do |x_point|
+            coords = geo_transform.apply_geo_transform(x_point, y_point)
+            narray[0, x_point, y_point] = coords[:x_geo] || 0
+            narray[1, x_point, y_point] = coords[:y_geo] || 0
           end
         end
 
