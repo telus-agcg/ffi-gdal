@@ -308,9 +308,24 @@ module GDAL
       #
       # @return [OGR::Polygon]
       def extent
-        raster_data_source = to_vector('memory data source', 'Memory', geometry_type: :wkbLinearRing)
+        ul = geo_transform.apply_geo_transform(0, 0)
+        ur = geo_transform.apply_geo_transform(raster_x_size, 0)
+        lr = geo_transform.apply_geo_transform(raster_x_size, raster_y_size)
+        ll = geo_transform.apply_geo_transform(0, raster_y_size)
 
-        raster_data_source.layer(0).geometry_from_extent
+        ring = OGR::LinearRing.new
+        ring.point_count = 5
+        ring.set_point(0, ul[:x_geo], ul[:y_geo])
+        ring.set_point(1, ur[:x_geo], ur[:y_geo])
+        ring.set_point(2, lr[:x_geo], lr[:y_geo])
+        ring.set_point(3, ll[:x_geo], ll[:y_geo])
+        ring.set_point(4, ul[:x_geo], ul[:y_geo])
+
+        polygon = OGR::Polygon.new
+        polygon.add_geometry(ring)
+        polygon.spatial_reference = spatial_reference
+
+        polygon
       end
 
       # @param wkt_geometry_string [String]
