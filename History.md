@@ -71,6 +71,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   consumers utilize yielded `OGR::Feature`s as they're retrieved instead of
   after the `features` Array has been built.
   `OGR::LayerMixins::Extensions#features` now uses this too.
+* `GDAL::RasterBandMixins::AlgorithmMethods` that use GDALProgressFunc functions
+  can now participate in GDALScaledProgress functions.
 
 ### Bug Fixes
 
