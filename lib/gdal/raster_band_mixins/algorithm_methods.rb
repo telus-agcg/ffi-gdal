@@ -280,11 +280,6 @@ module GDAL
       #
       # @see +sieve_filter!
       # @param destination_band [GDAL::RasterBand]
-        destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
-        if destination_band.nil? || destination_band.null?
-          fail GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
-        end
-
       def sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil,
                                                                         progress_function: nil,
                                                                         progress_arg: nil,
@@ -320,6 +315,12 @@ module GDAL
                                                                          progress_arg: nil,
                                                                          **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
+
+        if destination_band.nil? || destination_band.null?
+          fail GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
+        end
+
         options_ptr = GDAL::Options.pointer(options)
 
         FFI::GDAL::Alg.GDALSieveFilter(

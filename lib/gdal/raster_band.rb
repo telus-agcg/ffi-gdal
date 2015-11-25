@@ -179,6 +179,11 @@ module GDAL
       self.class.new(overview_pointer)
     end
 
+    # Returns the most reduced overview of this RasterBand that still satisfies
+    # the deisred number of samples. Using 0 fetches the most reduced overview.
+    # If the band doesn't have any overviews or none of the overviews have
+    # enough samples, it will return the same band.
+    #
     # @param desired_samples [Fixnum] The returned band will have at least this
     #   many pixels.
     # @return [GDAL::RasterBand] An optimal overview or the same raster band if
@@ -472,10 +477,13 @@ module GDAL
     # Computes a histogram using the given inputs.  If you just want the default
     # histogram, use #default_histogram.
     #
-    # @param min [Float]
-    # @param max [Float]
+    # @param min [Float] The lower bound of the histogram.
+    # @param max [Float] The upper bound of the histogram.
     # @param buckets [Fixnum]
-    # @param include_out_of_range [Boolean]
+    # @param include_out_of_range [Boolean] If +true+, values below the
+    #   histogram range will be mapped into the first bucket of the output
+    #   data; values above the range will be mapped into the last bucket. If
+    #   +false+, values outside of the range will be discarded.
     # @param approx_ok [Boolean]
     # @param block [Proc] No required, but can be used to output progress info
     #   during processing.
