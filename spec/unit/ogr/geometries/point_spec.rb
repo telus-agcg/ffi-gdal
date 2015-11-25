@@ -203,36 +203,30 @@ RSpec.describe OGR::Point do
       end
     end
 
-    describe '#point' do
+    describe '#point_value' do
       it 'returns x & y as an array' do
-        expect(subject.point).to eq([1, 2])
+        expect(subject.point_value).to eq([1.0, 2.0])
       end
     end
 
     describe '#set_point' do
       it 'changes the x & y values' do
-        expect do
-          subject.set_point(5, 6)
-        end.to change { subject.points }.
-          from([[1, 2]]).to([[5.0, 6.0, 0.0]])
+        expect { subject.set_point(0, 5, 6) }.to change { subject.point_value }.
+          from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe '#add_point' do
       it 'changes the x & y values' do
-        expect do
-          subject.add_point(5, 6)
-        end.to change { subject.points }.
-          from([[1, 2]]).to([[5.0, 6.0, 0.0]])
+        expect { subject.add_point(5, 6) }.to change { subject.point_value }.
+          from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe '#empty!' do
       it 'clears the point' do
-        expect do
-          subject.empty!
-        end.to change { subject.points }.
-          from([[1, 2]]).to([[]])
+        expect { subject.empty! }.to change { subject.point_value }.
+          from([1.0, 2.0]).to([])
       end
     end
   end
@@ -282,27 +276,23 @@ RSpec.describe OGR::Point do
       end
     end
 
-    describe '#point' do
+    describe '#point_value' do
       it 'returns an empty array' do
-        expect(subject.point).to eq([])
+        expect(subject.point_value).to eq([])
       end
     end
 
     describe '#set_point' do
       it 'changes the x & y values' do
-        expect do
-          subject.set_point(5, 6)
-        end.to change { subject.points }.
-          from([[]]).to([[5.0, 6.0, 0.0]])
+        expect { subject.set_point(0, 5, 6) }.to change { subject.point_value }.
+          from([]).to([5.0, 6.0])
       end
     end
 
     describe '#add_point' do
       it 'changes the x & y values' do
-        expect do
-          subject.add_point(5, 6)
-        end.to change { subject.points }.
-          from([[]]).to([[5.0, 6.0, 0.0]])
+        expect { subject.add_point(5, 6) }.to change { subject.point_value }.
+          from([]).to([5.0, 6.0])
       end
     end
 

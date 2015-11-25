@@ -17,7 +17,7 @@ module GDAL
     attr_accessor :input_field_name
 
     # Custom progress output Proc, passed on to {GDAL::Grid#create}. This must
-    # follow semantics imposed by {FFI::GDAL::GDAL.ProgressFunc}.
+    # follow semantics imposed by +FFI::GDAL::GDAL.ProgressFunc+.
     #
     # This option doesn't exist in gdal_grid; you only get their output format
     # or no output at all (using +-q+).

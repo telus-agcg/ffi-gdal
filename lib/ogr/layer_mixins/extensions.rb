@@ -4,32 +4,47 @@ module OGR
   module LayerMixins
     # Methods not part of the C Layer API.
     module Extensions
-      # @return [Array<OGR::Feature>]
-      def features
-        feature_list = []
+      # Enumerates through all associated features. Beware: it calls
+      # {#reset_reading} both before and after it's called. If you're using
+      # {OGR::Layer#next_feature} for iterating through features somewhere in
+      # your code, this will reset that reading.
+      #
+      # @return [Enumerator]
+      # @yieldparam [OGR::Feature]
+      def each_feature
+        return enum_for(:each_feature) unless block_given?
+
+        reset_reading
 
         loop do
           break unless feature = next_feature
-          feature_list << feature
+          yield feature
         end
 
-        @features = feature_list
+        reset_reading
       end
 
-      # @return [OGR::Geometry] A convex hull geometry derived from a LineString
-      #   that connects the 4 bounding box points (from the extent).
+      # @return [Array<OGR::Feature>]
+      def features
+        each_feature.to_a
+      end
+
+      # @return [OGR::Polygon] A polygon derived from a LinearRing that connects
+      #   the 4 bounding box points (from the extent).
       def geometry_from_extent
-        sr = spatial_reference
-        geometry = OGR::Geometry.create(:wkbLineString)
-        geometry.spatial_reference = sr
+        ring = OGR::LinearRing.new
 
-        geometry.add_point(extent.x_min, extent.y_min)
-        geometry.add_point(extent.x_min, extent.y_max)
-        geometry.add_point(extent.x_max, extent.y_max)
-        geometry.add_point(extent.x_max, extent.y_min)
-        geometry.add_point(extent.x_min, extent.y_min)
+        ring.point_count = 5
+        ring.set_point(0, extent.x_min, extent.y_min)
+        ring.set_point(1, extent.x_min, extent.y_max)
+        ring.set_point(2, extent.x_max, extent.y_max)
+        ring.set_point(3, extent.x_max, extent.y_min)
+        ring.set_point(4, extent.x_min, extent.y_min)
 
-        geometry.convex_hull
+        polygon = OGR::Polygon.new spatial_reference: spatial_reference.dup
+        polygon.add_geometry(ring)
+
+        polygon
       end
 
       # Iterates through all geometries in the Layer and extracts the point
@@ -60,7 +75,7 @@ module OGR
         field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = []
 
-        features.each do |feature|
+        each_feature do |feature|
           next unless yield(feature.geometry) if block_given?
 
           field_values = field_indices.map.with_index do |i, attribute_index|
@@ -71,7 +86,7 @@ module OGR
 
           case feature.geometry
           when OGR::Point, OGR::Point25D
-            values += [feature.geometry.point_values + field_values]
+            values += [feature.geometry.point_value + field_values]
           when OGR::LineString, OGR::LineString25D, OGR::LinearRing
             values += feature.geometry.point_values + field_values
           when OGR::Polygon, OGR::Polygon25D

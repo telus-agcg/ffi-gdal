@@ -162,7 +162,7 @@ module GDAL
     def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
       options_ptr = GDAL::Options.pointer(options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
-      fail "Source dataset couldn't be read" if source_dataset_ptr.null?
+      fail "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
 
       destination_dataset_ptr = FFI::GDAL::GDAL.GDALCreateCopy(
         @c_pointer,
@@ -207,12 +207,10 @@ module GDAL
     #   dataset, the pointer to another dataset, or the path to a dataset.
     # @return [GDAL::Dataset]
     def make_dataset_pointer(dataset)
-      if dataset.is_a? GDAL::Dataset
-        dataset.c_pointer
-      elsif dataset.is_a? String
+      if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        dataset
+        GDAL._pointer(GDAL::Dataset, source_dataset)
       end
     end
   end

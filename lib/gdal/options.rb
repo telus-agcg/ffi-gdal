@@ -29,7 +29,7 @@ module GDAL
       options_ptr = FFI::MemoryPointer.new(:pointer, size)
 
       each do |key, value|
-        options_ptr = FFI::CPL::String.CSLSetNameValue(options_ptr, key, value)
+        options_ptr = FFI::CPL::String.CSLSetNameValue(options_ptr, key, value.to_s)
       end
 
       options_ptr

@@ -35,7 +35,7 @@ module GDAL
       # @option options [Boolean] insert_center_long (true) False disables setting
       #   up a CENTER_LONG value on the coordinate system to rewrap things around
       #   the center of the image.
-      def initialize(source_dataset, destination_dataset, **options)
+      def initialize(source_dataset, destination_dataset: nil, **options)
         source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
         destination_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, false)
         options_ptr = GDAL::Options.pointer(options)

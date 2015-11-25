@@ -1,3 +1,4 @@
+require_relative '../ogr'
 require 'date'
 
 module OGR
@@ -68,7 +69,7 @@ module OGR
 
     # @param new_integer_list [Array<Fixnum>]
     def integer_list=(new_integer_list)
-      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.size)
+      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.length)
       list_ptr.write_array_of_int(new_integer_list)
 
       il = FFI::OGR::FieldTypes::IntegerList.new
@@ -194,16 +195,16 @@ module OGR
 
     # @param new_date [Date, Time, DateTime]
     def date=(new_date)
-      time = new_date.to_time
-      zone = OGR._format_time_zone_for_ogr(time.zone)
+      # All of Date's Time methods are private. Using #send to accomdate Date.
+      zone = OGR._format_time_zone_for_ogr(new_date.send(:zone))
 
       date = FFI::OGR::FieldTypes::Date.new
-      date[:year] = time.year
-      date[:month] = time.month
-      date[:day] = time.day
-      date[:hour] = time.hour
-      date[:minute] = time.min
-      date[:second] = time.sec
+      date[:year] = new_date.year
+      date[:month] = new_date.month
+      date[:day] = new_date.day
+      date[:hour] = new_date.hour
+      date[:minute] = new_date.send(:min)
+      date[:second] = new_date.send(:sec) + (new_date.to_time.usec / 1_000_000.to_f)
       date[:tz_flag] = zone
 
       @c_struct[:date] = date

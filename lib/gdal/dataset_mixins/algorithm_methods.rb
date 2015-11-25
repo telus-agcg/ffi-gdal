@@ -1,5 +1,6 @@
 module GDAL
   module DatasetMixins
+    # Wrappers for Warp algorithm methods defined in gdal_alg.h.
     module AlgorithmMethods
       # Rasterizes the geometric objects +geometries+ into this raster dataset.
       # +transformer+ can be nil as long as the +geometries+ are within the
@@ -106,23 +107,21 @@ module GDAL
           nil)                                              # pProgressArg
       end
 
-      # @param destination_file [String]
-      # @param driver [String] Name of the driver to use for outputing the new
-      #   image.
-      # @param transformer [Proc]
-      # @param transformer_arg_ptr [FFI::Pointer]
-      # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
-      #   warping.  0 indicates all bands.
-      # @param options [Hash]
-      # @option options [String] init Indicates that the output dataset should be
+      # @param destination_dataset [String]
+      # @param transformer [Proc, FFI::Function]
+      # @param transformer_arg_ptr [FFI::Pointer] The pointer created from one
+      #   of the GDAL::Transformers.
+      # @param warp_options [Hash]
+      # @option warp_options [String] init Indicates that the output dataset should be
       #   initialized to the given value in any area where valid data isn't
       #   written.  In form: "v[,v...]"
+      # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
+      #   warping.  0 indicates all bands.
+      # @param progress [Proc]
       # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
-      def simple_image_warp(destination_file, driver, transformer,
-        transformer_arg_ptr, band_numbers = 0, **options, &progress)
-        options_ptr = GDAL::Options.pointer(options)
-        driver = GDAL::Driver.by_name(driver)
-        destination_dataset_ptr = driver.open(destination_file, 'w')
+      def simple_image_warp(destination_dataset, transformer, transformer_arg_ptr,
+                            warp_options, band_numbers = 0, progress = nil)
+        destination_dataset_ptr = destination_dataset.c_pointer
 
         band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
         log "band numbers: #{band_numbers}"
@@ -131,7 +130,7 @@ module GDAL
         bands_ptr.write_array_of_int(band_numbers)
         log "band numbers ptr null? #{bands_ptr.null?}"
 
-        success = FFI::GDAL::GDAL.GDALSimpleImageWarp(@c_pointer,
+        success = FFI::GDAL::Alg.GDALSimpleImageWarp(@c_pointer,
           destination_dataset_ptr,
           band_numbers.size,
           bands_ptr,
@@ -139,12 +138,39 @@ module GDAL
           transformer_arg_ptr,
           progress,
           nil,
-          options_ptr)
+          warp_options.c_pointer)
 
-        success ? GDAL::Dataset.new(destination_dataset_ptr) : nil
+        success ? destination_dataset : nil
       end
 
+      # @param transformer [GDAL::Transformers]
+      # @return [Hash{geo_transform: GDAL::GeoTransform, lines: Fixnum, pixels: Fixnum}]
       def suggested_warp_output(transformer)
+        geo_transform = GDAL::GeoTransform.new
+        pixels_ptr = FFI::MemoryPointer.new(:int)
+        lines_ptr = FFI::MemoryPointer.new(:int)
+
+        FFI::GDAL::Alg.GDALSuggestedWarpOutput(
+          @c_pointer,
+          transformer.function,
+          transformer.c_pointer,
+          geo_transform.c_pointer,
+          pixels_ptr,
+          lines_ptr
+        )
+
+        {
+          geo_transform: geo_transform,
+          lines: lines_ptr.read_int,
+          pixels: pixels_ptr.read_int
+        }
+      end
+
+      # @param transformer [GDAL::Transformers]
+      # @return [Hash{extents: Hash{ min_x: Fixnum, min_y: Fixnum, max_x: Fixnum,
+      #   max_y: Fixnum }, geo_transform: GDAL::GeoTransform, lines: Fixnum,
+      #   pixels: Fixnum}]
+      def suggested_warp_output2(transformer)
         geo_transform = GDAL::GeoTransform.new
         pixels_ptr = FFI::MemoryPointer.new(:int)
         lines_ptr = FFI::MemoryPointer.new(:int)

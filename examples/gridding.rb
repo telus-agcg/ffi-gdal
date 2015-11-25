@@ -1,8 +1,8 @@
 require 'bundler/setup'
-require './lib/ffi-gdal'
-require './lib/gdal/gridder'
-require './lib/ogr/data_source'
-require './lib/ogr/spatial_reference'
+require 'ffi-gdal'
+require 'gdal/gridder'
+require 'ogr/data_source'
+require 'ogr/spatial_reference'
 
 GDAL::Logger.logging_enabled = true
 

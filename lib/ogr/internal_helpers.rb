@@ -45,7 +45,7 @@ module OGR
       #
       # @param time_zone [String]
       def _format_time_zone_for_ogr(time_zone)
-        if time_zone =~ /GMT/
+        if time_zone =~ /(00:00|GMT)\z/
           100
         elsif time_zone
           1

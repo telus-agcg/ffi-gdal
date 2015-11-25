@@ -15,8 +15,8 @@ module OGR
       FFI::OGR::API.OGR_G_GetZ(@c_pointer, 0)
     end
 
-    # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
-    def point_values
+    # @return [Array<Float, Float, Float>] [x, y, z].
+    def point_value
       return [] if empty?
 
       x_ptr = FFI::MemoryPointer.new(:double)
@@ -25,6 +25,27 @@ module OGR
       FFI::OGR::API.OGR_G_GetPoint(@c_pointer, 0, x_ptr, y_ptr, z_ptr)
 
       [x_ptr.read_double, y_ptr.read_double, z_ptr.read_double]
+    end
+
+    # @return [Array<Array<Float, Float, Float>>] [[x, y, z]].
+    def point_values
+      [point_value]
+    end
+
+    # @param index [Fixnum]
+    # @param x [Number]
+    # @param y [Number]
+    # @param z [Number]
+    def set_point(index, x, y, z)
+      FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
+    end
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    # @param z [Float]
+    def add_point(x, y, z)
+      FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
     end
   end
 end
