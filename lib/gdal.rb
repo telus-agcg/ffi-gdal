@@ -25,7 +25,7 @@ module GDAL
       start = Time.now
 
       lambda do |d, _, _|
-        print "Duration: #{(Time.now - start).to_i}s\t| #{(d * 100).round(2)}%\r"
+        print "Duration: #{(Time.now - start).to_f.round(2)}s\t| #{(d * 100).round(2)}%\r"
         true
       end
     end
