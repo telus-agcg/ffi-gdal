@@ -1,5 +1,6 @@
+require_relative '../ogr'
 require_relative 'envelope'
-require_relative 'geometry_extensions'
+require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
 require_relative '../gdal/options'
 require_relative '../gdal/logger'
@@ -32,14 +33,26 @@ module OGR
         return if new_pointer.nil? || new_pointer.null?
 
         case geometry.type
-        when :wkbPoint, :wkbPoint25D then OGR::Point.new(new_pointer)
-        when :wkbLineString, :wkbLineString25D then OGR::LineString.new(new_pointer)
+        when :wkbPoint then OGR::Point.new(new_pointer)
+        when :wkbPoint25D then OGR::Point25D.new(new_pointer)
+        when :wkbLineString
+          if geometry.to_wkt =~ /^LINEARRING/
+            OGR::LinearRing.new(new_pointer)
+          else
+            OGR::LineString.new(new_pointer)
+          end
+        when :wkbLineString25D then OGR::LineString25D.new(new_pointer)
         when :wkbLinearRing then OGR::LinearRing.new(new_pointer)
-        when :wkbPolygon, :wkbPolygon25D then OGR::Polygon.new(new_pointer)
-        when :wkbMultiPoint, :wkbMultiPoint25D then OGR::MultiPoint.new(new_pointer)
-        when :wkbMultiLineString, :wkbMultiLineString25D then OGR::MultiLineString.new(new_pointer)
-        when :wkbMultiPolygon, :wkbMultiPolygon25D then OGR::MultiPolygon.new(new_pointer)
+        when :wkbPolygon then OGR::Polygon.new(new_pointer)
+        when :wkbPolygon25D then OGR::Polygon25D.new(new_pointer)
+        when :wkbMultiPoint then OGR::MultiPoint.new(new_pointer)
+        when :wkbMultiPoint25D then OGR::MultiPoint25D.new(new_pointer)
+        when :wkbMultiLineString then OGR::MultiLineString.new(new_pointer)
+        when :wkbMultiLineString25D then OGR::MultiLineString25D.new(new_pointer)
+        when :wkbMultiPolygon then OGR::MultiPolygon.new(new_pointer)
+        when :wkbMultiPolygon25D then OGR::MultiPolygon25D.new(new_pointer)
         when :wkbGeometryCollection then OGR::GeometryCollection.new(new_pointer)
+        when :wkbGeometryCollection25D then OGR::GeometryCollection25D.new(new_pointer)
         when :wkbNone then OGR::NoneGeometry.new(new_pointer)
         else
           geometry
@@ -121,7 +134,7 @@ module OGR
 
     def self.included(base)
       base.send(:include, GDAL::Logger)
-      base.send(:include, GeometryExtensions)
+      base.send(:include, OGR::GeometryMixins::Extensions)
       base.send(:extend, ClassMethods)
     end
 
@@ -132,18 +145,18 @@ module OGR
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
-    # @param value [Boolean]
-    attr_writer :read_only
-
-    def read_only?
-      @read_only || false
-    end
-
     def destroy!
       return unless @c_pointer
 
       FFI::OGR::API.OGR_G_DestroyGeometry(@c_pointer)
       @c_pointer = nil
+    end
+
+    # @return [OGR::Geometry]
+    def clone
+      new_geometry_ptr = FFI::OGR::API.OGR_G_Clone(@c_pointer)
+
+      OGR::Geometry.factory(new_geometry_ptr)
     end
 
     # Clears all information from the geometry.
@@ -212,6 +225,7 @@ module OGR
     def geometry_count
       FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
     end
+    alias_method :count, :geometry_count
 
     # @return [Fixnum]
     def point_count
@@ -223,11 +237,11 @@ module OGR
     # @return [Fixnum]
     # @todo This regularly crashes, so disabling it.
     def centroid
-      fail NotImplementedError, '#centroid not yet implemented.'
+      point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 
-      point = OGR::Geometry.create(:wkbPoint)
-      FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
-      return nil if point.c_pointer.null?
+      ogr_err = FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
+      puts "OGR ERR: #{ogr_err}"
+      return if point.c_pointer.null? || ogr_err > 0
 
       point
     end
@@ -342,20 +356,16 @@ module OGR
     # @return [OGR::Geometry]
     # @todo This regularly crashes, so disabling it.
     def intersection(other_geometry)
-      fail NotImplementedError, '#intersection not yet implemented.'
-
-      return nil unless intersects?(other_geometry)
-
-      build_geometry do |ptr|
-        FFI::OGR::API.OGR_G_Intersection(ptr, other_geometry.c_pointer)
+      build_geometry do
+        FFI::OGR::API.OGR_G_Intersection(@c_pointer, other_geometry.c_pointer)
       end
     end
 
     # @param other_geometry [OGR::Geometry]
     # @return [OGR::Geometry]
     def union(other_geometry)
-      build_geometry do |ptr|
-        FFI::OGR::API.OGR_G_Union(ptr, other_geometry.c_pointer)
+      build_geometry do
+        FFI::OGR::API.OGR_G_Union(@c_pointer, other_geometry.c_pointer)
       end
     end
 
@@ -372,7 +382,7 @@ module OGR
     #   MultiLineString or if it's impossible to reassemble due to topological
     #   inconsistencies.
     def polygonize
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_Polygonize(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_Polygonize(@c_pointer) }
     end
 
     # @param geometry [OGR::Geometry]
@@ -463,11 +473,11 @@ module OGR
     # @param preserve_topology [Boolean]
     # @return [OGR::Geometry]
     def simplify(distance_tolerance, preserve_topology: false)
-      build_geometry do |ptr|
+      build_geometry do
         if preserve_topology
-          FFI::OGR::API.OGR_G_SimplifyPreserveTopology(ptr, distance_tolerance)
+          FFI::OGR::API.OGR_G_SimplifyPreserveTopology(@c_pointer, distance_tolerance)
         else
-          FFI::OGR::API.OGR_G_Simplify(ptr, distance_tolerance)
+          FFI::OGR::API.OGR_G_Simplify(@c_pointer, distance_tolerance)
         end
       end
     end
@@ -475,13 +485,16 @@ module OGR
     # Modify the geometry so that it has no segments longer than +max_length+.
     #
     # @param max_length [Float]
+    # @return [OGR::Geometry] Returns self that's been segmentized.
     def segmentize!(max_length)
       FFI::OGR::API.OGR_G_Segmentize(@c_pointer, max_length)
+
+      self
     end
 
     # @return [OGR::Geometry]
     def boundary
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_Boundary(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_Boundary(@c_pointer) }
     end
 
     # Computes the buffer of the geometry by building a new geometry that
@@ -491,22 +504,22 @@ module OGR
     # @param quad_segments [Fixnum] The number of segments to use to approximate
     #   a 90 degree (quadrant) of curvature.
     # @return [OGR::Polygon]
-    def buffer(distance, quad_segments)
-      build_geometry do |ptr|
-        FFI::OGR::API.OGR_G_Buffer(ptr, distance, quad_segments)
+    def buffer(distance, quad_segments = 30)
+      build_geometry do
+        FFI::OGR::API.OGR_G_Buffer(@c_pointer, distance, quad_segments)
       end
     end
 
     # @return [OGR::Geometry]
     def convex_hull
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ConvexHull(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ConvexHull(@c_pointer) }
     end
 
     # Returns a point that's guaranteed to lie on the surface.
     #
     # @return [OGR::Point]
     def point_on_surface
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_PointOnSurface(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer) }
     end
 
     # @param wkb_data [String] Binary WKB data.
@@ -588,7 +601,28 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_line_string
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ForceToLineString(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer) }
+    end
+
+    # Since GDAL doesn't provide converting to a LinearRing, this is a hackish
+    # method for doing so.
+    #
+    # @return [OGR::LinearRing]
+    def to_linear_ring(close_rings = false)
+      line_string = to_line_string
+
+      return line_string unless line_string.is_a?(OGR::LineString)
+
+      linear_ring = OGR::LinearRing.new
+
+      if line_string.spatial_reference
+        linear_ring.spatial_reference = line_string.spatial_reference.clone
+      end
+
+      linear_ring.import_from_wkt(line_string.to_wkt.tr('LINESTRING', 'LINEARRING'))
+      linear_ring.close_rings! if close_rings
+
+      linear_ring
     end
 
     # Converts the current geometry to a Polygon geometry.  The returned object
@@ -596,7 +630,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_polygon
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ForceToPolygon(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ForceToPolygon(clone.c_pointer) }
     end
 
     # Converts the current geometry to a MultiPoint geometry.  The returned
@@ -604,7 +638,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_point
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ForceToMultiPoint(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ForceToMultiPoint(clone.c_pointer) }
     end
 
     # Converts the current geometry to a MultiLineString geometry.  The returned
@@ -612,7 +646,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def to_multi_line_string
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ForceToMultiLineString(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ForceToMultiLineString(clone.c_pointer) }
     end
 
     # Converts the current geometry to a MultiPolygon geometry.  The returned
@@ -620,7 +654,7 @@ module OGR
     #
     # @return [OGR::MultiPolygon]
     def to_multi_polygon
-      build_geometry { |ptr| FFI::OGR::API.OGR_G_ForceToMultiPolygon(ptr) }
+      build_geometry { FFI::OGR::API.OGR_G_ForceToMultiPolygon(@c_pointer) }
     end
 
     private
@@ -629,13 +663,11 @@ module OGR
     def initialize_from_pointer(geometry_ptr)
       fail OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
       @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
-      @read_only = false
-      @spatial_reference = nil
     end
 
     def build_geometry
-      new_geometry_ptr = yield(@c_pointer)
-      return nil if new_geometry_ptr.nil? || new_geometry_ptr.null?
+      new_geometry_ptr = yield
+      return nil if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
       OGR::Geometry.factory(new_geometry_ptr)
     end

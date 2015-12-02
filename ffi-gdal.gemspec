@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.name          = 'ffi-gdal'
   spec.version       = FFI::GDAL::VERSION
   spec.authors       = ['Steve Loveless']
-  spec.email         = %w[steve.loveless@gmail.com]
+  spec.email         = %w[steve@agrian.com]
   spec.summary       = 'FFI wrapper for GDAL/OGR.'
-  spec.homepage      = 'https://github.com/turboladen/ffi-gdal'
+  spec.homepage      = 'http://bitbucket.org/agrian/ffi-gdal'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")

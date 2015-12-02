@@ -1,7 +1,5 @@
-require_relative '../../ffi/gdal/grid_data_metrics_options'
-
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class DataMetricsBase
       # @return [FFI::GDAL::GridDataMetricsOptions]
       attr_reader :options

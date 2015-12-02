@@ -21,9 +21,9 @@ module GDAL
       gt_ptr = new_pointer
 
       result = if extension
-                 FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
+                 FFI::GDAL::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
                else
-                 FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
+                 FFI::GDAL::GDAL.GDALLoadWorldFile(filename, gt_ptr)
                end
 
       return nil unless result
@@ -160,7 +160,7 @@ module GDAL
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
-      FFI::GDAL.GDALApplyGeoTransform(@c_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
+      FFI::GDAL::GDAL.GDALApplyGeoTransform(@c_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
       { x_geo: geo_x_ptr.read_double, y_geo: geo_y_ptr.read_double }
     end
@@ -179,7 +179,7 @@ module GDAL
       end
 
       new_gt_ptr = self.class.new_pointer
-      FFI::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)
+      FFI::GDAL::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)
       return nil if new_gt_ptr.null?
 
       GDAL::GeoTransform.new(new_gt_ptr)
@@ -192,7 +192,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def invert
       new_geo_transform_ptr = self.class.new_pointer
-      success = FFI::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
+      success = FFI::GDAL::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
       return nil unless success
 
       self.class.new(new_geo_transform_ptr)
@@ -202,7 +202,7 @@ module GDAL
     # @param world_extension [String]
     # @return [Boolean]
     def to_world_file(raster_filename, world_extension)
-      FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @c_pointer)
+      FFI::GDAL::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @c_pointer)
     end
   end
 end

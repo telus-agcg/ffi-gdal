@@ -1,5 +1,5 @@
 require 'narray'
-require_relative '../ffi/ogr/srs_api'
+require_relative 'spatial_reference'
 
 module OGR
   class CoordinateTransformation

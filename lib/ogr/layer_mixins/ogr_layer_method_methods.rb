@@ -147,7 +147,7 @@ module OGR
         options_ptr = GDAL::Options.pointer(options)
         result_layer_ptr = FFI::MemoryPointer.new(:OGRLayerH)
 
-        ogr_err = FFI::GDAL.send(method_name,
+        ogr_err = FFI::OGR::API.send(method_name,
           @c_pointer,
           method_layer_ptr,
           result_layer_ptr,

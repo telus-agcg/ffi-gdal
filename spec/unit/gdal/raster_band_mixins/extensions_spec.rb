@@ -95,17 +95,17 @@ RSpec.describe 'GDAL::RasterBandMixins::Extensions' do
     it { is_expected.to eq(15) }
   end
 
-  describe '#each_by_block' do
+  describe '#read_lines_by_block' do
     context 'block is given' do
       it 'yields each row of pixels' do
-        expect { |b| subject.each_by_block(&b) }.
+        expect { |b| subject.read_lines_by_block(&b) }.
           to yield_successive_args(*Array.new(25, Array.new(15, 0)))
       end
     end
 
     context 'no block given' do
       it 'returns an Enumerator' do
-        expect(subject.each_by_block).to be_a(Enumerator)
+        expect(subject.read_lines_by_block).to be_a(Enumerator)
       end
     end
   end

@@ -1,7 +1,5 @@
-require_relative '../../ffi/gdal/grid_moving_average_options'
-
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class MovingAverage
       # @return [FFI::GDAL::GridMovingAverageOptions]
       attr_reader :options
@@ -11,7 +9,7 @@ module GDAL
       end
 
       # @return [Symbol]
-      def algorithm
+      def c_identifier
         :GGA_MovingAverage
       end
     end

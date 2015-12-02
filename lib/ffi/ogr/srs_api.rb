@@ -1,5 +1,4 @@
 require_relative '../../ext/ffi_library_function_checks'
-require_relative '../ogr/core'
 
 module FFI
   module OGR

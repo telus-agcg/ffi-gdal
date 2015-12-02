@@ -1,7 +1,5 @@
-require_relative '../../ffi/gdal/grid_nearest_neighbor_options'
-
 module GDAL
-  module GridTypes
+  module GridAlgorithms
     class NearestNeighbor
       # @return [FFI::GDAL::GridNearestNeighborOptions]
       attr_reader :options
@@ -11,7 +9,7 @@ module GDAL
       end
 
       # @return [Symbol]
-      def algorithm
+      def c_identifier
         :GGA_NearestNeighbor
       end
     end

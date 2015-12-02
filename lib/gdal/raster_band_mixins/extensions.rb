@@ -33,12 +33,12 @@ module GDAL
         end
       end
 
-      # Writes an NArray of pixels to the raster band using {#raster_io}. It
-      # determines +x_size+ and +y_size+ for the {#raster_io} call using the
-      # dimensions of the array.
+      # Writes a 2-dimensional NArray of (x, y) pixels to the raster band using
+      # {GDAL::RasterBand#raster_io}. It determines +x_size+ and +y_size+ for
+      # the {GDAL::RasterBand#raster_io} call using the dimensions of the array.
       #
       # @param pixel_array [NArray] The 2d list of pixels.
-      def write_array(pixel_array)
+      def write_xy_narray(pixel_array)
         x_size = pixel_array.sizes.first
         y_size = pixel_array.sizes.last
         scan_line = FFI::MemoryPointer.new(:buffer_out, x_size)
@@ -117,16 +117,39 @@ module GDAL
         block_size[:x] * block_size[:y]
       end
 
-      # Reads through the raster, block-by-block and yields the pixel data that
-      # it gathered.
+      # Reads through the raster, block-by-block then line-by-line and yields
+      # the pixel data that it gathered.
       #
+      # @yieldparam row [Array<Number>] The Array of pixels for the current
+      #   line.
       # @return [Enumerator, nil] Returns an Enumerable if no block is given,
       #   allowing to chain with other Enumerable methods.  Returns nil if a
       #   block is given.
-      def each_by_block
-        return enum_for(:each_by_block) unless block_given?
+      def read_lines_by_block
+        return enum_for(:read_lines_by_block) unless block_given?
 
-        data_pointer = FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
+        read_blocks_by_block do |pixels, x_block_size, y_block_size|
+          pixels.each_slice(x_block_size).with_index do |row, block_row_number|
+            yield row
+            break if block_row_number == y_block_size - 1
+          end
+        end
+      end
+
+      # Reads through the raster block-by-block and yields all pixel values for
+      # the block.
+      #
+      # @yieldparam pixels [Array<Number>] An Array the same size as
+      #   {#block_buffer_size} containing all pixel values in the current block.
+      # @yieldparam x_block_size [Fixnum] Instead of using only #{RasterBand#block_size},
+      #   it will tell you the size of each block--handy for when the last block
+      #   is smaller than the rest.
+      # @yieldparam y_block_size [Fixnum] Same as +x_block_siz+ but for y.
+      # @return [Enumerator, nil]
+      def read_blocks_by_block
+        return enum_for(:read_blocks_by_block) unless block_given?
+
+        data_pointer = FFI::MemoryPointer.new(:buffer_inout, block_buffer_size)
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
@@ -136,17 +159,14 @@ module GDAL
             read_block(x_block_number, y_block_number, data_pointer)
             pixels = GDAL._read_pointer(data_pointer, data_type, block_buffer_size)
 
-            pixels.each_slice(x_block_size).with_index do |row, i|
-              yield row
-              break if i == y_block_size - 1
-            end
+            yield(pixels, x_block_size, y_block_size)
           end
         end
       end
 
       # @return [Array]
       def to_a
-        each_by_block.map { |pixels| pixels }
+        read_lines_by_block.map { |pixels| pixels }
       end
 
       # Iterates through all lines and builds an NArray of pixels.
@@ -158,112 +178,34 @@ module GDAL
         return narray unless to_data_type
 
         case to_data_type
-        when :GDT_Byte then narray.to_type(NArray::BYTE)
-        when :GDT_Int16 then narray.to_type(NArray::SINT)
-        when :GDT_UInt16 then narray.to_type(NArray::INT)
-        when :GDT_Int32 then narray.to_type(NArray::INT)
-        when :GDT_UInt32 then narray.to_type(NArray::INT)
-        when :GDT_Float32 then narray.to_type(NArray::SFLOAT)
-        when :GDT_Float64 then narray.to_type(NArray::DFLOAT)
-        when :GDT_CInt16 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CInt32 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat32 then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat64 then narray.to_type(NArray::DCOMPLEX)
+        when :GDT_Byte                            then narray.to_type(NArray::BYTE)
+        when :GDT_Int16                           then narray.to_type(NArray::SINT)
+        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then narray.to_type(NArray::INT)
+        when :GDT_Float32                         then narray.to_type(NArray::FLOAT)
+        when :GDT_Float64                         then narray.to_type(NArray::DFLOAT)
+        when :GDT_CInt16, :GDT_CInt32             then narray.to_type(NArray::SCOMPLEX)
+        when :GDT_CFloat32                        then narray.to_type(NArray::COMPLEX)
+        when :GDT_CFloat64                        then narray.to_type(NArray::DCOMPLEX)
         else
           fail "Unknown data type: #{to_data_type}"
         end
       end
 
-      # Sets the band to be a Palette band, then applies an RGB color table using
-      # the given colors.  Colors are distributed evenly across the table based
-      # on the number of colors given.  Note that this will overwrite any existing
-      # color table that may be set on this band.
-      #
-      # @param colors [Array<Fixnum, String>, Fixnum, String] Can be a single or
-      #   many colors, given as either R, G, and B integers (0-255) or as strings
-      #   of Hex.
-      #
-      # @example Colors as RGB values
-      #   # This will make the first 128 values black, and the last 128, red.
-      #   my_band.colorize!([[0, 0, 0], [255, 0, 0]])
-      #
-      # @example Colors as Hex values
-      #   # Same as above...
-      #   my_band.colorize!(%w[#000000 #FF0000])
-      def colorize!(*colors)
-        return if colors.empty?
-
-        self.color_interpretation ||= :GCI_PaletteIndex
-        table = GDAL::ColorTable.new(:GPI_RGB)
-        table.add_color_entry(0, 0, 0, 0, 255)
-
-        # Start at 1 instead of 0 because we manually set the first color entry
-        # to white.
-        color_entry_index_range =
-          if data_type == :GDT_Byte then 1..255
-          elsif data_type == :GDT_UInt16 then 1..65_535
-          else fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
-          end
-
-        bin_count = (color_entry_index_range.last + 1) / colors.size.to_f
-
-        color_entry_index_range.step do |color_entry_index|
-          color_number = (color_entry_index / bin_count).floor.to_i
-          color = colors[color_number]
-
-          # TODO: Fix possible uninitialized rgb_array
-          rgb_array = hex_to_rgb(color) unless color.is_a?(Array)
-          table.add_color_entry(color_entry_index,
-            rgb_array[0], rgb_array[1], rgb_array[2], 255)
-        end
-
-        self.color_table = table
-      end
-
-      # Gets the colors from the associated ColorTable and returns an Array of
-      # those, where each ColorEntry is [R, G, B, A].
-      #
-      # @return [Array<Array<Fixnum>>]
-      def colors_as_rgb
-        return [] unless color_table
-
-        color_table.color_entries_as_rgb.map(&:to_a)
-      end
-
-      # Gets the colors from the associated ColorTable and returns an Array of
-      # Strings, where the RGB color for each ColorEntry has been converted to
-      # Hex.
-      #
-      # @return [Array<String>]
-      def colors_as_hex
-        colors_as_rgb.map do |rgba|
-          rgb = rgba.to_a[0..2]
-
-          "##{rgb[0].to_s(16)}#{rgb[1].to_s(16)}#{rgb[2].to_s(16)}"
-        end
-      end
-
-      # @param hex [String]
-      def hex_to_rgb(hex)
-        hex.sub!(/^#/, '')
-        matches = hex.match(/(?<red>[a-zA-Z0-9]{2})(?<green>[a-zA-Z0-9]{2})(?<blue>[a-zA-Z0-9]{2})/)
-
-        [matches[:red].to_i(16), matches[:green].to_i(16), matches[:blue].to_i(16)]
-      end
-
       # Each pixel of the raster projected using the dataset's geo_transform.
+      # The output NArray is a 3D array where the inner-most array is a the
+      # lat an lon, those are contained in an array per pixel line, and finally
+      # the outter array contains each of the pixel lines.
       #
       # @return [NArray]
       def projected_points
-        point_count = (y_size) * (x_size)
-        narray = NArray.object(2, point_count)
+        narray = GDAL._narray_from_data_type(data_type, 2, x_size, y_size)
+        geo_transform = dataset.geo_transform
 
-        0.upto(y_size - 1).each do |y_point|
-          0.upto(x_size - 1).each do |x_point|
-            hash = dataset.geo_transform.apply_geo_transform(y_point, x_point)
-            point_number = y_point * x_point
-            narray[0, point_number] = hash[:y_geo] || 0
-            narray[1, point_number] = hash[:x_geo] || 0
+        y_size.times do |y_point|
+          x_size.times do |x_point|
+            coords = geo_transform.apply_geo_transform(x_point, y_point)
+            narray[0, x_point, y_point] = coords[:x_geo] || 0
+            narray[1, x_point, y_point] = coords[:y_geo] || 0
           end
         end
 

@@ -6,22 +6,39 @@ module OGR
     #   each index and returns maps the field as that value type.
     def fields
       field_count.times.map do |i|
-        case field_definition(i).type
-        when :OFTInteger        then field_as_integer(i)
-        when :OFTIntegerList    then field_as_integer_list(i)
-        when :OFTReal           then field_as_double(i)
-        when :OFTRealList       then field_as_double_list(i)
-        when :OFTString         then field_as_string(i)
-        when :OFTStringList     then field_as_string_list(i)
-        when :OFTWideString     then field_as_string(i)
-        when :OFTWideStringList then field_as_string_list(i)
-        when :OFTBinary         then field_as_binary(i)
-        when :OFTDate, :OFTTime, :OFTDateTime then field_as_date_time(i)
-        when :OFTInteger64      then field_as_integer(i)
-        when :OFTInteger64List  then field_as_integer_lsit(i)
-        when :OFTMaxType        then field_as_date_time(i)
-        else fail "not sure about field type: #{fd.type}"
-        end
+        field(i)
+      end
+    end
+
+    # Retrieves a field using +index+, but uses its type from the associated
+    # {OGR::FieldDefinition} to determine it's core type to return as. This
+    # saves from having to find out the type then call the associated
+    # +field_as_[type]+ method if you just want the data in it's originally
+    # intended form.
+    #
+    # @param index [Fixnum] Index of the field to retrieve the data for.
+    # @return [Number, String, Array]
+    # @raise [OGR::UnsupportedFieldType] if the associated FieldDefinition's
+    #   type has not yet been mapped here (to know how to return the value).
+    def field(index)
+      field_type = field_definition(index).type
+
+      case field_type
+      when :OFTInteger        then field_as_integer(index)
+      when :OFTIntegerList    then field_as_integer_list(index)
+      when :OFTReal           then field_as_double(index)
+      when :OFTRealList       then field_as_double_list(index)
+      when :OFTString         then field_as_string(index)
+      when :OFTStringList     then field_as_string_list(index)
+      when :OFTWideString     then field_as_string(index)
+      when :OFTWideStringList then field_as_string_list(index)
+      when :OFTBinary         then field_as_binary(index)
+      when :OFTDate, :OFTTime, :OFTDateTime then field_as_date_time(index)
+      when :OFTInteger64      then field_as_integer(index)
+      when :OFTInteger64List  then field_as_integer_lsit(index)
+      when :OFTMaxType        then field_as_date_time(index)
+      else fail OGR::UnsupportedFieldType,
+        "Don't know how to fetch field for field type: #{field_type}"
       end
     end
 
@@ -29,26 +46,6 @@ module OGR
     def geometry_fields
       geometry_field_count.times.map do |i|
         geometry_field(i)
-      end
-    end
-
-    # TODO: this seems really wonky...
-    def valid_raw_field?(index, raw_field)
-      field_def = field_definition(index)
-
-      case field_def.type
-      when :OFTInteger then !raw_field[:integer].nil?
-      when :OFTIntegerList then !raw_field[:integer_list].nil?
-      when :OFTInteger64 then !raw_field[:integer64].nil?
-      when :OFTInteger64List then !raw_field[:integer64_list].nil?
-      when :OFTReal then !raw_field[:real].nil?
-      when :OFTRealList then !raw_field[:real_list].nil?
-      when :OFTString then !raw_field[:string].nil?
-      when :OFTStringList then !raw_field[:string_list].nil?
-      when :OFTBinary then !raw_field[:binary].nil?
-      when :OFTDate then !raw_field[:date].nil?
-      else
-        fail OGR::Failure, "Not sure how to set raw type: #{field_def.type}"
       end
     end
 

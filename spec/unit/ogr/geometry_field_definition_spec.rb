@@ -8,7 +8,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
   describe '#destroy!' do
     it 'sets the c_pointer to nil' do
       subject.destroy!
-      expect(subject.instance_variable_get(:@geometry_field_definition_pointer)).
+      expect(subject.instance_variable_get(:@c_pointer)).
         to be_nil
     end
   end

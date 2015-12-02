@@ -1,4 +1,5 @@
-require_relative '../ffi/ogr'
+require_relative '../ffi-gdal'
+require_relative '../ogr'
 require_relative '../gdal/major_object'
 require_relative '../gdal/options'
 require_relative 'driver_mixins/capability_methods'

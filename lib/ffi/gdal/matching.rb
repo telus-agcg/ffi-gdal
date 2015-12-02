@@ -1,7 +1,5 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
-require_relative 'gdal'
-require_relative 'gcp'
 
 module FFI
   module GDAL
