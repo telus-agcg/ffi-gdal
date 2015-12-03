@@ -14,18 +14,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Improvements
 
-* Added `OGR::FeatureExtensions#field()` which gets the field using the
-  associated `OGR::FieldDefinition#type`. Makes so you don't always have to
-  request the field by its type (`field_as_double`).
-* Added `OGR::LayerMixins::Extensions#point_values()` which gets values for all
-  of the points in the layer. It also allows you to specify getting field values
-  with that, which helps retrieving data for the Grid API. You can also pass it
-  a block to filter out points that don't match some criteria defined in the
-  block.
-* Added `OGR::LayerMixins::Extensions#any_geometries_with_z?` which simply
-  checks to see if the layer has any geometries with Z values.
-* `GDAL::DataType.by_name` always calls `#to_s` on the param now, letting you
-  pass in Symbols.
+#### GDAL
+
 * Added `GDAL::GeoTransformMixins::Extensions.new_from_envelope` which lets you
   create a `GDAL::GeoTransform` using the points from an `OGR::Envelope` and the
   destination raster's width and height. It's convenient because it calculates
@@ -45,9 +35,6 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * Added `GDAL::InternalHelpers._buffer_from_data_type` to compliment the
   existing `._pointer_from_data_type`. Useful for creating buffer-specific
   pointers from a GDAL data type.
-* Added `OGR::Point#set_point`, `OGR::Point25#set_point`, and
-  `OGR::GeometryTypes::Curve#set_point` wrappers for `OGR_G_SetPoint_2D` and
-  `OGR_G_SetPoint`.
 * `GDAL::DatasetMixins::Extensions#extent` now manually builds an `OGR::Polygon`
   instead of polygonizing the entire dataset and taking the envelope of that.
   Much faster this way.
@@ -56,11 +43,31 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   coordinates.
 * Added `GDAL::InternalHelpers` methods for creating NArrays based on GDAL
   data types.
-* Added `OGR::LineString#add_geometry` to allow adding a OGR::Point object to
-  the LineString instead of having to pass coordinates in to #add_point.
 * `GDAL::Options` values all have `#to_s` called on them to ensure they're
   Strings before handing them over to GDAL. The GDAL options "hash" requires
   that both keys and values be Strings.
+* `GDAL::RasterBandMixins::AlgorithmMethods` that use GDALProgressFunc functions
+  can now participate in GDALScaledProgress functions.
+
+#### OGR
+
+* Added `OGR::FeatureExtensions#field()` which gets the field using the
+  associated `OGR::FieldDefinition#type`. Makes so you don't always have to
+  request the field by its type (`field_as_double`).
+* Added `OGR::LayerMixins::Extensions#point_values()` which gets values for all
+  of the points in the layer. It also allows you to specify getting field values
+  with that, which helps retrieving data for the Grid API. You can also pass it
+  a block to filter out points that don't match some criteria defined in the
+  block.
+* Added `OGR::LayerMixins::Extensions#any_geometries_with_z?` which simply
+  checks to see if the layer has any geometries with Z values.
+* `GDAL::DataType.by_name` always calls `#to_s` on the param now, letting you
+  pass in Symbols.
+* Added `OGR::Point#set_point`, `OGR::Point25#set_point`, and
+  `OGR::GeometryTypes::Curve#set_point` wrappers for `OGR_G_SetPoint_2D` and
+  `OGR_G_SetPoint`.
+* Added `OGR::LineString#add_geometry` to allow adding a OGR::Point object to
+  the LineString instead of having to pass coordinates in to #add_point.
 * `OGR::LayerMixins::Extensions#geometry_from_extent` now builds an
   `OGR::Polygon` using the same algorithm that
   `GDAL::DatasetMixins::Extensions#extent` uses. One could argue that there was
@@ -71,8 +78,6 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   consumers utilize yielded `OGR::Feature`s as they're retrieved instead of
   after the `features` Array has been built.
   `OGR::LayerMixins::Extensions#features` now uses this too.
-* `GDAL::RasterBandMixins::AlgorithmMethods` that use GDALProgressFunc functions
-  can now participate in GDALScaledProgress functions.
 
 ### Bug Fixes
 
