@@ -81,6 +81,13 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Bug Fixes
 
+#### GDAL
+
+* `GDAL::RasterBandMixins::AlgorithmMethods#fill_nodata!` was calling the old
+  name of the C function.
+
+#### OGR
+
 * `OGR::Field#date=` was casting the passed value to a `Time` object, which in
   doing so was setting the time zone. If a user passes in an object that doesn't
   have the TZ set, the method shouldn't be setting it for them.

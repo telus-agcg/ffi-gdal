@@ -171,7 +171,7 @@ module GDAL
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
-        !!FFI::GDAL::GDAL.GDALFillNodata(@c_pointer,
+        !!FFI::GDAL::Alg.GDALFillNodata(@c_pointer,
           mask_band_ptr,
           max_search_distance,
           0, # deprecated option in GDAL
