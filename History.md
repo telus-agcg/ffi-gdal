@@ -49,6 +49,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `GDAL::RasterBandMixins::AlgorithmMethods` that use GDALProgressFunc functions
   can now participate in GDALScaledProgress functions.
 * Added `GDAL::RasterBandMixins::Extensions#pixel_count`.
+* Allow `GDAL::RasterBand#create_mask_band` to take a single flag or many.
 
 #### OGR
 

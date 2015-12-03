@@ -224,7 +224,7 @@ module GDAL
     end
 
     # @return [Boolean]
-    def create_mask_band(flags)
+    def create_mask_band(*flags)
       flag_value = flags.each_with_object(0) do |flag, result|
         result += case flag
                   when :GMF_ALL_VALID then 0x01
