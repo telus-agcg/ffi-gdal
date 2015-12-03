@@ -48,6 +48,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   that both keys and values be Strings.
 * `GDAL::RasterBandMixins::AlgorithmMethods` that use GDALProgressFunc functions
   can now participate in GDALScaledProgress functions.
+* Added `GDAL::RasterBandMixins::Extensions#pixel_count`.
 
 #### OGR
 

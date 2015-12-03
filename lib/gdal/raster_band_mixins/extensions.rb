@@ -212,6 +212,13 @@ module GDAL
         narray
       end
 
+      # The total number of pixels in the raster band.
+      #
+      # @return [Fixnum]
+      def pixel_count
+        x_size * y_size
+      end
+
       # @return [Hash]
       def as_json(_options = nil)
         {
