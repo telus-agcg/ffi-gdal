@@ -80,6 +80,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   consumers utilize yielded `OGR::Feature`s as they're retrieved instead of
   after the `features` Array has been built.
   `OGR::LayerMixins::Extensions#features` now uses this too.
+* Added `OGR::GeometryMixins::Extensions#invalid?` to compliment
+  `OGR::Geometry#valid?`.
 
 ### Bug Fixes
 

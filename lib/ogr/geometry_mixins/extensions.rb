@@ -47,6 +47,11 @@ module OGR
         coordinate_dimension == 3
       end
 
+      # @return [Boolean]
+      def invalid?
+        !valid?
+      end
+
       # @return [Hash]
       def as_json(options = nil)
         json = {
