@@ -1,9 +1,6 @@
-require_relative 'driver'
 require_relative 'grid'
 require_relative 'options'
-require_relative 'data_type'
-require_relative '../ogr/geometry'
-require_relative '../ogr/spatial_reference'
+require_relative '../ogr'
 
 module GDAL
   # Object to be used with a {GDAL::Gridder}.

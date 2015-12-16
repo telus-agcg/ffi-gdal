@@ -1,14 +1,10 @@
-require_relative '../ffi-gdal'
-require_relative 'internal_helpers'
-require_relative 'dataset'
+require 'narray'
+require_relative '../gdal'
 require_relative 'raster_band_mixins/algorithm_extensions'
 require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'raster_band_mixins/coloring_extensions'
 require_relative 'raster_band_mixins/extensions'
-require_relative 'color_table'
 require_relative 'major_object'
-require_relative 'raster_attribute_table'
-require 'narray'
 
 module GDAL
   class RasterBand
@@ -226,13 +222,13 @@ module GDAL
     # @return [Boolean]
     def create_mask_band(*flags)
       flag_value = flags.each_with_object(0) do |flag, result|
-        result += case flag
-                  when :GMF_ALL_VALID then 0x01
-                  when :GMF_PER_DATASET then 0x02
-                  when :GMF_PER_ALPHA then 0x04
-                  when :GMF_NODATA then 0x08
-                  else 0
-                  end
+        case flag
+        when :GMF_ALL_VALID then 0x01
+        when :GMF_PER_DATASET then 0x02
+        when :GMF_PER_ALPHA then 0x04
+        when :GMF_NODATA then 0x08
+        else 0
+        end
       end
 
       !!FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flag_value)

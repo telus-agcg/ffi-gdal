@@ -1,7 +1,3 @@
-require_relative '../field_definition'
-require_relative '../field'
-require_relative '../geometry_field_definition'
-
 module OGR
   module LayerMixins
     module OGRFieldMethods

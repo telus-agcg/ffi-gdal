@@ -1,9 +1,6 @@
 require_relative '../ogr'
-require_relative 'envelope'
 require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
-require_relative '../gdal/options'
-require_relative '../gdal/logger'
 
 module OGR
   module Geometry

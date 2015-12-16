@@ -1,4 +1,4 @@
-require_relative '../ffi/gdal'
+require_relative '../gdal'
 require_relative 'geo_transform_mixins/extensions'
 
 module GDAL

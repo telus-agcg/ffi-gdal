@@ -1,14 +1,8 @@
 require 'narray'
-require_relative '../ffi-gdal'
 require_relative '../gdal'
 require_relative 'gridder_options'
-require_relative 'driver'
-require_relative 'dataset'
-require_relative 'geo_transform'
 require_relative 'options'
-require_relative 'logger'
-require_relative 'data_type'
-require_relative '../ogr/envelope'
+require_relative '../ogr'
 
 module GDAL
   # Somewhat analogous to the gdal_grid utility.

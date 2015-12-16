@@ -1,15 +1,10 @@
 require 'uri'
-require_relative '../ffi-gdal'
-require_relative '../ogr/spatial_reference'
-require_relative 'driver'
-require_relative 'geo_transform'
-require_relative 'raster_band'
-require_relative 'exceptions'
+require_relative '../gdal'
+require_relative '../ogr'
 require_relative 'major_object'
 require_relative 'dataset_mixins/extensions'
 require_relative 'dataset_mixins/matching'
 require_relative 'dataset_mixins/algorithm_methods'
-require_relative 'options'
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also

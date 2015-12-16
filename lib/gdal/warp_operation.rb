@@ -1,3 +1,5 @@
+require_relative '../gdal'
+
 module GDAL
   class WarpOperation
     # @return [FFI::Pointer]

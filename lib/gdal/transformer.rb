@@ -1,3 +1,5 @@
+require_relative '../gdal'
+
 module GDAL
   class Transformer
     # @param transformer_arg [FFI::Pointer]

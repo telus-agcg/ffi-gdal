@@ -1,3 +1,5 @@
+require_relative '../gdal'
+
 module GDAL
   # Takes a list of Ranges of color values and remaps them.  Note that these
   # values are directly written to the raster band, overwriting all existing
