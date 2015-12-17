@@ -1,8 +1,7 @@
 require 'forwardable'
 require 'narray'
+require_relative '../gdal'
 require_relative 'grid_algorithms'
-require_relative 'exceptions'
-require_relative 'logger'
 
 module GDAL
   # Wrapper for GDAL's [Grid API](http://www.gdal.org/grid_tutorial.html).

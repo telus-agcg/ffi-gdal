@@ -1,10 +1,7 @@
-require_relative '../ffi/ogr'
+require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
 require_relative 'feature_extensions'
-require_relative 'feature_definition'
-require_relative 'field_definition'
-require 'date'
 
 module OGR
   class Feature

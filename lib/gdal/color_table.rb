@@ -1,4 +1,4 @@
-require_relative '../ffi-gdal'
+require_relative '../gdal'
 require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 

@@ -7,6 +7,7 @@ module GDAL
     # @return [FFI::GDAL::ColorEntry]
     attr_reader :c_struct
 
+    # @param color_entry [FFI::GDAL::ColorEntry]
     def initialize(color_entry = nil)
       @c_struct = color_entry || FFI::GDAL::ColorEntry.new
     end

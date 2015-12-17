@@ -1,9 +1,7 @@
-require_relative '../ffi-gdal'
 require_relative '../ogr'
+require_relative '../gdal'
 require_relative '../gdal/major_object'
-require_relative '../gdal/options'
 require_relative 'driver_mixins/capability_methods'
-require_relative 'data_source'
 
 module OGR
   # Wrapper for OGR's Driver class.  In this case, to use a driver, find the

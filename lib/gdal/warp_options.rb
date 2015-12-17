@@ -1,4 +1,4 @@
-require_relative 'options'
+require_relative '../gdal'
 
 module GDAL
   class WarpOptions

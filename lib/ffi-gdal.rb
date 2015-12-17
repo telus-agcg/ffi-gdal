@@ -1,5 +1,4 @@
 require 'ffi'
-
 require_relative 'ext/ffi_library_function_checks'
 require_relative 'ext/narray_ext'
 require_relative 'ext/numeric_as_data_type'

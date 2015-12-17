@@ -1,5 +1,5 @@
-require_relative '../ffi/ogr'
-require_relative '../gdal/logger'
+require_relative '../ogr'
+require_relative '../gdal'
 require_relative 'spatial_reference_extensions'
 require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
 require_relative 'spatial_reference_mixins/exporters'

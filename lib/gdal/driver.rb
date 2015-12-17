@@ -1,11 +1,7 @@
-require_relative '../ffi-gdal'
+require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
-require_relative 'exceptions'
 require_relative 'driver_mixins/extensions'
-require_relative 'dataset'
-require_relative 'options'
-require 'multi_xml'
 
 module GDAL
   # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working

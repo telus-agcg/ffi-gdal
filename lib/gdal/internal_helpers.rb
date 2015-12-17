@@ -1,10 +1,4 @@
-require 'log_switch'
-
 module GDAL
-  module Logger
-    include LogSwitch
-  end
-
   # @private
   module InternalHelpers
     def self.included(base)
@@ -38,11 +32,7 @@ module GDAL
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
 
-        if size
-          FFI::MemoryPointer.new(pointer_type, size)
-        else
-          FFI::MemoryPointer.new(pointer_type)
-        end
+        size ? FFI::MemoryPointer.new(pointer_type, size) : FFI::MemoryPointer.new(pointer_type)
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]

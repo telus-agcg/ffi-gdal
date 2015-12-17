@@ -1,4 +1,4 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'field_definition_extensions'
 
 module OGR

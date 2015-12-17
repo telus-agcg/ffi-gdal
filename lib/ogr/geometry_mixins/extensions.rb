@@ -1,5 +1,4 @@
 require 'json'
-require_relative '../spatial_reference'
 
 module OGR
   module GeometryMixins

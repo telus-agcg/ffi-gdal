@@ -1,5 +1,5 @@
+require_relative '../gdal'
 require_relative 'major_object'
-require_relative 'options'
 
 module GDAL
   class VirtualDataset
