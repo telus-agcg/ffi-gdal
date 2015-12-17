@@ -33,3 +33,5 @@ valgrind_output.log
 *.xsd
 
 *.swp
+
+.byebug_history
