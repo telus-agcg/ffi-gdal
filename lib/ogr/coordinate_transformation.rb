@@ -1,5 +1,6 @@
 require 'narray'
 require_relative '../ogr'
+require_relative '../gdal'
 
 module OGR
   class CoordinateTransformation
@@ -7,7 +8,10 @@ module OGR
     # @return [String]
     def self.proj4_normalize(proj4_source)
       if GDAL._supported?(:OCTProj4Normalize)
-        FFI::GDAL.OCTProj4Normalize(proj4_source)
+        FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
+      else
+        fail OGR::UnsupportedOperation,
+          'Your version of GDAL/OGR does not support OCTProj4Normalize'
       end
     end
 
@@ -20,6 +24,8 @@ module OGR
     # @return [FFI::Pointer] C pointer that represents the CoordinateTransformation.
     attr_reader :c_pointer
 
+    # @param source_srs [OGR::SpatialReference]
+    # @param destination_srs [OGR::SpatialReference]
     def initialize(source_srs, destination_srs)
       source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
@@ -33,20 +39,82 @@ module OGR
       ObjectSpace.define_finalizer self, close_me
     end
 
-    # Deletes the object and deallocates all related resources.
+    # Deletes the object and deallocates all related C resources.
     def destroy!
       FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(@c_pointer)
+      @c_pointer = nil
     end
 
-    # Transforms points in the +source_srs+ space to points in the
-    # +destination_space+ (given in .create).
+    # Transforms points in the +#source_coordinate_system+ space to points in the
+    # +#destination_coordinate_system+ (given in {#initialize}).
     #
     # @param x_vertices [Array<Float>]
     # @param y_vertices [Array<Float>]
     # @param z_vertices [Array<Float>]
-    # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, y1], [x2,
-    #   y2], etc]
+    # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, x2, etc], [y1, y2, etc]]
+    #   Will include a 3rd array of Z values if z vertices are given.
     def transform(x_vertices, y_vertices, z_vertices = [])
+      _transform(x_vertices, y_vertices, z_vertices) do |point_count, x_ptr, y_ptr, z_ptr|
+        FFI::OGR::SRSAPI.OCTTransform(@c_pointer, point_count, x_ptr, y_ptr, z_ptr)
+      end
+    end
+
+    # @param x_vertices [Array<Float>]
+    # @param y_vertices [Array<Float>]
+    # @param z_vertices [Array<Float>]
+    # @return [Hash{points => Array<Array<Float>,Array<Float>,Array<Float>>, success_at => Array}]
+    #   [[x1, y1], [x2, y2], etc]
+    def transform_ex(x_vertices, y_vertices, z_vertices = [])
+      success_ptr = nil
+
+      point_array = _transform(x_vertices, y_vertices, z_vertices) do |point_count, x_ptr, y_ptr, z_ptr|
+        success_ptr = FFI::MemoryPointer.new(:bool, point_count)
+        FFI::OGR::SRSAPI.OCTTransformEx(@c_pointer, point_count, x_ptr, y_ptr, z_ptr, success_ptr)
+      end
+
+      successes = success_ptr.read_array_of_type(FFI::Type::BOOL, :read_char, point_array.first.length).map do |value|
+        !value.zero?
+      end
+
+      { points: point_array, successes: successes }
+    end
+
+    private
+
+    # @param x_vertices [Array<Float>]
+    # @param y_vertices [Array<Float>]
+    # @param z_vertices [Array<Float>]
+    # @yieldparam point_count [Fixnum]
+    # @yieldparam x_ptr [FFI::MemortyPointer]
+    # @yieldparam y_ptr [FFI::MemortyPointer]
+    # @yieldparam z_ptr [FFI::MemortyPointer]
+    # @yieldreturn [Boolean]
+    # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, x2, etc], [y1, y2, etc]]
+    #   Will include a 3rd array of Z values if z vertices are given.
+    def _transform(x_vertices, y_vertices, z_vertices = [])
+      x_ptr, y_ptr, z_ptr = init_transform_pointers(x_vertices, y_vertices, z_vertices)
+      point_count = x_vertices.length + y_vertices.length
+
+      result = yield point_count, x_ptr, y_ptr, z_ptr
+
+      # TODO: maybe this should raise?
+      return false unless result
+
+      x_vals = x_ptr.read_array_of_double(x_vertices.size)
+      y_vals = y_ptr.read_array_of_double(y_vertices.size)
+      z_vals = z_vertices.empty? ? nil : z_ptr.read_array_of_double(z_vertices.size)
+
+      points = [x_vals, y_vals]
+      points << z_vals unless z_vertices.empty?
+
+      points
+    end
+
+    # @param x_vertices [Array<Float>]
+    # @param y_vertices [Array<Float>]
+    # @param z_vertices [Array<Float>]
+    # @return [Array<FFI::Pointer>]
+    def init_transform_pointers(x_vertices, y_vertices, z_vertices)
       x_ptr = FFI::MemoryPointer.new(:pointer, x_vertices.size)
       x_ptr.write_array_of_double(x_vertices)
       y_ptr = FFI::MemoryPointer.new(:pointer, y_vertices.size)
@@ -59,25 +127,7 @@ module OGR
         z_ptr.write_array_of_double(z_vertices)
       end
 
-      point_count = x_vertices.size + y_vertices.size + z_vertices.size
-
-      result = FFI::OGR::SRSAPI.OCTTransform(@c_pointer, point_count,
-        x_ptr, y_ptr, z_ptr)
-
-      # maybe this should raise?
-      return false unless result
-
-      x_vals = x_ptr.read_array_of_double
-      y_vals = y_ptr.read_array_of_double
-      z_vals = z_vertices.empty? ? nil : z_ptr.read_array_of_double
-
-      points = if z_vertices.empty?
-                 NMatrix[x_vals, y_vals]
-               else
-                 NMatrix[x_vals, y_vals, z_vals]
-               end
-
-      points.transpose.to_a
+      [x_ptr, y_ptr, z_ptr]
     end
   end
 end

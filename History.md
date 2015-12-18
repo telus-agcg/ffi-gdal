@@ -6,11 +6,17 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### New Features
 
+#### GDAL
+
 * Added wrappers for the Grid API. It uses `GDAL::Gridder`, which is the
   programmatic equivalent to the `gdal_grid` command-line utility,
   `GDAL::GridderOptions`, which is an object used to mimic the options you pass
   to `gdal_grid`, and `GDAL::Grid`, which is the simple object that performs the
   gridding.
+
+#### OGR
+
+* Added `OGR::CoordinateTransform#transform_ex`.
 
 ### Improvements
 
@@ -96,6 +102,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   doing so was setting the time zone. If a user passes in an object that doesn't
   have the TZ set, the method shouldn't be setting it for them.
 * `OGR::Geometry#point_on_surface` now properly returns a geometry object.
+* `OGR::CoordinateTransform#transform` never worked. Fixed.
 
 ## 1.0.0.beta5 / 2015-06-16
 
