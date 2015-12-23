@@ -1,4 +1,5 @@
 require_relative '../gdal'
+require 'multi_xml'
 
 module GDAL
   module MajorObject

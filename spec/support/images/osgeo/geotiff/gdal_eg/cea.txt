@@ -1,0 +1,84 @@
+Cyldindrical Equal Area
+-----------------------
+
+Frank Warmerdam
+warmerdam@pobox.com
+
+Created by reprojecting utm11-27.tif in pci_eg directory.
+
+Geotiff_Information:
+   Version: 1
+   Key_Revision: 1.0
+   Tagged_Information:
+      ModelTiepointTag (2,3):
+         0                0                0                
+         -28493.1668      4255884.54       0                
+      ModelPixelScaleTag (1,3):
+         60.022137        60.022137        0                
+      End_Of_Tags.
+   Keyed_Information:
+      GTModelTypeGeoKey (Short,1): ModelTypeProjected
+      GTRasterTypeGeoKey (Short,1): RasterPixelIsArea
+      GTCitationGeoKey (Ascii,8): "unnamed"
+      GeographicTypeGeoKey (Short,1): GCS_NAD27
+      GeogCitationGeoKey (Ascii,6): "NAD27"
+      GeogAngularUnitsGeoKey (Short,1): Angular_Degree
+      ProjectedCSTypeGeoKey (Short,1): User-Defined
+      ProjectionGeoKey (Short,1): User-Defined
+      ProjCoordTransGeoKey (Short,1): CT_CylindricalEqualArea
+      ProjLinearUnitsGeoKey (Short,1): Linear_Meter
+      ProjStdParallel1GeoKey (Double,1): 33.75            
+      ProjNatOriginLongGeoKey (Double,1): -117.333333      
+      ProjFalseEastingGeoKey (Double,1): 0                
+      ProjFalseNorthingGeoKey (Double,1): 0                
+      End_Of_Keys.
+   End_Of_Geotiff.
+
+Projection Method: CT_CylindricalEqualArea
+   ProjStdParallel1GeoKey: 33.750000 ( 33d45' 0.00"N)
+   ProjNatOriginLongGeoKey: -117.333333 (117d20' 0.00"W)
+   ProjFalseEastingGeoKey: 0.000000 m
+   ProjFalseNorthingGeoKey: 0.000000 m
+GCS: 4267/NAD27
+Datum: 6267/North American Datum 1927
+Ellipsoid: 7008/Clarke 1866 (6378206.40,6356583.80)
+Prime Meridian: 8901/Greenwich (0.000000/  0d 0' 0.00"E)
+Projection Linear Units: 9001/metre (1.000000m)
+
+Corner Coordinates:
+Upper Left    (  -28493.167, 4255884.544)  (117d38'28.21"W, 33d54'13.08"N)
+Lower Left    (  -28493.167, 4224973.143)  (117d38'28.21"W, 33d37'30.66"N)
+Upper Right   (    2358.212, 4255884.544)  (117d18'28.28"W, 33d54'13.08"N)
+Lower Right   (    2358.212, 4224973.143)  (117d18'28.28"W, 33d37'30.66"N)
+Center        (  -13067.478, 4240428.844)  (117d28'28.24"W, 33d45'51.47"N)
+
+From gdalinfo:
+
+Driver: GTiff/GeoTIFF
+Size is 514, 515
+Coordinate System is:
+PROJCS["unnamed",
+    GEOGCS["NAD27",
+        DATUM["North_American_Datum_1927",
+            SPHEROID["Clarke 1866",6378206.4,294.9786982138982,
+                AUTHORITY["EPSG","7008"]],
+            AUTHORITY["EPSG","6267"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4267"]],
+    PROJECTION["Cylindrical_Equal_Area"],
+    PARAMETER["standard_parallel_1",33.75],
+    PARAMETER["central_meridian",-117.333333333333],
+    PARAMETER["false_easting",0],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (-28493.166784,4255884.543802)
+Pixel Size = (60.02213698,-60.02213698)
+Corner Coordinates:
+Upper Left  (  -28493.167, 4255884.544) (117d38'28.21"W, 33d54'13.08"N)
+Lower Left  (  -28493.167, 4224973.143) (117d38'28.21"W, 33d37'30.66"N)
+Upper Right (    2358.212, 4255884.544) (117d18'28.28"W, 33d54'13.08"N)
+Lower Right (    2358.212, 4224973.143) (117d18'28.28"W, 33d37'30.66"N)
+Center      (  -13067.478, 4240428.844) (117d28'28.24"W, 33d45'51.47"N)
+Band 1 Block=514x15 Type=Byte, ColorInterp=Gray

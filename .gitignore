@@ -20,7 +20,6 @@ test/version_tmp
 *.a
 mkmf.log
 .idea/
-spec/support/images
 tags
 *.sqlite
 vendor/bundle
