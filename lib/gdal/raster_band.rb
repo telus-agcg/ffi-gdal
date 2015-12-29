@@ -223,6 +223,7 @@ module GDAL
       flags
     end
 
+    # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
     # @return [Boolean]
     def create_mask_band(*flags)
       flag_value = 0

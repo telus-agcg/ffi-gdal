@@ -1,4 +1,7 @@
 module GDAL
+  class BufferTooSmall < StandardError
+  end
+
   class CreateFail < StandardError
   end
 
