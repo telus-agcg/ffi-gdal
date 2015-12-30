@@ -92,8 +92,6 @@ module GDAL
 
     # @return [Symbol]
     def access_flag
-      return nil if null?
-
       flag = FFI::GDAL::GDAL.GDALGetAccess(@c_pointer)
 
       FFI::GDAL::GDAL::Access[flag]

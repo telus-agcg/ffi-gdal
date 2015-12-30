@@ -64,6 +64,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   yielding the dataset then closing it afterwards.
 * `GDAL::RasterBandClassifier` now uses NArray to classify. Can result in quite
   a large performance gain.
+* `GDAL::Driver#copy_dataset` now properly takes progress block arguments.
+* `GDAL::Driver#copy_dataset` now yields a writable Dataset.
+* Swapped order of params in `GDAL::Driver#rename_dataset` to be (old, new)
+  instead of (new, old).
 
 #### OGR
 

@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'gdal/dataset'
 require 'gdal/raster_band'
 
-RSpec.describe GDAL::RasterBand do
+RSpec.describe GDAL::RasterBand, type: :integration do
   describe '#sieve_filter!' do
     let(:source_image_path) { 'spec/support/images/osgeo/geotiff/zi_imaging/image0.tif' }
     let(:dest_image_path) { 'tmp/image0.tif' }

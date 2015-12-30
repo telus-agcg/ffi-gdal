@@ -5,7 +5,7 @@ module IntegrationHelp
   end
 
   def cleanup_test_files
-    @test_files.each do |f|
+    test_files.each do |f|
       FileUtils.rm(f) if File.exist?(f)
     end
   end

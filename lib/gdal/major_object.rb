@@ -69,7 +69,7 @@ module GDAL
     end
 
     def null?
-      c_pointer.null?
+      @c_pointer.null?
     end
   end
 end
