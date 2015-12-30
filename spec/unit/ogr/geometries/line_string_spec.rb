@@ -76,7 +76,7 @@ RSpec.describe OGR::LineString do
     context 'other geometry is a line string' do
       context 'outside the ring' do
         let(:other_geometry) do
-          OGR::Geometry.create_from_wkt('LINESTRING (100 100, 200 200)')
+          OGR::Geometry.create_from_wkt('LINESTRING (100 100, 20 20)')
         end
 
         subject { open_line_string.intersects?(other_geometry) }

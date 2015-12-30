@@ -103,9 +103,6 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~
       # Transformer functions
       # ~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALSetTransformerDstGeoTransform,
-        %i[pointer pointer],
-        :void
       attach_function :GDALSuggestedWarpOutput,
         [
           FFI::GDAL::GDAL.find_type(:GDALDatasetH),

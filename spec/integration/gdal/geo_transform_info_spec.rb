@@ -3,13 +3,8 @@ require 'ffi-gdal'
 
 RSpec.describe 'GeoTransform Info', type: :integration do
   let(:dataset) { GDAL::Dataset.open(file, 'r') }
-  after :all do
-    dataset.close
-  end
-
-  subject do
-    dataset.geo_transform
-  end
+  after { dataset.close }
+  subject { dataset.geo_transform }
 
   describe '#x_origin' do
     it 'is a Float' do

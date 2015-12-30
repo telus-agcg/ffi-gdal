@@ -267,9 +267,6 @@ module FFI
       attach_function :OGR_FD_DeleteFieldDefn,
         %i[OGRFeatureDefnH int],
         FFI::OGR::Core::Err
-      attach_function :OGR_FD_ReorderFieldDefns,
-        %i[OGRFeatureDefnH pointer],
-        FFI::OGR::Core::Err
       attach_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_FD_SetGeomType,
         [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],

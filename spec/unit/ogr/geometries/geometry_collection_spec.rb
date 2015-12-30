@@ -64,7 +64,7 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         let(:line_string2) do
-          OGR::Geometry.create_from_wkt('LINESTRING (100 100,100 200,100 300)')
+          OGR::Geometry.create_from_wkt('LINESTRING (100 100,100 20,100 30)')
         end
 
         it 'raises a OGR::Failure error' do
@@ -123,7 +123,7 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         let(:line_string2) do
-          OGR::Geometry.create_from_wkt('LINESTRING (100 100,100 200,0 2)')
+          OGR::Geometry.create_from_wkt('LINESTRING (100 100,100 20,0 2)')
         end
 
         it 'raises a OGR::Failure' do
@@ -178,7 +178,7 @@ RSpec.describe OGR::GeometryCollection do
         it 'raises a GDAL::UnsupportedOperation or OGR::UnsupportedGeometryType' do
           expect do
             subject.polygon_from_edges(100, auto_close: false)
-          end.to raise_exception
+          end.to raise_exception(GDAL::UnsupportedOperation).or raise_exception(OGR::UnsupportedGeometryType)
         end
       end
     end
