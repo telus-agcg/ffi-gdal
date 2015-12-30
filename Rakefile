@@ -28,5 +28,5 @@ namespace :spec do
   end
 end
 
-task spec: 'spec:unit'
-task default: 'spec:unit'
+task :spec { RSpec::Core::RakeTask.new }
+task default: :spec
