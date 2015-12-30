@@ -103,6 +103,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   have the TZ set, the method shouldn't be setting it for them.
 * `OGR::Geometry#point_on_surface` now properly returns a geometry object.
 * `OGR::CoordinateTransform#transform` never worked. Fixed.
+* `OGR::GeometryMixins::Extensions#utm_zone` no longer creates invalid geometry.
 
 ## 1.0.0.beta5 / 2015-06-16
 

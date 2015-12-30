@@ -14,6 +14,8 @@ module OGR
           self_as_4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
         end
 
+        self_as_4326 = self_as_4326.buffer(0) unless self_as_4326.valid?
+
         return unless self_as_4326.point_on_surface.x
 
         ((self_as_4326.point_on_surface.x + 180) / 6.to_f).floor + 1
