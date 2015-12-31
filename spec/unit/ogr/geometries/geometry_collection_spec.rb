@@ -178,7 +178,7 @@ RSpec.describe OGR::GeometryCollection do
         it 'raises a GDAL::UnsupportedOperation or OGR::UnsupportedGeometryType' do
           expect do
             subject.polygon_from_edges(100, auto_close: false)
-          end.to raise_exception(GDAL::UnsupportedOperation).or raise_exception(OGR::UnsupportedGeometryType)
+          end.to raise_exception(GDAL::UnsupportedOperation)
         end
       end
     end

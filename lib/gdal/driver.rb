@@ -165,8 +165,10 @@ module GDAL
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
     # @param options [Hash]
-    # @param progress [Proc] For outputting copy progress.  Conforms to the
-    #   FFI::GDAL::GDAL::GDALProgressFunc signature.
+    # @param progress_block [Proc, FFI::GDAL::GDAL.GDALProgressFunc] For
+    #   outputting copy progress.  Conforms to the
+    #   FFI::GDAL::GDAL.GDALProgressFunc signature.
+    # @param progress_arg [Proc]
     # @return [true]
     # @raise [GDAL::CreateFail] if it couldn't copy the dataset.
     # @yieldparam destination_dataset [GDAL::Dataset]

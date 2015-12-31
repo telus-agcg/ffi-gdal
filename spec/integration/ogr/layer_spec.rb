@@ -1,6 +1,7 @@
 require 'spec_helper'
+require 'ogr'
 
-RSpec.describe OGR::Layer do
+RSpec.describe 'OGR::Layer' do
   let(:data_source) do
     OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
   end

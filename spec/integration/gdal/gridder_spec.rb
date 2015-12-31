@@ -46,25 +46,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-idtap.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-idtap.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 300
       expect(dataset.raster_band(1).y_size).to eq 200
       expect(dataset.raster_band(1).data_type).to eq :GDT_UInt16
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 0.0,
-        maximum: 55.0,
-        mean: 25.549166666666668,
-        standard_deviation: 19.12785974792592
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 0.0
+      expect(stats[:maximum]).to eq 55.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 25.549166666667
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 19.127859747926
     end
   end
 
@@ -84,25 +83,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-nearest_neighbor.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-nearest_neighbor.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 10
       expect(dataset.raster_band(1).y_size).to eq 15
       expect(dataset.raster_band(1).data_type).to eq :GDT_Int16
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 2.0,
-        maximum: 56.0,
-        mean: 16.97222222222222,
-        standard_deviation: 16.30863116933129
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 2.0
+      expect(stats[:maximum]).to eq 56.0
+      expect(stats[:mean]).to be_within(0.00000000001).of 16.972222222222
+      expect(stats[:standard_deviation]).to be_within(0.00000000001).of 16.308631169331
     end
   end
 
@@ -123,25 +121,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_average_distance.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_average_distance.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 100
       expect(dataset.raster_band(1).y_size).to eq 150
       expect(dataset.raster_band(1).data_type).to eq :GDT_UInt32
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 0.0,
-        maximum: 17.0,
-        mean: 6.211,
-        standard_deviation: 5.946194497323477
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 0.0
+      expect(stats[:maximum]).to eq 17.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 6.211
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 5.9461944973235
     end
   end
 
@@ -162,25 +159,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_average_distance_pts.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_average_distance_pts.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 250
       expect(dataset.raster_band(1).data_type).to eq :GDT_Float32
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 0.0,
-        maximum: 0.43194779753685,
-        mean: 0.11661225064790674,
-        standard_deviation: 0.08151869134589483
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 0.0
+      expect(stats[:maximum]).to be_within(0.000000000001).of 0.43194779753685
+      expect(stats[:mean]).to be_within(0.000000000001).of 0.11661225064791
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 0.081518691345895
     end
   end
 
@@ -201,25 +197,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_count.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_count.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 50
       expect(dataset.raster_band(1).data_type).to eq :GDT_Int32
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 1.0,
-        maximum: 18.0,
-        mean: 3.9318181818181817,
-        standard_deviation: 3.7135974182891673
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 1.0
+      expect(stats[:maximum]).to eq 18.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 3.9318181818182
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 3.7135974182892
     end
   end
 
@@ -240,25 +235,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_maximum.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_maximum.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 50
       expect(dataset.raster_band(1).data_type).to eq :GDT_Byte
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 0.0,
-        maximum: 56.0,
-        mean: 26.3916,
-        standard_deviation: 24.77985975424397
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 0.0
+      expect(stats[:maximum]).to eq 56.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 26.3916
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 24.779859754244
     end
   end
 
@@ -280,25 +274,24 @@ RSpec.describe 'GDAL::Gridder' do
     end
 
     let(:output_file_name) { File.expand_path './tmp/gridder_spec-metric_minimum.tif' }
+    # let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_minimum.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 50
       expect(dataset.raster_band(1).data_type).to eq :GDT_CInt16
 
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 1.0,
-        maximum: 53.0,
-        mean: 9.115079365079366,
-        standard_deviation: 12.575393694871057
-      )
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 1.0
+      expect(stats[:maximum]).to eq 53.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 9.1150793650794
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 12.575393694871
     end
   end
 
@@ -320,25 +313,24 @@ RSpec.describe 'GDAL::Gridder' do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_range.tif' }
+    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_range.tif', __dir__) }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
-
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 50
       expect(dataset.raster_band(1).data_type).to eq :GDT_CFloat64
-      expect(dataset.raster_band(1).statistics).to eq(
-        minimum: 0.0,
-        maximum: 55.0,
-        mean: 28.216176470588234,
-        standard_deviation: 24.681864682477947
-      )
+
+      stats = dataset.raster_band(1).statistics
+      expect(stats[:minimum]).to eq 0.0
+      expect(stats[:maximum]).to eq 55.0
+      expect(stats[:mean]).to be_within(0.000000000001).of 28.216176470588234
+      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 24.681864682477947
     end
   end
 end

@@ -22,6 +22,11 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Improvements
 
+* Removed all `ObjectSpace.define_finalizer` calls that "cleaned up" C pointers
+  for Ruby-wrapped objects that had not yet been closed/destroyed. This was
+  keeping those Ruby objects from getting collected (?) and effectively causing
+  lots of unnecessary memory use.
+
 #### GDAL
 
 * Added `GDAL::GeoTransformMixins::Extensions.new_from_envelope` which lets you

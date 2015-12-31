@@ -1,3 +1,4 @@
+require_relative '../geometry_types/container'
 require_relative '../geometry_types/surface'
 
 module OGR

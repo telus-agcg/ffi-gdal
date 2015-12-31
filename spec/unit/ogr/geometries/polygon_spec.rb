@@ -3,7 +3,7 @@ require 'ogr/geometry'
 
 RSpec.describe OGR::Polygon do
   subject(:polygon) { OGR::Geometry.create_from_wkt(wkt) }
-  let(:wkt) { 'POLYGON((100 100, 20 20, 30 30))' }
+  let(:wkt) { 'POLYGON((10 10, 20 20, 30 30))' }
 
   it_behaves_like 'a geometry' do
     let(:geometry) { polygon }

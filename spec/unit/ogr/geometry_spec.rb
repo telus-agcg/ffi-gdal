@@ -555,7 +555,7 @@ RSpec.describe OGR::Geometry do
     context 'SRID is 4326' do
       subject { geom.utm_zone }
       before { geom.spatial_reference = OGR::SpatialReference.new_from_epsg(4326) }
-      it { is_expected.to eq(64) }
+      it { is_expected.to eq(36) }
     end
 
     context 'SRID is not 4326' do

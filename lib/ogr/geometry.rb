@@ -80,10 +80,7 @@ module OGR
                       geometry_ptr_ptr.read_pointer.null?
         geometry_ptr_ptr.read_pointer.nil?
 
-        geometry = factory(geometry_ptr_ptr.read_pointer)
-        ObjectSpace.define_finalizer(geometry) { destroy! }
-
-        geometry
+        factory(geometry_ptr_ptr.read_pointer)
       end
 
       # @param gml_data [String]
@@ -663,14 +660,3 @@ module OGR
     end
   end
 end
-
-require_relative 'geometries/geometry_collection'
-require_relative 'geometries/line_string'
-require_relative 'geometries/linear_ring'
-require_relative 'geometries/multi_line_string'
-require_relative 'geometries/multi_point'
-require_relative 'geometries/multi_polygon'
-require_relative 'geometries/none_geometry'
-require_relative 'geometries/point'
-require_relative 'geometries/polygon'
-require_relative 'geometries/unknown_geometry'

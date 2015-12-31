@@ -203,7 +203,7 @@ module OGR
             extent: extent.as_json(options),
             feature_count: feature_count,
             feature_definition: feature_definition.as_json(options),
-            features: features.map(&:as_json),
+            features: each_feature.map { |f| f.as_json(options) },
             fid_column: fid_column,
             geometry_column: geometry_column,
             geometry_type: geometry_type,

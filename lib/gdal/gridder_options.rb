@@ -128,6 +128,7 @@ module GDAL
       @output_y_extent = {}
       @output_projection = nil
       @output_creation_options = {}
+      @progress_formatter = nil
 
       @grid = GDAL::Grid.new(algorithm_type, data_type: @output_data_type)
     end
