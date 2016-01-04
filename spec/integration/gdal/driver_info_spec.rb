@@ -7,8 +7,6 @@ RSpec.describe 'Driver Info', type: :integration do
   # of the same driver open. Seems like there might be a better solution than
   # this here, but I'm not sure what it is yet.
   before { ::FFI::GDAL::GDAL.GDALAllRegister }
-  after { File.unlink(tmp_source_tiff) if File.exist?(tmp_source_tiff) }
-
   let(:tmp_source_tiff) { make_temp_test_file(original_source_tiff) }
 
   let(:original_source_tiff) do

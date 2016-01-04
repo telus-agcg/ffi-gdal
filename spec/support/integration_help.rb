@@ -1,3 +1,5 @@
+require 'fileutils'
+
 # Helper methods for integration specs.
 module IntegrationHelp
   def test_files
