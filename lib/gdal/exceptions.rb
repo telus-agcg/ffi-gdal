@@ -65,6 +65,9 @@ module GDAL
     end
   end
 
+  class UnknownRasterAttributeTableType < StandardError
+  end
+
   class UnsupportedOperation < StandardError
   end
 end

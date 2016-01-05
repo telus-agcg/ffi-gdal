@@ -605,7 +605,7 @@ module FFI
         :int
       attach_function :GDALRATGetLinearBinning,
         %i[GDALRasterAttributeTableH pointer pointer],
-        :int
+        :bool
       attach_function :GDALRATTranslateToColorTable,
         %i[GDALRasterAttributeTableH int],
         :GDALColorTableH

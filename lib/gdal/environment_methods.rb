@@ -36,9 +36,11 @@ module GDAL
       FFI::GDAL::GDAL.GDALFlushCacheBlock
     end
 
-    # @param file_name [String]
-    def dump_open_datasets(file_name)
-      FFI::GDAL::GDAL.GDALDumpOpenDatasets(file_name)
+    # @param file_path [String]
+    def dump_open_datasets(file_path)
+      file_ptr = FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false)
+      FFI::GDAL::GDAL.GDALDumpOpenDatasets(file_ptr)
+      FFI::CPL::Conv.CPLCloseShared(file_ptr)
     end
   end
 end

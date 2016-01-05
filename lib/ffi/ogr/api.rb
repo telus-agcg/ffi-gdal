@@ -79,7 +79,7 @@ module FFI
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :string
       attach_function :OGR_G_DumpReadable,
-        %i[OGRGeometryH string string],
+        %i[OGRGeometryH pointer string],
         :void
       attach_function :OGR_G_FlattenTo2D, %i[OGRGeometryH], :void
       attach_function :OGR_G_CloseRings, %i[OGRGeometryH], :void
@@ -351,7 +351,7 @@ module FFI
 
       attach_function :OGR_F_GetFID, %i[OGRFeatureH], :long
       attach_function :OGR_F_SetFID, %i[OGRFeatureH long], FFI::OGR::Core::Err
-      attach_function :OGR_F_DumpReadable, %i[OGRFeatureH string], :void
+      attach_function :OGR_F_DumpReadable, %i[OGRFeatureH pointer], :void
       attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], FFI::OGR::Core::Err
       attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], FFI::OGR::Core::Err
 
