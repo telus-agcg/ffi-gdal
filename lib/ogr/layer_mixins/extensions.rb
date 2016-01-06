@@ -19,6 +19,7 @@ module OGR
         loop do
           break unless feature = next_feature
           yield feature
+          feature.destroy!
         end
 
         reset_reading
@@ -192,6 +193,8 @@ module OGR
           coordinate_dimension = FFI::OGR::API.OGR_G_GetCoordinateDimension(geom_ptr)
           found_z_geom = coordinate_dimension == 3
         end
+
+        feature.destroy! if feature.c_pointer
 
         found_z_geom
       end

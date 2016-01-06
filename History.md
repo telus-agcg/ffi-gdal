@@ -121,6 +121,9 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Bug Fixes
 
+* Cleanup `OGR::Feature`s that were a result of `OGR::Layer#next_feature`.
+  According to GDAL docs, these *must* be cleaned up before the layer is.
+
 #### GDAL
 
 * `GDAL::RasterBandMixins::AlgorithmMethods#fill_nodata!` was calling the old

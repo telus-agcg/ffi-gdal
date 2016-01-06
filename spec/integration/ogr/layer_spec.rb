@@ -36,6 +36,7 @@ RSpec.describe 'OGR::Layer' do
 
   describe '#next_feature' do
     subject { layer0.next_feature }
+    after { subject.destroy! }
     it { is_expected.to be_a OGR::Feature }
   end
 
