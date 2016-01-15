@@ -72,46 +72,53 @@ module OGR
       def point_values(with_attributes = {})
         return [[]] if feature_count.zero?
 
-        field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }.freeze
+        field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = Array.new(feature_count) { Array.new(2 + with_attributes.size) }
 
         start = Time.now
-        each_feature.with_index do |feature, i|
+        i = 0
+
+        each_feature do |feature|
           next unless yield(feature.geometry) if block_given?
 
           field_values = field_indices.map.with_index do |j, attribute_index|
             feature.send("field_as_#{with_attributes.values[attribute_index]}", j)
-          end.freeze
+          end
 
           feature.geometry.flatten_to_2d! if feature.geometry.is_3d?
 
           case feature.geometry
           when OGR::Point
-            values[i] = feature.geometry.point_value.push(*field_values)
-          # when OGR::LineString, OGR::LinearRing
-          #   ring.each_point.with_index(values_offset) do |point, i|
-          #     values[values_offset] = process_point(point, field_values)
-          #   end
-          # when OGR::Polygon
-          #   geometry.each do |ring|
-          #     ring.each_point.with_index(values_offset) do |point, i|
-          #       values[values_offset] = process_point(point, field_values)
-          #     end
-          #   end
-          # when OGR::MultiPoint, OGR::MultiLineString, OGR::MultiLineString
-          #   geometry.each do |ls|
-          #     ls.each_point.with_index(values_offset) do |point, i|
-          #       values[values_offset] = process_point(point, field_values)
-          #     end
-          #   end
-          # when OGR::MultiPolygon
-          #   geometry.each do |polygon|
-          #     polygon.each do |ring|
-          #       ring.each_point.with_index(values_offset) do |point, i|
-          #         values[values_offset] = process_point(point, field_values)
-          #       end
-          #     end
-          #   end
+            values[i] = extract_point_values(feature.geometry.point_value, field_values)
+            i += 1
+          when OGR::LineString, OGR::LinearRing
+            feature.geometry.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
+              values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+              i += 1
+            end
+          when OGR::Polygon
+            feature.geometry.each do |ring|
+              ring.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
+                values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+                i += 1
+              end
+            end
+          when OGR::MultiPoint, OGR::MultiLineString, OGR::MultiLineString
+            feature.geometry.each do |ls|
+              ls.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
+                values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+                i += 1
+              end
+            end
+          when OGR::MultiPolygon
+            feature.geometry.each do |polygon|
+              polygon.each do |ring|
+                ring.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
+                  values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+                  i += 1
+                end
+              end
+            end
           else fail OGR::UnsupportedGeometryType,
             "Not sure how to extract point_values for a #{feature.geometry.class}"
           end
@@ -158,6 +165,18 @@ module OGR
       # @return [String]
       def to_json(options = nil)
         as_json(options).to_json
+      end
+
+      private
+
+      # While it's a really simple method, I wanted to ensure that all Array
+      # building for related things was done in the most efficient way.
+      #
+      # @param point_value [Array<Float>] The (x, y) values of a point.
+      # @param field_values [Array<Number>] The valus from an associated Field
+      #   to merge to the +point_value+ array.
+      def extract_point_values(point_value, field_values)
+        point_value.push(*field_values)
       end
     end
   end
