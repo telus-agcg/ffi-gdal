@@ -56,6 +56,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   can now participate in GDALScaledProgress functions.
 * Added `GDAL::RasterBandMixins::Extensions#pixel_count`.
 * Allow `GDAL::RasterBand#create_mask_band` to take a single flag or many.
+* Allow `GDAL::Dataset`s to be open in shared mode vs non-shared mode. All
+  Datasets now default to use shared mode.
 
 #### OGR
 
