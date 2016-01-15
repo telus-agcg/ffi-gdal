@@ -70,44 +70,54 @@ module OGR
       #   encountered that the method doesn't know how to extract point values
       #   from.
       def point_values(with_attributes = {})
-        return [] if feature_count.zero?
+        return [[]] if feature_count.zero?
 
-        field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
-        values = []
+        field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }.freeze
+        values = Array.new(feature_count) { Array.new(2 + with_attributes.size) }
 
-        each_feature do |feature|
+        start = Time.now
+        each_feature.with_index do |feature, i|
           next unless yield(feature.geometry) if block_given?
 
-          field_values = field_indices.map.with_index do |i, attribute_index|
-            feature.send("field_as_#{with_attributes.values[attribute_index]}", i)
-          end
+          field_values = field_indices.map.with_index do |j, attribute_index|
+            feature.send("field_as_#{with_attributes.values[attribute_index]}", j)
+          end.freeze
 
           feature.geometry.flatten_to_2d! if feature.geometry.is_3d?
 
           case feature.geometry
-          when OGR::Point, OGR::Point25D
-            values += [feature.geometry.point_value + field_values]
-          when OGR::LineString, OGR::LineString25D, OGR::LinearRing
-            values += feature.geometry.point_values + field_values
-          when OGR::Polygon, OGR::Polygon25D
-            feature.geometry.each do |ring|
-              values += ring.point_values.map { |pv| pv + field_values }
-            end
-          when OGR::MultiPoint, OGR::MultiPoint25D, OGR::MultiLineString, OGR::MultiLineString
-            feature.geometry.each do |ls|
-              values += ls.point_values.map { |pv| pv + field_values }
-            end
-          when OGR::MultiPolygon, OGR::MultiPolygon25D
-            feature.geometry.each do |polygon|
-              polygon.each do |ring|
-                values += ring.point_values.map { |pv| pv + field_values }
-              end
-            end
+          when OGR::Point
+            values[i] = feature.geometry.point_value.push(*field_values)
+          # when OGR::LineString, OGR::LinearRing
+          #   ring.each_point.with_index(values_offset) do |point, i|
+          #     values[values_offset] = process_point(point, field_values)
+          #   end
+          # when OGR::Polygon
+          #   geometry.each do |ring|
+          #     ring.each_point.with_index(values_offset) do |point, i|
+          #       values[values_offset] = process_point(point, field_values)
+          #     end
+          #   end
+          # when OGR::MultiPoint, OGR::MultiLineString, OGR::MultiLineString
+          #   geometry.each do |ls|
+          #     ls.each_point.with_index(values_offset) do |point, i|
+          #       values[values_offset] = process_point(point, field_values)
+          #     end
+          #   end
+          # when OGR::MultiPolygon
+          #   geometry.each do |polygon|
+          #     polygon.each do |ring|
+          #       ring.each_point.with_index(values_offset) do |point, i|
+          #         values[values_offset] = process_point(point, field_values)
+          #       end
+          #     end
+          #   end
           else fail OGR::UnsupportedGeometryType,
             "Not sure how to extract point_values for a #{feature.geometry.class}"
           end
         end
 
+        log "#point_values took #{Time.now - start}s"
         values
       end
 
