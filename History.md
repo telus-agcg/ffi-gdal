@@ -90,6 +90,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   `OGR::LayerMixins::Extensions#features` now uses this too.
 * Added `OGR::GeometryMixins::Extensions#invalid?` to compliment
   `OGR::Geometry#valid?`.
+* Added `OGR::LayerMixins::Extensions#point_geometry`, `#each_point_geometry`,
+  and `point_geometries`. Since `#point` implies it returns a Point object, but
+  the OGR API's related method returns point values (x, y, z), it seemed like
+  it would be useful to have a method that returned a geometry.
 
 ### Bug Fixes
 
