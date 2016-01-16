@@ -56,6 +56,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   can now participate in GDALScaledProgress functions.
 * Added `GDAL::RasterBandMixins::Extensions#pixel_count`.
 * Allow `GDAL::RasterBand#create_mask_band` to take a single flag or many.
+* Allow `GDAL::Dataset`s to be open in shared mode vs non-shared mode. All
+  Datasets now default to use shared mode.
 
 #### OGR
 
@@ -88,6 +90,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   `OGR::LayerMixins::Extensions#features` now uses this too.
 * Added `OGR::GeometryMixins::Extensions#invalid?` to compliment
   `OGR::Geometry#valid?`.
+* Added `OGR::LayerMixins::Extensions#point_geometry`, `#each_point_geometry`,
+  and `point_geometries`. Since `#point` implies it returns a Point object, but
+  the OGR API's related method returns point values (x, y, z), it seemed like
+  it would be useful to have a method that returned a geometry.
 
 ### Bug Fixes
 

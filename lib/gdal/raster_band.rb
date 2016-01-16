@@ -69,7 +69,7 @@ module GDAL
       dataset_ptr = FFI::GDAL::GDAL.GDALGetBandDataset(@c_pointer)
       return nil if dataset_ptr.null?
 
-      @dataset = GDAL::Dataset.new(dataset_ptr, access_flag)
+      @dataset = GDAL::Dataset.new(dataset_ptr, access_flag, true)
     end
 
     # @return [Symbol] One of FFI::GDAL::GDAL::ColorInterp.
