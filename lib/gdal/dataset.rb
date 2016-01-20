@@ -1,15 +1,10 @@
 require 'uri'
-require_relative '../ffi-gdal'
-require_relative '../ogr/spatial_reference'
-require_relative 'driver'
-require_relative 'geo_transform'
-require_relative 'raster_band'
-require_relative 'exceptions'
+require_relative '../gdal'
+require_relative '../ogr'
 require_relative 'major_object'
 require_relative 'dataset_mixins/extensions'
 require_relative 'dataset_mixins/matching'
 require_relative 'dataset_mixins/algorithm_methods'
-require_relative 'options'
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also
@@ -30,8 +25,10 @@ module GDAL
     # @param path [String] Path to the file that contains the dataset.  Can be
     #   a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
-    def self.open(path, access_flag)
-      new(path, access_flag)
+    # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
+    #   vs GDALOpen. Defaults to +true+.
+    def self.open(path, access_flag, shared_open = true)
+      new(path, access_flag, shared_open)
     end
 
     #---------------------------------------------------------------------------
@@ -46,7 +43,9 @@ module GDAL
     #   contains the dataset or a pointer to the dataset. If it's a path, it can
     #   be a local file or a URL.
     # @param access_flag [String] 'r' or 'w'.
-    def initialize(path_or_pointer, access_flag)
+    # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
+    #   vs GDALOpen. Defaults to +true+.
+    def initialize(path_or_pointer, access_flag, shared_open = true)
       @c_pointer =
         if path_or_pointer.is_a? String
           file_path = begin
@@ -56,7 +55,11 @@ module GDAL
             path_or_pointer
           end
 
-          FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+          if shared_open
+            FFI::GDAL::GDAL.GDALOpenShared(file_path, ACCESS_FLAGS[access_flag])
+          else
+            FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+          end
         else
           path_or_pointer
         end

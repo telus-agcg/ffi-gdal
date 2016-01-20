@@ -1,4 +1,5 @@
 module GDAL
+  # Info about GDAL data types (GDT symbols).
   class DataType
     # The size in bits.
     #

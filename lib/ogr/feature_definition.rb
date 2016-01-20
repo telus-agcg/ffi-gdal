@@ -1,7 +1,5 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'feature_definition_extensions'
-require_relative 'field_definition'
-require_relative 'geometry_field_definition'
 
 module OGR
   class FeatureDefinition

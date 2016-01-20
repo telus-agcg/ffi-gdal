@@ -1,5 +1,5 @@
-require_relative '../ogr'
 require 'date'
+require_relative '../ogr'
 
 module OGR
   class Field

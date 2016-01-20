@@ -1,4 +1,4 @@
-require_relative '../ffi/gdal'
+require_relative '../gdal'
 
 module GDAL
   module MajorObject

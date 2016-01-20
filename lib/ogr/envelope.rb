@@ -1,4 +1,4 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'envelope_extensions'
 
 module OGR

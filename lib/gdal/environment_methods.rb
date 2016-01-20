@@ -1,4 +1,5 @@
 module GDAL
+  # Getters and setters for the GDAL environment.
   module EnvironmentMethods
     # @return [Fixnum] The maximum cache memory.
     def cache_max

@@ -1,10 +1,7 @@
-require_relative '../ffi/ogr'
+require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
 require_relative 'feature_extensions'
-require_relative 'feature_definition'
-require_relative 'field_definition'
-require 'date'
 
 module OGR
   class Feature
@@ -26,9 +23,6 @@ module OGR
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
         fail OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
       end
-
-      close_me = -> { destroy! }
-      ObjectSpace.define_finalizer self, close_me
     end
 
     def destroy!

@@ -1,5 +1,4 @@
 require 'json'
-require_relative '../spatial_reference'
 
 module OGR
   module GeometryMixins
@@ -14,6 +13,8 @@ module OGR
           self_as_4326 = dup
           self_as_4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
         end
+
+        self_as_4326 = self_as_4326.buffer(0) unless self_as_4326.valid?
 
         return unless self_as_4326.point_on_surface.x
 
@@ -45,6 +46,11 @@ module OGR
 
       def is_3d?
         coordinate_dimension == 3
+      end
+
+      # @return [Boolean]
+      def invalid?
+        !valid?
       end
 
       # @return [Hash]

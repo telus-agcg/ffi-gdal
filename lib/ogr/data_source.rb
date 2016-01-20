@@ -3,11 +3,7 @@ require 'json'
 require_relative '../gdal'
 require_relative '../ogr'
 require_relative 'data_source_extensions'
-require_relative 'exceptions'
-require_relative 'driver'
 require_relative 'data_source_mixins/capability_methods'
-require_relative 'style_table'
-require_relative 'layer'
 require_relative '../gdal/major_object'
 
 module OGR

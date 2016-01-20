@@ -1,6 +1,3 @@
-require_relative '../feature'
-require_relative '../feature_definition'
-
 module OGR
   module LayerMixins
     module OGRFeatureMethods

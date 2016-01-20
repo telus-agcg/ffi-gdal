@@ -1,9 +1,6 @@
 require_relative '../ogr'
-require_relative 'envelope'
 require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
-require_relative '../gdal/options'
-require_relative '../gdal/logger'
 
 module OGR
   module Geometry
@@ -240,7 +237,6 @@ module OGR
       point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 
       ogr_err = FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
-      puts "OGR ERR: #{ogr_err}"
       return if point.c_pointer.null? || ogr_err > 0
 
       point

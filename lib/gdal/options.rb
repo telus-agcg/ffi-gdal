@@ -18,6 +18,8 @@ module GDAL
       end
     end
 
+    # @param hash [Hash] The hash of options to turn into a CPL key/value pair
+    #   set.
     def initialize(hash = {})
       super()
       capitalize_keys!(hash)

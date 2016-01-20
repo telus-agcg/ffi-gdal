@@ -1,4 +1,4 @@
-require_relative 'layer'
+require_relative '../ogr'
 
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html

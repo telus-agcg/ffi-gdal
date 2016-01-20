@@ -2,11 +2,28 @@ require 'spec_helper'
 require 'gdal/gridder'
 require 'ogr/data_source'
 
-RSpec.describe GDAL::Gridder do
+RSpec.describe 'GDAL::Gridder' do
   let(:shapefile_path) { './spec/support/shapefiles/states_21basic' }
   let(:source_layer) do
     ds = OGR::DataSource.open(shapefile_path, 'r')
     ds.layer(0)
+  end
+
+  before do
+    Dir.glob('tmp/*.*').each do |file|
+      File.unlink(file) if File.exist?(file)
+    end
+    ::FFI::GDAL::GDAL.GDALAllRegister
+  end
+
+  let(:dataset) { GDAL::Dataset.open(output_file_name, 'r', true) }
+
+  after do
+    dataset.close unless dataset.c_pointer
+
+    Dir.glob("#{output_file_name}*").each do |file|
+      File.unlink(file)
+    end
   end
 
   describe 'Inverse Distance to a Power' do
@@ -35,19 +52,18 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
-      expect(dataset.raster_band(1).x_size).to eq 200
-      expect(dataset.raster_band(1).y_size).to eq 300
+      expect(dataset.raster_band(1).x_size).to eq 300
+      expect(dataset.raster_band(1).y_size).to eq 200
       expect(dataset.raster_band(1).data_type).to eq :GDT_UInt16
       expect(dataset.raster_band(1).statistics).to eq(
         minimum: 0.0,
-        maximum: 56.0,
-        mean: 24.73145,
-        standard_deviation: 19.30731288650754
+        maximum: 55.0,
+        mean: 25.549166666666668,
+        standard_deviation: 19.12785974792592
       )
     end
   end
@@ -74,13 +90,12 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
-      expect(dataset.raster_band(1).x_size).to eq 15
-      expect(dataset.raster_band(1).y_size).to eq 10
+      expect(dataset.raster_band(1).x_size).to eq 10
+      expect(dataset.raster_band(1).y_size).to eq 15
       expect(dataset.raster_band(1).data_type).to eq :GDT_Int16
       expect(dataset.raster_band(1).statistics).to eq(
         minimum: 2.0,
@@ -114,19 +129,18 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
-      expect(dataset.raster_band(1).x_size).to eq 150
-      expect(dataset.raster_band(1).y_size).to eq 100
+      expect(dataset.raster_band(1).x_size).to eq 100
+      expect(dataset.raster_band(1).y_size).to eq 150
       expect(dataset.raster_band(1).data_type).to eq :GDT_UInt32
       expect(dataset.raster_band(1).statistics).to eq(
         minimum: 0.0,
         maximum: 17.0,
-        mean: 6.1753846153846155,
-        standard_deviation: 5.940906365346503
+        mean: 6.211,
+        standard_deviation: 5.946194497323477
       )
     end
   end
@@ -154,13 +168,12 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
       expect(dataset.raster_band(1).no_data_value[:value]).to eq(-9999)
-      expect(dataset.raster_band(1).x_size).to eq 250
-      expect(dataset.raster_band(1).y_size).to eq 50
+      expect(dataset.raster_band(1).x_size).to eq 50
+      expect(dataset.raster_band(1).y_size).to eq 250
       expect(dataset.raster_band(1).data_type).to eq :GDT_Float32
       expect(dataset.raster_band(1).statistics).to eq(
         minimum: 0.0,
@@ -194,7 +207,6 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
@@ -234,7 +246,6 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
@@ -268,13 +279,12 @@ RSpec.describe GDAL::Gridder do
       gridder_options
     end
 
-    let(:output_file_name) { './tmp/gridder_spec-metric_minimum.tif' }
+    let(:output_file_name) { File.expand_path './tmp/gridder_spec-metric_minimum.tif' }
 
     it 'results in a raster with relevant data to the grid algorithm' do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
@@ -282,6 +292,7 @@ RSpec.describe GDAL::Gridder do
       expect(dataset.raster_band(1).x_size).to eq 50
       expect(dataset.raster_band(1).y_size).to eq 50
       expect(dataset.raster_band(1).data_type).to eq :GDT_CInt16
+
       expect(dataset.raster_band(1).statistics).to eq(
         minimum: 1.0,
         maximum: 53.0,
@@ -291,6 +302,7 @@ RSpec.describe GDAL::Gridder do
     end
   end
 
+  # TODO: This test seems particularly prone to ruby malloc errors.
   describe 'Metric Range' do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_range)
@@ -314,7 +326,6 @@ RSpec.describe GDAL::Gridder do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
-      dataset = GDAL::Dataset.open(output_file_name, 'r')
       expect(dataset.spatial_reference.authority_code.to_i).to eq 4269
 
       expect(dataset.raster_band(1)).to be_a GDAL::RasterBand
