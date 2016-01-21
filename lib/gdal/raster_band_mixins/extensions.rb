@@ -165,7 +165,7 @@ module GDAL
 
       # @return [Array]
       def to_a
-        read_lines_by_block.map { |pixels| pixels }
+        read_lines_by_block.to_a
       end
 
       # Iterates through all lines and builds an NArray of pixels.
@@ -176,18 +176,9 @@ module GDAL
 
         return narray unless to_data_type
 
-        case to_data_type
-        when :GDT_Byte                            then narray.to_type(NArray::BYTE)
-        when :GDT_Int16                           then narray.to_type(NArray::SINT)
-        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then narray.to_type(NArray::INT)
-        when :GDT_Float32                         then narray.to_type(NArray::FLOAT)
-        when :GDT_Float64                         then narray.to_type(NArray::DFLOAT)
-        when :GDT_CInt16, :GDT_CInt32             then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat32                        then narray.to_type(NArray::COMPLEX)
-        when :GDT_CFloat64                        then narray.to_type(NArray::DCOMPLEX)
-        else
-          fail "Unknown data type: #{to_data_type}"
-        end
+        narray_type = GDAL._gdal_data_type_to_narray_type_constant(to_data_type)
+
+        narray.to_type(narray_type)
       end
 
       # Each pixel of the raster projected using the dataset's geo_transform.

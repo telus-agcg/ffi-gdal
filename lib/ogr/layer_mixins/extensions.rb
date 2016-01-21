@@ -88,7 +88,6 @@ module OGR
 
         field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = Array.new(feature_count) { Array.new(2 + with_attributes.size) }
-        reset_reading
         start = Time.now
         i = 0
 
@@ -176,7 +175,6 @@ module OGR
           end
         end
 
-        reset_reading
         log "#point_values took #{Time.now - start}s"
 
         values

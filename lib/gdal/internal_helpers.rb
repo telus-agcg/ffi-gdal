@@ -115,6 +115,25 @@ module GDAL
         end
       end
 
+      # Maps GDAL DataTypes to NArray type constants.
+      #
+      # @param data_type [FFI::GDAL::GDAL::DataType]
+      # @return [Symbol]
+      def _gdal_data_type_to_narray_type_constant(data_type)
+        case data_type
+        when :GDT_Byte                            then NArray::BYTE
+        when :GDT_Int16                           then NArray::SINT
+        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then NArray::INT
+        when :GDT_Float32                         then NArray::FLOAT
+        when :GDT_Float64                         then NArray::DFLOAT
+        when :GDT_CInt16, :GDT_CInt32             then NArray::SCOMPLEX
+        when :GDT_CFloat32                        then NArray::COMPLEX
+        when :GDT_CFloat64                        then NArray::DCOMPLEX
+        else
+          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
+        end
+      end
+
       # Helper method for reading an FFI pointer based on the GDAL DataType of
       # the pointer.
       #
