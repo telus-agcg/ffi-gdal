@@ -24,6 +24,20 @@ module OGR
         reset_reading
       end
 
+      # @return [Enumerator]
+      # @yieldparam [FFI::Pointer] A pointer to each feature in the layer.
+      def each_feature_pointer
+        reset_reading
+
+        loop do
+          feature_ptr = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
+          break if feature_ptr.null?
+          yield feature_ptr
+        end
+
+        reset_reading
+      end
+
       # @return [Array<OGR::Feature>]
       def features
         each_feature.to_a
@@ -83,10 +97,7 @@ module OGR
         x_ptr = FFI::MemoryPointer.new(:double)
         y_ptr = FFI::MemoryPointer.new(:double)
 
-        loop do
-          feature_ptr = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
-          break if feature_ptr.nil? || feature_ptr.null?
-
+        each_feature_pointer do |feature_ptr|
           field_values = field_indices.map.with_index do |j, attribute_index|
             FFI::OGR::API.send("OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
           end
@@ -176,11 +187,12 @@ module OGR
       # @return [Boolean]
       def any_geometries_with_z?
         found_z_geom = false
-        feature = next_feature
 
-        until found_z_geom || feature.nil?
-          found_z_geom = feature.geometry.is_3d?
-          feature = next_feature
+        each_feature_pointer do |feature_ptr|
+          break if found_z_geom
+          geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
+          coordinate_dimension = FFI::OGR::API.OGR_G_GetCoordinateDimension(geom_ptr)
+          found_z_geom = coordinate_dimension == 3
         end
 
         found_z_geom
