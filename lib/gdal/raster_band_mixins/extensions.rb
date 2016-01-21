@@ -63,8 +63,6 @@ module GDAL
       def set_pixel_value(x, y, new_value)
         data_pointer = GDAL._pointer_from_data_type(data_type)
         GDAL._write_pointer(data_pointer, data_type, new_value)
-        data_pointer_pointer = FFI::MemoryPointer.new(:buffer_inout, 1)
-        data_pointer_pointer.write_pointer(data_pointer)
 
         raster_io('w', data_pointer, x_size: 1,
                                      y_size: 1,
