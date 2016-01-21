@@ -21,6 +21,7 @@ module GDAL
                                      y_size: 1,
                                      y_offset: row_number)
 
+          # TODO: Convert to use GDAL._read_pointer?
           line_array = case data_type
                        when :GDT_Byte then scan_line.read_array_of_uint8(x_size)
                        when :GDT_UInt16 then scan_line.read_array_of_uint16(x_size)
@@ -147,7 +148,7 @@ module GDAL
       def read_blocks_by_block
         return enum_for(:read_blocks_by_block) unless block_given?
 
-        data_pointer = FFI::MemoryPointer.new(:buffer_inout, block_buffer_size)
+        data_pointer = FFI::MemoryPointer.new(:buffer_in, block_buffer_size)
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
