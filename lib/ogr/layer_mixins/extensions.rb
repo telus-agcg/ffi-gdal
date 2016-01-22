@@ -24,6 +24,20 @@ module OGR
         reset_reading
       end
 
+      # @return [Enumerator]
+      # @yieldparam [FFI::Pointer] A pointer to each feature in the layer.
+      def each_feature_pointer
+        reset_reading
+
+        loop do
+          feature_ptr = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
+          break if feature_ptr.null?
+          yield feature_ptr
+        end
+
+        reset_reading
+      end
+
       # @return [Array<OGR::Feature>]
       def features
         each_feature.to_a
@@ -74,57 +88,95 @@ module OGR
 
         field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = Array.new(feature_count) { Array.new(2 + with_attributes.size) }
-
         start = Time.now
         i = 0
 
-        each_feature do |feature|
-          next unless yield(feature.geometry) if block_given?
+        # Initing these once and only once in the case the geom type is _not_
+        # wkbPoint.
+        x_ptr = FFI::MemoryPointer.new(:double)
+        y_ptr = FFI::MemoryPointer.new(:double)
 
+        each_feature_pointer do |feature_ptr|
           field_values = field_indices.map.with_index do |j, attribute_index|
-            feature.send("field_as_#{with_attributes.values[attribute_index]}", j)
+            FFI::OGR::API.send("OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
           end
 
-          feature.geometry.flatten_to_2d! if feature.geometry.is_3d?
+          geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
+          FFI::OGR::API.OGR_G_FlattenTo2D(geom_ptr)
 
-          case feature.geometry
-          when OGR::Point
-            values[i] = extract_point_values(feature.geometry.point_value, field_values)
+          geom_type = FFI::OGR::API.OGR_G_GetGeometryType(geom_ptr)
+          case geom_type
+          when :wkbPoint
+            values[i] = collect_point_values(geom_ptr, field_values)
             i += 1
-          when OGR::LineString, OGR::LinearRing
-            feature.geometry.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
-              values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+          when :wkbLineString, :wkbLinearRing
+            extract_ring_points(geom_ptr, x_ptr, y_ptr) do |points|
+              values[i] = points.push(*field_values)
               i += 1
             end
-          when OGR::Polygon
-            feature.geometry.each do |ring|
-              ring.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
-                values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+          when :wkbPolygon
+            exterior_ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, 0)
+
+            extract_ring_points(exterior_ring_ptr, x_ptr, y_ptr) do |points|
+              values[i] = points.push(*field_values)
+              i += 1
+            end
+
+            count = FFI::OGR::API.OGR_G_GetGeometryCount(geom_ptr)
+            next if count > 1
+
+            count.times do |ring_num|
+              next if ring_num.zero?
+              ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, ring_num)
+
+              extract_ring_points(ring_ptr, x_ptr, y_ptr) do |points|
+                values[i] = points.push(*field_values)
                 i += 1
               end
             end
-          when OGR::MultiPoint, OGR::MultiLineString, OGR::MultiLineString
-            feature.geometry.each do |ls|
-              ls.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
-                values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+          when :wkbMultiPoint, :wkbMultiLineString
+            count = FFI::OGR::API.OGR_G_GetGeometryCount(geom_ptr)
+
+            count.times do |geom_num|
+              ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, geom_num)
+
+              extract_ring_points(ring_ptr, x_ptr, y_ptr) do |points|
+                values[i] = points.push(*field_values)
                 i += 1
               end
             end
-          when OGR::MultiPolygon
-            feature.geometry.each do |polygon|
-              polygon.each do |ring|
-                ring.point_values.each.with_index(i) do |point_values, geom_num_plus_i|
-                  values[geom_num_plus_i] = extract_point_values(point_values, field_values)
+          when :wkbMultiPolygon
+            polygon_count = FFI::OGR::API.OGR_G_GetGeometryCount(geom_ptr)
+
+            polygon_count.times do |polygon_num|
+              polygon_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, polygon_num)
+              exterior_ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(polygon_ptr, 0)
+
+              extract_ring_points(exterior_ring_ptr, x_ptr, y_ptr) do |points|
+                values[i] = points.push(*field_values)
+                i += 1
+              end
+
+              count = FFI::OGR::API.OGR_G_GetGeometryCount(polygon_ptr)
+              next if count > 1
+
+              count.times do |ring_num|
+                next if ring_num.zero?
+                ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(polygon_ptr, ring_num)
+
+                extract_ring_points(ring_ptr, x_ptr, y_ptr) do |points|
+                  values[i] = points.push(*field_values)
                   i += 1
                 end
               end
             end
           else fail OGR::UnsupportedGeometryType,
-            "Not sure how to extract point_values for a #{feature.geometry.class}"
+            "Not sure how to extract point_values for a #{geom_type}"
           end
         end
 
         log "#point_values took #{Time.now - start}s"
+
         values
       end
 
@@ -133,11 +185,12 @@ module OGR
       # @return [Boolean]
       def any_geometries_with_z?
         found_z_geom = false
-        feature = next_feature
 
-        until found_z_geom || feature.nil?
-          found_z_geom = feature.geometry.is_3d?
-          feature = next_feature
+        each_feature_pointer do |feature_ptr|
+          break if found_z_geom
+          geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
+          coordinate_dimension = FFI::OGR::API.OGR_G_GetCoordinateDimension(geom_ptr)
+          found_z_geom = coordinate_dimension == 3
         end
 
         found_z_geom
@@ -169,14 +222,27 @@ module OGR
 
       private
 
-      # While it's a really simple method, I wanted to ensure that all Array
-      # building for related things was done in the most efficient way.
-      #
-      # @param point_value [Array<Float>] The (x, y) values of a point.
-      # @param field_values [Array<Number>] The valus from an associated Field
-      #   to merge to the +point_value+ array.
-      def extract_point_values(point_value, field_values)
-        point_value.push(*field_values)
+      # @param geometry_ptr [FFI::Pointer]
+      # @param field_values [Array]
+      # @return [Array]
+      def collect_point_values(geometry_ptr, field_values)
+        [FFI::OGR::API.OGR_G_GetX(geometry_ptr, 0), FFI::OGR::API.OGR_G_GetY(geometry_ptr, 0), *field_values]
+      end
+
+      # @param ring_ptr [FFI::Pointer] Pointer to the LineString/LinearRing to
+      #   extract points from.
+      # @param x_ptr [FFI::Pointer] Pointer to use for writing the x value to.
+      # @param y_ptr [FFI::Pointer] Pointer to use for writing the y value to.
+      # @yieldparam [Array<Float>] (x, y)
+      def extract_ring_points(ring_ptr, x_ptr, y_ptr)
+        FFI::OGR::API.OGR_G_GetPointCount(ring_ptr).times do |point_num|
+          FFI::OGR::API.OGR_G_GetPoint(ring_ptr, point_num, x_ptr, y_ptr, nil)
+
+          yield [x_ptr.read_double, y_ptr.read_double]
+
+          x_ptr.clear
+          y_ptr.clear
+        end
       end
     end
   end

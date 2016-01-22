@@ -84,9 +84,11 @@ module GDAL
     # values, so if you don't want to overwrite the Dataset you're working with,
     # you should copy it first.
     def classify!
+      nodata_value = @raster_band.no_data_value[:value]
+
       @raster_band.read_lines_by_block.with_index do |pixels, row_number|
         pixels.each_with_index do |pixel, pixel_number|
-          next if pixel == @raster_band.no_data_value[:value]
+          next if pixel == nodata_value
 
           range = @ranges.find { |r| r[:range].member?(pixel) }
 

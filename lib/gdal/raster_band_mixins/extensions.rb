@@ -21,6 +21,7 @@ module GDAL
                                      y_size: 1,
                                      y_offset: row_number)
 
+          # TODO: Convert to use GDAL._read_pointer?
           line_array = case data_type
                        when :GDT_Byte then scan_line.read_array_of_uint8(x_size)
                        when :GDT_UInt16 then scan_line.read_array_of_uint16(x_size)
@@ -63,8 +64,6 @@ module GDAL
       def set_pixel_value(x, y, new_value)
         data_pointer = GDAL._pointer_from_data_type(data_type)
         GDAL._write_pointer(data_pointer, data_type, new_value)
-        data_pointer_pointer = FFI::MemoryPointer.new(:buffer_inout, 1)
-        data_pointer_pointer.write_pointer(data_pointer)
 
         raster_io('w', data_pointer, x_size: 1,
                                      y_size: 1,
@@ -149,7 +148,7 @@ module GDAL
       def read_blocks_by_block
         return enum_for(:read_blocks_by_block) unless block_given?
 
-        data_pointer = FFI::MemoryPointer.new(:buffer_inout, block_buffer_size)
+        data_pointer = FFI::MemoryPointer.new(:buffer_in, block_buffer_size)
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
@@ -166,7 +165,7 @@ module GDAL
 
       # @return [Array]
       def to_a
-        read_lines_by_block.map { |pixels| pixels }
+        read_lines_by_block.to_a
       end
 
       # Iterates through all lines and builds an NArray of pixels.
@@ -177,18 +176,9 @@ module GDAL
 
         return narray unless to_data_type
 
-        case to_data_type
-        when :GDT_Byte                            then narray.to_type(NArray::BYTE)
-        when :GDT_Int16                           then narray.to_type(NArray::SINT)
-        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then narray.to_type(NArray::INT)
-        when :GDT_Float32                         then narray.to_type(NArray::FLOAT)
-        when :GDT_Float64                         then narray.to_type(NArray::DFLOAT)
-        when :GDT_CInt16, :GDT_CInt32             then narray.to_type(NArray::SCOMPLEX)
-        when :GDT_CFloat32                        then narray.to_type(NArray::COMPLEX)
-        when :GDT_CFloat64                        then narray.to_type(NArray::DCOMPLEX)
-        else
-          fail "Unknown data type: #{to_data_type}"
-        end
+        narray_type = GDAL._gdal_data_type_to_narray_type_constant(to_data_type)
+
+        narray.to_type(narray_type)
       end
 
       # Each pixel of the raster projected using the dataset's geo_transform.
