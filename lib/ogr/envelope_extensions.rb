@@ -85,6 +85,22 @@ module OGR
         y_max >= other_envelope.y_max
     end
 
+    # @return [OGR::Polygon]
+    def to_polygon
+      ring = OGR::LinearRing.new
+      ring.point_count = 5
+      ring.set_point(0, x_min, y_max)
+      ring.set_point(1, x_max, y_max)
+      ring.set_point(2, x_max, y_min)
+      ring.set_point(3, x_min, y_min)
+      ring.set_point(4, x_min, y_max)
+
+      polygon = OGR::Polygon.new
+      polygon.add_geometry(ring)
+
+      polygon
+    end
+
     # @return [Hash]
     def as_json(_options = nil)
       json = {

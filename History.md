@@ -13,6 +13,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   `GDAL::GridderOptions`, which is an object used to mimic the options you pass
   to `gdal_grid`, and `GDAL::Grid`, which is the simple object that performs the
   gridding.
+* Added first wrapper of `gdalwarper.h` methods, found in
+  `GDAL::DatasetMixins::WarpMethods`.
 
 #### OGR
 

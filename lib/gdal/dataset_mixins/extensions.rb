@@ -307,6 +307,7 @@ module GDAL
       # Gets the OGR::Geometry that represents the extent of the dataset.
       #
       # @return [OGR::Polygon]
+      # TODO: This should return an OGR::Envelope.
       def extent
         ul = geo_transform.apply_geo_transform(0, 0)
         ur = geo_transform.apply_geo_transform(raster_x_size, 0)
