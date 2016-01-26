@@ -19,7 +19,11 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      new(path, access_flag)
+      ds = new(path, access_flag)
+      result = yield ds if block_given?
+      ds.close
+
+      result
     end
 
     # @return [FFI::Pointer]

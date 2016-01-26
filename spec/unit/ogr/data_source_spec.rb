@@ -11,6 +11,18 @@ RSpec.describe OGR::DataSource do
         end.to raise_exception OGR::OpenFailure
       end
     end
+
+    context 'block given' do
+      let(:data_source) { instance_double 'OGR::DataSource' }
+
+      it 'yields then closes the opened DataSource' do
+        allow(described_class).to receive(:new).and_return data_source
+
+        expect(data_source).to receive(:close)
+        expect { |b| described_class.open('blarg', 'r', &b) }
+          .to yield_with_args(data_source)
+      end
+    end
   end
 
   let(:driver) { OGR::Driver.by_name 'Memory' }
