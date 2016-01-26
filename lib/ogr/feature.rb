@@ -297,7 +297,7 @@ module OGR
     def equal?(other)
       FFI::OGR::API.OGR_F_Equal(@c_pointer, c_pointer_from(other))
     end
-    alias_method :equals?, :equal?
+    alias equals? equal?
 
     # @param index [Fixnum]
     # @return [Fixnum]

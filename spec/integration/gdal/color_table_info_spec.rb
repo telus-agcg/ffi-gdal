@@ -4,7 +4,7 @@ require 'ffi-gdal'
 require 'gdal/dataset'
 
 TIF_FILES.each do |file|
-  dataset =  GDAL::Dataset.open(file, 'r')
+  dataset = GDAL::Dataset.open(file, 'r')
 
   RSpec.describe 'Color Table Info' do
     after :all do

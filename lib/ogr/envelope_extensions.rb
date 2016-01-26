@@ -111,7 +111,8 @@ module OGR
       }
 
       if @c_struct.is_a? FFI::GDAL::OGREnvelope3D
-        json.merge!(z_min: z_min, z_max: z_max)
+        json[:z_min] = z_min
+        json[:z_max] = z_max
       end
 
       json

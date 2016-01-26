@@ -164,7 +164,7 @@ module GDAL
 
       { x_geo: geo_x_ptr.read_double, y_geo: geo_y_ptr.read_double }
     end
-    alias_method :pixel_to_world, :apply_geo_transform
+    alias pixel_to_world apply_geo_transform
 
     # Composes this and the given geo_transform.  The resulting GeoTransform is
     # equivalent to applying both GeoTransforms to a point.

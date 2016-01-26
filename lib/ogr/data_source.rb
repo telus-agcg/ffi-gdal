@@ -19,7 +19,11 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      new(path, access_flag)
+      ds = new(path, access_flag)
+      result = yield ds if block_given?
+      ds.close
+
+      result
     end
 
     # @return [FFI::Pointer]
@@ -51,7 +55,7 @@ module OGR
       FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
       @c_pointer = nil
     end
-    alias_method :close, :destroy!
+    alias close destroy!
 
     # Name of the file represented by this object.
     #

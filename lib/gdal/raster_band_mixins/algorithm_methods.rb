@@ -165,9 +165,8 @@ module GDAL
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash]
       # TODO: document what valid options are.
-      def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil,
-                                                                             progress_arg: nil,
-                                                                             **options)
+      def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil, progress_arg: nil,
+        **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
@@ -220,8 +219,8 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @return [OGR::Layer]
-      def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false,
-                            progress_function: nil, progress_arg: nil, **options)
+      def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
+        progress_arg: nil, **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
         fail OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
@@ -265,10 +264,8 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash] None supported in GDAL as of this writing.
-      def sieve_filter!(size_threshold, connectedness, mask_band: nil,
-                                                       progress_function: nil,
-                                                       progress_arg: nil,
-                                                       **options)
+      def sieve_filter!(size_threshold, connectedness, mask_band: nil, progress_function: nil, progress_arg: nil,
+        **options)
         _sieve_filter(size_threshold, connectedness, self, mask_band: mask_band,
                                                            progress_function: progress_function,
                                                            progress_arg: progress_arg,
@@ -280,10 +277,8 @@ module GDAL
       #
       # @see +sieve_filter!
       # @param destination_band [GDAL::RasterBand]
-      def sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil,
-                                                                        progress_function: nil,
-                                                                        progress_arg: nil,
-                                                                        **options)
+      def sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
+        progress_arg: nil, **options)
         _sieve_filter(size_threshold, connectedness, destination_band, mask_band: mask_band,
                                                                        progress_function: progress_function,
                                                                        progress_arg: progress_arg,
@@ -310,10 +305,8 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash] None supported in GDAL as of this writing.
-      def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil,
-                                                                         progress_function: nil,
-                                                                         progress_arg: nil,
-                                                                         **options)
+      def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
+        progress_arg: nil, **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
 

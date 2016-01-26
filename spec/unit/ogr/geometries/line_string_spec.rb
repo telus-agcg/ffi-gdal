@@ -49,7 +49,7 @@ RSpec.describe OGR::LineString do
 
   describe '#point_count' do
     subject { open_line_string.point_count }
-    it { is_expected.to eq 3  }
+    it { is_expected.to eq 3 }
   end
 
   describe '#intersects?' do

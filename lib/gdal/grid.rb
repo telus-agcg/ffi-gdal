@@ -22,7 +22,7 @@ module GDAL
       @data_type = data_type
     end
 
-    # @param points [NArray] An NArray containing all x, y, and z points.
+    # @param points [Array,NArray] An Array containing all x, y, and z points.
     # @param extents [Hash{x_min: Fixnum, y_min: Fixnum, x_max: Fixnum, y_max: Fixnum}]
     # @param data_pointer [FFI::Pointer] Pointer that will contain the gridded
     #   data (after this method is done).
@@ -33,11 +33,14 @@ module GDAL
     # @return [FFI::MemoryPointer] Pointer to the grid data.
     def create(points, extents, data_pointer, output_size = { x: 256, y: 256 },
       progress_block = nil, progress_arg = nil)
-      log "Number of points: #{points.shape[1]}"
+      points = points.to_a if NArray === points
+      point_count = points.length
+      log "Number of points: #{point_count}"
+      points = points.transpose
 
-      x_input_coordinates_ptr = make_points_pointer(x_points(points))
-      y_input_coordinates_ptr = make_points_pointer(y_points(points))
-      z_input_coordinates_ptr = make_points_pointer(z_points(points))
+      x_input_coordinates_ptr = make_points_pointer(points[0])
+      y_input_coordinates_ptr = make_points_pointer(points[1])
+      z_input_coordinates_ptr = make_points_pointer(points[2])
 
       log "x_min, y_min: #{extents[:x_min]}, #{extents[:y_min]}"
       log "x_max, y_max: #{extents[:x_max]}, #{extents[:y_max]}"
@@ -46,7 +49,7 @@ module GDAL
       FFI::GDAL::Alg.GDALGridCreate(
         @algorithm.c_identifier,                        # eAlgorithm
         @algorithm.options.to_ptr,                      # poOptions
-        points.shape[1],                                # nPoints
+        point_count,                                    # nPoints
         x_input_coordinates_ptr,                        # padfX
         y_input_coordinates_ptr,                        # padfY
         z_input_coordinates_ptr,                        # padfZ
@@ -61,24 +64,6 @@ module GDAL
         progress_block,                                 # pfnProgress
         progress_arg                                    # pProgressArg
       )
-    end
-
-    # @param points [NArray]
-    # @return [Array]
-    def x_points(points)
-      points[0, true].to_a
-    end
-
-    # @param points [NArray]
-    # @return [Array]
-    def y_points(points)
-      points[1, true].to_a
-    end
-
-    # @param points [NArray]
-    # @return [Array]
-    def z_points(points)
-      points[2, true].to_a
     end
 
     private

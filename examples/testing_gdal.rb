@@ -24,8 +24,6 @@ usg = GDAL::Dataset.open(usg_path, 'r')
 world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
 world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
-binding.pry
-
 # floyd.image_warp('meow.tif', 'GTiff', 1, cutline: floyd_geometry )
 # extract_ndvi(floyd, 'ndvi.tif', floyd_wkt)
 
@@ -35,7 +33,6 @@ def warp_to_geometry(dataset, wkt_geometry)
   geometry = OGR::Geometry.create_from_wkt(wkt_geometry, wkt_spatial_ref)
   geometry.transform_to!(dataset.spatial_reference)
 
-  binding.pry
   # Create a .shp from the geometry
   shape = geometry.to_vector('geom.shp', 'ESRI Shapefile',
     spatial_reference: dataset.spatial_reference)

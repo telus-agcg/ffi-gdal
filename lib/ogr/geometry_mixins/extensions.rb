@@ -70,9 +70,9 @@ module OGR
           wkb_size: wkb_size
         }
 
-        json.merge!(area: area) if respond_to? :area
-        json.merge!(length: length) if respond_to? :length
-        json.merge!(points: points) if respond_to? :points
+        json[:area] = area if respond_to? :area
+        json[:length] = length if respond_to? :length
+        json[:points] = points if respond_to? :points
 
         json
       end

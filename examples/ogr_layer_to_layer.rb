@@ -31,5 +31,3 @@ ring.add_point(extent.x_min, extent.y_max)
 ring.add_point(extent.x_min, extent.y_min)
 poly = OGR::Geometry.create(:wkbPolygon)
 poly.add_geometry(ring)
-
-binding.pry

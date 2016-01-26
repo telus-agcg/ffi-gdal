@@ -21,8 +21,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       #------------------------------------------------------------------------
       # Functions
@@ -38,8 +38,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridInverseDistanceToAPointerNoSearch,
         [
@@ -52,8 +52,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridMovingAverage,
         [
@@ -66,8 +66,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridNearestNeighbor,
         [
@@ -80,8 +80,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricMinimum,
         [
@@ -94,8 +94,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricMaximum,
         [
@@ -108,8 +108,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricRange,
         [
@@ -122,8 +122,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricCount,
         [
@@ -136,8 +136,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricAverageDistance,
         [
@@ -150,8 +150,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :GDALGridDataMetricAverageDistancePts,
         [
@@ -164,8 +164,8 @@ module FFI
           :double,
           :pointer,
           :pointer
-      ],
-      CPL::Error::CPLErr
+        ],
+        CPL::Error::CPLErr
 
       attach_function :ParseAlgorithmAndOptions,
         [:string, Alg::GridAlgorithm, :pointer],

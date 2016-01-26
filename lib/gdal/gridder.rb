@@ -1,12 +1,14 @@
 require 'narray'
 require_relative '../gdal'
 require_relative 'gridder_options'
+require_relative 'gridder/point_extracting'
 require_relative 'options'
 require_relative '../ogr'
 
 module GDAL
   # Somewhat analogous to the gdal_grid utility.
   class Gridder
+    include PointExtracting
     include GDAL::Logger
 
     DESIRED_BUFFER_SIZE = 16 * 1024 * 1024
@@ -17,41 +19,24 @@ module GDAL
     # @return [GDAL::Grid]
     attr_reader :grid
 
-    # @param source_layer [OGR::Layer] The layer from which to use points for
-    #   interpolating.
+    # @param source_layer [OGR::Layer] The layer from which to use points and
+    #   spatial reference for interpolating. Alternatively, use +points+ to give
+    #   specific point values for gridding.
     # @param dest_file_name [String] The path to output the gridded raster to.
     # @param gridder_options [GDAL::GridderOptions]
-    def initialize(source_layer, dest_file_name, gridder_options)
+    # @param points [Array<Array<Float>>] A 2D array of (x, y, z) points to use
+    #   for gridding. Used for when you don't want to use all points from
+    #   +source_layer+.
+    def initialize(source_layer, dest_file_name, gridder_options, points: nil)
       @source_layer = source_layer
       @dest_file_name = dest_file_name
       @options = gridder_options
 
-      @points = nil
+      @points = points
       @x_min = nil
       @x_max = nil
       @y_min = nil
       @y_max = nil
-    end
-
-    # Gathers all points from the associated layer. If GridderOptions#input_clipping_geometry
-    # is set, it filters out any points that fall within that geometry. This is
-    # really just indented for internal use, but is being left public just in
-    # case it serves some benefit for debugging.
-    #
-    # @return [NArray]
-    def points
-      return @points if @points
-
-      ensure_z_values
-
-      ruby_points =
-        if @options.input_field_name
-          points_with_field_attributes(@source_layer, @options.input_field_name, @options.input_clipping_geometry)
-        else
-          points_no_field_attributes(@source_layer, @options.input_clipping_geometry)
-        end
-
-      @points = NArray.to_na(ruby_points)
     end
 
     # Does all of the things: gathers points from the associated Layer,
@@ -77,63 +62,6 @@ module GDAL
     #--------------------------------------------------------------------------
 
     private
-
-    # Checks to make sure that a) if an input_field_name option was give, that
-    # the layer actually has that field, or b) that the layer has Z values set.
-    # Without one of these two things, there's no values to pass along to
-    # interpolate.
-    #
-    # @raise [OGR::InvalidFieldName] if the layer doesn't have fields with the
-    #   name given in GridderOptions#input_field_name.
-    # @raise [GDAL::NoValuesToGrid] if GridderOptions#input_field_name is not
-    #   set and the layer has no Z values.
-    def ensure_z_values
-      if layer_missing_specified_field?
-        fail OGR::InvalidFieldName,
-          "Field name not found in layer: '#{@options.input_field_name}'"
-      elsif !@options.input_field_name && !@source_layer.any_geometries_with_z?
-        fail GDAL::NoValuesToGrid,
-          "No input_field_name option given and source layer #{@source_layer.name} has no Z values."
-      end
-    end
-
-    # @param layer [OGR::Layer] The layer from which to extract point values.
-    # @param clipping_geometry [OGR::Geometry] Optional geometry to use for
-    #   filtering out points in the layer.
-    # @return [Array<Array<Number>>]
-    def points_no_field_attributes(layer, clipping_geometry = nil)
-      if clipping_geometry
-        layer.point_values do |feature_geom|
-          feature_geom.within?(clipping_geometry)
-        end
-      else
-        layer.point_values
-      end
-    end
-
-    # @param layer [OGR::Layer] The layer from which to extract point values.
-    # @param input_field_name [String] Name of the OGR::FieldDefinition for
-    #   which to extract values from.
-    # @param clipping_geometry [OGR::Geometry] Optional geometry to use for
-    #   filtering out points in the layer.
-    # @return [Array<Array<Number>>]
-    def points_with_field_attributes(layer, input_field_name, clipping_geometry = nil)
-      if clipping_geometry
-        layer.point_values(input_field_name => :double) do |feature_geom|
-          feature_geom.within?(clipping_geometry)
-        end
-      else
-        layer.point_values(input_field_name => :double)
-      end
-    end
-
-    # Checks if the user specified to use a field name for Z values, then if so,
-    # makes sure the layer has a field by that name.
-    #
-    # @return [Boolean]
-    def layer_missing_specified_field?
-      !@options.input_field_name.nil? && !@source_layer.find_field_index(@options.input_field_name)
-    end
 
     # Builds the Dataset to use for writing gridded raster data to.
     #

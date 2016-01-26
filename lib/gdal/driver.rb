@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
@@ -11,7 +12,7 @@ module GDAL
     include GDAL::Logger
     include DriverMixins::Extensions
 
-    GDAL_DOCS_URL = 'http://gdal.org'
+    GDAL_DOCS_URL = 'http://gdal.org'.freeze
 
     # @return [Fixnum]
     def self.count
@@ -125,8 +126,9 @@ module GDAL
     # @param y_size [Fixnum] Height of created raster in pixels.
     # @param band_count [Fixnum]
     # @param data_type [FFI::GDAL::GDAL::DataType]
-    # @return [GDAL::Dataset] Returns the *open* dataset.  You'll need to
-    #   close it.
+    # @return [GDAL::Dataset] If no block is given, returns the *open*
+    #   (writable) dataset; you'll need to close it. If a block is given,
+    #   returns the result of the block.
     def create_dataset(filename, x_size, y_size, band_count: 1, data_type: :GDT_Byte, **options)
       options_pointer = GDAL::Options.pointer(options)
 
@@ -143,9 +145,15 @@ module GDAL
       fail CreateFail if dataset_pointer.null?
 
       dataset = GDAL::Dataset.new(dataset_pointer, 'w')
-      yield(dataset) if block_given?
 
-      dataset
+      if block_given?
+        result = yield(dataset)
+        dataset.close
+
+        result
+      else
+        dataset
+      end
     end
 
     # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.

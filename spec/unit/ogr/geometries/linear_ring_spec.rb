@@ -34,7 +34,7 @@ RSpec.describe OGR::LinearRing do
 
   describe '#point_count' do
     subject { linear_ring.point_count }
-    it { is_expected.to eq 5  }
+    it { is_expected.to eq 5 }
   end
 
   describe '#intersects?' do

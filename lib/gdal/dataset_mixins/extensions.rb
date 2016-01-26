@@ -164,7 +164,7 @@ module GDAL
         final_array = case output_data_type
                       when :GDT_Byte then calculate_ndvi_byte(ndvi)
                       when :GDT_UInt16 then calculate_ndvi_uint16(ndvi)
-                      else ndvi        # Already in Float32
+                      else ndvi # Already in Float32
                       end
 
         remove_negatives ? remove_negatives_from(final_array, no_data_value) : final_array
@@ -271,7 +271,11 @@ module GDAL
           spatial_ref = nil
         else
           spatial_ref = OGR::SpatialReference.new(projection)
-          spatial_ref.auto_identify_epsg! rescue OGR::UnsupportedSRS
+          begin
+            spatial_ref.auto_identify_epsg!
+          rescue
+            OGR::UnsupportedSRS
+          end
         end
 
         data_source = ogr_driver.create_data_source(file_name)
@@ -292,7 +296,7 @@ module GDAL
 
           pixel_value_field = layer.feature_definition.field_index(field_name)
           options = { pixel_value_field: pixel_value_field }
-          options.merge!(mask_band: band.mask_band) if use_band_masks
+          options[:mask_band] = band.mask_band if use_band_masks
           band.polygonize(layer, options)
         end
 
