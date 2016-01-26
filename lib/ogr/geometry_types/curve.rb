@@ -92,7 +92,7 @@ module OGR
       end
 
       # @return [Array<Array<Float>>] An array of (x, y) or (x, y, z) points.
-      def point_values
+      def points
         x_stride = FFI::Type::DOUBLE.size
         y_stride = FFI::Type::DOUBLE.size
         z_stride = coordinate_dimension == 3 ? FFI::Type::DOUBLE.size : 0
@@ -126,6 +126,8 @@ module OGR
           [x_array, y_array].transpose
         end
       end
+      alias_method :get_points, :points
+      alias_method :point_values, :points
 
       # @param geo_transform [GDAL::GeoTransform]
       # @return [Array<Array>]

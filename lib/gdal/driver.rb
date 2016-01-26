@@ -142,7 +142,7 @@ module GDAL
 
       fail CreateFail if dataset_pointer.null?
 
-      dataset = GDAL::Dataset.new(dataset_pointer, nil)
+      dataset = GDAL::Dataset.new(dataset_pointer, 'w')
       yield(dataset) if block_given?
 
       dataset

@@ -24,7 +24,7 @@ module OGR
     end
 
     # @return [<Array<Float, Float>] [x, y].
-    def point_value
+    def point
       return [] if empty?
 
       x_ptr = FFI::MemoryPointer.new(:double)
@@ -34,13 +34,15 @@ module OGR
 
       [x_ptr.read_double, y_ptr.read_double]
     end
+    alias_method :point_value, :point
 
     # Wrapper around {#point_value} to provide API parity with other geometries
     # that can have multiple points.
     #
     # @return [Array<Array<Float, Float>>]
+    # TODO: move to an extension
     def point_values
-      [point_value]
+      [point]
     end
 
     # @param index [Fixnum]

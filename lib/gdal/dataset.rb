@@ -5,6 +5,7 @@ require_relative 'major_object'
 require_relative 'dataset_mixins/extensions'
 require_relative 'dataset_mixins/matching'
 require_relative 'dataset_mixins/algorithm_methods'
+require_relative 'dataset_mixins/warp_methods'
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also
@@ -15,6 +16,7 @@ module GDAL
     include DatasetMixins::Extensions
     include DatasetMixins::Matching
     include DatasetMixins::AlgorithmMethods
+    include DatasetMixins::WarpMethods
     include GDAL::Logger
 
     ACCESS_FLAGS = {
