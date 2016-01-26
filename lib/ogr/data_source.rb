@@ -20,10 +20,14 @@ module OGR
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
       ds = new(path, access_flag)
-      result = yield ds if block_given?
-      ds.close
 
-      result
+      if block_given?
+        result = yield ds
+        ds.close
+        result
+      else
+        ds
+      end
     end
 
     # @return [FFI::Pointer]
