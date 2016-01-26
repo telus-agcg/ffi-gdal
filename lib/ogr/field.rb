@@ -20,7 +20,7 @@ module OGR
     def integer
       @c_struct[:integer]
     end
-    alias_method :to_i, :integer
+    alias to_i integer
 
     # @param new_int [Fixnum]
     def integer=(new_int)
@@ -41,7 +41,7 @@ module OGR
     def real
       @c_struct[:real]
     end
-    alias_method :to_f, :real
+    alias to_f real
 
     # @param new_real [Float]
     def real=(new_real)
@@ -86,7 +86,7 @@ module OGR
 
       il[:list].read_array_of_int64(il[:count])
     end
-    alias_method :to_bignum, :integer64_list
+    alias to_bignum integer64_list
 
     # @param new_integer64_list [Array<Bignum>]
     def integer64_list=(new_integer64_list)
@@ -99,7 +99,7 @@ module OGR
 
       @c_struct[:integer64_list] = il
     end
-    alias_method :bignum_list=, :integer64_list=
+    alias bignum_list= integer64_list=
 
     # @return [Array<Float>]
     def real_list
@@ -108,7 +108,7 @@ module OGR
 
       rl[:list].read_array_of_double(rl[:count])
     end
-    alias_method :float_list, :real_list
+    alias float_list real_list
 
     # @param new_real_list [Array<Float>]
     def real_list=(new_real_list)
@@ -121,7 +121,7 @@ module OGR
 
       @c_struct[:real_list] = rl
     end
-    alias_method :float_list=, :real_list=
+    alias float_list= real_list=
 
     # @return [Array<String>]
     def string_list

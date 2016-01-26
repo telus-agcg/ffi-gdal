@@ -11,7 +11,7 @@ module OGR
         # This object should not be modified.
         OGR::FeatureDefinition.new(feature_defn_pointer)
       end
-      alias_method :feature_definition, :definition
+      alias feature_definition definition
 
       # Adds the new OGR::Feature to the Layer. The feature should have been
       # created using the Layer's FeatureDefintion.
@@ -108,7 +108,7 @@ module OGR
 
         ogr_err.handle_result "Unable to set next feature index to #{feature_index}"
       end
-      alias_method :set_next_by_index, :next_feature_index=
+      alias set_next_by_index next_feature_index=
 
       # @return [Fixnum]
       def features_read

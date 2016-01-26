@@ -22,7 +22,7 @@ module GDAL
     ACCESS_FLAGS = {
       'r' => :GA_ReadOnly,
       'w' => :GA_Update
-    }
+    }.freeze
 
     # @param path [String] Path to the file that contains the dataset.  Can be
     #   a local file or a URL.
@@ -282,17 +282,9 @@ module GDAL
     # @param band_count [Fixnum] The number of bands to create in the raster.
     # @param pixel_space
     def raster_io(access_flag, data_ptr,
-                  x_size: nil,
-                  y_size: nil,
-                  x_offset: 0,
-                  y_offset: 0,
-                  data_type: :GDT_Byte,
-                  band_count: 1,
-                  pixel_space: 0,
-                  line_space: 0,
-                  band_space: 0
-                 )
-
+      x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
+      data_type: :GDT_Byte, band_count: 1,
+      pixel_space: 0, line_space: 0, band_space: 0)
       x_size ||= raster_x_size
       y_size ||= raster_y_size
 

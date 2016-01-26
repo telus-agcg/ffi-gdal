@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
@@ -11,7 +12,7 @@ module GDAL
     include GDAL::Logger
     include DriverMixins::Extensions
 
-    GDAL_DOCS_URL = 'http://gdal.org'
+    GDAL_DOCS_URL = 'http://gdal.org'.freeze
 
     # @return [Fixnum]
     def self.count

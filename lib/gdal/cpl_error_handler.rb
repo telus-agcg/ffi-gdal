@@ -19,7 +19,7 @@ module GDAL
       { cple: :CPLE_NoWriteAccess,  exception: GDAL::NoWriteAccess },
       { cple: :CPLE_UserInterrupt,  exception: ::Interrupt },
       { cple: :CPLE_ObjectNull,     exception: GDAL::NullObject }
-    ]
+    ].freeze
 
     FAIL_PROC = lambda do |exception, message|
       ex = exception ? exception.new(message) : GDAL::Error.new(message)

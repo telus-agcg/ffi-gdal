@@ -3,7 +3,7 @@ require 'support/integration_help'
 require 'ffi-gdal'
 
 TIF_FILES.each do |file|
-  dataset =  GDAL::Dataset.open(file, 'r')
+  dataset = GDAL::Dataset.open(file, 'r')
 
   RSpec.describe 'Raster Band Info' do
     after :all do

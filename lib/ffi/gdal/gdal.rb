@@ -54,7 +54,7 @@ module FFI
         :GCI_YCbCr_YBand,    14,
         :GCI_YCbCr_CbBand,   15,
         :GCI_YCbCr_CrBand,   16,
-        :GCI_Max, 16      # Seems wrong that this is also 16...
+        :GCI_Max, 16 # Seems wrong that this is also 16...
 
       PaletteInterp = enum :GPI_Gray, 0,
         :GPI_RGB,   1,
@@ -103,7 +103,7 @@ module FFI
       # When using, make sure to return +true+ if the operation should continue;
       #   +false+ if the user has cancelled.
       callback :GDALProgressFunc,
-        %i[double string pointer],     # completion, message, progress_arg
+        %i[double string pointer], # completion, message, progress_arg
         :bool
 
       callback :GDALDerivedPixelFunc,
@@ -208,7 +208,7 @@ module FFI
           :int,
           :int,
           :int
-      ], :GDALAsyncReaderH
+        ], :GDALAsyncReaderH
 
       attach_function :GDALEndAsyncReader,
         %i[GDALDatasetH GDALAsyncReaderH],
@@ -231,7 +231,7 @@ module FFI
           :int,
           :int,
           :int
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       attach_function :GDALDatasetAdviseRead,
         [
@@ -246,7 +246,7 @@ module FFI
           :int,
           :pointer,
           :pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       attach_function :GDALInitGCPs, %i[int pointer], :void
       attach_function :GDALDeinitGCPs, %i[int pointer], :void
@@ -278,7 +278,7 @@ module FFI
           pointer
           GDALProgressFunc
           pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       # OGR datasets.  Not found in v1.11.1
       # attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
@@ -347,24 +347,24 @@ module FFI
       # Raster functions
       # ----------------
       attach_function :GDALRasterBandCopyWholeRaster,
-      %i[
-      GDALRasterBandH
-      GDALRasterBandH
-      pointer
-      GDALProgressFunc
-      pointer
-      ], FFI::CPL::Error::CPLErr
-        attach_function :GDALRegenerateOverviews,
         %i[
-        GDALRasterBandH
-        int
-        pointer
-        string
-        GDALProgressFunc
-        pointer
-      ], FFI::CPL::Error::CPLErr
-        attach_function :GDALGetMaskBand, [:GDALRasterBandH], :GDALRasterBandH
-        attach_function :GDALGetMaskFlags, [:GDALRasterBandH], :int
+          GDALRasterBandH
+          GDALRasterBandH
+          pointer
+          GDALProgressFunc
+          pointer
+        ], FFI::CPL::Error::CPLErr
+      attach_function :GDALRegenerateOverviews,
+        %i[
+          GDALRasterBandH
+          int
+          pointer
+          string
+          GDALProgressFunc
+          pointer
+        ], FFI::CPL::Error::CPLErr
+      attach_function :GDALGetMaskBand, [:GDALRasterBandH], :GDALRasterBandH
+      attach_function :GDALGetMaskFlags, [:GDALRasterBandH], :int
       attach_function :GDALCreateMaskBand,
         %i[GDALRasterBandH int],
         FFI::CPL::Error::CPLErr
@@ -385,7 +385,7 @@ module FFI
           :int,
           DataType,
           :pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       attach_function :GDALRasterIO,
         [
@@ -401,7 +401,7 @@ module FFI
           DataType,
           :int,
           :int
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
       attach_function :GDALReadBlock,
         %i[GDALRasterBandH int int pointer],
         FFI::CPL::Error::CPLErr
@@ -460,7 +460,7 @@ module FFI
           pointer
           GDALProgressFunc
           pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
       attach_function :GDALSetRasterStatistics,
         %i[GDALRasterBandH double double double double],
         FFI::CPL::Error::CPLErr
@@ -485,7 +485,7 @@ module FFI
           bool
           GDALProgressFunc
           pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       attach_function :GDALGetDefaultHistogram,
         %i[
@@ -497,7 +497,7 @@ module FFI
           bool
           GDALProgressFunc
           pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
       attach_function :GDALSetDefaultHistogram,
         %i[
           GDALRasterBandH
@@ -505,7 +505,7 @@ module FFI
           double
           int
           pointer
-      ], FFI::CPL::Error::CPLErr
+        ], FFI::CPL::Error::CPLErr
 
       attach_function :GDALGetRandomRasterSample,
         %i[GDALRasterBandH int pointer],

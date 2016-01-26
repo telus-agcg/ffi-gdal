@@ -5,7 +5,7 @@ module FFI
   # Redefining #attach_function so we can avoid bombing out if a called method
   # is not defined.
   module Library
-    alias_method :old_attach_function, :attach_function
+    alias old_attach_function attach_function
 
     def attach_function(*args)
       old_attach_function(*args)

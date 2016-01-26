@@ -39,6 +39,7 @@ module OGR
     def set_point(index, x, y, z)
       FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
     end
+
     # Adds a point to a LineString or Point geometry.
     #
     # @param x [Float]

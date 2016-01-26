@@ -55,7 +55,7 @@ module OGR
       FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
       @c_pointer = nil
     end
-    alias_method :close, :destroy!
+    alias close destroy!
 
     # Name of the file represented by this object.
     #

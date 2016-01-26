@@ -10,7 +10,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :local_cs=, :set_local_cs
+      alias local_cs= set_local_cs
 
       # Set the user-visible PROJCS name.
       #
@@ -21,7 +21,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :proj_cs=, :set_proj_cs
+      alias proj_cs= set_proj_cs
 
       # Set the user-visible PROJCS name.
       #
@@ -32,7 +32,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :geoc_cs=, :set_geoc_cs
+      alias geoc_cs= set_geoc_cs
 
       # Set the GEOGCS based on a well-known name.
       #
@@ -45,7 +45,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :well_known_geog_cs=, :set_well_known_geog_cs
+      alias well_known_geog_cs= set_well_known_geog_cs
 
       # @param definition [String]
       def set_from_user_input(definition)
@@ -71,9 +71,7 @@ module OGR
       # @param z_rotation [Float] (In arc seconds.)
       # @param scaling_factor [Float] (In parts-per-million.)
       def set_towgs84(x_distance: nil, y_distance: nil, z_distance: nil,
-                      x_rotation: 0.0, y_rotation: 0.0, z_rotation: 0.0,
-                      scaling_factor: 0.0)
-
+        x_rotation: 0.0, y_rotation: 0.0, z_rotation: 0.0, scaling_factor: 0.0)
         ogr_err = FFI::OGR::SRSAPI.OSRSetTOWGS84(
           @c_pointer,
           x_distance, y_distance, z_distance,
@@ -216,7 +214,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :projection=, :set_projection
+      alias projection= set_projection
 
       # @param param_name [String]
       # @param value [Float]
@@ -300,7 +298,7 @@ module OGR
       def set_albers_conic_equal_area
         fail NotImplementedError
       end
-      alias_method :set_acea, :set_albers_conic_equal_area
+      alias set_acea set_albers_conic_equal_area
 
       def set_ae
         fail NotImplementedError
@@ -464,7 +462,7 @@ module OGR
 
         ogr_err.handle_result
       end
-      alias_method :set_tm, :set_transverse_mercator
+      alias set_tm set_transverse_mercator
 
       def set_tm_variant
         fail NotImplementedError

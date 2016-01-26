@@ -51,7 +51,7 @@ module OGR
           FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
         end
       end
-      alias_method :geometry_ref, :geometry_at
+      alias geometry_ref geometry_at
 
       # Build a ring from a bunch of arcs.  The collection must be
       # a MultiLineString or GeometryCollection.

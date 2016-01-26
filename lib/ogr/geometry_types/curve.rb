@@ -31,7 +31,7 @@ module OGR
           [x_ptr.read_double, y_ptr.read_double, z_ptr.read_double]
         end
       end
-      alias_method :get_point, :point
+      alias get_point point
 
       # It seems as if {{#point}} should return an OGR::Point, but since OGR's
       # OGR_G_GetPoint only returns coordinates, this allows getting the point
@@ -113,7 +113,7 @@ module OGR
           z_buffer,
           z_stride)
 
-        log "Got different number of points than point_count in #point_values" unless num_points == point_count
+        log 'Got different number of points than point_count in #point_values' unless num_points == point_count
 
         x_array = x_buffer.read_array_of_double(buffer_size)
         y_array = y_buffer.read_array_of_double(buffer_size)
@@ -126,8 +126,8 @@ module OGR
           [x_array, y_array].transpose
         end
       end
-      alias_method :get_points, :points
-      alias_method :point_values, :points
+      alias get_points points
+      alias point_values points
 
       # @param geo_transform [GDAL::GeoTransform]
       # @return [Array<Array>]

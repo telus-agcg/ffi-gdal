@@ -67,11 +67,7 @@ module OGR
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
         spatial_ref_pointer =
-          if spatial_ref
-            GDAL._pointer(OGR::SpatialReference, spatial_ref)
-          else
-            nil
-          end
+          (GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref)
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -222,7 +218,7 @@ module OGR
     def geometry_count
       FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
     end
-    alias_method :count, :geometry_count
+    alias count geometry_count
 
     # @return [Fixnum]
     def point_count
@@ -270,7 +266,7 @@ module OGR
 
       FFI::OGR::API.OGR_G_Equals(@c_pointer, geometry.c_pointer)
     end
-    alias_method :==, :equals?
+    alias == equals?
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
@@ -389,7 +385,7 @@ module OGR
 
       self.class.factory(new_geometry_ptr)
     end
-    alias_method :-, :difference
+    alias - difference
 
     # @param geometry [OGR::Geometry]
     # @return [OGR::Geometry]

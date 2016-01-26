@@ -120,7 +120,7 @@ module GDAL
       # @param progress [Proc]
       # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
       def simple_image_warp(destination_dataset, transformer, transformer_arg_ptr,
-                            warp_options, band_numbers = 0, progress = nil)
+        warp_options, band_numbers = 0, progress = nil)
         destination_dataset_ptr = destination_dataset.c_pointer
 
         band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
@@ -175,7 +175,7 @@ module GDAL
         pixels_ptr = FFI::MemoryPointer.new(:int)
         lines_ptr = FFI::MemoryPointer.new(:int)
         extents_ptr = FFI::MemoryPointer.new(:double, 4)
-        options = 0     # C code says this isn't used yet.
+        options = 0 # C code says this isn't used yet.
 
         FFI::GDAL::Alg.GDALSuggestedWarpOutput2(
           @c_pointer,

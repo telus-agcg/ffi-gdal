@@ -19,8 +19,8 @@ RSpec.describe OGR::DataSource do
         allow(described_class).to receive(:new).and_return data_source
 
         expect(data_source).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }
-          .to yield_with_args(data_source)
+        expect { |b| described_class.open('blarg', 'r', &b) }.
+          to yield_with_args(data_source)
       end
     end
   end

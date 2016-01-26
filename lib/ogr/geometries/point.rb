@@ -34,7 +34,7 @@ module OGR
 
       [x_ptr.read_double, y_ptr.read_double]
     end
-    alias_method :point_value, :point
+    alias point_value point
 
     # Wrapper around {#point_value} to provide API parity with other geometries
     # that can have multiple points.
