@@ -10,6 +10,28 @@ RSpec.describe GDAL::Dataset do
     described_class.open(file_path, 'r')
   end
 
+  describe '.open' do
+    context 'not a dataset' do
+      it 'raises an GDAL::OpenFailure' do
+        expect do
+          described_class.open('blarg', 'r')
+        end.to raise_exception GDAL::OpenFailure
+      end
+    end
+
+    context 'block given' do
+      let(:dataset) { instance_double 'GDAL::Dataset' }
+
+      it 'yields then closes the opened DataSource' do
+        allow(described_class).to receive(:new).and_return dataset
+
+        expect(dataset).to receive(:close)
+        expect { |b| described_class.open('blarg', 'r', &b) }.
+          to yield_with_args(dataset)
+      end
+    end
+  end
+
   describe '#access_flag' do
     it 'returns the flag that was used to open the dataset' do
       expect(subject.access_flag).to eq :GA_ReadOnly
