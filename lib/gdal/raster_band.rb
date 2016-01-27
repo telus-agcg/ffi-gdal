@@ -204,14 +204,16 @@ module GDAL
       flag_list = FFI::GDAL::GDAL.GDALGetMaskFlags(@c_pointer).to_s(2).scan(/\d/)
       flags = []
 
-      flag_list.reverse.each_with_index do |flag, i|
-        if i == 0 && flag.to_i == 1
+      flag_list.reverse_each.with_index do |flag, i|
+        flag = flag.to_i
+
+        if i == 0 && flag == 1
           flags << :GMF_ALL_VALID
-        elsif i == 1 && flag.to_i == 1
+        elsif i == 1 && flag == 1
           flags << :GMF_PER_DATASET
-        elsif i == 2 && flag.to_i == 1
+        elsif i == 2 && flag == 1
           flags << :GMF_ALPHA
-        elsif i == 3 && flag.to_i == 1
+        elsif i == 3 && flag == 1
           flags << :GMF_NODATA
         end
       end
@@ -221,14 +223,16 @@ module GDAL
 
     # @return [Boolean]
     def create_mask_band(*flags)
-      flag_value = flags.each_with_object(0) do |flag, _result|
-        case flag
-        when :GMF_ALL_VALID then 0x01
-        when :GMF_PER_DATASET then 0x02
-        when :GMF_PER_ALPHA then 0x04
-        when :GMF_NODATA then 0x08
-        else 0
-        end
+      flag_value = 0
+
+      flag_value = flags.each_with_object(flag_value) do |flag, result|
+        result + case flag
+                 when :GMF_ALL_VALID then 0x01
+                 when :GMF_PER_DATASET then 0x02
+                 when :GMF_PER_ALPHA then 0x04
+                 when :GMF_NODATA then 0x08
+                 else 0
+                 end
       end
 
       !!FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flag_value)

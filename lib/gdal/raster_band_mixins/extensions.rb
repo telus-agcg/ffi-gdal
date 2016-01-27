@@ -4,7 +4,7 @@ module GDAL
   module RasterBandMixins
     module Extensions
       def overviews
-        overview_count.times.map do |i|
+        Array.new(overview_count) do |i|
           overview(i)
         end
       end

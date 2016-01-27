@@ -5,9 +5,7 @@ module OGR
     # @return [Array] Uses each FieldDefinition to determine the field type at
     #   each index and returns maps the field as that value type.
     def fields
-      field_count.times.map do |i|
-        field(i)
-      end
+      Array.new(field_count) { |i| field(i) }
     end
 
     # Retrieves a field using +index+, but uses its type from the associated
@@ -44,9 +42,7 @@ module OGR
 
     # @return [Array<OGR::Geometry>]
     def geometry_fields
-      geometry_field_count.times.map do |i|
-        geometry_field(i)
-      end
+      Array.new(geometry_field_count) { |i| geometry_field(i) }
     end
 
     # @return [Hash]

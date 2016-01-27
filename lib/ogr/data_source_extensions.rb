@@ -2,11 +2,7 @@ module OGR
   module DataSourceExtensions
     # @return [Array<OGR::Layer>]
     def layers
-      l = layer_count.times.map do |i|
-        layer(i)
-      end
-
-      @layers = l
+      @layers = Array.new(layer_count) { |i| layer(i) }
     end
 
     # @return [Hash]

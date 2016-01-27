@@ -13,7 +13,8 @@ module FFI
       @unsupported_gdal_functions ||= []
 
       if $VERBOSE || ENV['VERBOSE']
-        warn "ffi-gdal warning: function '#{args.first}' is not available in this build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
+        warn "ffi-gdal warning: function '#{args.first}' is not available in this " \
+          "build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
       end
 
       @unsupported_gdal_functions << args.first

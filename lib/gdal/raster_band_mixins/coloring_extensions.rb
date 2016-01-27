@@ -28,8 +28,9 @@ module GDAL
         # Start at 1 instead of 0 because we manually set the first color entry
         # to white.
         color_entry_index_range =
-          if data_type == :GDT_Byte then 1..255
-          elsif data_type == :GDT_UInt16 then 1..65_535
+          case data_type
+          when :GDT_Byte then 1..255
+          when :GDT_UInt16 then 1..65_535
           else fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
           end
 

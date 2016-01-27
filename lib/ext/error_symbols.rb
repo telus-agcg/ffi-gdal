@@ -1,5 +1,5 @@
 require_relative '../ogr/error_handling'
 
-class ::Symbol
+class Symbol
   include OGR::ErrorHandling
 end

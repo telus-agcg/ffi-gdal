@@ -70,9 +70,12 @@ module GDAL
 
         string_pointers << nil
         array_pointer = FFI::MemoryPointer.new(:pointer, strings.size + 1)
+        i = 0
 
-        string_pointers.each_with_index do |ptr, i|
-          array_pointer[i].put_pointer(0, ptr)
+        # fast-ruby says while is faster than each_with_index
+        while i < string_pointers.length
+          array_pointer[i].put_pointer(0, string_pointers[i])
+          i += 1
         end
 
         array_pointer
