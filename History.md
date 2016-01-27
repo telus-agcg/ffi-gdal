@@ -60,8 +60,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * Allow `GDAL::RasterBand#create_mask_band` to take a single flag or many.
 * Allow `GDAL::Dataset`s to be open in shared mode vs non-shared mode. All
   Datasets now default to use shared mode.
-* Allow `GDAL::Driver#create_dataset` to take a block, yielding the dataset
-  then closing it afterwards.
+* Allow `GDAL::Driver#create_dataset` and `GDAL::Dataset.open` to take a block,
+  yielding the dataset then closing it afterwards.
 
 #### OGR
 

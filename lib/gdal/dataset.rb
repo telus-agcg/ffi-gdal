@@ -30,7 +30,15 @@ module GDAL
     # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
     def self.open(path, access_flag, shared_open = true)
-      new(path, access_flag, shared_open)
+      ds = new(path, access_flag, shared_open)
+
+      if block_given?
+        result = yield ds
+        ds.close
+        result
+      else
+        ds
+      end
     end
 
     #---------------------------------------------------------------------------
