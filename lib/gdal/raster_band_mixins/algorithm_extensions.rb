@@ -71,8 +71,10 @@ module GDAL
           pixel_row = raster_io('r', x_size: x_size, y_size: 1, x_offset: 0, y_offset: line_num)
           pixel_values = GDAL._read_pointer(pixel_row, data_type, x_size)
           row_changed = false
+          pixel_num = 0
 
-          pixel_values.each_with_index do |pixel_value, pixel_num|
+          while pixel_num < pixel_values.length
+            pixel_value = pixel_values[pixel_num]
             next if pixel_value == no_data_value[:value]
 
             keep_in_raster = yield(pixel_num, line_num, pixel_value)
@@ -81,6 +83,7 @@ module GDAL
             erased_pixel_count += 1
             pixel_values[pixel_num] = erase_value
             row_changed = true
+            pixel_num += 1
           end
 
           rewrite_pixel_row(write_buffer, pixel_values, line_num) if row_changed

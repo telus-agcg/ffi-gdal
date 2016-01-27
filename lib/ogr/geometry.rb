@@ -337,11 +337,9 @@ module OGR
     def ring?
       FFI::OGR::API.OGR_G_IsRing(@c_pointer)
     rescue GDAL::Error => ex
-      if ex.message.include? 'IllegalArgumentException'
-        false
-      else
-        raise
-      end
+      return false if ex.message.include? 'IllegalArgumentException'
+
+      raise
     end
 
     # @param other_geometry [OGR::Geometry]

@@ -182,12 +182,10 @@ module GDAL
     # @param geo_transform [GDAL::GeoTransform]
     def grid_and_write(raster_band, geo_transform)
       data_ptr = GDAL._pointer_from_data_type(@options.output_data_type, output_width * output_height)
+      scaled_progress_func = FFI::CPL::Progress::ScaledProgress if @options.progress_formatter
 
       each_block(raster_band.block_size) do |block_number, block_count, block_size, x_offset, y_offset|
-        scaled_progress_func, scaled_progress_ptr =
-          if @options.progress_formatter
-            [FFI::CPL::Progress::ScaledProgress, build_scaled_progress_pointer(block_number, block_count)]
-          end
+        scaled_progress_ptr = build_scaled_progress_pointer(block_number, block_count) if @options.progress_formatter
 
         x_request = build_data_request_size(block_size[:x], x_offset, output_width)
         y_request = build_data_request_size(block_size[:y], y_offset, output_height)

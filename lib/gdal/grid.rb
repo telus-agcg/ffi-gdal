@@ -33,7 +33,7 @@ module GDAL
     # @return [FFI::MemoryPointer] Pointer to the grid data.
     def create(points, extents, data_pointer, output_size = { x: 256, y: 256 },
       progress_block = nil, progress_arg = nil)
-      points = points.to_a if NArray === points
+      points = points.to_a if points.is_a? NArray
       point_count = points.length
       log "Number of points: #{point_count}"
       points = points.transpose

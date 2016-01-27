@@ -58,7 +58,7 @@ module GDAL
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
-      break_values = range_count.times.map { |i| sorted_and_masked_pixels[range_size * i] }.uniq
+      break_values = Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq
       log "Break values: #{break_values}"
       return if break_values.uniq.size != range_count
 
@@ -87,8 +87,15 @@ module GDAL
       nodata_value = @raster_band.no_data_value[:value]
 
       @raster_band.read_lines_by_block.with_index do |pixels, row_number|
-        pixels.each_with_index do |pixel, pixel_number|
-          next if pixel == nodata_value
+        pixel_number = 0
+
+        while pixel_number < pixels.length
+          pixel = pixels[pixel_number]
+
+          if pixel == nodata_value
+            pixel_number += 1
+            next
+          end
 
           range = @ranges.find { |r| r[:range].member?(pixel) }
 
@@ -97,6 +104,8 @@ module GDAL
           else
             log "pixel #{pixel_number} (value: #{pixel}) not in any given range"
           end
+
+          pixel_number += 1
         end
       end
     end

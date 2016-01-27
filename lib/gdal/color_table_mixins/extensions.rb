@@ -8,14 +8,14 @@ module GDAL
           fail "Invalid ColorEntry number 'color#{color_number}'"
         end
 
-        color_entry_count.times.map do |i|
+        Array.new(color_entry_count) do |i|
           color_entry(i).send("color#{color_number}".to_sym)
         end
       end
 
       # @return [Array<GDAL::ColorEntry>]
       def color_entries
-        color_entry_count.times.map do |i|
+        Array.new(color_entry_count) do |i|
           color_entry(i)
         end
       end
@@ -25,7 +25,7 @@ module GDAL
       #
       # @return [Array<GDAL::ColorEntry>]
       def color_entries_as_rgb
-        color_entry_count.times.map do |i|
+        Array.new(color_entry_count) do |i|
           color_entry_as_rgb(i)
         end
       end

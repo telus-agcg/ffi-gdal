@@ -45,9 +45,7 @@ module OGR
 
     # @return [Array<String>]
     def self.names
-      count.times.map do |i|
-        at_index(i).name
-      end.sort
+      Array.new(count) { |i| at_index(i).name }.sort
     end
 
     # @return [FFI::Pointer] C pointer that represents the Driver.
