@@ -4,6 +4,7 @@ require_relative 'raster_band_mixins/algorithm_extensions'
 require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'raster_band_mixins/coloring_extensions'
 require_relative 'raster_band_mixins/extensions'
+require_relative 'raster_band_mixins/io_extensions'
 require_relative 'major_object'
 
 module GDAL
@@ -14,6 +15,7 @@ module GDAL
     include RasterBandMixins::AlgorithmExtensions
     include RasterBandMixins::ColoringExtensions
     include RasterBandMixins::Extensions
+    include RasterBandMixins::IOExtensions
 
     ALL_VALID = 0x01
     PER_DATASET = 0x02
