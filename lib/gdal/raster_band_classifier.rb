@@ -51,6 +51,8 @@ module GDAL
     def equal_count_ranges(range_count)
       sorted_pixels = @raster_band.to_na.sort
       sorted_and_masked_pixels = sorted_pixels[sorted_pixels.ne(@raster_band.no_data_value[:value])]
+      return [] if sorted_and_masked_pixels.empty?
+
       range_size = (sorted_and_masked_pixels.size / range_count).to_i
 
       log "Pixel count: #{sorted_and_masked_pixels.size}"

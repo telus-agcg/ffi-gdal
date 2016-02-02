@@ -94,6 +94,15 @@ RSpec.describe GDAL::RasterBandClassifier do
       subject { classifier.equal_count_ranges(1_000) }
       it { is_expected.to be_nil }
     end
+
+    context 'all nodata pixels' do
+      let(:band_narray) { NArray.byte(0) }
+      before { allow(raster_band).to receive(:to_na).and_return(band_narray) }
+
+      it 'returns an empty Array' do
+        expect(subject.equal_count_ranges(10)).to eq([])
+      end
+    end
   end
 
   describe '#classify!' do
