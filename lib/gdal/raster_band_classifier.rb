@@ -55,7 +55,7 @@ module GDAL
 
       range_size = (sorted_and_masked_pixels.size / range_count).to_i
 
-      log "Pixel count: #{sorted_and_masked_pixels.size}"
+      log "Masked pixel count/total pixel count: #{sorted_and_masked_pixels.size}/#{sorted_pixels.size}"
       log "Min pixel value: #{sorted_and_masked_pixels.min}"
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
@@ -87,29 +87,19 @@ module GDAL
     # you should copy it first.
     def classify!
       nodata_value = @raster_band.no_data_value[:value]
+      band_pixels = @raster_band.to_na
+      new_band_pixels = GDAL._narray_from_data_type(@raster_band.data_type, @raster_band.x_size, @raster_band.y_size)
+      new_band_pixels[band_pixels.eq(nodata_value)] = nodata_value
 
-      @raster_band.read_lines_by_block.with_index do |pixels, row_number|
-        pixel_number = 0
-
-        while pixel_number < pixels.length
-          pixel = pixels[pixel_number]
-
-          if pixel == nodata_value
-            pixel_number += 1
-            next
-          end
-
-          range = @ranges.find { |r| r[:range].member?(pixel) }
-
-          if range
-            @raster_band.set_pixel_value(pixel_number, row_number, range[:map_to])
-          else
-            log "pixel #{pixel_number} (value: #{pixel}) not in any given range"
-          end
-
-          pixel_number += 1
-        end
+      @ranges.each do |r|
+        new_band_pixels[
+          band_pixels.ne(nodata_value).
+          and(band_pixels.le(r[:range].max)).
+          and(band_pixels.ge(r[:range].min))
+        ] = r[:map_to]
       end
+
+      @raster_band.write_xy_narray(new_band_pixels)
     end
 
     private

@@ -14,6 +14,33 @@ RSpec.describe 'GDAL::RasterBandMixins::IOExtensions' do
 
   subject(:raster_band) { dataset_byte.raster_band(1) }
 
+  describe '#write_xy_narray' do
+    let(:dataset) do
+      d = driver.create_dataset('test dataset', 64, 4)
+      band = d.raster_band 1
+
+      d
+    end
+
+    let(:raster_band) { dataset.raster_band 1 }
+
+    it 'writes pixels from the NArray' do
+      row0 = Array.new(64) { 1 }
+      row1 = Array.new(64) { 2 }
+      row2 = Array.new(64) { 3 }
+      row3 = Array.new(64) { 4 }
+      narray = NArray[row0, row1, row2, row3]
+
+      raster_band.write_xy_narray(narray)
+
+      pixels = raster_band.to_na
+      expect(pixels[true, 0]).to eq(NArray.to_na(row0))
+      expect(pixels[true, 1]).to eq(NArray.to_na(row1))
+      expect(pixels[true, 2]).to eq(NArray.to_na(row2))
+      expect(pixels[true, 3]).to eq(NArray.to_na(row3))
+    end
+  end
+
   describe '#set_pixel_value/#pixel_value' do
     context 'valid values, GDT_Byte' do
       it 'sets and gets the value successfully' do
