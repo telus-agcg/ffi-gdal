@@ -3,164 +3,18 @@ require 'json'
 module GDAL
   module RasterBandMixins
     module Extensions
+      # @return [Enumerator]
+      def each_overview
+        return enum_for(:each_overview) unless block_given?
+
+        overview_count.times do |i|
+          yield overview(i)
+        end
+      end
+
+      # @return [Array]
       def overviews
-        Array.new(overview_count) do |i|
-          overview(i)
-        end
-      end
-
-      # Reads the raster line-by-line and returns as an NArray.  Will yield each
-      # line and the line number if a block is given.
-      #
-      # @yieldparam pixel_line [Array]
-      def readlines
-        return enum_for(:readlines) unless block_given?
-
-        y_size.times do |row_number|
-          scan_line = raster_io('r', x_size: x_size,
-                                     y_size: 1,
-                                     y_offset: row_number)
-
-          # TODO: Convert to use GDAL._read_pointer?
-          line_array = case data_type
-                       when :GDT_Byte then scan_line.read_array_of_uint8(x_size)
-                       when :GDT_UInt16 then scan_line.read_array_of_uint16(x_size)
-                       when :GDT_Float32 then scan_line.read_array_of_float32(x_size)
-                       else
-                         fail "Not sure how to deal with data_type: #{data_type}"
-                       end
-
-          yield line_array
-        end
-      end
-
-      # Writes a 2-dimensional NArray of (x, y) pixels to the raster band using
-      # {GDAL::RasterBand#raster_io}. It determines +x_size+ and +y_size+ for
-      # the {GDAL::RasterBand#raster_io} call using the dimensions of the array.
-      #
-      # @param pixel_array [NArray] The 2d list of pixels.
-      def write_xy_narray(pixel_array)
-        x_size = pixel_array.sizes.first
-        y_size = pixel_array.sizes.last
-        scan_line = FFI::MemoryPointer.new(:buffer_out, x_size)
-
-        y_size.times do |line_number|
-          pixels = pixel_array[true, line_number]
-          GDAL._write_pointer(scan_line, data_type, pixels.to_a)
-
-          raster_io('w', scan_line, x_size: x_size, y_size: 1,
-                                    y_offset: line_number,
-                                    buffer_x_size: x_size, buffer_y_size: line_number)
-        end
-
-        flush_cache
-      end
-
-      # Convenience method for directly setting a single pixel value.
-      #
-      # @param x [Fixnum] Pixel number in the row to set.
-      # @param y [Fixnum] Row number of the pixel to set.
-      # @param new_value [Number] The value to set the pixel to.
-      def set_pixel_value(x, y, new_value)
-        data_pointer = GDAL._pointer_from_data_type(data_type)
-        GDAL._write_pointer(data_pointer, data_type, new_value)
-
-        raster_io('w', data_pointer, x_size: 1,
-                                     y_size: 1,
-                                     x_offset: x,
-                                     y_offset: y,
-                                     buffer_x_size: 1,
-                                     buffer_y_size: 1)
-      end
-
-      # Convenience method for directly getting a single pixel value.
-      #
-      # @param x [Fixnum] Pixel number in the row to get.
-      # @param y [Fixnum] Row number of the pixel to get.
-      # @return [Number]
-      def pixel_value(x, y)
-        output = raster_io('r', x_size: 1,
-                                y_size: 1,
-                                x_offset: x,
-                                y_offset: y,
-                                buffer_x_size: 1,
-                                buffer_y_size: 1)
-
-        GDAL._read_pointer(output, data_type)
-      end
-
-      # Determines not only x and y block counts (how many blocks there are in
-      # the raster band when using GDAL's suggested block size), but remainder
-      # x and y counts for when the total number of pixels and lines does not
-      # divide evently using GDAL's block count.
-      #
-      # @return [Hash{x => Fixnum, x_remainder => Fixnum, y => Fixnum,
-      #   y_remainder => Fixnum}]
-      # @see http://www.gdal.org/classGDALRasterBand.html#a09e1d83971ddff0b43deffd54ef25eef
-      def block_count
-        x_size_plus_block_size = x_size + block_size[:x]
-        y_size_plus_block_size = y_size + block_size[:y]
-
-        {
-          x: ((x_size_plus_block_size - 1) / block_size[:x]).to_i,
-          x_remainder: x_size_plus_block_size.modulo(block_size[:x]),
-          y: ((y_size_plus_block_size - 1) / block_size[:y]).to_i,
-          y_remainder: y_size_plus_block_size.modulo(block_size[:y])
-        }
-      end
-
-      # The buffer size to use for block-based IO, based on #block_size.
-      #
-      # @return [Fixnum]
-      def block_buffer_size
-        block_size[:x] * block_size[:y]
-      end
-
-      # Reads through the raster, block-by-block then line-by-line and yields
-      # the pixel data that it gathered.
-      #
-      # @yieldparam row [Array<Number>] The Array of pixels for the current
-      #   line.
-      # @return [Enumerator, nil] Returns an Enumerable if no block is given,
-      #   allowing to chain with other Enumerable methods.  Returns nil if a
-      #   block is given.
-      def read_lines_by_block
-        return enum_for(:read_lines_by_block) unless block_given?
-
-        read_blocks_by_block do |pixels, x_block_size, y_block_size|
-          pixels.each_slice(x_block_size).with_index do |row, block_row_number|
-            yield row
-            break if block_row_number == y_block_size - 1
-          end
-        end
-      end
-
-      # Reads through the raster block-by-block and yields all pixel values for
-      # the block.
-      #
-      # @yieldparam pixels [Array<Number>] An Array the same size as
-      #   {#block_buffer_size} containing all pixel values in the current block.
-      # @yieldparam x_block_size [Fixnum] Instead of using only #{RasterBand#block_size},
-      #   it will tell you the size of each block--handy for when the last block
-      #   is smaller than the rest.
-      # @yieldparam y_block_size [Fixnum] Same as +x_block_siz+ but for y.
-      # @return [Enumerator, nil]
-      def read_blocks_by_block
-        return enum_for(:read_blocks_by_block) unless block_given?
-
-        data_pointer = FFI::MemoryPointer.new(:buffer_in, block_buffer_size)
-
-        block_count[:y].times do |y_block_number|
-          block_count[:x].times do |x_block_number|
-            y_block_size = calculate_y_block_size(y_block_number)
-            x_block_size = calculate_x_block_size(x_block_number)
-
-            read_block(x_block_number, y_block_number, data_pointer)
-            pixels = GDAL._read_pointer(data_pointer, data_type, block_buffer_size)
-
-            yield(pixels, x_block_size, y_block_size)
-          end
-        end
+        eaach_overview.to_a
       end
 
       # @return [Array]
@@ -242,42 +96,6 @@ module GDAL
       # @return [String]
       def to_json(options = nil)
         as_json(options).to_json
-      end
-
-      private
-
-      # Determines how many lines to read for the block, considering that not
-      # all blocks can be of equal size. For example, if there are 125 lines and
-      # GDAL reports that the block size to read is 60, we still need to know
-      # to read those last 5 lines when using block-related methods.
-      #
-      # @param block_number [Fixnum] The number of the y block when iterating
-      #   through y blocks.
-      # @return [Fixnum] The number of lines to read as part of the block.
-      def calculate_y_block_size(block_number)
-        # If it's the last block...
-        if block_number == (block_count[:y] - 1)
-          block_count[:y_remainder].zero? ? block_size[:y] : block_count[:y_remainder]
-        else
-          block_size[:y]
-        end
-      end
-
-      # Determines how many pixels to read for the block, considering that not
-      # all blocks can be of equal size. For example, if there are 125 pixels
-      # and GDAL reports that the block size to read is 60, we still need to
-      # know to read those last 5 pixels when using block-related methods.
-      #
-      # @param block_number [Fixnum] The number of the x block when iterating
-      #   through x blocks.
-      # @return [Fixnum] The number of pixels to read as part of the block.
-      def calculate_x_block_size(block_number)
-        # If it's the last block...
-        if block_number == (block_count[:x] - 1)
-          block_count[:x_remainder].zero? ? block_size[:x] : block_count[:x_remainder]
-        else
-          block_size[:x]
-        end
       end
     end
   end

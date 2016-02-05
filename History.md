@@ -62,6 +62,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   Datasets now default to use shared mode.
 * Allow `GDAL::Driver#create_dataset` and `GDAL::Dataset.open` to take a block,
   yielding the dataset then closing it afterwards.
+* `GDAL::RasterBandClassifier` now uses NArray to classify. Can result in quite
+  a large performance gain.
 
 #### OGR
 
