@@ -3,16 +3,18 @@ require 'json'
 module GDAL
   module RasterBandMixins
     module Extensions
+      # @return [Enumerator]
+      def each_overview
+        return enum_for(:each_overview) unless block_given?
+
+        overview_count.times do |i|
+          yield overview(i)
+        end
+      end
+
+      # @return [Array]
       def overviews
-        Array.new(overview_count) do |i|
-          overview(i)
-        end
-      end
-
-
-        end
-      end
-
+        eaach_overview.to_a
       end
 
       # @return [Array]
