@@ -358,6 +358,8 @@ module GDAL
       { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
     end
 
+    # Sets the scaling offset. Very few formats support this method.
+    #
     # @param new_offset [Float]
     # @return [Boolean]
     def offset=(new_offset)

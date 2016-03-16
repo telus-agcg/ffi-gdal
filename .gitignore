@@ -35,3 +35,5 @@ valgrind_output.log
 *.swp
 
 .byebug_history
+
+.tags

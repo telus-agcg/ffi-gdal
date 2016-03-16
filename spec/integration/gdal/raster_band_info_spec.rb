@@ -1,12 +1,20 @@
 require 'spec_helper'
 require 'ffi-gdal'
+require 'gdal'
 
-RSpec.describe 'Raster Band Info' do
-  let(:dataset) { GDAL::Dataset.open(file, 'r') }
+RSpec.describe 'Raster Band Info', type: :integration do
+  let(:original_tiff) do
+    path = '../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif'
+    File.expand_path(path, __dir__)
+  end
+
+  let(:tmp_tiff) { make_temp_test_file(original_tiff) }
+  let(:dataset) { GDAL::Dataset.open(tmp_tiff, 'w') }
   after { dataset.close }
 
   # TODO: Test against each raster band
-  subject { GDAL::RasterBand.new(band_under_test.c_pointer) }
+  # subject { GDAL::RasterBand.new(band_under_test.c_pointer) }
+  subject { dataset.raster_band(1) }
 
   it_behaves_like 'a major object'
 
@@ -25,7 +33,7 @@ RSpec.describe 'Raster Band Info' do
   end
 
   describe '#access_flag' do
-    specify { expect(subject.access_flag).to eq :GA_ReadOnly }
+    specify { expect(subject.access_flag).to eq :GA_Update }
   end
 
   describe '#number' do
@@ -77,15 +85,7 @@ RSpec.describe 'Raster Band Info' do
   end
 
   describe '#category_names=' do
-    around do |example|
-      category_names = subject.category_names
-      example.run
-      subject.category_names = category_names
-    end
-
     it 'sets the category names' do
-      expect(subject.category_names).to be_empty
-
       subject.category_names = %w[one two three]
 
       expect(subject.category_names).to eq %w[one two three]
@@ -172,12 +172,6 @@ RSpec.describe 'Raster Band Info' do
   end
 
   describe '#scale=' do
-    around do |example|
-      scale = subject.scale[:value]
-      example.run
-      subject.scale = scale
-    end
-
     it 'does nothing (because the file formats dont support it)' do
       subject.scale = 0.1
       expect(subject.scale[:value]).to eq 0.1
@@ -200,12 +194,6 @@ RSpec.describe 'Raster Band Info' do
   end
 
   describe '#offset=' do
-    around do |example|
-      offset = subject.offset[:value]
-      example.run
-      subject.offset = offset
-    end
-
     it 'does nothing (because the file formats dont support it)' do
       subject.offset = 0.1
       expect(subject.offset[:value]).to eq 0.1
@@ -219,12 +207,6 @@ RSpec.describe 'Raster Band Info' do
   end
 
   describe '#unit_type=' do
-    around do |example|
-      unit_type = subject.unit_type
-      example.run
-      subject.unit_type = unit_type
-    end
-
     it 'does nothing (because the file formats dont support it)' do
       if defined? FFI::GDAL::GDAL::GDALSetRasterUnitType
         subject.unit_type = 'ft'
