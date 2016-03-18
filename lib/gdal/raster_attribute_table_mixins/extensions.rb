@@ -3,8 +3,6 @@ require 'json'
 module GDAL
   module RasterAttributeTableMixins
     module Extensions
-      include Enumerable
-
       # @param row [Fixnum]
       # @param field [Fixnum]
       # @param value [String, Float, Fixnum]

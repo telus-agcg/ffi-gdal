@@ -11,9 +11,6 @@ RSpec.describe 'Raster Band Info', type: :integration do
   let(:tmp_tiff) { make_temp_test_file(original_tiff) }
   let(:dataset) { GDAL::Dataset.open(tmp_tiff, 'w') }
   after { dataset.close }
-
-  # TODO: Test against each raster band
-  # subject { GDAL::RasterBand.new(band_under_test.c_pointer) }
   subject { dataset.raster_band(1) }
 
   it_behaves_like 'a major object'

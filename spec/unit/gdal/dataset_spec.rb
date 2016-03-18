@@ -7,7 +7,7 @@ RSpec.describe GDAL::Dataset do
   end
 
   subject do
-    described_class.open(file_path, 'r')
+    described_class.open(file_path, 'r', false)
   end
 
   it_behaves_like 'a major object'

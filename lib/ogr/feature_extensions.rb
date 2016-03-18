@@ -2,8 +2,6 @@ require 'json'
 
 module OGR
   module FeatureExtensions
-    include Enumerable
-
     # @return [Enumerator]
     # @yieldparam [Number, String, Array]
     def each_field
