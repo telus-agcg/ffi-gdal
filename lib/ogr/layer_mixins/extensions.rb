@@ -14,7 +14,7 @@ module OGR
       def each_feature
         return enum_for(:each_feature) unless block_given?
 
-        reset_reading
+        FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
 
         loop do
           break unless feature = next_feature
@@ -22,21 +22,29 @@ module OGR
           feature.destroy!
         end
 
-        reset_reading
+        FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
       end
 
       # @return [Enumerator]
       # @yieldparam [FFI::Pointer] A pointer to each feature in the layer.
       def each_feature_pointer
-        reset_reading
+        return enum_for(:each_feature_pointer) unless block_given?
+
+        FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
 
         loop do
           feature_ptr = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
-          break if feature_ptr.null?
+
+          if feature_ptr.null?
+            FFI::OGR::API.OGR_F_Destroy(feature_ptr)
+            break
+          end
+
           yield feature_ptr
+          FFI::OGR::API.OGR_F_Destroy(feature_ptr)
         end
 
-        reset_reading
+        FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
       end
 
       # @return [Array<OGR::Feature>]
@@ -103,9 +111,10 @@ module OGR
           end
 
           geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
+          geom_ptr.autorelease = false
           FFI::OGR::API.OGR_G_FlattenTo2D(geom_ptr)
-
           geom_type = FFI::OGR::API.OGR_G_GetGeometryType(geom_ptr)
+
           case geom_type
           when :wkbPoint
             values[i] = collect_point_values(geom_ptr, field_values)
@@ -151,7 +160,9 @@ module OGR
 
             polygon_count.times do |polygon_num|
               polygon_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, polygon_num)
+              polygon_ptr.autorelease = false
               exterior_ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(polygon_ptr, 0)
+              exterior_ring_ptr.autorelease = false
 
               extract_ring_points(exterior_ring_ptr, x_ptr, y_ptr) do |points|
                 values[i] = points.push(*field_values)
@@ -164,6 +175,7 @@ module OGR
               count.times do |ring_num|
                 next if ring_num.zero?
                 ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(polygon_ptr, ring_num)
+                ring_ptr.autorelease = false
 
                 extract_ring_points(ring_ptr, x_ptr, y_ptr) do |points|
                   values[i] = points.push(*field_values)
@@ -190,6 +202,7 @@ module OGR
         each_feature_pointer do |feature_ptr|
           break if found_z_geom
           geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
+          geom_ptr.autorelease = false
           coordinate_dimension = FFI::OGR::API.OGR_G_GetCoordinateDimension(geom_ptr)
           found_z_geom = coordinate_dimension == 3
         end
@@ -238,7 +251,9 @@ module OGR
       # @param y_ptr [FFI::Pointer] Pointer to use for writing the y value to.
       # @yieldparam [Array<Float>] (x, y)
       def extract_ring_points(ring_ptr, x_ptr, y_ptr)
-        FFI::OGR::API.OGR_G_GetPointCount(ring_ptr).times do |point_num|
+        point_count = FFI::OGR::API.OGR_G_GetPointCount(ring_ptr)
+
+        point_count.times do |point_num|
           FFI::OGR::API.OGR_G_GetPoint(ring_ptr, point_num, x_ptr, y_ptr, nil)
 
           yield [x_ptr.read_double, y_ptr.read_double]

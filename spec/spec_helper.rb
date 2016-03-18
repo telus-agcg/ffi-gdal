@@ -103,6 +103,11 @@ RSpec.configure do |config|
 
   config.include IntegrationHelp, type: :integration
 
+  config.before do
+    ::FFI::GDAL::GDAL.GDALAllRegister
+    Dir[File.join('tmp', '*')].each { |f| File.unlink(f) if File.exist?(f) }
+  end
+
   config.after(:example, type: :integration) do
     cleanup_test_files
   end

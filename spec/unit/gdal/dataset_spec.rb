@@ -10,6 +10,8 @@ RSpec.describe GDAL::Dataset do
     described_class.open(file_path, 'r')
   end
 
+  it_behaves_like 'a major object'
+
   describe '.open' do
     context 'not a dataset' do
       it 'raises an GDAL::OpenFailure' do

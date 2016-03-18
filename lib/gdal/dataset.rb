@@ -197,6 +197,7 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
+      geo_transform_pointer.autorelease = false
       FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)

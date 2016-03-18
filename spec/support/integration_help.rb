@@ -19,6 +19,7 @@ module IntegrationHelp
     relative_tmp_path = File.join(temp_base_dir, file_name)
     tmp_path = File.expand_path(relative_tmp_path, __dir__)
 
+    return tmp_path if test_files.include?(tmp_path)
     FileUtils.cp(original_path, tmp_path)
     test_files << tmp_path
 

@@ -77,7 +77,7 @@ RSpec.describe 'Driver Info', type: :integration do
         { 'THINGS' => 123 }
       end
 
-      it 'returns true' do
+      it 'returns false' do
         expect(subject.validate_creation_options(options)).to eq false
       end
     end

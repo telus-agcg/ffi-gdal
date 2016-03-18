@@ -11,9 +11,8 @@ RSpec.describe 'Dataset Info', type: :integration do
   end
 
   subject { GDAL::Dataset.open(tmp_tiff, 'r') }
-  after { subject.close }
 
-  it_behaves_like 'a major object'
+  after { subject.close if File.exist?(tmp_tiff) }
 
   describe '#driver' do
     it 'is a GDAL::Driver' do
