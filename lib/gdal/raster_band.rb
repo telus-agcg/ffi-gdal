@@ -611,6 +611,7 @@ module GDAL
       buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
       pixel_space: 0, line_space: 0)
       return unless @c_pointer
+
       x_size ||= self.x_size
       y_size ||= self.y_size
 

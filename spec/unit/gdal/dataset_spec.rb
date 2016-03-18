@@ -116,4 +116,24 @@ RSpec.describe GDAL::Dataset do
       expect(subject.geo_transform).to be_a GDAL::GeoTransform
     end
   end
+
+  describe '#parse_mask_flag_symbols' do
+    context 'empty params' do
+      it 'returns 0' do
+        expect(subject.send(:parse_mask_flag_symbols, nil)).to eq 0
+      end
+    end
+
+    context ':GMF_ALL_VALID' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID)).to eq 1
+      end
+    end
+
+    context ':GMF_ALL_VALID, :GMF_NODATA' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID, :GMF_NODATA)).to eq 9
+      end
+    end
+  end
 end

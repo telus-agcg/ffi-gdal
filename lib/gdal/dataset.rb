@@ -168,15 +168,7 @@ module GDAL
     # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
     # @return [Boolean]
     def create_mask_band(*flags)
-      flag_value = flags.each_with_object(0) do |flag, result|
-        case flag
-        when :GMF_ALL_VALID then 0x01
-        when :GMF_PER_DATASET then 0x02
-        when :GMF_PER_ALPHA then 0x04
-        when :GMF_NODATA then 0x08
-        else 0
-        end
-      end
+      flag_value = parse_mask_flag_symbols(flags)
 
       !!FFI::GDAL::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flag_value)
     end
@@ -209,11 +201,7 @@ module GDAL
       new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
       FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
 
-      @geo_transform = if new_transform.is_a?(FFI::Pointer)
-                         GeoTransform.new(new_pointer)
-                       else
-                         new_transform
-                       end
+      @geo_transform = new_transform.is_a?(FFI::Pointer) ? GeoTransform.new(new_pointer) : new_transform
     end
 
     # @return [Fixnum]
@@ -357,6 +345,23 @@ module GDAL
     end
 
     private
+
+    # Lets you pass in :GMF_ symbols that represent mask band flags and bitwise
+    # ors them.
+    #
+    # @param flags [Symbol]
+    # @return [Fixnum]
+    def parse_mask_flag_symbols(*flags)
+      flags.reduce(0) do |result, flag|
+        result |= case flag
+                  when :GMF_ALL_VALID then 0x01
+                  when :GMF_PER_DATASET then 0x02
+                  when :GMF_PER_ALPHA then 0x04
+                  when :GMF_NODATA then 0x08
+                  else 0
+                  end
+      end
+    end
 
     # @param buffer_data_type [FFI::GDAL::GDAL::DataType]
     # @param x_buffer_size [Fixnum]
