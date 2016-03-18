@@ -262,7 +262,7 @@ module OGR
           case hemisphere
           when :north then 1
           when :south then 0
-          else fail "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
+          else raise "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
           end
         north_ptr = FFI::MemoryPointer.new(:bool)
         north_ptr.write_bytes(north.to_s)
@@ -296,156 +296,156 @@ module OGR
       end
 
       def set_albers_conic_equal_area
-        fail NotImplementedError
+        raise NotImplementedError
       end
       alias set_acea set_albers_conic_equal_area
 
       def set_ae
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_bonne
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_cea
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_cs
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_ec
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_eckert
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_eckert_iv
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_eckert_vi
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_equirectangular
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_equirectangular2
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_gc
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_gh
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_igh
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_geos
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_gauss_schreiber_transverse_mercator
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_gnomonic
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_om
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_hom
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_hom_2_pno
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_iwm_polyconic
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_krovak
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_laea
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_lcc
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_lcc_1sp
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_lccb
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_mc
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_mercator
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_mollweide
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_nzmg
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_os
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_orthographic
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_polyconic
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_ps
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_robinson
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_sinusoidal
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_stereographic
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_soc
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       # @param center_lat [Float]
@@ -465,27 +465,27 @@ module OGR
       alias set_tm set_transverse_mercator
 
       def set_tm_variant
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_tmg
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_tmso
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_vdg
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_wagner
-        fail NotImplementedError
+        raise NotImplementedError
       end
 
       def set_qsc
-        fail NotImplementedError
+        raise NotImplementedError
       end
     end
   end

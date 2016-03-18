@@ -23,7 +23,7 @@ module GDAL
         transformer: nil, transform_arg: nil, **options, &progress_block)
 
         if geo_transform.nil? && gcp_count.zero?
-          fail "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
+          raise "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
         end
 
         gdal_options = GDAL::Options.pointer(options)

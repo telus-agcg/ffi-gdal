@@ -98,8 +98,15 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#projection' do
+    let(:expected_wkt) do
+      'GEOGCS["unknown",DATUM["unknown",SPHEROID["Bessel 1841",' \
+        '6377397.155,299.1528128000008,AUTHORITY["EPSG","7004"]],' \
+        'TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],' \
+        'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]]'
+    end
+
     it 'returns the projection string' do
-      expect(subject.projection).to eq %(GEOGCS[\"unknown\",DATUM[\"unknown\",SPHEROID[\"Bessel 1841\",6377397.155,299.1528128000008,AUTHORITY[\"EPSG\",\"7004\"]],TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]])
+      expect(subject.projection).to eq expected_wkt
     end
   end
 

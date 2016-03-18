@@ -124,13 +124,13 @@ RSpec.describe 'Raster Attribute Table Info', type: :integration do
   describe '#row_of_value' do
     context 'a row exists for the given pixel value' do
       it 'returns the row index' do
-        expect(subject.row_of_value(58595)).to eq 253
+        expect(subject.row_of_value(58_595)).to eq 253
       end
     end
 
     context 'a row does not exist for the given pixel value' do
       it 'returns nil' do
-        expect(subject.row_of_value(123456)).to eq nil
+        expect(subject.row_of_value(123_456)).to eq nil
       end
     end
   end

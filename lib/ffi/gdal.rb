@@ -86,7 +86,7 @@ module FFI
     end
 
     if gdal_library_path.nil? || gdal_library_path.empty?
-      fail FFI::GDAL::LibraryNotFound, "Can't find required gdal library using path: '#{gdal_library_path}'"
+      raise FFI::GDAL::LibraryNotFound, "Can't find required gdal library using path: '#{gdal_library_path}'"
     end
 
     ffi_lib(gdal_library_path)

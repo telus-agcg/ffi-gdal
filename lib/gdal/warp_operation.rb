@@ -8,7 +8,7 @@ module GDAL
     # @param warp_options [GDAL::WarpOptions]
     def initialize(warp_options)
       @c_pointer = FFI::GDAL::Warper.GDALCreateWarpOperation(warp_options.c_struct)
-      fail 'blort' if @c_pointer.null?
+      raise GDAL::Error, 'Unable to create warp operation' if @c_pointer.null?
     end
 
     def destroy!

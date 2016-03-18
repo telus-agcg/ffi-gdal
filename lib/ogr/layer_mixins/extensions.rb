@@ -17,7 +17,8 @@ module OGR
         FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
 
         loop do
-          break unless feature = next_feature
+          feature = next_feature
+          break unless feature
           yield feature
           feature.destroy!
         end
@@ -183,7 +184,7 @@ module OGR
                 end
               end
             end
-          else fail OGR::UnsupportedGeometryType,
+          else raise OGR::UnsupportedGeometryType,
             "Not sure how to extract point_values for a #{geom_type}"
           end
         end

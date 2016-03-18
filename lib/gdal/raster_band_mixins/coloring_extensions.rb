@@ -31,7 +31,7 @@ module GDAL
           case data_type
           when :GDT_Byte then 1..255
           when :GDT_UInt16 then 1..65_535
-          else fail "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
+          else raise "Can't colorize a #{data_type} band--must be :GDT_Byte or :GDT_UInt16"
           end
 
         bin_count = (color_entry_index_range.last + 1) / colors.size.to_f

@@ -7,7 +7,7 @@ module OGR
       def utm_zone
         return unless spatial_reference
 
-        if spatial_reference.authority_code == '4326'
+        if spatial_reference.authority_code == '4326'.freeze
           self_as_4326 = self
         else
           self_as_4326 = dup
@@ -98,7 +98,7 @@ module OGR
         # field.width = 32
 
         unless layer
-          fail OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
+          raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
         end
 
         feature = layer.create_feature(layer_name)

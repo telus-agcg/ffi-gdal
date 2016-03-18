@@ -13,10 +13,6 @@ RSpec.describe OGR::Feature do
   let(:binary_field_def) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
   let(:date_field_def) { OGR::FieldDefinition.new('test date field', :OFTDate) }
 
-  let(:geometry_field_definition) do
-    OGR::GeometryFieldDefinition.new('test geometry', :wkbPoint)
-  end
-
   let(:feature_definition) do
     fd = OGR::FeatureDefinition.new('test FD')
 
@@ -29,7 +25,9 @@ RSpec.describe OGR::Feature do
     fd.add_field_definition(binary_field_def)         # 6
     fd.add_field_definition(date_field_def)           # 7
 
-    fd.add_geometry_field_definition(geometry_field_definition)
+    gfd = fd.geometry_field_definition(0)
+    gfd.type = :wkbPoint
+    gfd.name = 'test point'
 
     fd
   end

@@ -39,8 +39,8 @@ module GDAL
         output_data_type: nil, remove_negatives: false, no_data_value: -9999.0, **options)
         red = raster_band(red_band_number)
         nir = raster_band(nir_band_number)
-        fail RequiredBandNotFound, 'Red band not found.' if red.nil?
-        fail RequiredBandNotFound, 'Near-infrared' if nir.nil?
+        raise RequiredBandNotFound, 'Red band not found.' if red.nil?
+        raise RequiredBandNotFound, 'Near-infrared' if nir.nil?
 
         output_data_type ||= red.data_type
         the_array = calculate_ndvi(red.to_na, nir.to_na, no_data_value, remove_negatives, output_data_type)
@@ -78,7 +78,7 @@ module GDAL
       #   this object or the data may not persist!*
       def extract_nir(destination, band_number, driver_name: 'GTiff', output_data_type: nil, **options)
         original_nir_band = raster_band(band_number)
-        fail InvalidBandNumber, "Band #{band_number} found but was nil." if original_nir_band.nil?
+        raise InvalidBandNumber, "Band #{band_number} found but was nil." if original_nir_band.nil?
 
         output_data_type ||= original_nir_band.data_type
         driver = GDAL::Driver.by_name(driver_name)
@@ -280,6 +280,7 @@ module GDAL
 
         data_source = ogr_driver.create_data_source(file_name)
 
+        # TODO: fasterer: each_with_index is slower than loop
         band_numbers.each_with_index do |band_number, i|
           log "Starting to polygonize raster band #{band_number}..."
           layer_name = "#{layer_name_prefix}-#{band_number}"
@@ -291,7 +292,7 @@ module GDAL
           band = raster_band(band_number)
 
           unless band
-            fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+            raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
           end
 
           pixel_value_field = layer.feature_definition.field_index(field_name)

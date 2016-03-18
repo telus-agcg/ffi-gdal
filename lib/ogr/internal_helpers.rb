@@ -15,7 +15,7 @@ module OGR
         case flag
         when 'w' then true
         when 'r' then false
-        else fail "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
+        else raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
         end
       end
 
@@ -32,7 +32,7 @@ module OGR
         when 0 then nil
         when 1 then (Time.now.getlocal.utc_offset / 3600).to_s
         when 100 then '+0'
-        else fail "Unable to process time zone: #{time_zone}"
+        else raise "Unable to process time zone: #{time_zone}"
         end
       end
 

@@ -17,11 +17,7 @@ module GDAL
       #   +progress_function+.
       # @param options [Hash] Warp options, normally empty.
       def reproject_image(destination_dataset, resample_algorithm, destination_spatial_reference: nil,
-        warp_memory_limit: 0.0,
-        max_error: 0.0,
-        progress_function: nil,
-        progress_arg: nil,
-        **options)
+        warp_memory_limit: 0.0, max_error: 0.0, progress_function: nil, progress_arg: nil, **options)
         destination_spatial_reference_wkt = if destination_spatial_reference
                                               destination_spatial_reference.to_wkt
                                             end

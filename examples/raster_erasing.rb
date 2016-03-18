@@ -25,7 +25,7 @@ module Examples
       extent_polygon = extent_polygon.buffer(buffer_size)
 
       if extent_polygon.empty?
-        fail 'Poorly buffered extent--you should play with these values to get this demo to work.'
+        raise 'Poorly buffered extent--you should play with these values to get this demo to work.'
       end
 
       raster_point = OGR::Point.new

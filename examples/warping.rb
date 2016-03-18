@@ -107,7 +107,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   args = ARGV.dup
-  fail 'Must only supply 2 args: [source destination]' unless args.length == 2
+  raise 'Must only supply 2 args: [source destination]' unless args.length == 2
 
   # 32616
   # harper_wkt = <<-WKT

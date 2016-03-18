@@ -171,7 +171,7 @@ module OGR
     # @param new_coordinate_dimension [Fixnum]
     def coordinate_dimension=(new_coordinate_dimension)
       unless [2, 3].include?(new_coordinate_dimension)
-        fail "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
+        raise "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
       end
 
       FFI::OGR::API.OGR_G_SetCoordinateDimension(@c_pointer, new_coordinate_dimension)
@@ -188,7 +188,7 @@ module OGR
         FFI::OGR::API.OGR_G_GetEnvelope3D(@c_pointer, envelope)
       when 0 then return nil
       else
-        fail 'Unknown envelope dimension.'
+        raise 'Unknown envelope dimension.'
       end
 
       return nil if envelope.null?
@@ -649,7 +649,7 @@ module OGR
 
     # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
     def initialize_from_pointer(geometry_ptr)
-      fail OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
+      raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
       @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
     end
 

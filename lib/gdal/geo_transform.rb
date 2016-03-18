@@ -169,7 +169,7 @@ module GDAL
       other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
 
       unless other_ptr
-        fail GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
+        raise GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
       end
 
       new_gt_ptr = self.class.new_pointer

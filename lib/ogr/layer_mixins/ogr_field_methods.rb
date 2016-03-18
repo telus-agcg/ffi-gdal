@@ -11,7 +11,7 @@ module OGR
       # @return [Boolean]
       def create_field(field_definition, approx_ok = false)
         unless can_create_field?
-          fail OGR::UnsupportedOperation, 'This layer does not support field creation.'
+          raise OGR::UnsupportedOperation, 'This layer does not support field creation.'
         end
 
         field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
@@ -25,7 +25,7 @@ module OGR
       # @return +true+ if successful, otherwise raises an OGR exception.
       def delete_field(field_id)
         unless can_delete_field?
-          fail OGR::UnsupportedOperation, 'This driver does not support field deletion.'
+          raise OGR::UnsupportedOperation, 'This driver does not support field deletion.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_DeleteField(@c_pointer, field_id)
@@ -38,7 +38,7 @@ module OGR
       # @return [Boolean]
       def reorder_fields(*new_order)
         unless can_reorder_fields?
-          fail OGR::UnsupportedOperation, 'This driver does not support field reordering.'
+          raise OGR::UnsupportedOperation, 'This driver does not support field reordering.'
         end
 
         return false if new_order.empty?
@@ -57,7 +57,7 @@ module OGR
       # @param new_position [Fixnum]
       def reorder_field(old_position, new_position)
         unless can_reorder_fields?
-          fail OGR::UnsupportedOperation, 'This driver does not support field reordering.'
+          raise OGR::UnsupportedOperation, 'This driver does not support field reordering.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_ReorderField(@c_pointer, old_position, new_position)
@@ -72,7 +72,7 @@ module OGR
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
       def alter_field_definition(field_index, new_field_definition, flags)
         unless can_alter_field_definition?
-          fail OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
+          raise OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
         end
 
         new_field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, new_field_definition)
@@ -107,7 +107,7 @@ module OGR
       # @return [Boolean]
       def create_geometry_field(geometry_field_def, approx_ok = false)
         unless can_create_geometry_field?
-          fail OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
+          raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end
 
         geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)

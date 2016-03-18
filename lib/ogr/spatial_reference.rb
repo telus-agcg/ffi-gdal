@@ -44,22 +44,13 @@ module OGR
     #   OGR::SpatialReference.projection_methods.
     # @return [Hash{parameter => Array<String>, user_visible_name => String}]
     def self.parameter_list(projection_method)
-      name_ptr = FFI::MemoryPointer.new(:string)
-      name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-      name_ptr_ptr.write_pointer(name_ptr)
-
-      params_ptr_ptr = FFI::OGR::SRSAPI.OPTGetParameterList(projection_method,
-        name_ptr_ptr)
+      name_ptr_ptr = GDAL._pointer_pointer(:string)
+      params_ptr_ptr = FFI::OGR::SRSAPI.OPTGetParameterList(projection_method, name_ptr_ptr)
       count = FFI::CPL::String.CSLCount(params_ptr_ptr)
 
       # For some reason #get_array_of_string leaves off the first 6.
       pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
-
-      name = if name_ptr_ptr.read_pointer.null?
-               nil
-             else
-               name_ptr_ptr.read_pointer.read_string
-             end
+      name = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
 
       {
         parameters: pointer_array.map(&:read_string).sort,
@@ -72,14 +63,8 @@ module OGR
     # @param projection_method [String]
     # @param parameter_name [String]
     def self.parameter_info(projection_method, parameter_name)
-      name_ptr = FFI::MemoryPointer.new(:string)
-      name_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-      name_ptr_ptr.write_pointer(name_ptr)
-
-      type_ptr = FFI::MemoryPointer.new(:string)
-      type_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-      type_ptr_ptr.write_pointer(type_ptr)
-
+      name_ptr_ptr = GDAL._pointer_pointer(:string)
+      type_ptr_ptr = GDAL._pointer_pointer(:string)
       default_value_ptr = FFI::MemoryPointer.new(:double)
 
       result = FFI::OGR::SRSAPI.OPTGetParameterInfo(projection_method, parameter_name,
@@ -87,17 +72,8 @@ module OGR
 
       return {} unless result
 
-      name = if name_ptr_ptr.read_pointer.null?
-               nil
-             else
-               name_ptr_ptr.read_pointer.read_string
-             end
-
-      type = if type_ptr_ptr.read_pointer.null?
-               nil
-             else
-               type_ptr_ptr.read_pointer.read_string
-             end
+      name = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
+      type = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
 
       {
         type: type,
@@ -143,7 +119,7 @@ module OGR
 
       return if @c_pointer && !@c_pointer.null?
 
-      fail OGR::CreateFailure, 'Unable to create SpatialReference.'
+      raise OGR::CreateFailure, 'Unable to create SpatialReference.'
     end
 
     def destroy!
@@ -176,7 +152,7 @@ module OGR
     # @return [Boolean]
     def copy_geog_cs_from(other_spatial_ref)
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
-      fail OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
+      raise OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
 
       ogr_err = FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
 

@@ -25,7 +25,7 @@ module GDAL
       ex = exception ? exception.new(message) : GDAL::Error.new(message)
       ex.set_backtrace(caller(4))
 
-      fail(ex)
+      raise(ex)
     end
 
     SUCCESS_PROC = proc { true }

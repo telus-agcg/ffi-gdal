@@ -223,7 +223,7 @@ module GDAL
         progress_arg: nil, **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
-        fail OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+        raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
         log "Pixel value field: #{pixel_value_field}"
 
         options_ptr = GDAL::Options.pointer(options)
@@ -311,7 +311,7 @@ module GDAL
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
 
         if destination_band.nil? || destination_band.null?
-          fail GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
+          raise GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
         end
 
         options_ptr = GDAL::Options.pointer(options)

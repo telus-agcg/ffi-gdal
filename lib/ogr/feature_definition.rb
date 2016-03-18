@@ -20,7 +20,7 @@ module OGR
                    end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        fail OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
     end
 
@@ -56,7 +56,7 @@ module OGR
       field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
 
       if field_definition_ptr.nil?
-        fail OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
+        raise OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
       end
 
       FFI::OGR::API.OGR_FD_AddFieldDefn(@c_pointer, field_definition_ptr)

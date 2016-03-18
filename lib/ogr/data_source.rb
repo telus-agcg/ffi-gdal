@@ -38,7 +38,7 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     def initialize(path_or_pointer, access_flag)
       @c_pointer =
-        if String === path_or_pointer
+        if path_or_pointer.is_a?(String)
           uri = URI.parse(path_or_pointer)
           file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
           FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
@@ -46,7 +46,7 @@ module OGR
           path_or_pointer
         end
 
-      fail OGR::OpenFailure, file_path if @c_pointer.null?
+      raise OGR::OpenFailure, file_path if @c_pointer.null?
 
       @layers = []
     end
@@ -111,7 +111,7 @@ module OGR
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
       unless can_create_layer?
-        fail OGR::UnsupportedOperation, 'This data source does not support creating layers.'
+        raise OGR::UnsupportedOperation, 'This data source does not support creating layers.'
       end
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
@@ -121,7 +121,7 @@ module OGR
         spatial_ref_ptr, geometry_type, options_obj)
 
       unless layer_ptr
-        fail OGR::InvalidLayer, "Unable to create layer '#{name}'."
+        raise OGR::InvalidLayer, "Unable to create layer '#{name}'."
       end
 
       @layers << OGR::Layer.new(layer_ptr)
@@ -148,7 +148,7 @@ module OGR
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
       unless can_delete_layer?
-        fail OGR::UnsupportedOperation, 'This data source does not support deleting layers.'
+        raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.'
       end
 
       ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)

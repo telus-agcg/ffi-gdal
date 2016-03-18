@@ -63,7 +63,7 @@ module GDAL
         erased_pixel_count = 0
 
         unless erase_value
-          fail GDAL::NoRasterEraseValue,
+          raise GDAL::NoRasterEraseValue,
             'Cannot erase values, RasterBand does not have a NODATA value set'
         end
 

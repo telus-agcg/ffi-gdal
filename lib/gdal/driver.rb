@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
@@ -27,7 +26,7 @@ module GDAL
       driver_ptr = FFI::GDAL::GDAL.GDALGetDriverByName(name)
 
       if driver_ptr.null?
-        fail InvalidDriverName, "'#{name}' is not a valid driver name."
+        raise InvalidDriverName, "'#{name}' is not a valid driver name."
       end
 
       new(driver_ptr)
@@ -39,7 +38,7 @@ module GDAL
     # @raise [GDAL::InvalidDriverIndex] If driver at +index+ does not exist.
     def self.at_index(index)
       if index > count
-        fail InvalidDriverIndex, "index must be between 0 and #{count - 1}."
+        raise InvalidDriverIndex, "index must be between 0 and #{count - 1}."
       end
 
       driver_ptr = FFI::GDAL::GDAL.GDALGetDriver(index)
@@ -142,7 +141,7 @@ module GDAL
         options_pointer
       )
 
-      fail CreateFail if dataset_pointer.null?
+      raise CreateFail if dataset_pointer.null?
 
       dataset = GDAL::Dataset.new(dataset_pointer, 'w')
 
@@ -172,9 +171,10 @@ module GDAL
     # @return [true]
     # @raise [GDAL::CreateFail] if it couldn't copy the dataset.
     # @yieldparam destination_dataset [GDAL::Dataset]
-    def copy_dataset(source_dataset, destination_path, progress_block = nil, progress_arg = nil, strict: true, **options)
+    def copy_dataset(source_dataset, destination_path, progress_block = nil, progress_arg = nil, strict: true,
+      **options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
-      fail GDAL::OpenFailure, "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
+      raise GDAL::OpenFailure, "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
 
       options_ptr = GDAL::Options.pointer(options)
 
@@ -188,7 +188,7 @@ module GDAL
         progress_arg
       )
 
-      fail CreateFail if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
+      raise CreateFail if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
 
       if block_given?
         dataset = Dataset.new(destination_dataset_ptr, 'w')
