@@ -38,7 +38,7 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     def initialize(path_or_pointer, access_flag)
       @c_pointer =
-        if path_or_pointer.is_a? String
+        if String === path_or_pointer
           uri = URI.parse(path_or_pointer)
           file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
           FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
@@ -49,7 +49,6 @@ module OGR
       fail OGR::OpenFailure, file_path if @c_pointer.null?
 
       @layers = []
-      ObjectSpace.define_finalizer self, -> { destroy! }
     end
 
     # Closes opened data source and releases allocated resources.

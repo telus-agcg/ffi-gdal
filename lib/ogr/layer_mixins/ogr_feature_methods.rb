@@ -91,10 +91,13 @@ module OGR
       # current spatial filter will be returned.  Use +reset_reading+ to start at
       # the beginning again.
       #
+      # NOTE: You *must* call {{OGR::Feature#destroy!}} on the returned feature,
+      # otherwise expect segfaults.
+      #
       # @return [OGR::Feature, nil]
       def next_feature
         feature_pointer = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
-        return nil if feature_pointer.null?
+        return if feature_pointer.null?
 
         OGR::Feature.new(feature_pointer)
       end

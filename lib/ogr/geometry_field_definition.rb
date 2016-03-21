@@ -34,6 +34,8 @@ module OGR
     end
 
     def destroy!
+      return unless @c_pointer
+
       FFI::OGR::API.OGR_GFld_Destroy(@c_pointer)
       @c_pointer = nil
     end

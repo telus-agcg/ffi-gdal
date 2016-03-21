@@ -167,9 +167,6 @@ module FFI
       attach_function :GDALOpenShared,
         [:string, Access],
         :GDALDatasetH
-      attach_function :GDALOpenEx,
-        %i[string uint string string string],
-        :GDALDatasetH
       attach_function :GDALDumpOpenDatasets, [:pointer], :int
       attach_function :GDALGetOpenDatasets, %i[pointer pointer], :void
 
@@ -608,7 +605,7 @@ module FFI
         :int
       attach_function :GDALRATGetLinearBinning,
         %i[GDALRasterAttributeTableH pointer pointer],
-        :int
+        :bool
       attach_function :GDALRATTranslateToColorTable,
         %i[GDALRasterAttributeTableH int],
         :GDALColorTableH

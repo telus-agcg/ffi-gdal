@@ -165,15 +165,11 @@ module FFI
       attach_function :OGRMalloc, [:size_t], :pointer
       attach_function :OGRCalloc, %i[size_t size_t], :pointer
       attach_function :OGRRealloc, %i[pointer size_t], :pointer
-      attach_function :OGRStrdup, [:string], :string
       attach_function :OGRFree, [:pointer], :void
 
       attach_function :OGRGeometryTypeToName, [WKBGeometryType], :string
       attach_function :OGRMergeGeometryTypes,
         [WKBGeometryType, WKBGeometryType],
-        WKBGeometryType
-      attach_function :OGRMergeGeometryTypesEx,
-        [WKBGeometryType, WKBGeometryType, :bool],
         WKBGeometryType
       attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
     end

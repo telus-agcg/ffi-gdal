@@ -46,18 +46,18 @@ RSpec.describe OGR::Geometry do
     end
 
     context 'a 2D MultiLineString' do
-      let(:wkt) { 'MULTILINESTRING((3 4),(100 200))' }
+      let(:wkt) { 'MULTILINESTRING((3 4),(100 20))' }
       it { is_expected.to be_a OGR::MultiLineString }
     end
 
     context 'a 2.5D MultiLineString' do
-      let(:wkt) { 'MULTILINESTRING((3 4 19),(100 200 400))' }
+      let(:wkt) { 'MULTILINESTRING((3 4 19),(100 20 40))' }
       it { is_expected.to be_a OGR::MultiLineString }
     end
 
     context 'a 2D MultiPolygon' do
       let(:wkt) do
-        'MULTIPOLYGON(((1 1,2 2,3 3)),((100 100, 200 200, 300 300)))'
+        'MULTIPOLYGON(((1 1,2 2,3 3)),((100 100, 20 20, 30 30)))'
       end
 
       it { is_expected.to be_a OGR::MultiPolygon }
@@ -65,7 +65,7 @@ RSpec.describe OGR::Geometry do
 
     context 'a 2.5D MultiPolygon' do
       let(:wkt) do
-        'MULTIPOLYGON(((1 1 1,2 2 2,3 3 3)),((100 100 100, 200 200 200, 300 300 300)))'
+        'MULTIPOLYGON(((1 1 1,2 2 2,3 3 3)),((100 100 100, 20 20 20, 30 30 30)))'
       end
 
       it { is_expected.to be_a OGR::MultiPolygon }
@@ -181,7 +181,7 @@ RSpec.describe OGR::Geometry do
             [
               [3.0, 4.0], [21.0, 27.0], [2.0, 5.0]
             ], [
-              [100.0, 200.0], [982.0, 6.0]
+              [100.0, 20.0], [982.0, 6.0]
             ]
           ]
         }.to_json
@@ -198,7 +198,7 @@ RSpec.describe OGR::Geometry do
             [
               [3.0, 4.0, 19.0], [21.0, 27.0, 30.0]
             ], [
-              [100.0, 200.0, 400.0], [982.0, 6.0, 47.1]
+              [100.0, 20.0, 400.0], [92.0, 6.0, 47.1]
             ]
           ]
         }.to_json
@@ -220,7 +220,7 @@ RSpec.describe OGR::Geometry do
               ]
             ], [
               [
-                [100.0, 100.0], [200.0, 200.0], [300.0, 300.0]
+                [100.0, 100.0], [20.0, 20.0], [30.0, 30.0]
               ], [
                 [10.0, 10.0], [20.0, 20.0], [30.0, 30.0]
               ]
@@ -245,7 +245,7 @@ RSpec.describe OGR::Geometry do
               ]
             ], [
               [
-                [100.0, 100.0, 100.0], [200.0, 200.0, 200.0], [300.0, 300.0, 300.0]
+                [100.0, 100.0, 100.0], [20.0, 20.0, 20.0], [30.0, 30.0, 30.0]
               ], [
                 [10.0, 10.0, 10.0], [20.0, 20.0, 20.0], [30.0, 30.0, 30.0]
               ]
@@ -398,7 +398,7 @@ RSpec.describe OGR::Geometry do
     </gml:lineStringMember>
     <gml:lineStringMember>
       <gml:LineString>
-        <gml:coordinates>100,200</gml:coordinates>
+        <gml:coordinates>100,20</gml:coordinates>
       </gml:LineString>
     </gml:lineStringMember>
   </gml:MultiLineString>
@@ -419,7 +419,7 @@ RSpec.describe OGR::Geometry do
     </gml:lineStringMember>
     <gml:lineStringMember>
       <gml:LineString>
-        <gml:coordinates>100,200,400</gml:coordinates>
+        <gml:coordinates>100,20,40</gml:coordinates>
       </gml:LineString>
     </gml:lineStringMember>
   </gml:MultiLineString>
@@ -446,7 +446,7 @@ RSpec.describe OGR::Geometry do
       <gml:Polygon>
         <gml:outerBoundaryIs>
           <gml:LinearRing>
-            <gml:coordinates>100,100 200,200 300,300</gml:coordinates>
+            <gml:coordinates>100,100 20,20 30,30</gml:coordinates>
           </gml:LinearRing>
         </gml:outerBoundaryIs>
       </gml:Polygon>
@@ -475,7 +475,7 @@ RSpec.describe OGR::Geometry do
       <gml:Polygon>
         <gml:outerBoundaryIs>
           <gml:LinearRing>
-            <gml:coordinates>100,100,9 200,200,9 300,300,9</gml:coordinates>
+            <gml:coordinates>100,100,9 20,20,9 30,30,9</gml:coordinates>
           </gml:LinearRing>
         </gml:outerBoundaryIs>
       </gml:Polygon>
@@ -544,7 +544,7 @@ RSpec.describe OGR::Geometry do
     let(:geom) { OGR::Geometry.create_from_wkt(wkt) }
 
     let(:wkt) do
-      'LINESTRING(100 100, 200 200, 300 300, 100 100)'
+      'LINESTRING(100 100, 20 20, 30 30, 100 100)'
     end
 
     context 'no spatial_reference' do
@@ -555,7 +555,7 @@ RSpec.describe OGR::Geometry do
     context 'SRID is 4326' do
       subject { geom.utm_zone }
       before { geom.spatial_reference = OGR::SpatialReference.new_from_epsg(4326) }
-      it { is_expected.to eq(64) }
+      it { is_expected.to eq(36) }
     end
 
     context 'SRID is not 4326' do

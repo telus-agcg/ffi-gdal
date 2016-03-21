@@ -2,10 +2,20 @@ require 'json'
 
 module OGR
   module FeatureExtensions
+    # @return [Enumerator]
+    # @yieldparam [Number, String, Array]
+    def each_field
+      return enum_for(:each_field) unless block_given?
+
+      field_count.times.map do |i|
+        field(i)
+      end
+    end
+
     # @return [Array] Uses each FieldDefinition to determine the field type at
     #   each index and returns maps the field as that value type.
     def fields
-      Array.new(field_count) { |i| field(i) }
+      each_field.to_a
     end
 
     # Retrieves a field using +index+, but uses its type from the associated
@@ -40,17 +50,42 @@ module OGR
       end
     end
 
+    # @return [Enumerator]
+    # @yieldparam [OGR::GeometryFieldDefinition]
+    def each_geometry_field_definition
+      return enum_for(:each_geometry_field_definition) unless block_given?
+
+      geometry_field_count.times do |i|
+        yield geometry_field_definition(i)
+      end
+    end
+
+    # @return [Array<OGR::GeometryFieldDefinition>]
+    def geometry_field_definitions
+      each_geometry_field_definition.to_a
+    end
+
+    # @return [Enumerator]
+    # @yieldparam [OGR::Geometry]
+    def each_geometry_field
+      return enum_for(:each_geometry_field) unless block_given?
+
+      geometry_field_count.times.map do |i|
+        geometry_field(i)
+      end
+    end
+
     # @return [Array<OGR::Geometry>]
     def geometry_fields
-      Array.new(geometry_field_count) { |i| geometry_field(i) }
+      each_geometry_field.to_a
     end
 
     # @return [Hash]
     def as_json(options = nil)
-      fields_with_nested_json = fields.map do |f|
+      fields_with_nested_json = fields.map.with_index do |f, i|
         {
-          field_definition: f[:field_definition].as_json(options),
-          value_as_string: f[:value_as_string]
+          field_definition: field_definition(i).as_json(options),
+          value: f
         }
       end
 
@@ -61,7 +96,7 @@ module OGR
         fields: fields_with_nested_json,
         geometry: geometry ? geometry.as_json(options) : nil,
         geometry_field_count: geometry_field_count,
-        geometry_field_definitions: geometry_field_definitions.map(&:as_json),
+        geometry_field_definition: each_geometry_field_definition.map { |gfd| gfd.as_json(options) },
         style_string: style_string,
         style_table: style_table ? style_table.as_json(options) : nil
       }

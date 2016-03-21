@@ -48,7 +48,9 @@ module OGR
       # @return [OGR::Geometry]
       def geometry_at(sub_geometry_index)
         build_geometry do
-          FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
+          tmp_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
+          tmp_ptr.autorelease = false
+          tmp_ptr.null? ? nil : FFI::OGR::API.OGR_G_Clone(tmp_ptr)
         end
       end
       alias geometry_ref geometry_at

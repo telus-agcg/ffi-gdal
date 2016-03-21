@@ -8,10 +8,6 @@ module GDAL
 
       attr_reader :c_pointer
 
-      def initialize
-        # ObjectSpace.define_finalizer self, -> { destroy! }
-      end
-
       def destroy!
         return unless @c_pointer
 

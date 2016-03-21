@@ -22,6 +22,11 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Improvements
 
+* Removed all `ObjectSpace.define_finalizer` calls that "cleaned up" C pointers
+  for Ruby-wrapped objects that had not yet been closed/destroyed. This was
+  keeping those Ruby objects from getting collected (?) and effectively causing
+  lots of unnecessary memory use.
+
 #### GDAL
 
 * Added `GDAL::GeoTransformMixins::Extensions.new_from_envelope` which lets you
@@ -64,6 +69,17 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   yielding the dataset then closing it afterwards.
 * `GDAL::RasterBandClassifier` now uses NArray to classify. Can result in quite
   a large performance gain.
+* `GDAL::Driver#copy_dataset` now properly takes progress block arguments.
+* `GDAL::Driver#copy_dataset` now yields a writable Dataset.
+* Swapped order of params in `GDAL::Driver#rename_dataset` to be (old, new)
+  instead of (new, old).
+* Added enumerator `RasterAttributeTableMixins::Extensions#each_column` to allow
+  nicer iterating over columns.
+* `GDAL::RasterAttributeTable` methods that returned -1 when a value can't be
+  returned now return nil instead.
+* Renamed `GDAL::RasterAttributeTable#value_to_*` methods to be named after
+  their C functions. Also, renamed `#add_value` to `#set_value` and refactored
+  into `RasterAttributeTableMixins::Extensions`.
 
 #### OGR
 
@@ -105,10 +121,14 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Bug Fixes
 
+* Cleanup `OGR::Feature`s that were a result of `OGR::Layer#next_feature`.
+  According to GDAL docs, these *must* be cleaned up before the layer is.
+
 #### GDAL
 
 * `GDAL::RasterBandMixins::AlgorithmMethods#fill_nodata!` was calling the old
   name of the C function.
+* `GDAL::EnvironmentMethods#dump_open_datasets` now works.
 
 #### OGR
 
@@ -118,6 +138,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `OGR::Geometry#point_on_surface` now properly returns a geometry object.
 * `OGR::CoordinateTransform#transform` never worked. Fixed.
 * `OGR::GeometryMixins::Extensions#utm_zone` no longer creates invalid geometry.
+* `OGR::Feature#dump_readable` never worked. Fixed.
+* `OGR::Geometry#dump_readable` never worked. Fixed.
 
 ## 1.0.0.beta5 / 2015-06-16
 

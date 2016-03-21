@@ -1,4 +1,7 @@
 module GDAL
+  class BufferTooSmall < StandardError
+  end
+
   class CreateFail < StandardError
   end
 
@@ -60,6 +63,9 @@ module GDAL
       message = msg || "Unknown Grid algorithm type '#{algorithm}'."
       super(message)
     end
+  end
+
+  class UnknownRasterAttributeTableType < StandardError
   end
 
   class UnsupportedOperation < StandardError

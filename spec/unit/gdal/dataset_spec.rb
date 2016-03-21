@@ -7,8 +7,10 @@ RSpec.describe GDAL::Dataset do
   end
 
   subject do
-    described_class.open(file_path, 'r')
+    described_class.open(file_path, 'r', false)
   end
+
+  it_behaves_like 'a major object'
 
   describe '.open' do
     context 'not a dataset' do
@@ -112,6 +114,26 @@ RSpec.describe GDAL::Dataset do
   describe '#geo_transform' do
     it 'returns a GDAL::GeoTransform' do
       expect(subject.geo_transform).to be_a GDAL::GeoTransform
+    end
+  end
+
+  describe '#parse_mask_flag_symbols' do
+    context 'empty params' do
+      it 'returns 0' do
+        expect(subject.send(:parse_mask_flag_symbols, nil)).to eq 0
+      end
+    end
+
+    context ':GMF_ALL_VALID' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID)).to eq 1
+      end
+    end
+
+    context ':GMF_ALL_VALID, :GMF_NODATA' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID, :GMF_NODATA)).to eq 9
+      end
     end
   end
 end

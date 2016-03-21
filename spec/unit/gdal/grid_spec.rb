@@ -13,11 +13,22 @@ RSpec.describe GDAL::Grid do
   end
 
   describe '#make_points_pointer' do
-    it 'creates a FFI::MemoryPointer from the given array of points' do
-      points = [1, 2, 3, 4]
-      pointer = subject.send(:make_points_pointer, points)
-      expect(pointer).to be_an_instance_of FFI::MemoryPointer
-      expect(pointer.read_array_of_double(points.length)).to eq(points)
+    context 'array has values' do
+      let(:points) { [1, 2, 3, 4] }
+
+      it 'creates a FFI::MemoryPointer from the given array of points' do
+        pointer = subject.send(:make_points_pointer, points)
+        expect(pointer).to be_an_instance_of FFI::MemoryPointer
+        expect(pointer.read_array_of_double(points.length)).to eq(points)
+      end
+    end
+
+    context 'array has only nil values' do
+      let(:points) { [nil, nil] }
+
+      it 'raises a GDAL::Error' do
+        expect { subject.send(:make_points_pointer, points) }.to raise_error GDAL::Error
+      end
     end
   end
 

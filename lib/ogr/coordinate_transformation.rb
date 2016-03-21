@@ -34,13 +34,12 @@ module OGR
       if @c_pointer.null?
         fail OGR::Failure, 'Unable to create coordinate transformation'
       end
-
-      close_me = -> { destroy! }
-      ObjectSpace.define_finalizer self, close_me
     end
 
     # Deletes the object and deallocates all related C resources.
     def destroy!
+      return unless @c_pointer
+
       FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(@c_pointer)
       @c_pointer = nil
     end
@@ -93,7 +92,7 @@ module OGR
     #   Will include a 3rd array of Z values if z vertices are given.
     def _transform(x_vertices, y_vertices, z_vertices = [])
       x_ptr, y_ptr, z_ptr = init_transform_pointers(x_vertices, y_vertices, z_vertices)
-      point_count = x_vertices.length + y_vertices.length
+      point_count = [x_vertices.length, y_vertices.length, z_vertices.length].max
 
       result = yield point_count, x_ptr, y_ptr, z_ptr
 

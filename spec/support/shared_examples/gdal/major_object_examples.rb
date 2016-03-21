@@ -49,12 +49,6 @@ RSpec.shared_examples 'a major object' do
 
   describe '#description=' do
     context 'new description is a string' do
-      around :example do |example|
-        original_description = subject.description
-        example.run
-        subject.description = original_description
-      end
-
       it 'sets the items description' do
         subject.description = 'a test description'
         expect(subject.description).to eq 'a test description'

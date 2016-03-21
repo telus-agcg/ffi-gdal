@@ -185,7 +185,13 @@ module GDAL
       scaled_progress_func = FFI::CPL::Progress::ScaledProgress if @options.progress_formatter
 
       each_block(raster_band.block_size) do |block_number, block_count, block_size, x_offset, y_offset|
-        scaled_progress_ptr = build_scaled_progress_pointer(block_number, block_count) if @options.progress_formatter
+        scaled_progress_ptr = nil
+        progress_arg = nil
+
+        if @options.progress_formatter
+          scaled_progress_ptr = build_scaled_progress_pointer(block_number, block_count)
+          progress_arg = FFI::CPL::Progress::ScaledProgress
+        end
 
         x_request = build_data_request_size(block_size[:x], x_offset, output_width)
         y_request = build_data_request_size(block_size[:y], y_offset, output_height)
@@ -196,7 +202,7 @@ module GDAL
         extents = { x_min: grid_x_min, x_max: grid_x_max, y_min: grid_y_min, y_max: grid_y_max }
 
         @options.grid.create(points, extents, data_ptr, output_size,
-          scaled_progress_func, scaled_progress_ptr)
+          progress_arg, scaled_progress_ptr)
 
         raster_band.raster_io('w', data_ptr, x_offset: x_offset, y_offset: y_offset,
                                              x_size: x_request, y_size: y_request,

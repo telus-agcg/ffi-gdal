@@ -43,9 +43,11 @@ module OGR
 
     # Dumps the feature out to the file in human-readable form.
     #
-    # @param file_name [String]
-    def dump_readable(file_name)
-      FFI::OGR::API.OGR_F_DumpReadable(@c_pointer, file_name)
+    # @param file_path [String]
+    def dump_readable(file_path = nil)
+      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+      FFI::OGR::API.OGR_F_DumpReadable(@c_pointer, file_ptr)
+      FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
     end
 
     # Overwrites the contents of this feature from the geometry and attributes

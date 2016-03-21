@@ -261,9 +261,6 @@ module FFI
       attach_function :OSRSetGnomonic,
         %i[OGRSpatialReferenceH double double double double],
         FFI::OGR::Core::Err
-      attach_function :OSRSetOM,
-        %i[OGRSpatialReferenceH double double double double double double double],
-        FFI::OGR::Core::Err
       attach_function :OSRSetHOM,
         %i[OGRSpatialReferenceH double double double double double double double],
         FFI::OGR::Core::Err

@@ -156,17 +156,27 @@ module GDAL
       end
     end
 
+    # Copies +source_dataset+ to +destination_path+. Will yield a writable
+    # {{GDAL::Dataset}} of the destination dataset then close it if a block is
+    # given.
+    #
     # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
     # @param destination_path [String] The name for the new dataset file.
     # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
     #   the output format.
     # @param options [Hash]
-    # @param progress [Proc] For outputting copy progress.  Conforms to the
-    #   FFI::GDAL::GDAL::GDALProgressFunc signature.
-    def copy_dataset(source_dataset, destination_path, strict: true, **options, &progress)
-      options_ptr = GDAL::Options.pointer(options)
+    # @param progress_block [Proc, FFI::GDAL::GDAL.GDALProgressFunc] For
+    #   outputting copy progress.  Conforms to the
+    #   FFI::GDAL::GDAL.GDALProgressFunc signature.
+    # @param progress_arg [Proc]
+    # @return [true]
+    # @raise [GDAL::CreateFail] if it couldn't copy the dataset.
+    # @yieldparam destination_dataset [GDAL::Dataset]
+    def copy_dataset(source_dataset, destination_path, progress_block = nil, progress_arg = nil, strict: true, **options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
-      fail "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
+      fail GDAL::OpenFailure, "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
+
+      options_ptr = GDAL::Options.pointer(options)
 
       destination_dataset_ptr = FFI::GDAL::GDAL.GDALCreateCopy(
         @c_pointer,
@@ -174,17 +184,19 @@ module GDAL
         source_dataset_ptr,
         strict,
         options_ptr,
-        progress,
-        nil
+        progress_block,
+        progress_arg
       )
 
-      fail CreateFail if destination_dataset_ptr.null?
+      fail CreateFail if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
 
-      dataset = Dataset.new(destination_dataset_ptr, 'w')
-      yield(dataset) if block_given?
-      dataset.close
+      if block_given?
+        dataset = Dataset.new(destination_dataset_ptr, 'w')
+        yield(dataset)
+        dataset.close
+      end
 
-      dataset
+      true
     end
 
     # Delete the dataset represented by +file_name+.  Depending on the driver,
@@ -197,11 +209,11 @@ module GDAL
       FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
     end
 
-    # @param new_name [String]
     # @param old_name [String]
+    # @param new_name [String]
     # @return true on success, false on warning.
     # @raise [GDAL::CPLErrFailure] If failures.
-    def rename_dataset(new_name, old_name)
+    def rename_dataset(old_name, new_name)
       FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
     end
 
@@ -214,7 +226,7 @@ module GDAL
       if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        GDAL._pointer(GDAL::Dataset, source_dataset)
+        GDAL._pointer(GDAL::Dataset, dataset)
       end
     end
   end

@@ -86,12 +86,17 @@ module GDAL
         new_color_interp)
     end
 
+    # Gets the associated GDAL::ColorTable. Note that it remains owned by the
+    # RasterBand and cannot be modified.
+    #
     # @return [GDAL::ColorTable]
     def color_table
-      gdal_color_table = FFI::GDAL::GDAL.GDALGetRasterColorTable(@c_pointer)
-      return nil if gdal_color_table.null?
+      color_table_ptr = FFI::GDAL::GDAL.GDALGetRasterColorTable(@c_pointer)
+      color_table_ptr.autorelease = false
 
-      ColorTable.new(gdal_color_table)
+      return nil if color_table_ptr.null?
+
+      ColorTable.new(color_table_ptr)
     end
 
     # @param new_color_table [GDAL::ColorTable]
@@ -223,6 +228,7 @@ module GDAL
       flags
     end
 
+    # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
     # @return [Boolean]
     def create_mask_band(*flags)
       flag_value = 0
@@ -357,6 +363,8 @@ module GDAL
       { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
     end
 
+    # Sets the scaling offset. Very few formats support this method.
+    #
     # @param new_offset [Float]
     # @return [Boolean]
     def offset=(new_offset)
@@ -602,6 +610,8 @@ module GDAL
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
       buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
       pixel_space: 0, line_space: 0)
+      return unless @c_pointer
+
       x_size ||= self.x_size
       y_size ||= self.y_size
 

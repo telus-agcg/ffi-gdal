@@ -105,7 +105,7 @@ module OGR
                      FFI::MemoryPointer.new(:buffer_out, buffer_size)
                    end
 
-        num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
+        FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
           x_buffer,
           x_stride,
           y_buffer,

@@ -70,6 +70,7 @@ module GDAL
 
     # @param points [Array]
     def make_points_pointer(points)
+      fail GDAL::Error, 'No points to make pointer for' if points.compact.empty?
       input_coordinates_ptr = FFI::MemoryPointer.new(:double, points.length)
       input_coordinates_ptr.write_array_of_double(points)
 

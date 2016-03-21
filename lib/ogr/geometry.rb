@@ -80,10 +80,7 @@ module OGR
                       geometry_ptr_ptr.read_pointer.null?
         geometry_ptr_ptr.read_pointer.nil?
 
-        geometry = factory(geometry_ptr_ptr.read_pointer)
-        ObjectSpace.define_finalizer(geometry) { destroy! }
-
-        geometry
+        factory(geometry_ptr_ptr.read_pointer)
       end
 
       # @param gml_data [String]
@@ -238,13 +235,14 @@ module OGR
       point
     end
 
-    # # Dump as WKT to the give +file+.
+    # Dump as WKT to the given +file_path+; dumps to STDOUT if none is given.
     #
-    # @param file [String] The text file to write to.
+    # @param file_path [String] The text file to write to.
     # @param prefix [String] The prefix to put on each line of output.
-    # @return [String]
-    def dump_readable(file, prefix = nil)
-      FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file, prefix)
+    def dump_readable(file_path = nil, prefix: nil)
+      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+      FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file_ptr, prefix)
+      FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
     end
 
     # Converts this geometry to a 2D geometry.
@@ -663,14 +661,3 @@ module OGR
     end
   end
 end
-
-require_relative 'geometries/geometry_collection'
-require_relative 'geometries/line_string'
-require_relative 'geometries/linear_ring'
-require_relative 'geometries/multi_line_string'
-require_relative 'geometries/multi_point'
-require_relative 'geometries/multi_polygon'
-require_relative 'geometries/none_geometry'
-require_relative 'geometries/point'
-require_relative 'geometries/polygon'
-require_relative 'geometries/unknown_geometry'

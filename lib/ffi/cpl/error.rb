@@ -31,9 +31,6 @@ module FFI
       attach_function :CPLGetLastErrorMsg, [], :string
 
       attach_function :CPLGetErrorHandlerUserData, [], :pointer
-      attach_function :CPLErrorSetState,
-        [CPLErr, :int, :string],
-        :void
       attach_function :CPLCleanupErrorMutex, [], :void
       attach_function :CPLLoggingErrorHandler,
         [CPLErr, :int, :string],

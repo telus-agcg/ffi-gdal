@@ -1,5 +1,5 @@
 RSpec.shared_examples 'a geometry' do
-  require 'ogr/spatial_reference'
+  require 'ogr'
 
   describe '#coordinate_dimension' do
     subject { geometry.coordinate_dimension }
