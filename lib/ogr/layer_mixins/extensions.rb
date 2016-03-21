@@ -17,8 +17,16 @@ module OGR
         FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
 
         loop do
-          break unless feature = next_feature
-          yield feature
+          feature = next_feature
+          break unless feature
+
+          begin
+            yield feature
+          rescue
+            feature.destroy!
+            raise
+          end
+
           feature.destroy!
         end
 
@@ -40,7 +48,13 @@ module OGR
             break
           end
 
-          yield feature_ptr
+          begin
+            yield feature_ptr
+          rescue
+            FFI::OGR::API.OGR_F_Destroy(feature_ptr)
+            raise
+          end
+
           FFI::OGR::API.OGR_F_Destroy(feature_ptr)
         end
 
