@@ -32,7 +32,7 @@ module GDAL
         end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        fail GDAL::InvalidColorTable,
+        raise GDAL::InvalidColorTable,
           "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
       end
 
@@ -44,7 +44,7 @@ module GDAL
       when :GPI_CMYK then extend GDAL::ColorTableTypes::CMYK
       when :GPI_HLS then extend GDAL::ColorTableTypes::HLS
       else
-        fail "Unknown PaletteInterpretation: #{palette_interpretation}"
+        raise "Unknown PaletteInterpretation: #{palette_interpretation}"
       end
     end
 

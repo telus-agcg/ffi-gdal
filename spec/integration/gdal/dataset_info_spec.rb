@@ -100,7 +100,7 @@ GEOGCS["WGS 84",
 
     context 'param is not a string' do
       it 'raises a GDAL::Error' do
-        expect { subject.projection  = { one: 1 } }.to raise_exception(GDAL::Error)
+        expect { subject.projection = { one: 1 } }.to raise_exception(GDAL::Error)
       end
     end
   end

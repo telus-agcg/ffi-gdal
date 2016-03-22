@@ -21,7 +21,7 @@ module OGR
                    end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        fail OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
+        raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
       end
     end
 
@@ -36,7 +36,7 @@ module OGR
     # @raise [OGR::Failure] If, for some reason, the clone fails.
     def clone
       feature_ptr = FFI::OGR::API.OGR_F_Clone(@c_pointer)
-      fail OGR::Failure, 'Unable to clone feature' if feature_ptr.nil?
+      raise OGR::Failure, 'Unable to clone feature' if feature_ptr.nil?
 
       OGR::Feature.new(feature_ptr)
     end
@@ -59,7 +59,7 @@ module OGR
     # @param with_map [Array<Fixnum>]
     # TODO: Implement +with_map+
     def set_from!(_other_feature, _be_forgiving = false, with_map: nil)
-      fail NotImplementedError, 'with_map: is not yet supported' if with_map
+      raise NotImplementedError, 'with_map: is not yet supported' if with_map
 
       ogr_err = FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
 
@@ -141,7 +141,7 @@ module OGR
     # @param index [Fixnum]
     # @param value [String]
     def set_field_binary(index, value)
-      fail TypeError, 'value must be a binary string' unless value.is_a? String
+      raise TypeError, 'value must be a binary string' unless value.is_a? String
 
       value_ptr = FFI::MemoryPointer.new(:uchar, value.length)
       value_ptr.put_bytes(0, value)
@@ -224,7 +224,7 @@ module OGR
     # @return [OGR::Geometry]
     def steal_geometry
       geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@c_pointer)
-      fail OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil?
+      raise OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil?
 
       OGR::Geometry.factory(geometry_ptr)
     end
@@ -276,21 +276,16 @@ module OGR
       geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@c_pointer, index)
       return nil if geometry_ptr.nil? || geometry_ptr.null?
 
-      geometry = OGR::Geometry.factory(geometry_ptr)
-      geometry.read_only = true
-
-      geometry
+      OGR::Geometry.factory(geometry_ptr)
     end
 
     # @param index [Fixnum]
     # @param geometry [OGR::Geometry]
     def set_geometry_field(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
-      fail OGR::InvalidGeometry if geometry_ptr.nil?
+      raise OGR::InvalidGeometry if geometry_ptr.nil?
 
-      ogr_err =
-        # FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)
-        FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
+      ogr_err = FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
 
       ogr_err.handle_result
     end
@@ -434,7 +429,7 @@ module OGR
     # @param new_style_table [OGR::StyleTable]
     def style_table=(new_style_table)
       new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
-      fail OGR::InvalidStyleTable unless new_style_table_ptr
+      raise OGR::InvalidStyleTable unless new_style_table_ptr
 
       FFI::OGR::API.OGR_F_SetStyleTableDirectly(@c_pointer, new_style_table_ptr)
     end

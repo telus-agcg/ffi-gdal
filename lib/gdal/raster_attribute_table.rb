@@ -60,21 +60,21 @@ module GDAL
     def column_name(index)
       FFI::GDAL::GDAL.GDALRATGetNameOfCol(@c_pointer, index)
     end
-    alias_method :name_of_col, :column_name
+    alias name_of_col column_name
 
     # @param index [Fixnum] The column number.
     # @return [GDALRATFieldUsage]
     def column_usage(index)
       FFI::GDAL::GDAL.GDALRATGetUsageOfCol(@c_pointer, index)
     end
-    alias_method :usage_of_col, :column_usage
+    alias usage_of_col column_usage
 
     # @param index [Fixnum] The column number.
     # @return [GDALRATFieldType]
     def column_type(index)
       FFI::GDAL::GDAL.GDALRATGetTypeOfCol(@c_pointer, index)
     end
-    alias_method :type_of_col, :column_type
+    alias type_of_col column_type
 
     # @param field_usage [GDALRATFieldUsage]
     # @return [Fixnum] The column number or nil.
@@ -127,7 +127,7 @@ module GDAL
     def value_as_integer(row, field)
       FFI::GDAL::GDAL.GDALRATGetValueAsInt(@c_pointer, row, field)
     end
-    alias_method :value_as_int, :value_as_integer
+    alias value_as_int value_as_integer
 
     # @param row [Fixnum]
     # @param field [Fixnum]
@@ -135,7 +135,7 @@ module GDAL
     def value_as_double(row, field)
       FFI::GDAL::GDAL.GDALRATGetValueAsDouble(@c_pointer, row, field)
     end
-    alias_method :value_as_float, :value_as_double
+    alias value_as_float value_as_double
 
     # @param row [Fixnum]
     # @param field [Fixnum]
@@ -150,7 +150,7 @@ module GDAL
     def set_value_as_double(row, field, value)
       FFI::GDAL::GDAL.GDALRATSetValueAsDouble(@c_pointer, row, field, value)
     end
-    alias_method :set_value_as_float, :set_value_as_double
+    alias set_value_as_float set_value_as_double
 
     # @param row [Fixnum]
     # @param field [Fixnum]
@@ -158,7 +158,7 @@ module GDAL
     def set_value_as_integer(row, field, value)
       FFI::GDAL::GDAL.GDALRATSetValueAsInt(@c_pointer, row, field, value)
     end
-    alias_method :set_value_as_int, :set_value_as_integer
+    alias set_value_as_int set_value_as_integer
 
     # @return [Hash{row_0_minimum => Float, bin_size => Float}]
     def linear_binning

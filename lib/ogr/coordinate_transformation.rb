@@ -10,7 +10,7 @@ module OGR
       if GDAL._supported?(:OCTProj4Normalize)
         FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
       else
-        fail OGR::UnsupportedOperation,
+        raise OGR::UnsupportedOperation,
           'Your version of GDAL/OGR does not support OCTProj4Normalize'
       end
     end
@@ -31,9 +31,7 @@ module OGR
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
       @c_pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
-      if @c_pointer.null?
-        fail OGR::Failure, 'Unable to create coordinate transformation'
-      end
+      raise OGR::Failure, 'Unable to create coordinate transformation' if @c_pointer.null?
     end
 
     # Deletes the object and deallocates all related C resources.

@@ -100,18 +100,11 @@ module OGR
         buffer_size = point_count
         x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
         y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-
-        z_buffer = if coordinate_dimension == 3
-                     FFI::MemoryPointer.new(:buffer_out, buffer_size)
-                   end
+        z_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size) if coordinate_dimension == 3
 
         FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
-          x_buffer,
-          x_stride,
-          y_buffer,
-          y_stride,
-          z_buffer,
-          z_stride)
+          x_buffer, x_stride, y_buffer,
+          y_stride, z_buffer, z_stride)
 
         log 'Got different number of points than point_count in #point_values' unless num_points == point_count
 

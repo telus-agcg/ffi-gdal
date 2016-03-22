@@ -197,7 +197,7 @@ module OGR
                 end
               end
             end
-          else fail OGR::UnsupportedGeometryType,
+          else raise OGR::UnsupportedGeometryType,
             "Not sure how to extract point_values for a #{geom_type}"
           end
         end

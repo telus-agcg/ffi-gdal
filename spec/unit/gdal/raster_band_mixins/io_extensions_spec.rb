@@ -15,13 +15,7 @@ RSpec.describe 'GDAL::RasterBandMixins::IOExtensions' do
   subject(:raster_band) { dataset_byte.raster_band(1) }
 
   describe '#write_xy_narray' do
-    let(:dataset) do
-      d = driver.create_dataset('test dataset', 64, 4)
-      band = d.raster_band 1
-
-      d
-    end
-
+    let(:dataset) { driver.create_dataset('test dataset', 64, 4) }
     let(:raster_band) { dataset.raster_band 1 }
 
     it 'writes pixels from the NArray' do

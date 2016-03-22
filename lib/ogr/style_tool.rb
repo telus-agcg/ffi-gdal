@@ -11,7 +11,7 @@ module OGR
       @c_pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
       return if @c_pointer && !@c_pointer.null?
 
-      fail OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
+      raise OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
     end
 
     # @return [String, nil]
@@ -94,14 +94,8 @@ module OGR
       blue_ptr = FFI::MemoryPointer.new(:int)
       alpha_ptr = FFI::MemoryPointer.new(:int)
 
-      boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(
-        @c_pointer,
-        color_string,
-        red_ptr,
-        green_ptr,
-        blue_ptr,
-        alpha_ptr
-      )
+      boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(@c_pointer,
+        color_string, red_ptr, green_ptr, blue_ptr, alpha_ptr)
 
       if boolean_result
         {

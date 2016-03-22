@@ -23,7 +23,7 @@ module GDAL
           0.0,
           order
         )
-        fail if @c_pointer.null?
+        raise if @c_pointer.null?
 
         super()
       end

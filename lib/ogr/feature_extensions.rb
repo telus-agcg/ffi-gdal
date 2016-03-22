@@ -2,13 +2,15 @@ require 'json'
 
 module OGR
   module FeatureExtensions
+    # Retrieves the value for each field and yields it.
+    #
     # @return [Enumerator]
     # @yieldparam [Number, String, Array]
     def each_field
       return enum_for(:each_field) unless block_given?
 
-      field_count.times.map do |i|
-        field(i)
+      field_count.times do |i|
+        yield field(i)
       end
     end
 
@@ -45,7 +47,7 @@ module OGR
       when :OFTInteger64      then field_as_integer(index)
       when :OFTInteger64List  then field_as_integer_lsit(index)
       when :OFTMaxType        then field_as_date_time(index)
-      else fail OGR::UnsupportedFieldType,
+      else raise OGR::UnsupportedFieldType,
         "Don't know how to fetch field for field type: #{field_type}"
       end
     end
@@ -70,8 +72,8 @@ module OGR
     def each_geometry_field
       return enum_for(:each_geometry_field) unless block_given?
 
-      geometry_field_count.times.map do |i|
-        geometry_field(i)
+      geometry_field_count.times do |i|
+        yield geometry_field(i)
       end
     end
 

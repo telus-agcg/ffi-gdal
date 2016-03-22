@@ -150,7 +150,7 @@ RSpec.describe 'GeoTransform Info', type: :integration do
     context 'really large pixel and line' do
       it '(oddly) returns a Hash with mapped geo values' do
         expect(subject.apply_geo_transform(1_000_000_000_000, 10_000_000_000_000)).
-          to eq(x_geo: 1850509803909.084, y_geo: -300184210417.2807)
+          to eq(x_geo: 1_850_509_803_909.084, y_geo: -300_184_210_417.2807)
       end
     end
 

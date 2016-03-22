@@ -137,7 +137,7 @@ module GDAL
     # @return [OGR::Geometry]
     def input_clipping_geometry=(geometry)
       unless geometry.is_a?(OGR::Geometry)
-        fail OGR::InvalidGeometry,
+        raise OGR::InvalidGeometry,
           "Clipping geometry must be a OGR::Geometry type, but was a #{geometry.class}"
       end
 
@@ -149,7 +149,7 @@ module GDAL
       data_types = FFI::GDAL::GDAL::DataType.symbols
 
       unless data_types.include?(type)
-        fail GDAL::InvalidDataType,
+        raise GDAL::InvalidDataType,
           "output_data_type must be one of #{data_types} but was #{type}"
       end
 
@@ -166,7 +166,7 @@ module GDAL
       driver_names = GDAL::Driver.short_names
 
       unless driver_names.include?(format)
-        fail GDAL::InvalidDriverName,
+        raise GDAL::InvalidDriverName,
           "output_form must be one of #{driver_names} but was #{format}"
       end
 
@@ -210,7 +210,7 @@ module GDAL
     # @param spatial_reference [OGR::SpatialReference]
     def output_projection=(spatial_reference)
       unless spatial_reference.is_a?(OGR::SpatialReference)
-        fail OGR::InvalidSpatialReference,
+        raise OGR::InvalidSpatialReference,
           "output_projection must be an OGR::SpatialReference but was a #{spatial_reference.class}"
       end
 
@@ -248,7 +248,7 @@ module GDAL
     # @return [Array<Number>]
     def extract_min_max_from_array(content, min_name, max_name)
       unless content.length == 2
-        fail ArgumentError,
+        raise ArgumentError,
           "Please supply only 2 elements, one for #{min_name}, one for #{max_name}"
       end
 
@@ -264,7 +264,7 @@ module GDAL
       actual_keys = content.keys
 
       unless actual_keys.length == 2 && valid_keys & actual_keys == valid_keys
-        fail ArgumentError, "Please supply only key/value pairs for #{min_name} and #{max_name}"
+        raise ArgumentError, "Please supply only key/value pairs for #{min_name} and #{max_name}"
       end
 
       [content[min_name], content[max_name]]

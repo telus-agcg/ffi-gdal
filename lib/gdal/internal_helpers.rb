@@ -81,6 +81,23 @@ module GDAL
         array_pointer
       end
 
+      # @param type [Symbol] FFI type of pointer to make a pointer to.
+      # @return [FFI::MemoryPointer] Pointer to a pointer.
+      def _pointer_pointer(type)
+        pointer = FFI::MemoryPointer.new(type)
+        pointer_ptr = FFI::MemoryPointer.new(:pointer)
+        pointer_ptr.write_pointer(pointer)
+
+        pointer_ptr
+      end
+
+      # @return [String, nil]
+      def _read_pointer_pointer_safely(pointer_ptr, type)
+        return if pointer_ptr.read_pointer.null?
+
+        pointer_ptr.read_pointer.send("read_#{type}".to_sym)
+      end
+
       # Maps GDAL DataTypes to FFI types.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]
@@ -95,7 +112,7 @@ module GDAL
         when :GDT_Float32, :GDT_CFloat32  then :float
         when :GDT_Float64, :GDT_CFloat64  then :double
         else
-          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
+          raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end
       end
 
@@ -114,7 +131,7 @@ module GDAL
         when :GDT_CFloat32                            then :complex
         when :GDT_CFloat64                            then :dcomplex
         else
-          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
+          raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end
       end
 
@@ -133,7 +150,7 @@ module GDAL
         when :GDT_CFloat32                        then NArray::COMPLEX
         when :GDT_CFloat64                        then NArray::DCOMPLEX
         else
-          fail GDAL::InvalidDataType, "Unknown data type: #{data_type}"
+          raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end
       end
 
@@ -190,7 +207,7 @@ module GDAL
         case char
         when 'r' then :GF_Read
         when 'w' then :GF_Write
-        else fail GDAL::InvalidAccessFlag, "Invalid access flag: #{char}"
+        else raise GDAL::InvalidAccessFlag, "Invalid access flag: #{char}"
         end
       end
     end

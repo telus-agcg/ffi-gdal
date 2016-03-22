@@ -8,8 +8,7 @@ module OGR
         datum_name = FFI::MemoryPointer.new(:string)
         units = FFI::MemoryPointer.new(:string)
 
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name,
-          datum_name, units)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name, datum_name, units)
         ogr_err.handle_result 'Required parameters (name, datum name, units) are not defined'
 
         {
@@ -21,12 +20,8 @@ module OGR
 
       # @return [Array<String>]
       def to_mapinfo
-        return_ptr = FFI::MemoryPointer.new(:string)
-        return_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-        return_ptr_ptr.write_pointer(return_ptr)
-
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToMICoordSys(@c_pointer,
-          return_ptr_ptr)
+        return_ptr_ptr = GDAL._pointer_pointer(:string)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToMICoordSys(@c_pointer, return_ptr_ptr)
         ogr_err.handle_result
 
         return_ptr_ptr.get_array_of_string(0)
@@ -34,20 +29,11 @@ module OGR
 
       # @return [Hash]
       def to_pci
-        proj = FFI::MemoryPointer.new(:string)
-        proj_ptr = FFI::MemoryPointer.new(:pointer)
-        proj_ptr.write_pointer(proj)
+        proj_ptr = GDAL._pointer_pointer(:string)
+        units_ptr = GDAL._pointer_pointer(:string)
+        prj_params_ptr = GDAL._pointer_pointer(:double)
 
-        units = FFI::MemoryPointer.new(:string)
-        units_ptr = FFI::MemoryPointer.new(:pointer)
-        units_ptr.write_pointer(units)
-
-        prj_params = FFI::MemoryPointer.new(:double)
-        prj_params_ptr = FFI::MemoryPointer.new(:pointer)
-        prj_params_ptr.write_pointer(prj_params)
-
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToPCI(@c_pointer, proj_ptr,
-          units_ptr, prj_params_ptr)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToPCI(@c_pointer, proj_ptr, units_ptr, prj_params_ptr)
         ogr_err.handle_result
 
         {
@@ -60,14 +46,11 @@ module OGR
       # @return [String]
       # @raise [GDAL::UnsupportedOperation] If empty definition.
       def to_proj4
-        proj4 = FFI::MemoryPointer.new(:string)
-        proj4_ptr = FFI::MemoryPointer.new(:pointer)
-        proj4_ptr.write_pointer(proj4)
-
+        proj4_ptr = GDAL._pointer_pointer(:string)
         ogr_err = FFI::OGR::SRSAPI.OSRExportToProj4(@c_pointer, proj4_ptr)
         ogr_err.handle_result
 
-        proj4_ptr.read_pointer.read_string
+        GDAL._read_pointer_pointer_safely(proj4_ptr, :string)
       end
 
       # @return [Hash]
@@ -75,12 +58,9 @@ module OGR
         proj_sys = FFI::MemoryPointer.new(:long)
         zone = FFI::MemoryPointer.new(:long)
         datum = FFI::MemoryPointer.new(:long)
-        prj_params = FFI::MemoryPointer.new(:double)
-        prj_params_ptr = FFI::MemoryPointer.new(:pointer)
-        prj_params_ptr.write_pointer(prj_params)
+        prj_params_ptr = GDAL._pointer_pointer(:double)
 
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys,
-          zone, prj_params_ptr, datum)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys, zone, prj_params_ptr, datum)
         ogr_err.handle_result
 
         {
@@ -93,38 +73,27 @@ module OGR
 
       # @return [String]
       def to_wkt
-        wkt_ptr = FFI::MemoryPointer.new(:string)
-        wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-        wkt_ptr_ptr.write_pointer(wkt_ptr)
-
+        wkt_ptr_ptr = GDAL._pointer_pointer(:string)
         ogr_err = FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
         ogr_err.handle_result
 
-        wkt_ptr_ptr.read_pointer.read_string
+        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
       end
 
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
       #   +EXTENSION+ nodes.
       def to_pretty_wkt(simplify = false)
-        wkt_ptr = FFI::MemoryPointer.new(:string)
-        wkt_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-        wkt_ptr_ptr.write_pointer(wkt_ptr)
-
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer,
-          wkt_ptr_ptr, simplify)
+        wkt_ptr_ptr = GDAL._pointer_pointer(:string)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
         ogr_err.handle_result
 
-        wkt_ptr_ptr.read_pointer.read_string
+        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
       end
 
       # @return [String]
       def to_xml(dialect = nil)
-        xml_ptr = FFI::MemoryPointer.new(:string)
-        xml_ptr_ptr = FFI::MemoryPointer.new(:pointer)
-        xml_ptr_ptr.write_pointer(xml_ptr)
-
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToXML(@c_pointer, xml_ptr_ptr,
-          dialect)
+        xml_ptr_ptr = GDAL._pointer_pointer(:string)
+        ogr_err = FFI::OGR::SRSAPI.OSRExportToXML(@c_pointer, xml_ptr_ptr, dialect)
         ogr_err.handle_result
 
         xml_ptr_ptr.get_array_of_string(0).join

@@ -70,7 +70,7 @@ module GDAL
 
     # @param points [Array]
     def make_points_pointer(points)
-      fail GDAL::Error, 'No points to make pointer for' if points.compact.empty?
+      raise GDAL::Error, 'No points to make pointer for' if points.compact.empty?
       input_coordinates_ptr = FFI::MemoryPointer.new(:double, points.length)
       input_coordinates_ptr.write_array_of_double(points)
 
@@ -90,7 +90,7 @@ module GDAL
       when :metric_maximum              then GDAL::GridAlgorithms::MetricMaximum.new
       when :metric_minimum              then GDAL::GridAlgorithms::MetricMinimum.new
       when :metric_range                then GDAL::GridAlgorithms::MetricRange.new
-      else fail GDAL::UnknownGridAlgorithm, algorithm_type
+      else raise GDAL::UnknownGridAlgorithm, algorithm_type
       end
     end
   end

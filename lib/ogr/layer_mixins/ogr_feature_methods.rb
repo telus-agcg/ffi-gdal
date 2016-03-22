@@ -24,7 +24,7 @@ module OGR
       # @return [Boolean]
       def create_feature(feature)
         unless can_sequential_write?
-          fail OGR::UnsupportedOperation, 'This layer does not support feature creation.'
+          raise OGR::UnsupportedOperation, 'This layer does not support feature creation.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
@@ -40,7 +40,7 @@ module OGR
       #   does not exist.
       def delete_feature(feature_id)
         unless can_delete_feature?
-          fail OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
+          raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
@@ -62,11 +62,11 @@ module OGR
       # @param new_feature [OGR::Feature, FFI::Pointer]
       def feature=(new_feature)
         unless can_random_write?
-          fail OGR::UnsupportedOperation, '#feature= not supported by this Layer'
+          raise OGR::UnsupportedOperation, '#feature= not supported by this Layer'
         end
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
-        fail OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
+        raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
         ogr_err = FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)
 
@@ -78,7 +78,7 @@ module OGR
       # @return [OGR::Feature, nil]
       def feature(index)
         unless can_random_read?
-          fail OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
+          raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
         end
 
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)

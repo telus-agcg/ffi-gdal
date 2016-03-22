@@ -82,7 +82,7 @@ module GDAL
     end
 
     def cutline_geometry=(geometry)
-      fail 'Not a geom' unless geometry.is_a?(OGR::Geometry)
+      raise 'Not a geom' unless geometry.is_a?(OGR::Geometry)
 
       @c_struct[:cutline] = geometry.c_pointer
       # @c_struct[:cutline] = geometry.clone.c_pointer

@@ -10,7 +10,9 @@ module OGR
       styles = {}
       reset_style_string_reading
 
-      while style = next_style
+      loop do
+        style = next_style
+        break unless style
         styles[last_style_name] = style
       end
 

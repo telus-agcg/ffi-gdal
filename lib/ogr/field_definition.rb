@@ -18,7 +18,7 @@ module OGR
                    end
 
       unless @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
-        fail OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+        raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
     end
 

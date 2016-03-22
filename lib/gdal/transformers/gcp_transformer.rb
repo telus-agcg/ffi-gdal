@@ -15,6 +15,7 @@ module GDAL
       def initialize(gcp_list, requested_polynomial_order, reversed = false, tolerance: nil, minimum_gcps: nil)
         gcp_list_ptr = FFI::MemoryPointer.new(:pointer, gcp_list.size)
 
+        # TODO: fasterer: each_with_index is slower than loop
         gcp_list.each_with_index do |gcp, i|
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end

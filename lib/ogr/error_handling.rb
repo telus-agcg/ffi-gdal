@@ -32,7 +32,7 @@ module OGR
         OGRERR_FAILURE: ->(msg) { raise_exception(OGR::Failure, msg) },
         OGRERR_UNSUPPORTED_SRS: ->(msg) { raise_exception(OGR::UnsupportedSRS, msg) },
         OGRERR_INVALID_HANDLE: ->(msg) { raise_exception(OGR::InvalidHandle, msg) }
-      }.fetch(error_class) { fail "Unknown OGRERR type: #{self}" }
+      }.fetch(error_class) { raise "Unknown OGRERR type: #{self}" }
     end
 
     # Exists solely to strip off the top 4 lines of the backtrace so it doesn't
@@ -40,7 +40,7 @@ module OGR
     def raise_exception(exception, message)
       e = exception.new(message)
       e.set_backtrace(caller(4))
-      fail(e)
+      raise(e)
     end
   end
 end

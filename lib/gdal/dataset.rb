@@ -74,7 +74,7 @@ module GDAL
           path_or_pointer
         end
 
-      fail OpenFailure, path_or_pointer if @c_pointer.null?
+      raise OpenFailure, path_or_pointer if @c_pointer.null?
 
       @geo_transform = nil
       @spatial_reference = nil
@@ -145,7 +145,7 @@ module GDAL
     # @return [GDAL::RasterBand]
     def raster_band(raster_index)
       if raster_index > raster_count
-        fail GDAL::InvalidRasterBand, "Invalid raster band number '#{raster_index}'. Must be <= #{raster_count}"
+        raise GDAL::InvalidRasterBand, "Invalid raster band number '#{raster_index}'. Must be <= #{raster_count}"
       end
 
       raster_band_ptr = FFI::GDAL::GDAL.GDALGetRasterBand(@c_pointer, raster_index)
@@ -301,10 +301,10 @@ module GDAL
     #   data to the start of the next. If defaulted (0), the size of
     #   +line_space+ * +buffer_y_size* is used.
     def raster_io(access_flag, buffer = nil,
-                  x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
-                  buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: nil,
-                  band_numbers: nil,
-                  pixel_space: 0, line_space: 0, band_space: 0)
+      x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
+      buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: nil,
+      band_numbers: nil,
+      pixel_space: 0, line_space: 0, band_space: 0)
       x_size ||= raster_x_size
       y_size ||= raster_y_size
       buffer_x_size ||= x_size
