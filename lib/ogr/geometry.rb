@@ -56,7 +56,6 @@ module OGR
         end
       end
 
-      # @return [OGR::Geometry]
       # @param wkt_data [String]
       # @param spatial_ref [FFI::Pointer] Optional spatial reference
       #   to assign to the new geometry.
@@ -66,8 +65,7 @@ module OGR
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-        spatial_ref_pointer =
-          (GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref)
+        spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -76,9 +74,26 @@ module OGR
         FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
           spatial_ref_pointer, geometry_ptr_ptr)
 
-        return nil if geometry_ptr_ptr.null? ||
-                      geometry_ptr_ptr.read_pointer.null?
-        geometry_ptr_ptr.read_pointer.nil?
+        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
+
+        factory(geometry_ptr_ptr.read_pointer)
+      end
+
+      # @param wkb_data [String] Binary string of WKB.
+      # @param spatial_ref [OGR::SpatialReference]
+      # @return [OGR::Geometry]
+      def create_from_wkb(wkb_data, spatial_ref = nil)
+        wkb_data_pointer = FFI::MemoryPointer.new(:char, wkb_data.length)
+        wkb_data_pointer.put_bytes(0, wkb_data)
+
+        spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref
+
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
+
+        byte_count = wkb_data.length
+        FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
+
+        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
 
         factory(geometry_ptr_ptr.read_pointer)
       end

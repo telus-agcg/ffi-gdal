@@ -26,7 +26,7 @@ module FFI
       # Functions
       # -----------------------------------------------------------------------
       attach_function :OGR_G_CreateFromWkb,
-        [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
+        [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
         FFI::OGR::Core::Err
       attach_function :OGR_G_CreateFromWkt,
         [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
