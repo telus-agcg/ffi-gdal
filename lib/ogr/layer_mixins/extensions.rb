@@ -61,9 +61,12 @@ module OGR
         FFI::OGR::API.OGR_L_ResetReading(@c_pointer)
       end
 
+      # Returns all features as an Array. Note that if you just want to iterate
+      # through features, {{#each_feature}} will perform better.
+      #
       # @return [Array<OGR::Feature>]
       def features
-        each_feature.to_a
+        each_feature.map { |f| f.clone }
       end
 
       # @return [OGR::Polygon] A polygon derived from a LinearRing that connects
