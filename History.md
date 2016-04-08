@@ -140,6 +140,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `OGR::GeometryMixins::Extensions#utm_zone` no longer creates invalid geometry.
 * `OGR::Feature#dump_readable` never worked. Fixed.
 * `OGR::Geometry#dump_readable` never worked. Fixed.
+* Added missing output_layer param to `OGR::LayerMixins::OGRLayerMethodMethods`.
 
 ## 1.0.0.beta5 / 2015-06-16
 
