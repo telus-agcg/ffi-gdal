@@ -45,11 +45,10 @@ module OGR
       [point]
     end
 
-    # @param index [Fixnum]
     # @param x [Number]
     # @param y [Number]
-    def set_point(index, x, y)
-      FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
+    def set_point(x, y)
+      FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, 0, x, y)
     end
 
     # Adds a point to a LineString or Point geometry.
