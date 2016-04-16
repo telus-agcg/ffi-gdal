@@ -1,6 +1,8 @@
 require_relative 'point'
 
 module OGR
+  # NOTE: {{#type}} will return :wkbPoint (read: 2D instead of 2.5D) until a Z
+  # value is set.
   class Point25D < Point
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)
@@ -10,13 +12,13 @@ module OGR
 
     # @return [Float]
     def z
-      return nil if empty?
+      return if empty?
 
       FFI::OGR::API.OGR_G_GetZ(@c_pointer, 0)
     end
 
     # @return [Array<Float, Float, Float>] [x, y, z].
-    def point_value
+    def point
       return [] if empty?
 
       x_ptr = FFI::MemoryPointer.new(:double)

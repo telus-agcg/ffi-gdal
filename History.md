@@ -141,6 +141,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `OGR::Feature#dump_readable` never worked. Fixed.
 * `OGR::Geometry#dump_readable` never worked. Fixed.
 * Added missing output_layer param to `OGR::LayerMixins::OGRLayerMethodMethods`.
+* `FFI::OGR::Core::WKBGeometryType` was using an INT32 instead of UINT32 and
+  thus 25D geometry types weren't completely accurate.
 
 ## 1.0.0.beta5 / 2015-06-16
 

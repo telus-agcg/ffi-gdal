@@ -7,7 +7,7 @@ module OGR
     module ClassMethods
       def create(type)
         geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometry(type)
-        return nil if geometry_pointer.null?
+        return if geometry_pointer.null?
         geometry_pointer.autorelease = false
 
         factory(geometry_pointer)
@@ -206,7 +206,7 @@ module OGR
         raise 'Unknown envelope dimension.'
       end
 
-      return nil if envelope.null?
+      return if envelope.null?
 
       OGR::Envelope.new(envelope)
     end
@@ -392,7 +392,7 @@ module OGR
     # @return [OGR::Geometry]
     def difference(geometry)
       new_geometry_ptr = FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
-      return nil if new_geometry_ptr.null?
+      return if new_geometry_ptr.null?
 
       self.class.factory(new_geometry_ptr)
     end
@@ -402,7 +402,7 @@ module OGR
     # @return [OGR::Geometry]
     def symmetric_difference(geometry)
       new_geometry_ptr = FFI::OGR::API.OGR_G_SymDifference(@c_pointer, geometry.c_pointer)
-      return nil if new_geometry_ptr.null?
+      return if new_geometry_ptr.null?
 
       self.class.factory(new_geometry_ptr)
     end
@@ -418,7 +418,7 @@ module OGR
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
-      return nil if spatial_ref_ptr.null?
+      return if spatial_ref_ptr.null?
 
       OGR::SpatialReference.new(spatial_ref_ptr)
     end
@@ -463,7 +463,7 @@ module OGR
     # @return [Boolean]
     def transform_to!(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
-      return nil if new_spatial_ref_ptr.null?
+      return if new_spatial_ref_ptr.null?
 
       ogr_err = FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
 
@@ -670,7 +670,7 @@ module OGR
 
     def build_geometry
       new_geometry_ptr = yield
-      return nil if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+      return if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
       OGR::Geometry.factory(new_geometry_ptr)
     end

@@ -12,7 +12,7 @@ RSpec.describe OGR::Geometry do
 
     context 'a 2.5D Point' do
       let(:wkt) { 'POINT(1 32 100)' }
-      it { is_expected.to be_a OGR::Point }
+      it { is_expected.to be_a OGR::Point25D }
     end
 
     context 'a 2D LineString' do
@@ -22,7 +22,7 @@ RSpec.describe OGR::Geometry do
 
     context 'a 2.5D LineString' do
       let(:wkt) { 'LINESTRING(3 4 19,12 23 20)' }
-      it { is_expected.to be_a OGR::LineString }
+      it { is_expected.to be_a OGR::LineString25D }
     end
 
     context 'a 2D Polygon' do
@@ -32,7 +32,7 @@ RSpec.describe OGR::Geometry do
 
     context 'a 2.5D Polygon' do
       let(:wkt) { 'POLYGON((1 1 1,2 2 2,3 3 3))' }
-      it { is_expected.to be_a OGR::Polygon }
+      it { is_expected.to be_a OGR::Polygon25D }
     end
 
     context 'a 2D MultiPoint' do
@@ -40,9 +40,9 @@ RSpec.describe OGR::Geometry do
       it { is_expected.to be_a OGR::MultiPoint }
     end
 
-    context 'a 2D MultiPoint' do
+    context 'a 2.5D MultiPoint' do
       let(:wkt) { 'MULTIPOINT((1 1 1),(2 2 2))' }
-      it { is_expected.to be_a OGR::MultiPoint }
+      it { is_expected.to be_a OGR::MultiPoint25D }
     end
 
     context 'a 2D MultiLineString' do
@@ -52,7 +52,7 @@ RSpec.describe OGR::Geometry do
 
     context 'a 2.5D MultiLineString' do
       let(:wkt) { 'MULTILINESTRING((3 4 19),(100 20 40))' }
-      it { is_expected.to be_a OGR::MultiLineString }
+      it { is_expected.to be_a OGR::MultiLineString25D }
     end
 
     context 'a 2D MultiPolygon' do
@@ -68,7 +68,7 @@ RSpec.describe OGR::Geometry do
         'MULTIPOLYGON(((1 1 1,2 2 2,3 3 3)),((100 100 100, 20 20 20, 30 30 30)))'
       end
 
-      it { is_expected.to be_a OGR::MultiPolygon }
+      it { is_expected.to be_a OGR::MultiPolygon25D }
     end
   end
 
@@ -88,7 +88,7 @@ RSpec.describe OGR::Geometry do
         { type: :Point, coordinates: [1.0, 2.0, 3.0] }.to_json
       end
 
-      it { is_expected.to be_a OGR::Point }
+      it { is_expected.to be_a OGR::Point25D }
     end
 
     context 'a 2D LineString' do
@@ -114,7 +114,7 @@ RSpec.describe OGR::Geometry do
         }.to_json
       end
 
-      it { is_expected.to be_a OGR::LineString }
+      it { is_expected.to be_a OGR::LineString25D }
     end
 
     context 'a 2D Polygon' do
@@ -144,7 +144,7 @@ RSpec.describe OGR::Geometry do
         }.to_json
       end
 
-      it { is_expected.to be_a OGR::Polygon }
+      it { is_expected.to be_a OGR::Polygon25D }
     end
 
     context 'a 2D MultiPoint' do
@@ -170,7 +170,7 @@ RSpec.describe OGR::Geometry do
         }.to_json
       end
 
-      it { is_expected.to be_a OGR::MultiPoint }
+      it { is_expected.to be_a OGR::MultiPoint25D }
     end
 
     context 'a 2D MultiLineString' do
@@ -204,7 +204,7 @@ RSpec.describe OGR::Geometry do
         }.to_json
       end
 
-      it { is_expected.to be_a OGR::MultiLineString }
+      it { is_expected.to be_a OGR::MultiLineString25D }
     end
 
     context 'a 2D MultiPolygon' do
@@ -254,7 +254,7 @@ RSpec.describe OGR::Geometry do
         }.to_json
       end
 
-      it { is_expected.to be_a OGR::MultiPolygon }
+      it { is_expected.to be_a OGR::MultiPolygon25D }
     end
   end
 
@@ -274,7 +274,7 @@ RSpec.describe OGR::Geometry do
         '<gml:Point><gml:coordinates>1,7,25</gml:coordinates></gml:Point>'
       end
 
-      it { is_expected.to be_a OGR::Point }
+      it { is_expected.to be_a OGR::Point25D }
     end
 
     context 'a 2D LineString' do
@@ -290,7 +290,7 @@ RSpec.describe OGR::Geometry do
         '<gml:LineString><gml:coordinates>3,4,19</gml:coordinates></gml:LineString>'
       end
 
-      it { is_expected.to be_a OGR::LineString }
+      it { is_expected.to be_a OGR::LineString25D }
     end
 
     context 'a 2D Polygon' do
@@ -322,7 +322,7 @@ RSpec.describe OGR::Geometry do
         GML
       end
 
-      it { is_expected.to be_a OGR::Polygon }
+      it { is_expected.to be_a OGR::Polygon25D }
     end
 
     context 'a 2D MultiPoint' do
@@ -384,7 +384,7 @@ RSpec.describe OGR::Geometry do
         GML
       end
 
-      it { is_expected.to be_a OGR::MultiPoint }
+      it { is_expected.to be_a OGR::MultiPoint25D }
     end
 
     context 'a 2D MultiLineString' do
@@ -426,7 +426,7 @@ RSpec.describe OGR::Geometry do
         GML
       end
 
-      it { is_expected.to be_a OGR::MultiLineString }
+      it { is_expected.to be_a OGR::MultiLineString25D }
     end
 
     context 'a 2D MultiPolygon' do
@@ -484,7 +484,142 @@ RSpec.describe OGR::Geometry do
         GML
       end
 
+      it { is_expected.to be_a OGR::MultiPolygon25D }
+    end
+  end
+
+  describe '.create_from_wkb' do
+    subject { OGR::Geometry.create_from_wkb(wkb) }
+
+    context 'a 2D Point' do
+      # POINT(1 32)
+      let(:wkb) { ['0101000000000000000000f03f0000000000004040'].pack('H*') }
+      it { is_expected.to be_a OGR::Point }
+    end
+
+    context 'a 2.5D Point' do
+      # POINT(1 32 100)
+      let(:wkb) { ['01e9030000000000000000f03f00000000000040400000000000005940'].pack('H*') }
+      it { is_expected.to be_a OGR::Point }
+    end
+
+    context 'a 2D LineString' do
+      # LINESTRING(3 19,12 20)
+      let(:wkb) do
+        ['0102000000020000000000000000000840000000000000334000000000000028400000000000003440'].pack('H*')
+      end
+      it { is_expected.to be_a OGR::LineString }
+    end
+
+    context 'a 2.5D LineString' do
+      # LINESTRING(3 4 19,12 13 20)
+      let(:wkb) do
+        hex = '01ea030000020000000000000000000840000000000000104000000000000' \
+          '03340000000000000284000000000000037400000000000003440'
+        [hex].pack('H*')
+      end
+
+      it { is_expected.to be_a OGR::LineString25D }
+    end
+
+    context 'a 2D Polygon' do
+      # 'POLYGON((1 1,2 1,3 0,1 1))'
+      let(:wkb) do
+        hex = '01030000000100000004000000000000000000f03f000000000000f03f0000' \
+          '000000000040000000000000f03f00000000000008400000000000000000000000' \
+          '000000f03f000000000000f03f'
+        [hex].pack('H*')
+      end
+
+      it { is_expected.to be_a OGR::Polygon }
+    end
+
+    context 'a 2.5D Polygon' do
+      let(:wkb) do
+        # 'POLYGON((1 1 1,2 1 1,2 0 1,1 1 1))'
+        hex = '01eb0300000100000004000000000000000000f03f000000000000f03f0000' \
+          '00000000f03f0000000000000040000000000000f03f000000000000f03f000000' \
+          '00000000400000000000000000000000000000f03f000000000000f03f00000000' \
+          '0000f03f000000000000f03f'
+        [hex].pack('H*')
+      end
+      it { is_expected.to be_a OGR::Polygon25D }
+    end
+
+    context 'a 2D MultiPoint' do
+      let(:wkb) do
+        # 'MULTIPOINT((0 0),(1 1))'
+        hex = '01040000000200000001010000000000000000000000000000000000000001' \
+          '01000000000000000000f03f000000000000f03f'
+        [hex].pack('H*')
+      end
+      it { is_expected.to be_a OGR::MultiPoint }
+    end
+
+    context 'a 2.5D MultiPoint' do
+      let(:wkb) do
+        # 'MULTIPOINT((0 0 0),(1 1 1))'
+        hex = '01ec0300000200000001e90300000000000000000000000000000000000000' \
+          '0000000000000001e9030000000000000000f03f000000000000f03f0000000000' \
+          '00f03f'
+        [hex].pack('H*')
+      end
+      it { is_expected.to be_a OGR::MultiPoint25D }
+    end
+
+    context 'a 2D MultiLineString' do
+      let(:wkb) do
+        # 'MULTILINESTRING((1 1,2 2, 3 3),(10 10,20 20,30 30))'
+        hex = '010500000002000000010200000003000000000000000000f03f0000000000' \
+          '00f03f000000000000004000000000000000400000000000000840000000000000' \
+          '084001020000000300000000000000000024400000000000002440000000000000' \
+          '344000000000000034400000000000003e400000000000003e40'
+        [hex].pack('H*')
+      end
+      it { is_expected.to be_a OGR::MultiLineString }
+    end
+
+    context 'a 2.5D MultiLineString' do
+      let(:wkb) do
+        # MULTILINESTRING((3 4 19,100 20 40),(5 5 5,6 6 6,7 7 7))
+        hex = '01ed0300000200000001ea0300000200000000000000000008400000000000' \
+          '001040000000000000334000000000000059400000000000003440000000000000' \
+          '444001ea0300000300000000000000000014400000000000001440000000000000' \
+          '14400000000000001840000000000000184000000000000018400000000000001c' \
+          '400000000000001c400000000000001c40'
+        [hex].pack('H*')
+      end
+      it { is_expected.to be_a OGR::MultiLineString25D }
+    end
+
+    context 'a 2D MultiPolygon' do
+      # 'MULTIPOLYGON(((1 1,2 1,2 0,1 1)),((100 100,20 20,30 30,100 100)))'
+      let(:wkb) do
+        hex = '01060000000200000001030000000100000004000000000000000000f03f00' \
+          '0000000000f03f0000000000000040000000000000f03f00000000000000400000' \
+          '000000000000000000000000f03f000000000000f03f0103000000010000000400' \
+          '000000000000000059400000000000005940000000000000344000000000000034' \
+          '400000000000003e400000000000003e4000000000000059400000000000005940'
+        [hex].pack('H*')
+      end
+
       it { is_expected.to be_a OGR::MultiPolygon }
+    end
+
+    context 'a 2.5D MultiPolygon' do
+      # 'MULTIPOLYGON(((1 1 1,2 1 2,2 0 3,1 1 1)),((100 100 100,20 20 20,30 30 30,100 100 100)))'
+      let(:wkb) do
+        hex = '01ee0300000200000001eb0300000100000004000000000000000000f03f00' \
+          '0000000000f03f000000000000f03f0000000000000040000000000000f03f0000' \
+          '000000000040000000000000004000000000000000000000000000000840000000' \
+          '000000f03f000000000000f03f000000000000f03f01eb03000001000000040000' \
+          '000000000000005940000000000000594000000000000059400000000000003440' \
+          '000000000000344000000000000034400000000000003e400000000000003e4000' \
+          '00000000003e40000000000000594000000000000059400000000000005940'
+        [hex].pack('H*')
+      end
+
+      it { is_expected.to be_a OGR::MultiPolygon25D }
     end
   end
 
