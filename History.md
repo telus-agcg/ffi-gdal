@@ -2,7 +2,7 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
-## Unreleased / yyyy-mm-dd
+## 1.0.0.beta6 / 2016-04-18
 
 ### New Features
 
