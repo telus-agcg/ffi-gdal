@@ -7,7 +7,7 @@ module OGR
     module ClassMethods
       def create(type)
         geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometry(type)
-        return nil if geometry_pointer.null?
+        return if geometry_pointer.null?
         geometry_pointer.autorelease = false
 
         factory(geometry_pointer)
@@ -56,7 +56,6 @@ module OGR
         end
       end
 
-      # @return [OGR::Geometry]
       # @param wkt_data [String]
       # @param spatial_ref [FFI::Pointer] Optional spatial reference
       #   to assign to the new geometry.
@@ -66,8 +65,7 @@ module OGR
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
-        spatial_ref_pointer =
-          (GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref)
+        spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref
 
         geometry_ptr = FFI::MemoryPointer.new(:pointer)
         geometry_ptr_ptr = FFI::MemoryPointer.new(:pointer)
@@ -76,9 +74,26 @@ module OGR
         FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
           spatial_ref_pointer, geometry_ptr_ptr)
 
-        return nil if geometry_ptr_ptr.null? ||
-                      geometry_ptr_ptr.read_pointer.null?
-        geometry_ptr_ptr.read_pointer.nil?
+        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
+
+        factory(geometry_ptr_ptr.read_pointer)
+      end
+
+      # @param wkb_data [String] Binary string of WKB.
+      # @param spatial_ref [OGR::SpatialReference]
+      # @return [OGR::Geometry]
+      def create_from_wkb(wkb_data, spatial_ref = nil)
+        wkb_data_pointer = FFI::MemoryPointer.new(:char, wkb_data.length)
+        wkb_data_pointer.put_bytes(0, wkb_data)
+
+        spatial_ref_pointer = GDAL._pointer(OGR::SpatialReference, spatial_ref) if spatial_ref
+
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
+
+        byte_count = wkb_data.length
+        FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
+
+        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
 
         factory(geometry_ptr_ptr.read_pointer)
       end
@@ -191,7 +206,7 @@ module OGR
         raise 'Unknown envelope dimension.'
       end
 
-      return nil if envelope.null?
+      return if envelope.null?
 
       OGR::Envelope.new(envelope)
     end
@@ -377,7 +392,7 @@ module OGR
     # @return [OGR::Geometry]
     def difference(geometry)
       new_geometry_ptr = FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
-      return nil if new_geometry_ptr.null?
+      return if new_geometry_ptr.null?
 
       self.class.factory(new_geometry_ptr)
     end
@@ -387,7 +402,7 @@ module OGR
     # @return [OGR::Geometry]
     def symmetric_difference(geometry)
       new_geometry_ptr = FFI::OGR::API.OGR_G_SymDifference(@c_pointer, geometry.c_pointer)
-      return nil if new_geometry_ptr.null?
+      return if new_geometry_ptr.null?
 
       self.class.factory(new_geometry_ptr)
     end
@@ -403,7 +418,7 @@ module OGR
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
-      return nil if spatial_ref_ptr.null?
+      return if spatial_ref_ptr.null?
 
       OGR::SpatialReference.new(spatial_ref_ptr)
     end
@@ -448,7 +463,7 @@ module OGR
     # @return [Boolean]
     def transform_to!(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
-      return nil if new_spatial_ref_ptr.null?
+      return if new_spatial_ref_ptr.null?
 
       ogr_err = FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
 
@@ -655,7 +670,7 @@ module OGR
 
     def build_geometry
       new_geometry_ptr = yield
-      return nil if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+      return if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
       OGR::Geometry.factory(new_geometry_ptr)
     end
