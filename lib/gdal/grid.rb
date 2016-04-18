@@ -1,8 +1,7 @@
 require 'forwardable'
 require 'narray'
-require_relative '../ffi/gdal/alg'
-require_relative 'grid_types'
-require_relative 'geo_transform'
+require_relative '../gdal'
+require_relative 'grid_algorithms'
 
 module GDAL
   # Wrapper for GDAL's [Grid API](http://www.gdal.org/grid_tutorial.html).
@@ -10,135 +9,89 @@ module GDAL
     extend Forwardable
     include GDAL::Logger
 
-    # @return [NArray]
-    attr_accessor :points
-
-    # @return [GDAL::GeoTransform]
-    attr_reader :geo_transform
-
-    # @return [FFI::GDAL::DataType]
+    # @return [FFI::GDAL::GDAL::DataType]
     attr_accessor :data_type
 
-    def_delegator :@gridder, :options, :options
+    def_delegator :@algorithm, :options, :algorithm_options
+    def_delegator :@algorithm, :c_identifier, :algorithm_type
 
-    # @param algorithm [Symbol]
-    # @param data_type [FFI::GDAL::DataType]
-    def initialize(algorithm, data_type: :GDT_Byte)
+    # @param algorithm_type [Symbol]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
+    def initialize(algorithm_type, data_type: :GDT_Float32)
+      @algorithm = init_algorithm(algorithm_type)
       @data_type = data_type
-      @gridder = init_gridder(algorithm)
-      @points = nil
-      @geo_transform = GDAL::GeoTransform.new
     end
 
+    # @param points [Array,NArray] An Array containing all x, y, and z points.
+    # @param extents [Hash{x_min: Fixnum, y_min: Fixnum, x_max: Fixnum, y_max: Fixnum}]
+    # @param data_pointer [FFI::Pointer] Pointer that will contain the gridded
+    #   data (after this method is done).
+    # @param output_size [Hash{x: Fixnum, y: Fixnum}] Overall dimensions of the
+    #   area of the output raster to grid.
+    # @param progress_block [Proc]
+    # @param progress_arg [FFI::Pointer]
     # @return [FFI::MemoryPointer] Pointer to the grid data.
-    def create(&progress_block)
-      update_geo_transform
-
+    def create(points, extents, data_pointer, output_size = { x: 256, y: 256 },
+      progress_block = nil, progress_arg = nil)
+      points = points.to_a if points.is_a? NArray
+      point_count = points.length
       log "Number of points: #{point_count}"
-      x_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
-      y_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
-      x_coordinates_ptr.write_array_of_float(@points[0, true].to_a)
-      y_coordinates_ptr.write_array_of_float(@points[1, true].to_a)
+      points = points.transpose
 
-      if @points.shape.first == 3
-        z_coordinates_ptr = FFI::MemoryPointer.new(:double, point_count)
-        z_coordinates_ptr.write_array_of_float(@points[2, true].to_a)
-      else
-        z_coordinates_ptr = nil
-      end
+      x_input_coordinates_ptr = make_points_pointer(points[0])
+      y_input_coordinates_ptr = make_points_pointer(points[1])
+      z_input_coordinates_ptr = make_points_pointer(points[2])
 
-      log "x_min, y_min: #{x_min}, #{y_min}"
-      log "x_max, y_max: #{x_max}, #{y_max}"
-      log "x_size, y_size: #{x_size}, #{y_size}"
-      log "pixel_width: #{@geo_transform.pixel_width}"
-      log "pixel_height: #{@geo_transform.pixel_height}"
-      data_ptr = FFI::MemoryPointer.new(:buffer_inout, x_size * y_size)
-
-      # gdal_grid.cpp lists this as the corner coordinates, which ends up being
-      # larger than my x_max/y_min test values. That seems odd.
-      # x_end = x_max + (@geo_transform.x_size(x_max) / 2)
-      # y_end = y_min - (@geo_transform.y_size(y_max) / 2)
-      max_pixel = @geo_transform.world_to_pixel(x_max, y_max)
-      x_end = x_max + (max_pixel[:pixel] / 2)
-      y_end = y_min - (max_pixel[:line] / 2)
-      log "corner x1 (gdal_grid.cpp): #{x_end}"
-      log "corner y1 (gdal_grid.cpp): #{y_end}"
+      log "x_min, y_min: #{extents[:x_min]}, #{extents[:y_min]}"
+      log "x_max, y_max: #{extents[:x_max]}, #{extents[:y_max]}"
+      log "output_x_size, output_y_size: #{output_size[:x]}, #{output_size[:y]}"
 
       FFI::GDAL::Alg.GDALGridCreate(
-        @gridder.algorithm,                             # eAlgorithm
-        @gridder.options.to_ptr,                        # poOptions
+        @algorithm.c_identifier,                        # eAlgorithm
+        @algorithm.options.to_ptr,                      # poOptions
         point_count,                                    # nPoints
-        x_coordinates_ptr,                              # padfX
-        y_coordinates_ptr,                              # padfY
-        z_coordinates_ptr,                              # padfZ
-        x_min,                                          # dfXMin
-        x_max,                                          # dfXMax
-        y_min,                                          # dfYMin
-        y_max,                                          # dfYMax
-        x_size,                                         # nXSize
-        y_size,                                         # nYSize
+        x_input_coordinates_ptr,                        # padfX
+        y_input_coordinates_ptr,                        # padfY
+        z_input_coordinates_ptr,                        # padfZ
+        extents[:x_min],                                # dfXMin
+        extents[:x_max],                                # dfXMax
+        extents[:y_min],                                # dfYMin
+        extents[:y_max],                                # dfYMax
+        output_size[:x],                                # nXSize
+        output_size[:y],                                # nYSize
         @data_type,                                     # eType
-        data_ptr,                                       # pData,
+        data_pointer,                                   # pData,
         progress_block,                                 # pfnProgress
-        nil                                             # pProgressArg
+        progress_arg                                    # pProgressArg
       )
-
-      data_ptr
-    end
-
-    # @return [Fixnum] The number of points (x,y,z) in the grid.
-    def point_count
-      @points.shape.last
-    end
-
-    def x_min
-      @points.nil? ? nil : @points[0, true].to_a.compact.min
-    end
-
-    def x_max
-      @points.nil? ? nil : @points[0, true].to_a.compact.max
-    end
-
-    def x_size
-      @points.nil? ? nil : (x_max - x_min)
-    end
-
-    def y_min
-      @points.nil? ? nil : @points[1, true].to_a.compact.min
-    end
-
-    def y_max
-      @points.nil? ? nil : @points[1, true].to_a.compact.max
-    end
-
-    def y_size
-      @points.nil? ? nil : (y_max - y_min)
     end
 
     private
 
-    def init_gridder(algorithm)
-      case algorithm
-      when :inverse_distance_to_a_power then GDAL::GridTypes::InverseDistanceToAPower.new
-      when :moving_average then GDAL::GridTypes::MovingAverage.new
-      when :nearest_neighbor then GDAL::GridTypes::NearestNeighbor.new
-      when :metric_average_distance then GDAL::GridTypes::MetricAverageDistance.new
-      when :metric_average_distance_pts then GDAL::GridTypes::MetricAverageDistancePts.new
-      when :metric_count then GDAL::GridTypes::MetricCount.new
-      when :metric_maximum then GDAL::GridTypes::MetricMaximum.new
-      when :metric_minimum then GDAL::GridTypes::MetricMinimum.new
-      when :metric_range then GDAL::GridTypes::MetricRange.new
-      else fail GDAL::UnknownGridAlgorithm, algorithm
-      end
+    # @param points [Array]
+    def make_points_pointer(points)
+      raise GDAL::Error, 'No points to make pointer for' if points.compact.empty?
+      input_coordinates_ptr = FFI::MemoryPointer.new(:double, points.length)
+      input_coordinates_ptr.write_array_of_double(points)
+
+      input_coordinates_ptr
     end
 
-    def update_geo_transform
-      return if @points.nil?
-
-      @geo_transform.x_origin = x_min
-      @geo_transform.y_origin = y_max
-      @geo_transform.pixel_width = (x_max - x_min) / x_size
-      @geo_transform.pixel_height = (y_max - y_min) / y_size
+    # @param algorithm_type [Symbol]
+    # @return [GDAL::GridAlgorithms]
+    def init_algorithm(algorithm_type)
+      case algorithm_type
+      when :inverse_distance_to_a_power then GDAL::GridAlgorithms::InverseDistanceToAPower.new
+      when :moving_average              then GDAL::GridAlgorithms::MovingAverage.new
+      when :nearest_neighbor            then GDAL::GridAlgorithms::NearestNeighbor.new
+      when :metric_average_distance     then GDAL::GridAlgorithms::MetricAverageDistance.new
+      when :metric_average_distance_pts then GDAL::GridAlgorithms::MetricAverageDistancePts.new
+      when :metric_count                then GDAL::GridAlgorithms::MetricCount.new
+      when :metric_maximum              then GDAL::GridAlgorithms::MetricMaximum.new
+      when :metric_minimum              then GDAL::GridAlgorithms::MetricMinimum.new
+      when :metric_range                then GDAL::GridAlgorithms::MetricRange.new
+      else raise GDAL::UnknownGridAlgorithm, algorithm_type
+      end
     end
   end
 end

@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module Transformers
     class ReprojectionTransformer
@@ -15,12 +13,6 @@ module GDAL
       # @param destination_wkt [String]
       def initialize(source_wkt, destination_wkt)
         @c_pointer = FFI::GDAL::Alg.GDALCreateReprojectionTransformer(source_wkt, destination_wkt)
-
-        ObjectSpace.define_finalizer(transformer_ptr) do
-          destroy_reprojection_transformer(transformer_ptr)
-        end
-
-        transformer_ptr
       end
 
       def destroy!

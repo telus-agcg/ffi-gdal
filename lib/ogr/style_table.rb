@@ -1,4 +1,4 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'style_table_extensions'
 
 module OGR
@@ -12,7 +12,7 @@ module OGR
     def initialize(c_pointer = nil)
       @c_pointer = c_pointer ? c_pointer : FFI::OGR::API.OGR_STBL_Create
 
-      fail 'Unable to create StyleTable' if @c_pointer.null?
+      raise 'Unable to create StyleTable' if @c_pointer.null?
     end
 
     def destroy!

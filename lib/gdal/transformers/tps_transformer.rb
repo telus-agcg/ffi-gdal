@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module Transformers
     class TPSTransformer
@@ -16,12 +14,12 @@ module GDAL
       def initialize(gcp_list, reversed = false)
         gcp_list_ptr = FFI::MemoryPointer.new(:pointer, gcp_list.size)
 
+        # TODO: fasterer: each_with_index is slower than loop
         gcp_list.each_with_index do |gcp, i|
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end
 
         @c_pointer = FFI::GDAL::Alg.GDALCreateTPSTransformer(gcp_list.size, gcp_list_ptr, reversed)
-        ObjectSpace.define_finalizer self, -> { destroy! }
       end
 
       def destroy!

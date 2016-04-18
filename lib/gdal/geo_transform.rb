@@ -1,4 +1,4 @@
-require_relative '../ffi/gdal'
+require_relative '../gdal'
 require_relative 'geo_transform_mixins/extensions'
 
 module GDAL
@@ -21,9 +21,9 @@ module GDAL
       gt_ptr = new_pointer
 
       result = if extension
-                 FFI::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
+                 FFI::GDAL::GDAL.GDALReadWorldFile(filename, extension, gt_ptr)
                else
-                 FFI::GDAL.GDALLoadWorldFile(filename, gt_ptr)
+                 FFI::GDAL::GDAL.GDALLoadWorldFile(filename, gt_ptr)
                end
 
       return nil unless result
@@ -33,13 +33,7 @@ module GDAL
 
     # @param geo_transform [FFI::Pointer]
     def initialize(geo_transform = nil)
-      @c_pointer = if geo_transform.is_a? GDAL::GeoTransform
-                     geo_transform.c_pointer
-                   elsif geo_transform
-                     geo_transform
-                   else
-                     self.class.new_pointer
-                   end
+      @c_pointer = geo_transform ? GDAL._pointer(GDAL::GeoTransform, geo_transform) : self.class.new_pointer
 
       self.pixel_width ||= 1.0
       self.pixel_height ||= 1.0
@@ -160,11 +154,11 @@ module GDAL
     def apply_geo_transform(pixel, line)
       geo_x_ptr = FFI::MemoryPointer.new(:double)
       geo_y_ptr = FFI::MemoryPointer.new(:double)
-      FFI::GDAL.GDALApplyGeoTransform(@c_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
+      FFI::GDAL::GDAL.GDALApplyGeoTransform(@c_pointer, pixel, line, geo_x_ptr, geo_y_ptr)
 
       { x_geo: geo_x_ptr.read_double, y_geo: geo_y_ptr.read_double }
     end
-    alias_method :pixel_to_world, :apply_geo_transform
+    alias pixel_to_world apply_geo_transform
 
     # Composes this and the given geo_transform.  The resulting GeoTransform is
     # equivalent to applying both GeoTransforms to a point.
@@ -175,11 +169,11 @@ module GDAL
       other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
 
       unless other_ptr
-        fail GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
+        raise GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
       end
 
       new_gt_ptr = self.class.new_pointer
-      FFI::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)
+      FFI::GDAL::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)
       return nil if new_gt_ptr.null?
 
       GDAL::GeoTransform.new(new_gt_ptr)
@@ -192,7 +186,7 @@ module GDAL
     # @return [GDAL::GeoTransform]
     def invert
       new_geo_transform_ptr = self.class.new_pointer
-      success = FFI::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
+      success = FFI::GDAL::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
       return nil unless success
 
       self.class.new(new_geo_transform_ptr)
@@ -202,7 +196,7 @@ module GDAL
     # @param world_extension [String]
     # @return [Boolean]
     def to_world_file(raster_filename, world_extension)
-      FFI::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @c_pointer)
+      FFI::GDAL::GDAL.GDALWriteWorldFile(raster_filename, world_extension, @c_pointer)
     end
   end
 end

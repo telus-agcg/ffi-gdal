@@ -1,5 +1,4 @@
 require 'ffi'
-require_relative '../cpl/port'
 
 module FFI
   module OGR
@@ -8,7 +7,7 @@ module FFI
         :double_value, :double,
         :int_value, :int,
         :valid, FFI::CPL::Port.find_type(:GBool),
-        :unit, OGRSTUnitId
+        :unit, Core::STUnitId
     end
   end
 end

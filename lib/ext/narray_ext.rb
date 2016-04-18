@@ -12,7 +12,7 @@ class NArray
     when 7 then :complex
     when 8 then :object
     else
-      fail "Unknown typecode: #{typecode}"
+      raise "Unknown typecode: #{typecode}"
     end
   end
 end

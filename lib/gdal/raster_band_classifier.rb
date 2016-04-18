@@ -1,3 +1,5 @@
+require_relative '../gdal'
+
 module GDAL
   # Takes a list of Ranges of color values and remaps them.  Note that these
   # values are directly written to the raster band, overwriting all existing
@@ -28,7 +30,7 @@ module GDAL
     # @param range [Range] The range of values to map to a new value.
     # @param map_to_value [Number]
     def add_range(range, map_to_value)
-      fail 'range must be a Ruby Range' unless range.is_a? Range
+      raise 'range must be a Ruby Range' unless range.is_a? Range
 
       @ranges << { range: range, map_to: map_to_value }
     end
@@ -49,14 +51,16 @@ module GDAL
     def equal_count_ranges(range_count)
       sorted_pixels = @raster_band.to_na.sort
       sorted_and_masked_pixels = sorted_pixels[sorted_pixels.ne(@raster_band.no_data_value[:value])]
+      return [] if sorted_and_masked_pixels.empty?
+
       range_size = (sorted_and_masked_pixels.size / range_count).to_i
 
-      log "Pixel count: #{sorted_and_masked_pixels.size}"
+      log "Masked pixel count/total pixel count: #{sorted_and_masked_pixels.size}/#{sorted_pixels.size}"
       log "Min pixel value: #{sorted_and_masked_pixels.min}"
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
-      break_values = range_count.times.map { |i| sorted_and_masked_pixels[range_size * i] }
+      break_values = Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq
       log "Break values: #{break_values}"
       return if break_values.uniq.size != range_count
 
@@ -82,23 +86,20 @@ module GDAL
     # values, so if you don't want to overwrite the Dataset you're working with,
     # you should copy it first.
     def classify!
-      narray = @raster_band.to_na.dup
+      nodata_value = @raster_band.no_data_value[:value]
+      band_pixels = @raster_band.to_na
+      new_band_pixels = GDAL._narray_from_data_type(@raster_band.data_type, @raster_band.x_size, @raster_band.y_size)
+      new_band_pixels[band_pixels.eq(nodata_value)] = nodata_value
 
-      0.upto(narray.size - 1) do |pixel_number|
-        next if narray[pixel_number] == @raster_band.no_data_value[:value]
-
-        range = @ranges.find do |r|
-          r[:range].member? narray[pixel_number]
-        end
-
-        if range
-          narray[pixel_number] = range[:map_to]
-        else
-          log "pixel #{pixel_number} (value: #{narray[pixel_number]}) not in any given range"
-        end
+      @ranges.each do |r|
+        new_band_pixels[
+          band_pixels.ne(nodata_value).
+          and(band_pixels.le(r[:range].max)).
+          and(band_pixels.ge(r[:range].min))
+        ] = r[:map_to]
       end
 
-      @raster_band.write_array(narray, buffer_data_type: @raster_band.data_type)
+      @raster_band.write_xy_narray(new_band_pixels)
     end
 
     private

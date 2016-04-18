@@ -1,6 +1,3 @@
-require_relative '../feature'
-require_relative '../feature_definition'
-
 module OGR
   module LayerMixins
     module OGRFeatureMethods
@@ -14,7 +11,7 @@ module OGR
         # This object should not be modified.
         OGR::FeatureDefinition.new(feature_defn_pointer)
       end
-      alias_method :feature_definition, :definition
+      alias feature_definition definition
 
       # Adds the new OGR::Feature to the Layer. The feature should have been
       # created using the Layer's FeatureDefintion.
@@ -27,7 +24,7 @@ module OGR
       # @return [Boolean]
       def create_feature(feature)
         unless can_sequential_write?
-          fail OGR::UnsupportedOperation, 'This layer does not support feature creation.'
+          raise OGR::UnsupportedOperation, 'This layer does not support feature creation.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
@@ -43,7 +40,7 @@ module OGR
       #   does not exist.
       def delete_feature(feature_id)
         unless can_delete_feature?
-          fail OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
+          raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
         end
 
         ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
@@ -65,11 +62,11 @@ module OGR
       # @param new_feature [OGR::Feature, FFI::Pointer]
       def feature=(new_feature)
         unless can_random_write?
-          fail OGR::UnsupportedOperation, '#feature= not supported by this Layer'
+          raise OGR::UnsupportedOperation, '#feature= not supported by this Layer'
         end
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
-        fail OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
+        raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
         ogr_err = FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)
 
@@ -81,7 +78,7 @@ module OGR
       # @return [OGR::Feature, nil]
       def feature(index)
         unless can_random_read?
-          fail OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
+          raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
         end
 
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)
@@ -94,10 +91,13 @@ module OGR
       # current spatial filter will be returned.  Use +reset_reading+ to start at
       # the beginning again.
       #
+      # NOTE: You *must* call {{OGR::Feature#destroy!}} on the returned feature,
+      # otherwise expect segfaults.
+      #
       # @return [OGR::Feature, nil]
       def next_feature
         feature_pointer = FFI::OGR::API.OGR_L_GetNextFeature(@c_pointer)
-        return nil if feature_pointer.null?
+        return if feature_pointer.null?
 
         OGR::Feature.new(feature_pointer)
       end
@@ -111,7 +111,7 @@ module OGR
 
         ogr_err.handle_result "Unable to set next feature index to #{feature_index}"
       end
-      alias_method :set_next_by_index, :next_feature_index=
+      alias set_next_by_index next_feature_index=
 
       # @return [Fixnum]
       def features_read

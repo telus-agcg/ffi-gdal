@@ -1,4 +1,5 @@
 require 'date'
+require_relative '../ogr'
 
 module OGR
   class Field
@@ -19,7 +20,7 @@ module OGR
     def integer
       @c_struct[:integer]
     end
-    alias_method :to_i, :integer
+    alias to_i integer
 
     # @param new_int [Fixnum]
     def integer=(new_int)
@@ -40,7 +41,7 @@ module OGR
     def real
       @c_struct[:real]
     end
-    alias_method :to_f, :real
+    alias to_f real
 
     # @param new_real [Float]
     def real=(new_real)
@@ -68,7 +69,7 @@ module OGR
 
     # @param new_integer_list [Array<Fixnum>]
     def integer_list=(new_integer_list)
-      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.size)
+      list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.length)
       list_ptr.write_array_of_int(new_integer_list)
 
       il = FFI::OGR::FieldTypes::IntegerList.new
@@ -85,7 +86,7 @@ module OGR
 
       il[:list].read_array_of_int64(il[:count])
     end
-    alias_method :to_bignum, :integer64_list
+    alias to_bignum integer64_list
 
     # @param new_integer64_list [Array<Bignum>]
     def integer64_list=(new_integer64_list)
@@ -98,7 +99,7 @@ module OGR
 
       @c_struct[:integer64_list] = il
     end
-    alias_method :bignum_list=, :integer64_list=
+    alias bignum_list= integer64_list=
 
     # @return [Array<Float>]
     def real_list
@@ -107,7 +108,7 @@ module OGR
 
       rl[:list].read_array_of_double(rl[:count])
     end
-    alias_method :float_list, :real_list
+    alias float_list real_list
 
     # @param new_real_list [Array<Float>]
     def real_list=(new_real_list)
@@ -120,7 +121,7 @@ module OGR
 
       @c_struct[:real_list] = rl
     end
-    alias_method :float_list=, :real_list=
+    alias float_list= real_list=
 
     # @return [Array<String>]
     def string_list
@@ -194,16 +195,16 @@ module OGR
 
     # @param new_date [Date, Time, DateTime]
     def date=(new_date)
-      time = new_date.to_time
-      zone = OGR._format_time_zone_for_ogr(time.zone)
+      # All of Date's Time methods are private. Using #send to accomdate Date.
+      zone = OGR._format_time_zone_for_ogr(new_date.send(:zone))
 
       date = FFI::OGR::FieldTypes::Date.new
-      date[:year] = time.year
-      date[:month] = time.month
-      date[:day] = time.day
-      date[:hour] = time.hour
-      date[:minute] = time.min
-      date[:second] = time.sec
+      date[:year] = new_date.year
+      date[:month] = new_date.month
+      date[:day] = new_date.day
+      date[:hour] = new_date.hour
+      date[:minute] = new_date.send(:min)
+      date[:second] = new_date.send(:sec) + (new_date.to_time.usec / 1_000_000.to_f)
       date[:tz_flag] = zone
 
       @c_struct[:date] = date

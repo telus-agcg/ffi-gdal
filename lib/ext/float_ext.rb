@@ -3,13 +3,13 @@ class Float
   #
   # @return [Float]
   def to_decimal_degrees
-    FFI::GDAL.GDALPackedDMSToDec(self)
+    FFI::GDAL::GDAL.GDALPackedDMSToDec(self)
   end
 
   # Converts decimal degrees int a packed DMS value (DDDMMMSSS.SS).
   #
   # @return [Float]
   def to_dms
-    FFI::GDAL.GDALDecToPackedDMS(self)
+    FFI::GDAL::GDAL.GDALDecToPackedDMS(self)
   end
 end

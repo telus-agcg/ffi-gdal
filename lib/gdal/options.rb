@@ -1,5 +1,4 @@
 require 'ffi'
-require_relative '../ffi/cpl/string'
 
 module GDAL
   # A wrapper for the way GDAL does key/value pair options for methods.
@@ -19,6 +18,8 @@ module GDAL
       end
     end
 
+    # @param hash [Hash] The hash of options to turn into a CPL key/value pair
+    #   set.
     def initialize(hash = {})
       super()
       capitalize_keys!(hash)
@@ -30,7 +31,7 @@ module GDAL
       options_ptr = FFI::MemoryPointer.new(:pointer, size)
 
       each do |key, value|
-        options_ptr = FFI::CPL::String.CSLSetNameValue(options_ptr, key, value)
+        options_ptr = FFI::CPL::String.CSLSetNameValue(options_ptr, key, value.to_s)
       end
 
       options_ptr

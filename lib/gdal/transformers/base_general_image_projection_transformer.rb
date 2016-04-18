@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module Transformers
     class BaseGeneralImageProjectionTransformer
@@ -9,10 +7,6 @@ module GDAL
       end
 
       attr_reader :c_pointer
-
-      def initialize
-        # ObjectSpace.define_finalizer self, -> { destroy! }
-      end
 
       def destroy!
         return unless @c_pointer

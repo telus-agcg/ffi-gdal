@@ -1,8 +1,7 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
+require_relative '../gdal'
 require_relative '../gdal/major_object'
-require_relative '../gdal/options'
 require_relative 'driver_mixins/capability_methods'
-require_relative 'data_source'
 
 module OGR
   # Wrapper for OGR's Driver class.  In this case, to use a driver, find the
@@ -25,7 +24,7 @@ module OGR
     # @raise [OGR::DriverNotFound] if a driver with +name+ isn't found.
     def self.by_name(name)
       driver_ptr = FFI::OGR::API.OGRGetDriverByName(name)
-      fail OGR::DriverNotFound, name if driver_ptr.null?
+      raise OGR::DriverNotFound, name if driver_ptr.null?
 
       new(driver_ptr)
     end
@@ -35,20 +34,18 @@ module OGR
     # @return [OGR::Driver]
     # @raise [OGR::DriverNotFound] if a driver at +index+ isn't found.
     def self.at_index(index)
-      fail OGR::DriverNotFound, index if index > count
+      raise OGR::DriverNotFound, index if index > count
 
       driver_ptr = FFI::OGR::API.OGRGetDriver(index)
       return nil if driver_ptr.null?
-      fail OGR::DriverNotFound, index if driver_ptr.null?
+      raise OGR::DriverNotFound, index if driver_ptr.null?
 
       new(driver_ptr)
     end
 
     # @return [Array<String>]
     def self.names
-      count.times.map do |i|
-        at_index(i).name
-      end.sort
+      Array.new(count) { |i| at_index(i).name }.sort
     end
 
     # @return [FFI::Pointer] C pointer that represents the Driver.
@@ -76,7 +73,7 @@ module OGR
       data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
 
       if data_source_ptr.null?
-        fail OGR::InvalidDataSource, "Unable to open data source at #{file_name}"
+        raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}"
       end
 
       OGR::DataSource.new(data_source_ptr, nil)
@@ -91,7 +88,7 @@ module OGR
     # @return [OGR::DataSource, nil]
     def create_data_source(file_name, **options)
       unless can_create_data_source?
-        fail OGR::UnsupportedOperation, 'This driver does not support data source creation.'
+        raise OGR::UnsupportedOperation, 'This driver does not support data source creation.'
       end
 
       options_ptr = GDAL::Options.pointer(options)
@@ -100,7 +97,7 @@ module OGR
         file_name, options_ptr)
       return nil if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr, nil)
+      ds = OGR::DataSource.new(data_source_ptr, 'w')
       yield ds if block_given?
 
       ds
@@ -110,7 +107,7 @@ module OGR
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_data_source(file_name)
       unless can_delete_data_source?
-        fail OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
+        raise OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
       end
 
       ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
@@ -126,7 +123,7 @@ module OGR
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
 
       if source_ptr.nil? || source_ptr.null?
-        fail OGR::InvalidDataSource, source_data_source
+        raise OGR::InvalidDataSource, source_data_source
       end
 
       options_ptr = GDAL::Options.pointer(options)

@@ -1,6 +1,5 @@
-require_relative '../ffi/ogr'
-require_relative '../gdal/major_object'
-require_relative 'envelope'
+require_relative '../ogr'
+require_relative '../gdal'
 require_relative 'layer_mixins/extensions'
 require_relative 'layer_mixins/capability_methods'
 require_relative 'layer_mixins/ogr_feature_methods'
@@ -12,6 +11,7 @@ require_relative 'layer_mixins/ogr_sql_methods'
 module OGR
   class Layer
     include GDAL::MajorObject
+    include GDAL::Logger
     include LayerMixins::Extensions
     include LayerMixins::CapabilityMethods
     include LayerMixins::OGRFeatureMethods
@@ -28,7 +28,6 @@ module OGR
     # @param layer_ptr [FFI::Pointer]
     def initialize(layer_ptr)
       @c_pointer = layer_ptr
-      @features = []
     end
 
     # @return [String]
@@ -97,7 +96,7 @@ module OGR
     # @param new_style_table [OGR::StyleTable, FFI::pointer]
     def style_table=(new_style_table)
       style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
-      fail OGR::Failure if style_table_ptr.nil? || style_table_ptr.null?
+      raise OGR::Failure if style_table_ptr.nil? || style_table_ptr.null?
 
       FFI::OGR::API.OGR_L_SetStyleTable(@c_pointer, style_table_ptr)
     end

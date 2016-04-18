@@ -1,6 +1,5 @@
-require_relative '../ffi/gdal/rpc_info'
-require_relative '../ffi/gdal/alg'
 require 'forwardable'
+require_relative '../gdal'
 
 module GDAL
   # @return [FFI::GDAL::RPCInfo]

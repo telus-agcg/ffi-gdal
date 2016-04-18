@@ -1,4 +1,4 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'field_definition_extensions'
 
 module OGR
@@ -18,13 +18,13 @@ module OGR
                    end
 
       unless @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
-        fail OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+        raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
-
-      ObjectSpace.define_finalizer(self, -> { destroy! })
     end
 
     def destroy!
+      return unless @c_pointer
+
       FFI::OGR::API.OGR_Fld_Destroy(@c_pointer)
       @c_pointer = nil
     end

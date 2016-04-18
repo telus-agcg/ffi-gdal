@@ -1,7 +1,5 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 require_relative 'feature_definition_extensions'
-require_relative 'field_definition'
-require_relative 'geometry_field_definition'
 
 module OGR
   class FeatureDefinition
@@ -22,15 +20,15 @@ module OGR
                    end
 
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        fail OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
-
-      close_me = -> { FFI::OGR::API.OGR_FD_Destroy(@c_pointer) }
-      ObjectSpace.define_finalizer self, close_me
     end
 
     def release!
+      return unless @c_pointer
+
       FFI::OGR::API.OGR_FD_Release(@c_pointer)
+      @c_pointer = nil
     end
 
     # @return [String]
@@ -58,7 +56,7 @@ module OGR
       field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
 
       if field_definition_ptr.nil?
-        fail OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
+        raise OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
       end
 
       FFI::OGR::API.OGR_FD_AddFieldDefn(@c_pointer, field_definition_ptr)

@@ -1,5 +1,4 @@
 require 'ffi'
-require_relative 'minixml'
 
 module FFI
   module CPL

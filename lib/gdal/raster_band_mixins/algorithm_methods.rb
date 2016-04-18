@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module RasterBandMixins
     module AlgorithmMethods
@@ -18,22 +16,25 @@ module GDAL
         # @param green_band [GDAL::RasterBand, FFI::Pointer]
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
         # @param colors [Fixnum] Number of colors to return; 2-256.
-        # @param color_interpretation [FFI::GDAL::PaletteInterp] The type
+        # @param color_interpretation [FFI::GDAL::GDAL::PaletteInterp] The type
         #   of ColorTable to return.
+        # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+        # @param progress_arg [FFI::Pointer] Usually used when when using a
+        #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
         # @return [GDAL::ColorTable]
         def compute_median_cut_pct(red_band, green_band, blue_band,
-          colors, color_interpretation, &progress)
+          colors, color_interpretation, progress_function: nil, progress_arg: nil)
           color_table = GDAL::ColorTable.new(color_interpretation)
 
           FFI::GDAL::Alg.GDALComputeMedianCutPCT(
             red_band,
             green_band,
             blue_band,
-            nil,            # This isn't yet supported in GDAL.
+            nil, # This isn't yet supported in GDAL.
             colors,
             color_table.c_pointer,
-            progress,
-            nil)
+            progress_function,
+            progress_arg)
 
           color_table
         end
@@ -54,10 +55,13 @@ module GDAL
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
         # @param output_band [GDAL::RasterBand, FFI::Pointer]
         # @param color_table [GDAL::ColorTable, FFI::Pointer]
+        # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+        # @param progress_arg [FFI::Pointer] Usually used when when using a
+        #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
         # @return [GDAL::RasterBand] +output_band+ with the dithering algorithm
         #   applied.
         def dither_rgb_to_pct(red_band, green_band, blue_band, output_band,
-          color_table, &progress)
+          color_table, progress_function: nil, progress_arg: nil)
           red_ptr = GDAL._pointer(GDAL::RasterBand, red_band)
           green_ptr = GDAL._pointer(GDAL::RasterBand, green_band)
           blue_ptr = GDAL._pointer(GDAL::RasterBand, blue_band)
@@ -70,8 +74,8 @@ module GDAL
             blue_ptr,
             output_ptr,
             color_table_ptr,
-            progress,
-            nil)
+            progress_function,
+            progress_arg)
 
           output_band
         end
@@ -105,6 +109,9 @@ module GDAL
       # values.
       #
       # @param proximity_band [GDAL::RasterBand, FFI::Pointer]
+      # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+      # @param progress_arg [FFI::Pointer] Usually used when when using a
+      #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash]
       # @option options [String] values A list of target pixel values to measure
       #   the distance from. If this isn't provided, proximity will be computed
@@ -118,7 +125,7 @@ module GDAL
       # @option options [Fixnum] fixed_buf_val If set, all pixels within the
       #   +maxdist+ threshold are set to this fixed value instead of to a
       #   proximity distance.
-      def compute_proximity!(proximity_band, **options, &progress)
+      def compute_proximity!(proximity_band, progress_function: nil, progress_arg: nil, **options)
         proximity_band_ptr = GDAL._pointer(GDAL::RasterBand, proximity_band)
         options_ptr = GDAL::Options.pointer(options)
 
@@ -126,8 +133,8 @@ module GDAL
           @c_pointer,
           proximity_band_ptr,
           options_ptr,
-          progress,
-          nil)
+          progress_function,
+          progress_arg)
       end
 
       # Fill selected raster regions by interpolation from the edges. It
@@ -153,20 +160,24 @@ module GDAL
       #   directions to find values to interpolate from.
       # @param smoothing_iterations [Fixnum] The number of 3x3 smoothing filter
       #   passes to run.  Can be 0.
+      # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+      # @param progress_arg [FFI::Pointer] Usually used when when using a
+      #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash]
       # TODO: document what valid options are.
-      def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, **options, &progress)
+      def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil, progress_arg: nil,
+        **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
-        !!FFI::GDAL.GDALFillNodata(@c_pointer,
+        !!FFI::GDAL::Alg.GDALFillNodata(@c_pointer,
           mask_band_ptr,
           max_search_distance,
-          0,                    # deprecated option in GDAL
+          0, # deprecated option in GDAL
           smoothing_iterations,
           options_ptr,
-          progress,
-          nil)
+          progress_function,
+          progress_arg)
       end
 
       # Creates vector polygons for all connected regions of pixels in the raster
@@ -196,16 +207,23 @@ module GDAL
       #   suitable for collection as polygons.
       # @param pixel_value_field [Fixnum] Index of the feature attribute into
       #   which the pixel value of the polygon should be written.
+      # @param use_integer_function [Boolean] Indicates using GDAL's
+      #   GDALPolygonize() instead of GDALFPolygonize(); the former uses a
+      #   32-bit integer buffer for reading pixel band values, the latter uses a
+      #   32-bit float buffer. The integer based function is faster but less
+      #   precise.
       # @param options [Hash]
       # @option options [Fixnum] '8CONNECTED' (4) Set to 8 to use 8
       #   connectedness.
-      # @param progress [Proc]
+      # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+      # @param progress_arg [FFI::Pointer] Usually used when when using a
+      #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @return [OGR::Layer]
-      def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false,
-        **options, &progress)
+      def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
+        progress_arg: nil, **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
-        fail OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+        raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
         log "Pixel value field: #{pixel_value_field}"
 
         options_ptr = GDAL::Options.pointer(options)
@@ -219,8 +237,8 @@ module GDAL
           layer_ptr,              # hOutLayer
           pixel_value_field,      # iPixValField
           options_ptr,            # papszOptions
-          progress,               # pfnProgress
-          nil                     # pProgressArg
+          progress_function,      # pfnProgress
+          progress_arg            # pProgressArg
         )
 
         layer_ptr.instance_of?(OGR::Layer) ? layer_ptr : OGR::Layer.new(layer_ptr)
@@ -242,10 +260,16 @@ module GDAL
       # @param mask_band [GDAL::RasterBand] [description] All pixels in this
       #   band with a value other than 0 will be considered suitable for
       #   inclusion in polygons.
+      # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+      # @param progress_arg [FFI::Pointer] Usually used when when using a
+      #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash] None supported in GDAL as of this writing.
-      def sieve_filter!(size_threshold, connectedness, mask_band: nil, **options, &progress)
-        _sieve_filter(size_threshold, connectedness, @c_pointer,
-          mask_band: mask_band, **options, &progress)
+      def sieve_filter!(size_threshold, connectedness, mask_band: nil, progress_function: nil, progress_arg: nil,
+        **options)
+        _sieve_filter(size_threshold, connectedness, self, mask_band: mask_band,
+                                                           progress_function: progress_function,
+                                                           progress_arg: progress_arg,
+                                                           **options)
       end
 
       # The same as +sieve_filter!+, but returns a new GDAL::RasterBand as the
@@ -253,15 +277,12 @@ module GDAL
       #
       # @see +sieve_filter!
       # @param destination_band [GDAL::RasterBand]
-      def sieve_filter(size_threshold, connectedness, destination_band,
-        mask_band: nil, **options, &progress)
-        destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
-        if destination_band.nil? || destination_band.null?
-          fail GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
-        end
-
-        _sieve_filter(size_threshold, connectedness, destination_band_ptr,
-          mask_band: mask_band, **options, &progress)
+      def sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
+        progress_arg: nil, **options)
+        _sieve_filter(size_threshold, connectedness, destination_band, mask_band: mask_band,
+                                                                       progress_function: progress_function,
+                                                                       progress_arg: progress_arg,
+                                                                       **options)
 
         if destination_band.is_a? GDAL::RasterBand
           destination_band
@@ -272,9 +293,27 @@ module GDAL
 
       private
 
-      def _sieve_filter(size_threshold, connectedness, destination_band_ptr = nil,
-        mask_band: nil, **options, &progress)
+      # @param size_threshold [Fixnum] Polygons found in the raster with sizes
+      #   smaller than this will be merged into their largest neighbor.
+      # @param connectedness [Fixnum] 4 or 8. 4 indicates that diagonal pixels
+      #   are not considered directly adjacent for polygon membership purposes;
+      #   8 indicates they are.
+      # @param mask_band [GDAL::RasterBand] [description] All pixels in this
+      #   band with a value other than 0 will be considered suitable for
+      #   inclusion in polygons.
+      # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
+      # @param progress_arg [FFI::Pointer] Usually used when when using a
+      #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
+      # @param options [Hash] None supported in GDAL as of this writing.
+      def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
+        progress_arg: nil, **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
+
+        if destination_band.nil? || destination_band.null?
+          raise GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"
+        end
+
         options_ptr = GDAL::Options.pointer(options)
 
         FFI::GDAL::Alg.GDALSieveFilter(
@@ -284,8 +323,8 @@ module GDAL
           size_threshold,
           connectedness,
           options_ptr,
-          progress,
-          nil)
+          progress_function,
+          progress_arg)
       end
     end
   end

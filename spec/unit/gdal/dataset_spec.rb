@@ -7,7 +7,31 @@ RSpec.describe GDAL::Dataset do
   end
 
   subject do
-    described_class.open(file_path, 'r')
+    described_class.open(file_path, 'r', false)
+  end
+
+  it_behaves_like 'a major object'
+
+  describe '.open' do
+    context 'not a dataset' do
+      it 'raises an GDAL::OpenFailure' do
+        expect do
+          described_class.open('blarg', 'r')
+        end.to raise_exception GDAL::OpenFailure
+      end
+    end
+
+    context 'block given' do
+      let(:dataset) { instance_double 'GDAL::Dataset' }
+
+      it 'yields then closes the opened DataSource' do
+        allow(described_class).to receive(:new).and_return dataset
+
+        expect(dataset).to receive(:close)
+        expect { |b| described_class.open('blarg', 'r', &b) }.
+          to yield_with_args(dataset)
+      end
+    end
   end
 
   describe '#access_flag' do
@@ -74,8 +98,15 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#projection' do
+    let(:expected_wkt) do
+      'GEOGCS["unknown",DATUM["unknown",SPHEROID["Bessel 1841",' \
+        '6377397.155,299.1528128000008,AUTHORITY["EPSG","7004"]],' \
+        'TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],' \
+        'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]]'
+    end
+
     it 'returns the projection string' do
-      expect(subject.projection).to eq %(GEOGCS[\"unknown\",DATUM[\"unknown\",SPHEROID[\"Bessel 1841\",6377397.155,299.1528128000008,AUTHORITY[\"EPSG\",\"7004\"]],TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]])
+      expect(subject.projection).to eq expected_wkt
     end
   end
 
@@ -90,6 +121,26 @@ RSpec.describe GDAL::Dataset do
   describe '#geo_transform' do
     it 'returns a GDAL::GeoTransform' do
       expect(subject.geo_transform).to be_a GDAL::GeoTransform
+    end
+  end
+
+  describe '#parse_mask_flag_symbols' do
+    context 'empty params' do
+      it 'returns 0' do
+        expect(subject.send(:parse_mask_flag_symbols, nil)).to eq 0
+      end
+    end
+
+    context ':GMF_ALL_VALID' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID)).to eq 1
+      end
+    end
+
+    context ':GMF_ALL_VALID, :GMF_NODATA' do
+      it 'returns 1' do
+        expect(subject.send(:parse_mask_flag_symbols, :GMF_ALL_VALID, :GMF_NODATA)).to eq 9
+      end
     end
   end
 end

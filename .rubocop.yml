@@ -51,12 +51,19 @@ Style/PercentLiteralDelimiters:
     '%w': '[]'
     '%W': '[]'
 
+Style/PredicateName:
+  Exclude:
+    - lib/ogr/geometry_mixins/extensions.rb
+
 Style/SymbolArray:
   Enabled: true
 
 AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
   Include:
     - Gemfile
     - ffi-gdal.gemspec
   Exclude:
     - vendor/bundle/**/*
+  TargetRubyVersion: 2.2

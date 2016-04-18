@@ -8,19 +8,14 @@ module GDAL
       module ClassMethods
         # @return [Array<String>]
         def short_names
-          names = count.times.map do |i|
-            driver = at_index(i)
-            driver.short_name
-          end
+          names = Array.new(count) { |i| at_index(i).short_name }
 
           names.compact.sort
         end
 
         # @return [Array<String>]
         def long_names
-          names = count.times.map do |i|
-            at_index(i).long_name
-          end
+          names = Array.new(count) { |i| at_index(i).long_name }
 
           names.compact.sort
         end

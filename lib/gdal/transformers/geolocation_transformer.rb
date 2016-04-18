@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module Transformers
     class GeolocationTransformer
@@ -22,8 +20,6 @@ module GDAL
           base_dataset_ptr,
           geolocation_info_ptr,
           reversed)
-
-        ObjectSpace.define_finalizer self, -> { destroy! }
       end
 
       def destroy!

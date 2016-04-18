@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/alg'
-
 module GDAL
   module Transformers
     class RPCTransformer
@@ -36,8 +34,6 @@ module GDAL
           reversed,
           pixel_error_threshold,
           options_ptr)
-
-        ObjectSpace.define_finalizer self, -> { destroy! }
       end
 
       def destroy!

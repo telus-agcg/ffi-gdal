@@ -40,11 +40,11 @@ module OGR
     # Compares min/max X and min/max Y to the other envelope.  The envelopes are
     # considered equal if those values are the same.
     #
-    # @param other_envelope [OGR::Envelope]
+    # @param other [OGR::Envelope]
     # @return [Boolean]
-    def ==(other_envelope)
-      x_min == other_envelope.x_min && y_min == other_envelope.y_min &&
-        x_max == other_envelope.x_max && y_max == other_envelope.y_max
+    def ==(other)
+      x_min == other.x_min && y_min == other.y_min &&
+        x_max == other.x_max && y_max == other.y_max
     end
 
     # Stolen from http://www.gdal.org/ogr__core_8h_source.html.
@@ -85,6 +85,22 @@ module OGR
         y_max >= other_envelope.y_max
     end
 
+    # @return [OGR::Polygon]
+    def to_polygon
+      ring = OGR::LinearRing.new
+      ring.point_count = 5
+      ring.set_point(0, x_min, y_max)
+      ring.set_point(1, x_max, y_max)
+      ring.set_point(2, x_max, y_min)
+      ring.set_point(3, x_min, y_min)
+      ring.set_point(4, x_min, y_max)
+
+      polygon = OGR::Polygon.new
+      polygon.add_geometry(ring)
+
+      polygon
+    end
+
     # @return [Hash]
     def as_json(_options = nil)
       json = {
@@ -94,8 +110,9 @@ module OGR
         y_max: y_max
       }
 
-      if @c_struct.is_a? FFI::GDAL::OGREnvelope3D
-        json.merge!(z_min: z_min, z_max: z_max)
+      if @c_struct.is_a? FFI::OGR::Envelope3D
+        json[:z_min] = z_min
+        json[:z_max] = z_max
       end
 
       json

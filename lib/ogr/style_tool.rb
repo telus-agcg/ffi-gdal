@@ -1,4 +1,4 @@
-require_relative '../ffi/ogr'
+require_relative '../ogr'
 
 module OGR
   class StyleTool
@@ -11,7 +11,7 @@ module OGR
       @c_pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
       return if @c_pointer && !@c_pointer.null?
 
-      fail OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
+      raise OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
     end
 
     # @return [String, nil]
@@ -43,14 +43,14 @@ module OGR
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
-    alias_method :param_as_float, :param_as_double
+    alias param_as_float param_as_double
 
     # @param param_number [Fixnum]
     # @param value [Float]
     def set_param_as_double(param_number, value)
       FFI::OGR::API.OGR_ST_SetParamDbl(@c_pointer, param_number, value)
     end
-    alias_method :set_param_as_float, :set_param_as_double
+    alias set_param_as_float set_param_as_double
 
     # @param param_number [Fixnum]
     # @return [Fixnum, nil]
@@ -60,14 +60,14 @@ module OGR
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
-    alias_method :param_as_integer, :param_as_number
+    alias param_as_integer param_as_number
 
     # @param param_number [Fixnum]
     # @param value [Fixnum]
     def set_param_as_number(param_number, value)
       FFI::OGR::API.OGR_ST_SetParamNum(@c_pointer, param_number, value)
     end
-    alias_method :set_param_as_integer, :set_param_as_number
+    alias set_param_as_integer set_param_as_number
 
     # @param param_number [Fixnum]
     # @return [String, nil]
@@ -94,14 +94,8 @@ module OGR
       blue_ptr = FFI::MemoryPointer.new(:int)
       alpha_ptr = FFI::MemoryPointer.new(:int)
 
-      boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(
-        @c_pointer,
-        color_string,
-        red_ptr,
-        green_ptr,
-        blue_ptr,
-        alpha_ptr
-      )
+      boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(@c_pointer,
+        color_string, red_ptr, green_ptr, blue_ptr, alpha_ptr)
 
       if boolean_result
         {

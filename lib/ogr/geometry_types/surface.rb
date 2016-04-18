@@ -1,5 +1,3 @@
-require_relative '../../ffi/ogr/api'
-
 module OGR
   module GeometryTypes
     module Surface
@@ -16,13 +14,6 @@ module OGR
       # @return [Hash]
       def area_units
         spatial_reference ? spatial_reference.linear_units : nil
-      end
-
-      # Returns a point that's guaranteed to lie on the surface.
-      #
-      # @return [OGR::Point]
-      def point_on_surface
-        build_geometry { |ptr| FFI::OGR::API.OGR_G_PointOnSurface(ptr) }
       end
     end
   end

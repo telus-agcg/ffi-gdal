@@ -36,7 +36,7 @@ module OGR
       # @return [Boolean]
       def transact
         unless supports_transactions?
-          fail OGR::UnsupportedOperation, 'This layer does not support transactions.'
+          raise OGR::UnsupportedOperation, 'This layer does not support transactions.'
         end
 
         ogr_err = yield

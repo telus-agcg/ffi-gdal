@@ -21,7 +21,7 @@ module OGR
         end
 
       unless @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
-        fail OGR::InvalidGeometryFieldDefinition,
+        raise OGR::InvalidGeometryFieldDefinition,
           "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
 
@@ -34,6 +34,8 @@ module OGR
     end
 
     def destroy!
+      return unless @c_pointer
+
       FFI::OGR::API.OGR_GFld_Destroy(@c_pointer)
       @c_pointer = nil
     end
@@ -45,7 +47,7 @@ module OGR
 
     # @param new_name [String]
     def name=(new_name)
-      fail OGR::ReadOnlyObject if @read_only
+      raise OGR::ReadOnlyObject if @read_only
 
       FFI::OGR::API.OGR_GFld_SetName(@c_pointer, new_name)
     end
@@ -57,7 +59,7 @@ module OGR
 
     # @param new_type [FFI::OGR::API::WKBGeometryType]
     def type=(new_type)
-      fail OGR::ReadOnlyObject if @read_only
+      raise OGR::ReadOnlyObject if @read_only
 
       FFI::OGR::API.OGR_GFld_SetType(@c_pointer, new_type)
     end
@@ -75,7 +77,7 @@ module OGR
 
     # @param new_spatial_reference [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_reference)
-      fail OGR::ReadOnlyObject if @read_only
+      raise OGR::ReadOnlyObject if @read_only
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference)
 
@@ -91,7 +93,7 @@ module OGR
 
     # @param value [Boolean]
     def ignore=(value)
-      fail OGR::ReadOnlyObject if @read_only
+      raise OGR::ReadOnlyObject if @read_only
 
       FFI::OGR::API.OGR_GFld_SetIgnored(@c_pointer, value)
     end

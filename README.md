@@ -28,12 +28,10 @@ you'll just want to use the Ruby-fied library, but if for some reason that
 doesn't get you what you want, direct access to the FFI wrapper (which is
 really just direct access to the C API) is available.
 
-
 ### The Ruby-fied Library
 
 To distinguish this gem from the already-existing gdal gem, you
 `require ffi-gdal` to get access to the `GDAL` module and its children.
-
 
 ### The direct FFI wrapper
 
@@ -46,20 +44,16 @@ For classes that are enabled with logging capabilities, you can turn logging on
 and off like `GDAL::RasterBand.logging_enabled = true`. If you're using ffi-gdal
 in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 
+Additional Libraries
+--------------------
 
-Testing
--------
-
-You'll need some images to run the integration specs against, and instead of
-keeping those as part of this repo, there's a Rake task that will pull OSGeo's
-set of sample geotiffs down via FTP.  Running `rake get_tiffs` will pull
-everything down from ftp://downloads.osgeo.org/geotiff/samples and put the
-files under spec/support/images/osgeo/geotiff.
+[ffi-gdal-extensions](https://bitbucket.org/agrian/ffi-gdal-extensions) provides
+additional functionality, not provided in this core, GDAL-wrapper library.
 
 Contributing
 ------------
 
-1. Fork it ( https://github.com/turboladen/ffi-gdal/fork )
+1. Fork it ( https://bitbucket.org/agrian/ffi-gdal/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

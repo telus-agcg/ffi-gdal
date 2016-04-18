@@ -1,34 +1,33 @@
 require 'spec_helper'
 require 'date'
 require 'ogr/feature'
+require 'ogr/field'
 
 RSpec.describe OGR::Feature do
-  let(:integer_field) { OGR::FieldDefinition.new('test integer field', :OFTInteger) }
-  let(:integer_list_field) { OGR::FieldDefinition.new('test integer list field', :OFTIntegerList) }
-  let(:real_field) { OGR::FieldDefinition.new('test real field', :OFTReal) }
-  let(:real_list_field) { OGR::FieldDefinition.new('test real list field', :OFTRealList) }
-  let(:string_field) { OGR::FieldDefinition.new('test string field', :OFTString) }
-  let(:string_list_field) { OGR::FieldDefinition.new('test string list field', :OFTStringList) }
-  let(:binary_field) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
-  let(:date_field) { OGR::FieldDefinition.new('test date field', :OFTDate) }
-
-  let(:geometry_field_definition) do
-    OGR::GeometryFieldDefinition.new('test geometry', :wkbPoint)
-  end
+  let(:integer_field_def) { OGR::FieldDefinition.new('test integer field', :OFTInteger) }
+  let(:integer_list_field_def) { OGR::FieldDefinition.new('test integer list field', :OFTIntegerList) }
+  let(:real_field_def) { OGR::FieldDefinition.new('test real field', :OFTReal) }
+  let(:real_list_field_def) { OGR::FieldDefinition.new('test real list field', :OFTRealList) }
+  let(:string_field_def) { OGR::FieldDefinition.new('test string field', :OFTString) }
+  let(:string_list_field_def) { OGR::FieldDefinition.new('test string list field', :OFTStringList) }
+  let(:binary_field_def) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
+  let(:date_field_def) { OGR::FieldDefinition.new('test date field', :OFTDate) }
 
   let(:feature_definition) do
     fd = OGR::FeatureDefinition.new('test FD')
 
-    fd.add_field_definition(integer_field)        # 0
-    fd.add_field_definition(integer_list_field)   # 1
-    fd.add_field_definition(real_field)           # 2
-    fd.add_field_definition(real_list_field)      # 3
-    fd.add_field_definition(string_field)         # 4
-    fd.add_field_definition(string_list_field)    # 5
-    fd.add_field_definition(binary_field)         # 6
-    fd.add_field_definition(date_field)           # 7
+    fd.add_field_definition(integer_field_def)        # 0
+    fd.add_field_definition(integer_list_field_def)   # 1
+    fd.add_field_definition(real_field_def)           # 2
+    fd.add_field_definition(real_list_field_def)      # 3
+    fd.add_field_definition(string_field_def)         # 4
+    fd.add_field_definition(string_list_field_def)    # 5
+    fd.add_field_definition(binary_field_def)         # 6
+    fd.add_field_definition(date_field_def)           # 7
 
-    fd.add_geometry_field_definition(geometry_field_definition)
+    gfd = fd.geometry_field_definition(0)
+    gfd.type = :wkbPoint
+    gfd.name = 'test point'
 
     fd
   end
@@ -218,21 +217,23 @@ RSpec.describe OGR::Feature do
   end
 
   describe '#set_field_raw + #field_as_raw' do
-    let(:integer_field_struct) do
-      f = FFI::OGR::Field.new
-      f[:integer] = 1
+    let(:integer_field) do
+      f = OGR::Field.new
+      f.integer = 1
+
       f
     end
 
-    let(:integer_list_field_struct) do
-      f = FFI::OGR::Field.new
-      f[:integer_list] = [1, 2, 3]
+    let(:integer_list_field) do
+      f = OGR::Field.new
+      f.integer_list = [1, 2, 3]
+
       f
     end
 
     context 'to a valid index' do
       it 'adds the field' do
-        subject.set_field_raw(0, integer_field_struct)
+        subject.set_field_raw(0, integer_field)
         expect(subject.field_as_integer(0)).to eq 1
       end
     end
@@ -240,25 +241,8 @@ RSpec.describe OGR::Feature do
     context 'to an invalid valid index' do
       it 'adds the field' do
         expect do
-          subject.set_field_raw(100, integer_field_struct)
+          subject.set_field_raw(100, integer_field)
         end.to raise_exception GDAL::Error
-      end
-    end
-
-    context 'raw field is not of the given type' do
-      let(:int_feature_definition) do
-        fd = OGR::FeatureDefinition.new('test FD')
-        fd.add_field_definition(integer_field)        # 0
-
-        fd
-      end
-
-      subject { described_class.new(int_feature_definition) }
-
-      it 'raises a TypeError' do
-        expect do
-          subject.set_field_raw(0, integer_list_field_struct)
-        end.to raise_exception TypeError
       end
     end
   end

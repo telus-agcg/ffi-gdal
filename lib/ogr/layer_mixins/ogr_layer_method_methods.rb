@@ -20,8 +20,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def clip(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Clip, method_layer, **options, &progress)
+      def clip(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Clip, method_layer, output_layer, **options, &progress)
       end
 
       # Remove areas in this layer that are covered by the method layer.
@@ -40,8 +40,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def erase(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Erase, method_layer, **options, &progress)
+      def erase(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Erase, method_layer, output_layer, **options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -58,8 +58,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def identity(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Identity, method_layer, **options, &progress)
+      def identity(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Identity, method_layer, output_layer, **options, &progress)
       end
 
       # Intersection of this layer and +method_layer+.
@@ -74,8 +74,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def intersection(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Intersection, method_layer, **options, &progress)
+      def intersection(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Intersection, method_layer, output_layer, **options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -95,8 +95,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def symmetrical_difference(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_SymDifference, method_layer, **options, &progress)
+      def symmetrical_difference(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_SymDifference, method_layer, output_layer, **options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -115,8 +115,8 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def union(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Union, method_layer, **options, &progress)
+      def union(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Union, method_layer, output_layer, **options, &progress)
       end
 
       # Update this layer with features from the update layer. The result layer
@@ -136,18 +136,18 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
-      def update(method_layer, **options, &progress)
-        run_layer_method(:OGR_L_Update, method_layer, **options, &progress)
+      def update(method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Update, method_layer, output_layer, **options, &progress)
       end
 
       private
 
-      def run_layer_method(method_name, method_layer, **options, &progress)
+      def run_layer_method(method_name, method_layer, output_layer, **options, &progress)
         method_layer_ptr = GDAL._pointer(OGR::Layer, method_layer)
         options_ptr = GDAL::Options.pointer(options)
-        result_layer_ptr = FFI::MemoryPointer.new(:OGRLayerH)
+        result_layer_ptr = output_layer.c_pointer
 
-        ogr_err = FFI::GDAL.send(method_name,
+        ogr_err = FFI::OGR::API.send(method_name,
           @c_pointer,
           method_layer_ptr,
           result_layer_ptr,
@@ -156,7 +156,7 @@ module OGR
           nil)
         ogr_err.handle_result
 
-        OGR::Layer.new(result_layer_ptr)
+        output_layer
       end
     end
   end

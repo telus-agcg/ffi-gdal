@@ -1,15 +1,16 @@
-require_relative '../ffi/gdal'
+require_relative '../gdal'
+require 'multi_xml'
 
 module GDAL
   module MajorObject
     # @return [Array<String>]
     def metadata_domain_list
-      unless defined? FFI::GDAL.GDALGetMetadataDomainList
+      unless defined? FFI::GDAL::GDAL.GDALGetMetadataDomainList
         warn "GDALGetMetadataDomainList is't defined. GDAL::MajorObject#metadata_domain_list disabled."
         return []
       end
 
-      list_pointer = FFI::GDAL.GDALGetMetadataDomainList(c_pointer)
+      list_pointer = FFI::GDAL::GDAL.GDALGetMetadataDomainList(@c_pointer)
       return [] if list_pointer.null?
 
       strings = list_pointer.get_array_of_string(0)
@@ -19,8 +20,10 @@ module GDAL
 
     # @param domain [String] Name of the domain to get metadata for.
     # @return [Hash]
-    def metadata(domain = '')
-      m = FFI::GDAL.GDALGetMetadata(c_pointer, domain)
+    def metadata(domain = nil)
+      return unless @c_pointer
+
+      m = FFI::GDAL::GDAL.GDALGetMetadata(@c_pointer, domain)
       return {} if m.null?
 
       data_array = m.get_array_of_string(0)
@@ -40,11 +43,11 @@ module GDAL
     # @param domain [String]
     # @return [String]
     def metadata_item(name, domain = '')
-      FFI::GDAL.GDALGetMetadataItem(c_pointer, name, domain)
+      FFI::GDAL::GDAL.GDALGetMetadataItem(@c_pointer, name, domain)
     end
 
     def set_metadata_item(name, value, domain = '')
-      FFI::GDAL.GDALSetMetadataItem(c_pointer, name, value.to_s, domain)
+      FFI::GDAL::GDAL.GDALSetMetadataItem(@c_pointer, name, value.to_s, domain)
     end
 
     # @return [Hash{domain => Array<String>}]
@@ -59,16 +62,16 @@ module GDAL
 
     # @return [String]
     def description
-      FFI::GDAL.GDALGetDescription(c_pointer)
+      FFI::GDAL::GDAL.GDALGetDescription(@c_pointer)
     end
 
     # @param new_description [String]
     def description=(new_description)
-      FFI::GDAL.GDALSetDescription(c_pointer, new_description.to_s)
+      FFI::GDAL::GDAL.GDALSetDescription(@c_pointer, new_description.to_s)
     end
 
     def null?
-      c_pointer.null?
+      @c_pointer.null?
     end
   end
 end

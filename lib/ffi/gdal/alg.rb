@@ -1,10 +1,5 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
-require_relative 'rpc_info'
-require_relative '../ogr/api'
-require_relative '../cpl/error'
-require_relative '../cpl/port'
-require_relative '../cpl/xml_node'
 
 module FFI
   module GDAL
@@ -39,27 +34,29 @@ module FFI
       # -----------------------------------------------------------------------
       # Functions
       # -----------------------------------------------------------------------
+      attach_function :GDALDestroyTransformer, %i[pointer], :void
+
       attach_function :GDALChecksumImage,
-        [GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
+        [FFI::GDAL::GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
         :int
       attach_function :GDALComputeMedianCutPCT,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           :pointer,
           :int,
-          GDAL.find_type(:GDALColorTableH),
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALColorTableH),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         :int
       attach_function :GDALComputeProximity,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
@@ -88,7 +85,7 @@ module FFI
         CPL::Error::CPLErr
       attach_function :GDALContourGenerate,
         [
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           :double,
           :double,
           :int,
@@ -98,7 +95,7 @@ module FFI
           :pointer,
           :int,
           :int,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
@@ -106,12 +103,9 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~
       # Transformer functions
       # ~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALSetTransformerDstGeoTransform,
-        %i[pointer pointer],
-        :void
       attach_function :GDALSuggestedWarpOutput,
         [
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :GDALTransformerFunc,
           :pointer,
           :pointer,
@@ -121,7 +115,7 @@ module FFI
         CPL::Error::CPLErr
       attach_function :GDALSuggestedWarpOutput2,
         [
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :GDALTransformerFunc,
           :pointer,
           :pointer,
@@ -139,12 +133,12 @@ module FFI
         CPL::Error::CPLErr
       attach_function :GDALTransformGeolocations,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           :GDALTransformerFunc,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer,
           :pointer
         ],
@@ -180,7 +174,7 @@ module FFI
       # GeoLoc Transform
       # ~~~
       attach_function :GDALCreateGeoLocTransformer,
-        [GDAL.find_type(:GDALDatasetH), :pointer, :bool],
+        [FFI::GDAL::GDAL.find_type(:GDALDatasetH), :pointer, :bool],
         :pointer
       attach_function :GDALDestroyGeoLocTransformer, %i[pointer], :void
       GeoLocTransform = attach_function :GDALGeoLocTransform,
@@ -192,9 +186,9 @@ module FFI
       # ~~~
       attach_function :GDALCreateGenImgProjTransformer,
         [
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :string,
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :string,
           :bool,
           :double,
@@ -202,7 +196,7 @@ module FFI
         ],
         :pointer
       attach_function :GDALCreateGenImgProjTransformer2,
-        [GDAL.find_type(:GDALDatasetH), GDAL.find_type(:GDALDatasetH), :pointer],
+        [FFI::GDAL::GDAL.find_type(:GDALDatasetH), FFI::GDAL::GDAL.find_type(:GDALDatasetH), :pointer],
         :pointer
       attach_function :GDALCreateGenImgProjTransformer3,
         %i[string pointer string pointer],
@@ -232,7 +226,7 @@ module FFI
       attach_function :GDALCreateRPCTransformer,
         [RPCInfo.ptr, :int, :double, :pointer],
         :pointer
-      attach_function :RPCInfoToMD, [GDAL::RPCInfo.ptr], :pointer
+      attach_function :RPCInfoToMD, [RPCInfo.ptr], :pointer
       attach_function :GDALDestroyRPCTransformer, %i[pointer], :void
       RPCTransform = attach_function :GDALRPCTransform,
         %i[pointer bool int pointer pointer pointer pointer],
@@ -247,48 +241,63 @@ module FFI
         %i[pointer bool int pointer pointer pointer pointer],
         :int
 
+      # ~~~
+      # RasterBand related functions
+      # ~~~
       attach_function :GDALDitherRGB2PCT,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALColorTableH),
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALColorTableH),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
       attach_function :GDALFillNodata,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           :double,
           :int,
           :int,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
       attach_function :GDALPolygonize,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           OGR::API.find_type(:OGRLayerH),
           :int,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
       attach_function :GDALFPolygonize,
         [
-          GDAL.find_type(:GDALRasterBandH),
-          GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
           OGR::API.find_type(:OGRLayerH),
           :int,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
+          :pointer
+        ],
+        CPL::Error::CPLErr
+      attach_function :GDALSieveFilter,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
+          :int,
+          :int,
+          :pointer,
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
@@ -312,13 +321,13 @@ module FFI
           CPL::Port.find_type(:GUInt32),
           GDAL::DataType,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
       attach_function :GDALRasterizeGeometries,
         [
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :int,
           :pointer,
           :int,
@@ -327,13 +336,13 @@ module FFI
           :pointer,
           :pointer,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
       attach_function :GDALRasterizeLayers,
         [
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :int,
           :pointer,
           :int,
@@ -342,7 +351,7 @@ module FFI
           :pointer,
           :pointer,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
@@ -362,24 +371,33 @@ module FFI
           :pointer,
           :double,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer
         ],
         CPL::Error::CPLErr
 
       attach_function :GDALSimpleImageWarp,
         [
-          GDAL.find_type(:GDALDatasetH),
-          GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :int,
           :pointer,
           :GDALTransformerFunc,
           :pointer,
-          GDAL.find_type(:GDALProgressFunc),
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
           :pointer,
           :pointer
         ],
         :bool
+
+      attach_function :GDALComputeMatchingPoints,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          :pointer,
+          :pointer
+        ],
+        FFI::GDAL::GCP.ptr
     end
   end
 end

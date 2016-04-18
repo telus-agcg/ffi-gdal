@@ -1,5 +1,3 @@
-require_relative '../../ffi/gdal/matching'
-
 module GDAL
   module DatasetMixins
     module Matching

@@ -1,4 +1,4 @@
-require_relative 'layer'
+require_relative '../ogr'
 
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html
@@ -34,13 +34,13 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(converted_options)
 
-      @c_pointer = FFI::GDAL.OGRGeocodeCreateSession(options_ptr)
+      @c_pointer = FFI::GDAL::GDAL.OGRGeocodeCreateSession(options_ptr)
     end
 
     def destroy!
       return unless @c_pointer
 
-      FFI::GDAL.OGRGeocodeDestroySession(@c_pointer)
+      FFI::GDAL::GDAL.OGRGeocodeDestroySession(@c_pointer)
       @c_pointer = nil
     end
 
@@ -59,7 +59,7 @@ module OGR
     def geocode(query, **options)
       options_ptr = GDAL::Options.pointer(options)
       layer_ptr =
-        FFI::GDAL.OGRGeocode(@c_pointer, query, nil, options_ptr)
+        FFI::GDAL::GDAL.OGRGeocode(@c_pointer, query, nil, options_ptr)
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)
@@ -76,7 +76,7 @@ module OGR
     def reverse_geocode(lon, lat, **options)
       options_ptr = GDAL::Options.pointer(options)
       layer_ptr =
-        FFI::GDAL.OGRGeocodeReverse(@c_pointer, lon, lat, options_ptr)
+        FFI::GDAL::GDAL.OGRGeocodeReverse(@c_pointer, lon, lat, options_ptr)
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)

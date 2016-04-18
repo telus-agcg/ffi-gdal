@@ -39,8 +39,8 @@ module GDAL
         output_data_type: nil, remove_negatives: false, no_data_value: -9999.0, **options)
         red = raster_band(red_band_number)
         nir = raster_band(nir_band_number)
-        fail RequiredBandNotFound, 'Red band not found.' if red.nil?
-        fail RequiredBandNotFound, 'Near-infrared' if nir.nil?
+        raise RequiredBandNotFound, 'Red band not found.' if red.nil?
+        raise RequiredBandNotFound, 'Near-infrared' if nir.nil?
 
         output_data_type ||= red.data_type
         the_array = calculate_ndvi(red.to_na, nir.to_na, no_data_value, remove_negatives, output_data_type)
@@ -52,7 +52,7 @@ module GDAL
           ndvi_dataset.projection = projection
 
           ndvi_band = ndvi_dataset.raster_band(1)
-          ndvi_band.write_array(the_array)
+          ndvi_band.write_xy_narray(the_array)
           ndvi_band.no_data_value = no_data_value
         end
 
@@ -78,7 +78,7 @@ module GDAL
       #   this object or the data may not persist!*
       def extract_nir(destination, band_number, driver_name: 'GTiff', output_data_type: nil, **options)
         original_nir_band = raster_band(band_number)
-        fail InvalidBandNumber, "Band #{band_number} found but was nil." if original_nir_band.nil?
+        raise InvalidBandNumber, "Band #{band_number} found but was nil." if original_nir_band.nil?
 
         output_data_type ||= original_nir_band.data_type
         driver = GDAL::Driver.by_name(driver_name)
@@ -164,7 +164,7 @@ module GDAL
         final_array = case output_data_type
                       when :GDT_Byte then calculate_ndvi_byte(ndvi)
                       when :GDT_UInt16 then calculate_ndvi_uint16(ndvi)
-                      else ndvi        # Already in Float32
+                      else ndvi # Already in Float32
                       end
 
         remove_negatives ? remove_negatives_from(final_array, no_data_value) : final_array
@@ -271,11 +271,16 @@ module GDAL
           spatial_ref = nil
         else
           spatial_ref = OGR::SpatialReference.new(projection)
-          spatial_ref.auto_identify_epsg! rescue OGR::UnsupportedSRS
+          begin
+            spatial_ref.auto_identify_epsg!
+          rescue
+            OGR::UnsupportedSRS
+          end
         end
 
         data_source = ogr_driver.create_data_source(file_name)
 
+        # TODO: fasterer: each_with_index is slower than loop
         band_numbers.each_with_index do |band_number, i|
           log "Starting to polygonize raster band #{band_number}..."
           layer_name = "#{layer_name_prefix}-#{band_number}"
@@ -287,12 +292,12 @@ module GDAL
           band = raster_band(band_number)
 
           unless band
-            fail GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
+            raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
           end
 
           pixel_value_field = layer.feature_definition.field_index(field_name)
           options = { pixel_value_field: pixel_value_field }
-          options.merge!(mask_band: band.mask_band) if use_band_masks
+          options[:mask_band] = band.mask_band if use_band_masks
           band.polygonize(layer, options)
         end
 
@@ -307,10 +312,26 @@ module GDAL
       # Gets the OGR::Geometry that represents the extent of the dataset.
       #
       # @return [OGR::Polygon]
+      # TODO: This should return an OGR::Envelope.
       def extent
-        raster_data_source = to_vector('memory data source', 'Memory', geometry_type: :wkbLinearRing)
+        ul = geo_transform.apply_geo_transform(0, 0)
+        ur = geo_transform.apply_geo_transform(raster_x_size, 0)
+        lr = geo_transform.apply_geo_transform(raster_x_size, raster_y_size)
+        ll = geo_transform.apply_geo_transform(0, raster_y_size)
 
-        raster_data_source.layer(0).geometry_from_extent
+        ring = OGR::LinearRing.new
+        ring.point_count = 5
+        ring.set_point(0, ul[:x_geo], ul[:y_geo])
+        ring.set_point(1, ur[:x_geo], ur[:y_geo])
+        ring.set_point(2, lr[:x_geo], lr[:y_geo])
+        ring.set_point(3, ll[:x_geo], ll[:y_geo])
+        ring.set_point(4, ul[:x_geo], ul[:y_geo])
+
+        polygon = OGR::Polygon.new
+        polygon.add_geometry(ring)
+        polygon.spatial_reference = spatial_reference
+
+        polygon
       end
 
       # @param wkt_geometry_string [String]
@@ -326,56 +347,6 @@ module GDAL
         source_geometry.transform!(coordinate_transformation)
 
         @raster_geometry.contains? source_geometry
-      end
-
-      def image_warp(destination_file, driver, band_numbers, **warp_options)
-        fail NotImplementedError, '#image_warp not yet implemented.'
-
-        _options_ptr = GDAL::Options.pointer(warp_options)
-        driver = GDAL::Driver.by_name(driver)
-        destination_dataset = driver.create_dataset(destination_file, raster_x_size, raster_y_size)
-
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-        log "band numbers: #{band_numbers}"
-
-        bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
-        bands_ptr.write_array_of_int(band_numbers)
-        log "band numbers ptr null? #{bands_ptr.null?}"
-
-        warp_options_struct = FFI::GDAL::WarpOptions.new
-
-        warp_options.each do |k, _|
-          warp_options_struct[k] = warp_options[k]
-        end
-
-        warp_options[:source_dataset] = c_pointer
-        warp_options[:destination_dataset] = destination_dataset.c_pointer
-        warp_options[:band_count] = band_numbers.size
-        warp_options[:source_bands] = bands_ptr
-        warp_options[:transformer] = transformer
-        warp_options[:transformer_arg] = transformer_arg
-
-        log "transformer: #{transformer}"
-        error_threshold = 0.0
-        order = 0
-
-        _transformer_ptr = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(@c_pointer,
-          projection,
-          destination_dataset.c_pointer,
-          destination.projection,
-          false,
-          error_threshold,
-          order)
-
-        warp_operation = GDAL::WarpOperation.new(warp_options)
-        warp_operation.chunk_and_warp_image(0, 0, raster_x_size, raster_y_size)
-        transformer.destroy!
-        warp_operation.destroy!
-
-        destination = GDAL::Dataset.new(destination_dataset_ptr)
-        destination.close
-
-        destination
       end
 
       # Retrieves pixels from each raster band and converts this to an array of

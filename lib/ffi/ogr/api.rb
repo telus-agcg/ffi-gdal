@@ -1,12 +1,4 @@
 require_relative '../../ext/ffi_library_function_checks'
-require_relative '../cpl/conv'
-require_relative 'core'
-require_relative 'envelope'
-require_relative 'envelope_3d'
-require_relative 'field'
-require_relative 'srs_api'
-require_relative '../cpl/xml_node'
-require_relative '../gdal/gdal'
 
 module FFI
   module OGR
@@ -34,7 +26,7 @@ module FFI
       # Functions
       # -----------------------------------------------------------------------
       attach_function :OGR_G_CreateFromWkb,
-        [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
+        [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
         FFI::OGR::Core::Err
       attach_function :OGR_G_CreateFromWkt,
         [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
@@ -87,7 +79,7 @@ module FFI
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :string
       attach_function :OGR_G_DumpReadable,
-        %i[OGRGeometryH string string],
+        %i[OGRGeometryH pointer string],
         :void
       attach_function :OGR_G_FlattenTo2D, %i[OGRGeometryH], :void
       attach_function :OGR_G_CloseRings, %i[OGRGeometryH], :void
@@ -275,9 +267,6 @@ module FFI
       attach_function :OGR_FD_DeleteFieldDefn,
         %i[OGRFeatureDefnH int],
         FFI::OGR::Core::Err
-      attach_function :OGR_FD_ReorderFieldDefns,
-        %i[OGRFeatureDefnH pointer],
-        FFI::OGR::Core::Err
       attach_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_FD_SetGeomType,
         [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],
@@ -362,7 +351,7 @@ module FFI
 
       attach_function :OGR_F_GetFID, %i[OGRFeatureH], :long
       attach_function :OGR_F_SetFID, %i[OGRFeatureH long], FFI::OGR::Core::Err
-      attach_function :OGR_F_DumpReadable, %i[OGRFeatureH string], :void
+      attach_function :OGR_F_DumpReadable, %i[OGRFeatureH pointer], :void
       attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], FFI::OGR::Core::Err
       attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], FFI::OGR::Core::Err
 
@@ -433,25 +422,25 @@ module FFI
       attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
 
       attach_function :OGR_L_Intersection,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_Union,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_SymDifference,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_Identity,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_Update,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_Clip,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
       attach_function :OGR_L_Erase,
-        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL.find_type(:GDALProgressFunc), :pointer],
+        [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
         FFI::OGR::Core::Err
 
       # ~~~~~~~~~~~~~~~~

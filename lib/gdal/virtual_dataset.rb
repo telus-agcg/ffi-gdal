@@ -1,7 +1,5 @@
-require_relative '../ffi/gdal/vrt'
-require_relative '../ffi/cpl/minixml'
+require_relative '../gdal'
 require_relative 'major_object'
-require_relative 'options'
 
 module GDAL
   class VirtualDataset
@@ -25,7 +23,7 @@ module GDAL
       FFI::CPL::MiniXML.CPLSerializeXMLTree(xml_node)
     end
 
-    # @param data_type [FFI::GDAL::DataType]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
     # @param options [Hash]
     # @return [Boolean]
     def add_band(data_type, **options)

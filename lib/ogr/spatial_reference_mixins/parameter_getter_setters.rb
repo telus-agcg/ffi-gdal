@@ -22,13 +22,10 @@ module OGR
       #   of the unit type ("degree" or "radian").  +value+ is the number to
       #   multiply angular distances to transform them to radians.
       def angular_units
-        name = FFI::MemoryPointer.new(:string)
-        name_ptr = FFI::MemoryPointer.new(:pointer)
-        name_ptr.write_pointer(name)
-
+        name_ptr = GDAL._pointer_pointer(:string)
         value = FFI::OGR::SRSAPI.OSRGetAngularUnits(@c_pointer, name_ptr)
 
-        { unit_name: name_ptr.read_pointer.read_string, value: value }
+        { unit_name: GDAL._read_pointer_pointer_safely(name_ptr, :string), value: value }
       end
 
       # @param unit_label [String]
@@ -44,13 +41,10 @@ module OGR
       #   of the unit type (e.g. "Meters"). +value+ is the number to multiply
       #   linear distances to transform them to meters.
       def linear_units
-        name = FFI::MemoryPointer.new(:string)
-        name_ptr = FFI::MemoryPointer.new(:pointer)
-        name_ptr.write_pointer(name)
-
+        name_ptr = GDAL._pointer_pointer(:string)
         value = FFI::OGR::SRSAPI.OSRGetLinearUnits(@c_pointer, name_ptr)
 
-        { unit_name: name_ptr.read_pointer.read_string, value: value }
+        { unit_name: GDAL._read_pointer_pointer_safely(name_ptr, :string), value: value }
       end
 
       # @param unit_label [String]
@@ -69,9 +63,7 @@ module OGR
       # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(
-          @c_pointer,
-          unit_label,
+        ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(@c_pointer, unit_label,
           transform_to_meters.to_f)
 
         ogr_err.handle_result
@@ -82,13 +74,10 @@ module OGR
       # @param target_key [String] I.e. "PROJCS" or "VERT_CS".
       # @return [Hash]
       def target_linear_units(target_key)
-        name = FFI::MemoryPointer.new(:string)
-        name_ptr = FFI::MemoryPointer.new(:pointer)
-        name_ptr.write_pointer(name)
-
+        name_ptr = GDAL._pointer_pointer(:string)
         value = FFI::OGR::SRSAPI.OSRGetTargetLinearUnits(@c_pointer, target_key, name_ptr)
 
-        { unit_name: name_ptr.read_pointer.read_string, value: value }
+        { unit_name: GDAL._read_pointer_pointer_safely(name_ptr, :string), value: value }
       end
 
       # @param target_key [String] The keyword to set linear units for ("PROJCS",
@@ -97,25 +86,17 @@ module OGR
       # @param transform_to_meters [Float] The value to multiple a length to
       #   transform the value to meters.
       def set_target_linear_units(target_key, unit_label, transform_to_meters)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetTargetLinearUnits(
-          @c_pointer,
-          target_key,
-          unit_label,
-          transform_to_meters
-        )
+        ogr_err = FFI::OGR::SRSAPI.OSRSetTargetLinearUnits(@c_pointer, target_key, unit_label, transform_to_meters)
 
         ogr_err.handle_result
       end
 
       # @return [Hash]
       def prime_meridian
-        pm = FFI::MemoryPointer.new(:string)
-        pm_ptr = FFI::MemoryPointer.new(:pointer)
-        pm_ptr.write_pointer(pm)
-
+        pm_ptr = GDAL._pointer_pointer(:string)
         value = FFI::OGR::SRSAPI.OSRGetPrimeMeridian(@c_pointer, pm_ptr)
 
-        { name: pm_ptr.read_pointer.read_string, value: value }
+        { name: GDAL._read_pointer_pointer_safely(pm_ptr, :string), value: value }
       end
     end
   end

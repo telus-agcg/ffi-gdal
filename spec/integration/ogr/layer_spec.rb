@@ -1,6 +1,7 @@
 require 'spec_helper'
+require 'ogr'
 
-RSpec.describe OGR::Layer do
+RSpec.describe 'OGR::Layer' do
   let(:data_source) do
     OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
   end
@@ -35,6 +36,7 @@ RSpec.describe OGR::Layer do
 
   describe '#next_feature' do
     subject { layer0.next_feature }
+    after { subject.destroy! }
     it { is_expected.to be_a OGR::Feature }
   end
 

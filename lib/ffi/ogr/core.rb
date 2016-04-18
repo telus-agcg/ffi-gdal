@@ -24,7 +24,8 @@ module FFI
         :OGRERR_UNSUPPORTED_SRS,
         :OGRERR_INVALID_HANDLE
 
-      WKBGeometryType = enum :wkbUnknown, 0,
+      WKBGeometryType = enum FFI::Type::UINT,
+        :wkbUnknown,                0,
         :wkbPoint,                  1,
         :wkbLineString,             2,
         :wkbPolygon,                3,
@@ -34,13 +35,13 @@ module FFI
         :wkbGeometryCollection,     7,
         :wkbNone,                   100,    # non-standard, for pure attribute records
         :wkbLinearRing,             101,    # non-standard, just for createGeometry
-        :wkbPoint25D,               -2_147_483_647,
-        :wkbLineString25D,          -2_147_483_646,
-        :wkbPolygon25D,             -2_147_483_645,
-        :wkbMultiPoint25D,          -2_147_483_644,
-        :wkbMultiLineString25D,     -2_147_483_643,
-        :wkbMultiPolygon25D,        -2_147_483_642,
-        :wkbGeometryCollection25D,  -2_147_483_641
+        :wkbPoint25D,               0x8000_0001,
+        :wkbLineString25D,          0x8000_0002,
+        :wkbPolygon25D,             0x8000_0003,
+        :wkbMultiPoint25D,          0x8000_0004,
+        :wkbMultiLineString25D,     0x8000_0005,
+        :wkbMultiPolygon25D,        0x8000_0006,
+        :wkbGeometryCollection25D,  0x8000_0007
 
       WKBVariant = enum :wkbVariantOgc, :wkbVariantIso
       WKBByteOrder = enum :wkbXDR, 0,
@@ -165,15 +166,11 @@ module FFI
       attach_function :OGRMalloc, [:size_t], :pointer
       attach_function :OGRCalloc, %i[size_t size_t], :pointer
       attach_function :OGRRealloc, %i[pointer size_t], :pointer
-      attach_function :OGRStrdup, [:string], :string
       attach_function :OGRFree, [:pointer], :void
 
       attach_function :OGRGeometryTypeToName, [WKBGeometryType], :string
       attach_function :OGRMergeGeometryTypes,
         [WKBGeometryType, WKBGeometryType],
-        WKBGeometryType
-      attach_function :OGRMergeGeometryTypesEx,
-        [WKBGeometryType, WKBGeometryType, :bool],
         WKBGeometryType
       attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
     end

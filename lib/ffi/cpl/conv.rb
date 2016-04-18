@@ -1,6 +1,4 @@
 require 'ffi'
-require_relative 'error'
-require_relative 'port'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
@@ -93,7 +91,7 @@ module FFI
       attach_function :CPLPopFinderLocation, %i[], :void
       attach_function :CPLFinderClean, %i[], :void
       attach_function :CPLStat, %i[string pointer], :int
-      attach_function :CPLOpenShared, %i[string string int], :pointer
+      attach_function :CPLOpenShared, %i[string string bool], :pointer
       attach_function :CPLCloseShared, %i[pointer], :void
       attach_function :CPLGetSharedList, %i[pointer], :pointer
       attach_function :CPLDumpSharedList, %i[pointer], :void

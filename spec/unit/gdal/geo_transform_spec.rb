@@ -227,7 +227,7 @@ RSpec.describe GDAL::GeoTransform do
       end
 
       it 'returns an inverted y_origin' do
-        expect(subject.y_origin).to eq (-1600.0)
+        expect(subject.y_origin).to eq(-1600.0)
       end
 
       it 'returns an inverted pixel_height' do

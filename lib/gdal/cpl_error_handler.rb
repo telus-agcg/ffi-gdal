@@ -1,5 +1,3 @@
-require_relative 'exceptions'
-
 module GDAL
   # This is used to override GDAL's built-in error handling.  By default, GDAL
   # only logs errors to STDOUT, which doesn't allow a whole lot of flexibility.
@@ -10,24 +8,24 @@ module GDAL
     include GDAL::Logger
 
     CPLE_MAP = [
-      { cple: :CPLE_None, exception: nil },
-      { cple: :CPLE_AppDefined, exception: nil },
-      { cple: :CPLE_OutOfMemory, exception: ::NoMemoryError },
-      { cple: :CPLE_FileIO, exception: ::IOError },
-      { cple: :CPLE_OpenFailed, exception: GDAL::OpenFailure },
-      { cple: :CPLE_IllegalArg, exception: ::ArgumentError },
-      { cple: :CPLE_NotSupported, exception: GDAL::UnsupportedOperation },
+      { cple: :CPLE_None,           exception: nil },
+      { cple: :CPLE_AppDefined,     exception: nil },
+      { cple: :CPLE_OutOfMemory,    exception: ::NoMemoryError },
+      { cple: :CPLE_FileIO,         exception: ::IOError },
+      { cple: :CPLE_OpenFailed,     exception: GDAL::OpenFailure },
+      { cple: :CPLE_IllegalArg,     exception: ::ArgumentError },
+      { cple: :CPLE_NotSupported,   exception: GDAL::UnsupportedOperation },
       { cple: :CPLE_AssertionFailed, exception: ::RuntimeError },
-      { cple: :CPLE_NoWriteAccess, exception: GDAL::NoWriteAccess },
-      { cple: :CPLE_UserInterrupt, exception: ::Interrupt },
-      { cple: :CPLE_ObjectNull, exception: GDAL::NullObject }
-    ]
+      { cple: :CPLE_NoWriteAccess,  exception: GDAL::NoWriteAccess },
+      { cple: :CPLE_UserInterrupt,  exception: ::Interrupt },
+      { cple: :CPLE_ObjectNull,     exception: GDAL::NullObject }
+    ].freeze
 
     FAIL_PROC = lambda do |exception, message|
       ex = exception ? exception.new(message) : GDAL::Error.new(message)
       ex.set_backtrace(caller(4))
 
-      fail(ex)
+      raise(ex)
     end
 
     SUCCESS_PROC = proc { true }

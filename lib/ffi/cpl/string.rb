@@ -40,7 +40,6 @@ module FFI
       attach_function :CSLInsertString, %i[pointer int string], :pointer
       attach_function :CSLRemoveStrings, %i[pointer int int pointer], :pointer
       attach_function :CSLFindString, %i[pointer string], :int
-      attach_function :CSLFindStringCaseSensitive, %i[pointer string], :int
       attach_function :CSLPartialFindString, %i[pointer string], :int
       attach_function :CSLFindName, %i[pointer string], :int
 
@@ -66,11 +65,6 @@ module FFI
       attach_function :CPLStrlcpy, %i[string string size_t], :size_t
       attach_function :CPLStrlcat, %i[string string size_t], :size_t
       attach_function :CPLStrnlen, %i[string size_t], :size_t
-      attach_function :CPLvsnprintf, %i[string size_t string varargs], :size_t
-      attach_function :CPLsnprintf, %i[string size_t varargs], :size_t
-      attach_function :CPLsprintf, %i[string varargs], :size_t
-      attach_function :CPLprintf, %i[varargs], :size_t
-      attach_function :CPLsscanf, %i[string varargs], :size_t
       attach_function :CPLSPrintf, %i[string varargs], :string
       attach_function :CSLAppendPrintf, %i[pointer string varargs], :pointer
       attach_function :CPLVASPrintf, %i[pointer string varargs], :pointer
@@ -86,8 +80,6 @@ module FFI
       attach_function :CPLForceToASCII, %i[string int char], :string
       attach_function :CPLStrlenUTF8, %i[string], :int
 
-      attach_function :CPLOPrintf, %i[string varargs], :CPLString
-      attach_function :CPLOvPrintf, %i[string varargs], :CPLString
       attach_function :CPLURLGetValue, %i[string string], :CPLString
       attach_function :CPLURLAddKVP, %i[string string string], :CPLString
     end
