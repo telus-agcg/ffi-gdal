@@ -62,41 +62,6 @@ module GDAL
       def pixel_count
         x_size * y_size
       end
-
-      # @return [Hash]
-      def as_json(_options = nil)
-        {
-          raster_band: {
-            block_size: block_size,
-            category_names: category_names,
-            color_interpretation: color_interpretation,
-            color_table: color_table,
-            data_type: data_type,
-            default_histogram: default_histogram(true),
-            default_raster_attribute_table: default_raster_attribute_table,
-            has_arbitrary_overviews: arbitrary_overviews?,
-            mask_flags: mask_flags,
-            maximum_value: maximum_value,
-            minimum_value: minimum_value,
-            no_data_value: no_data_value,
-            number: number,
-            offset: offset,
-            overview_count: overview_count,
-            overviews: overviews,
-            scale: scale,
-            statistics: statistics,
-            unit_type: unit_type,
-            x_size: x_size,
-            y_size: y_size
-          },
-          metadata: all_metadata
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
     end
   end
 end

@@ -28,31 +28,5 @@ module OGR
     rescue NameError
       raise NameError, "Param must be a known linear unit type: #{unit_label}"
     end
-
-    # @return [Hash]
-    def as_json(_options = nil)
-      {
-        angular_units: angular_units,
-        epsg_treats_as_lat_long: epsg_treats_as_lat_long?,
-        epsg_treats_as_northing_easting: epsg_treats_as_northing_easting?,
-        is_compound: compound?,
-        is_geocentric: geocentric?,
-        is_geographic: geographic?,
-        is_local: local?,
-        is_projected: projected?,
-        is_vertical: vertical?,
-        linear_units: linear_units,
-        prime_meridian: prime_meridian,
-        semi_major: semi_major,
-        semi_minor: semi_minor,
-        spheroid_inverse_flattening: spheroid_inverse_flattening,
-        utm_zone: utm_zone
-      }
-    end
-
-    # @return [String]
-    def to_json(options = nil)
-      as_json(options).to_json
-    end
   end
 end

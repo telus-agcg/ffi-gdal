@@ -103,30 +103,4 @@ RSpec.describe OGR::StyleTable do
       expect(subject.styles).to eq('style1' => '12345', 'style2' => '67890')
     end
   end
-
-  describe '#as_json' do
-    subject do
-      st = described_class.new
-      st.add_style('style1', '12345')
-      st.add_style('style2', '67890')
-      st
-    end
-
-    it 'returns the styles as a Hash' do
-      expect(subject.as_json).to eq('style1' => '12345', 'style2' => '67890')
-    end
-  end
-
-  describe '#to_json' do
-    subject do
-      st = described_class.new
-      st.add_style('style1', '12345')
-      st.add_style('style2', '67890')
-      st
-    end
-
-    it 'returns the styles' do
-      expect(subject.to_json).to eq('{"style1":"12345","style2":"67890"}')
-    end
-  end
 end

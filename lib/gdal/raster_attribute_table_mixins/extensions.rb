@@ -39,21 +39,6 @@ module GDAL
 
         column_count.times { |i| yield column(i) }
       end
-
-      # @return [Hash]
-      def as_json(_options = nil)
-        {
-          column_count: column_count,
-          columns: columns,
-          linear_binning: linear_binning,
-          row_count: row_count
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
     end
   end
 end

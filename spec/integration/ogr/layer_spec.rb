@@ -90,10 +90,4 @@ RSpec.describe 'OGR::Layer' do
       expect(geometry).to be_a OGR::Polygon
     end
   end
-
-  describe '#as_json' do
-    specify do
-      expect { subject.as_json }.to_not raise_exception
-    end
-  end
 end

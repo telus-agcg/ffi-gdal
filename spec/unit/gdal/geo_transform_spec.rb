@@ -259,18 +259,5 @@ RSpec.describe GDAL::GeoTransform do
         expect(result).to eq pixel: -9000, line: -19_000
       end
     end
-
-    describe '#as_json' do
-      it 'returns the attributes as a Hash' do
-        expect(subject.as_json).to eq(
-          x_origin: 0.0,
-          x_rotation: 0.0,
-          pixel_width: 0.0,
-          y_origin: 0.0,
-          y_rotation: 0.0,
-          pixel_height: 0.0
-        )
-      end
-    end
   end
 end
