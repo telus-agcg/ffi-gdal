@@ -2,6 +2,13 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## [Unreleased] / yyyy-mm-dd
+
+### Improvements
+
+* Removed all `#as_json` and `#to_json` definitions. They were out of date, not
+  used, and sometimes confusing (ex OGR::Geometries#to_json vs #to_geo_json).
+
 ## 1.0.0.beta6 / 2016-04-18
 
 ### New Features

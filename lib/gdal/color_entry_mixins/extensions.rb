@@ -13,20 +13,6 @@ module GDAL
           [color1, color2, color3]
         end
       end
-
-      def as_json(_options = nil)
-        {
-          color1: color1,
-          color2: color2,
-          color3: color3,
-          color4: color4
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
     end
   end
 end

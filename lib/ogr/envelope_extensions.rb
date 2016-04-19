@@ -101,28 +101,6 @@ module OGR
       polygon
     end
 
-    # @return [Hash]
-    def as_json(_options = nil)
-      json = {
-        x_min: x_min,
-        x_max: x_max,
-        y_min: y_min,
-        y_max: y_max
-      }
-
-      if @c_struct.is_a? FFI::OGR::Envelope3D
-        json[:z_min] = z_min
-        json[:z_max] = z_max
-      end
-
-      json
-    end
-
-    # @return [String]
-    def to_json(options = nil)
-      as_json(options).to_json
-    end
-
     def to_a
       [x_min, y_min, x_max, y_max]
     end

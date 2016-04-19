@@ -367,29 +367,6 @@ module GDAL
         NArray[*na.transpose]
       end
 
-      # @return [Hash]
-      def as_json(options = nil)
-        {
-          dataset: {
-            driver: driver.long_name,
-            file_list: file_list,
-            gcp_count: gcp_count,
-            gcp_projection: gcp_projection,
-            geo_transform: geo_transform.as_json(options),
-            projection: projection,
-            raster_count: raster_count,
-            raster_bands: raster_bands.map(&:as_json),
-            spatial_reference: spatial_reference.as_json(options)
-          },
-          metadata: all_metadata
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
-
       private
 
       # @param ndvi [NArray]

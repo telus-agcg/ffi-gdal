@@ -33,23 +33,5 @@ module OGR
 
       geometry_field_definition(g)
     end
-
-    # @return [Hash]
-    def as_json(_options = nil)
-      {
-        field_count: field_count,
-        field_definitions: field_definitions.map(&:as_json),
-        geometry_field_count: geometry_field_count,
-        geometry_type: geometry_type,
-        is_geometry_ignored: geometry_ignored?,
-        is_style_ignored: style_ignored?,
-        name: name
-      }
-    end
-
-    # @return [String]
-    def to_json(options = nil)
-      as_json(options).to_json
-    end
   end
 end

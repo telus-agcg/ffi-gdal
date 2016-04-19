@@ -1,10 +1,7 @@
 require_relative '../ogr'
-require_relative 'field_definition_extensions'
 
 module OGR
   class FieldDefinition
-    include FieldDefinitionExtensions
-
     # @return [FFI::Pointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer
 

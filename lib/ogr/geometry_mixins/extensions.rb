@@ -53,35 +53,6 @@ module OGR
         !valid?
       end
 
-      # @return [Hash]
-      def as_json(options = nil)
-        json = {
-          coordinate_dimension: coordinate_dimension,
-          geometry_count: geometry_count,
-          dimension: dimension,
-          is_empty: empty?,
-          is_ring: ring?,
-          is_simple: simple?,
-          is_valid: valid?,
-          name: name,
-          point_count: point_count,
-          spatial_reference: spatial_reference.nil? ? nil : spatial_reference.as_json(options),
-          type: type_to_name,
-          wkb_size: wkb_size
-        }
-
-        json[:area] = area if respond_to? :area
-        json[:length] = length if respond_to? :length
-        json[:points] = points if respond_to? :points
-
-        json
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
-
       def collection?
         false
       end

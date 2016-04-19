@@ -291,23 +291,4 @@ RSpec.describe OGR::FeatureDefinition do
       end
     end
   end
-
-  describe '#as_json' do
-    it 'returns a Hash of all attributes and values' do
-      expect(subject.as_json).to eq(field_count: 0,
-                                    field_definitions: [],
-                                    geometry_field_count: 1,
-                                    geometry_type: :wkbMultiPolygon,
-                                    is_geometry_ignored: false,
-                                    is_style_ignored: false,
-                                    name: 'spec feature definition')
-    end
-  end
-
-  describe '#to_json' do
-    it 'is a String' do
-      expect(subject.to_json).to be_a String
-      expect(subject.to_json).to_not be_empty
-    end
-  end
 end
