@@ -36,8 +36,9 @@ module GDAL
       points = points.to_a if points.is_a? NArray
       point_count = points.length
       log "Number of points: #{point_count}"
-      points = points.transpose
+      raise GDAL::NoValuesToGrid, 'No points to grid' if point_count.zero?
 
+      points = points.transpose
       x_input_coordinates_ptr = make_points_pointer(points[0])
       y_input_coordinates_ptr = make_points_pointer(points[1])
       z_input_coordinates_ptr = make_points_pointer(points[2])

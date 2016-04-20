@@ -137,4 +137,44 @@ RSpec.describe GDAL::Gridder do
       end
     end
   end
+
+  describe '#build_block_count' do
+    it 'builds block sizes for both x and y' do
+      raster_width = 4
+      block_x_size = 2
+      raster_height = 5
+      block_y_size = 3
+
+      expect(subject).to receive(:build_block_size).with(raster_width, block_x_size).
+        and_call_original
+      expect(subject).to receive(:build_block_size).with(raster_height, block_y_size).
+        and_call_original
+
+      subject.send(:build_block_count, block_x_size, block_y_size, raster_width, raster_height)
+    end
+  end
+
+  describe '#build_block_size' do
+    context 'calculation should not be evenly divisible' do
+      it 'returns the floor of the count' do
+        raster_width = 4
+        block_x_size = 2
+
+        result = subject.send(:build_block_size, raster_width, block_x_size)
+
+        expect(result).to eq 2
+      end
+    end
+
+    context 'calculation should be evenly divisible' do
+      it 'returns the floor of the count' do
+        raster_width = 4
+        block_x_size = 1
+
+        result = subject.send(:build_block_size, raster_width, block_x_size)
+
+        expect(result).to eq 4
+      end
+    end
+  end
 end
