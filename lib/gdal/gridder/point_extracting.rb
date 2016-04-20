@@ -39,8 +39,7 @@ module GDAL
       #   set and the layer has no Z values.
       def ensure_z_values
         if layer_missing_specified_field?
-          raise OGR::InvalidFieldName,
-            "Field name not found in layer: '#{@options.input_field_name}'"
+          raise OGR::InvalidFieldName, "Field name not found in layer: '#{@options.input_field_name}'"
         elsif !@options.input_field_name && !@source_layer.any_geometries_with_z?
           raise GDAL::NoValuesToGrid,
             "No input_field_name option given and source layer #{@source_layer.name} has no Z values."
