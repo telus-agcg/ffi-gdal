@@ -9,6 +9,13 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * Removed all `#as_json` and `#to_json` definitions. They were out of date, not
   used, and sometimes confusing (ex OGR::Geometries#to_json vs #to_geo_json).
 
+### Bug Fixes
+
+#### GDAL
+
+* `GDAL::RasterBandMixins::IOExtensions#write_xy_narray` no longer duplicates
+  data when blocks have a remainder.
+
 ## 1.0.0.beta6 / 2016-04-18
 
 ### New Features
