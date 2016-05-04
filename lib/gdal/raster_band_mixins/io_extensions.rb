@@ -24,6 +24,7 @@ module GDAL
       # @param pixel_array [NArray] The 2d list of pixels.
       def write_xy_narray(pixel_array)
         data_pointer = FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
+        read_start = 0
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
@@ -31,14 +32,14 @@ module GDAL
             x_block_size = calculate_x_block_size(x_block_number)
 
             pixel_count_per_block = x_block_size * y_block_size
-            read_offset = (y_block_number + 1) * (x_block_number + 1)
-            read_range = ((read_offset - 1) * pixel_count_per_block)...(read_offset * pixel_count_per_block)
+            read_range = (read_start...(read_start + pixel_count_per_block))
             pixels = pixel_array[read_range]
             GDAL._write_pointer(data_pointer, data_type, pixels.to_a)
 
             write_block(x_block_number, y_block_number, data_pointer)
 
             data_pointer.clear
+            read_start = read_range.end
           end
         end
       end
@@ -69,7 +70,7 @@ module GDAL
       # Determines not only x and y block counts (how many blocks there are in
       # the raster band when using GDAL's suggested block size), but remainder
       # x and y counts for when the total number of pixels and lines does not
-      # divide evently using GDAL's block count.
+      # divide evenly using GDAL's block count.
       #
       # @return [Hash{x => Fixnum, x_remainder => Fixnum, y => Fixnum,
       #   y_remainder => Fixnum}]
