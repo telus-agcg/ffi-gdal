@@ -55,11 +55,9 @@ module GDAL
       # @param options [Hash] Warp options, normally empty.
       def create_and_reproject_image(destination_file_name, resample_algorithm, destination_projection,
         destination_driver, creation_options: {},
-                            warp_memory_limit: 0.0,
-                            max_error: 0.0,
-                            progress_function: nil,
-                            progress_arg: nil,
-                            **warp_options)
+        warp_memory_limit: 0.0, max_error: 0.0,
+        progress_function: nil, progress_arg: nil,
+        **warp_options)
         creation_options_ptr = GDAL::Options.pointer(creation_options)
         warp_options_ptr = GDAL::Options.pointer(warp_options)
 

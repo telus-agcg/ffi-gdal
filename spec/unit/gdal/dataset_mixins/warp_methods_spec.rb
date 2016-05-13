@@ -18,7 +18,7 @@ RSpec.describe GDAL::Dataset do
       dest_width = subject.raster_x_size / 4
       dest_height = subject.raster_y_size / 4
       dataset = GDAL::Driver.by_name('GTiff').create_dataset(output_file, dest_width, dest_height,
-                                                   data_type: subject.raster_band(1).data_type)
+        data_type: subject.raster_band(1).data_type)
       dataset.geo_transform = subject.geo_transform.dup
       dataset.projection = OGR::SpatialReference.new_from_epsg(3857).to_wkt
       dataset

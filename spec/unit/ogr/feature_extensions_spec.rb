@@ -6,7 +6,7 @@ RSpec.describe OGR::Feature do
 
   let(:feature_definition) do
     fd = OGR::FeatureDefinition.new('test FD')
-    fd.add_field_definition(integer_field_def)        # 0
+    fd.add_field_definition(integer_field_def) # 0
 
     gfd = fd.geometry_field_definition(0)
     gfd.type = :wkbPoint

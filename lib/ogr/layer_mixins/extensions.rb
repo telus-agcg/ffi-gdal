@@ -66,7 +66,7 @@ module OGR
       #
       # @return [Array<OGR::Feature>]
       def features
-        each_feature.map { |f| f.clone }
+        each_feature.map(&:clone)
       end
 
       # @return [OGR::Polygon] A polygon derived from a LinearRing that connects
