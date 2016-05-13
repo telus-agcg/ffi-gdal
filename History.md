@@ -9,6 +9,15 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * Removed all `#as_json` and `#to_json` definitions. They were out of date, not
   used, and sometimes confusing (ex OGR::Geometries#to_json vs #to_geo_json).
 
+#### GDAL
+
+* Added wrapper for GDALCreateAndReprojectImage in
+  `gdal/dataset_mixins/warp_methods.rb`.
+* (BREAKING CHANGE) Additionally, changed
+  `GDAL::DatasetMixins::WarpMethods#reproject_image`'s
+  `destination_spatial_reference` named param to `destination_projection` which
+  takes a String of WKT for a projection instead of an `OGR::SpatialReference`.
+
 ### Bug Fixes
 
 #### GDAL
