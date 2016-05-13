@@ -15,10 +15,10 @@ module GDAL
       #   callback for reporting progress.
       # @param progress_arg [FFI::Pointer] Argument to be passed to
       #   +progress_function+.
-      # @param options [Hash] Warp options, normally empty.
+      # @param warp_options [GDAL::WarpOptions] Warp options, normally empty.
       def reproject_image(destination_dataset, resample_algorithm, destination_projection: nil,
-        warp_memory_limit: 0.0, max_error: 0.0, progress_function: nil, progress_arg: nil, **options)
-        options_ptr = GDAL::Options.pointer(options)
+        warp_memory_limit: 0.0, max_error: 0.0, progress_function: nil, progress_arg: nil, warp_options: nil)
+        warp_options_struct = warp_options ? warp_options.c_struct : nil
 
         FFI::GDAL::Warper.GDALReprojectImage(
           @c_pointer,                           # hSrcDS
@@ -30,7 +30,7 @@ module GDAL
           max_error,                            # dfMaxError
           progress_function,                    # pfnProgress
           progress_arg,                         # pProgressArg
-          options_ptr                           # psOptions
+          warp_options_struct                   # psOptions
         )
       end
 
@@ -52,14 +52,14 @@ module GDAL
       #   callback for reporting progress.
       # @param progress_arg [FFI::Pointer] Argument to be passed to
       #   +progress_function+.
-      # @param options [Hash] Warp options, normally empty.
+      # @param warp_options [GDAL::WarpOptions] Warp options, normally empty.
       def create_and_reproject_image(destination_file_name, resample_algorithm, destination_projection,
         destination_driver, creation_options: {},
         warp_memory_limit: 0.0, max_error: 0.0,
         progress_function: nil, progress_arg: nil,
-        **warp_options)
+        warp_options: nil)
         creation_options_ptr = GDAL::Options.pointer(creation_options)
-        warp_options_ptr = GDAL::Options.pointer(warp_options)
+        warp_options_struct = warp_options ? warp_options.c_struct : nil
 
         FFI::GDAL::Warper.GDALCreateAndReprojectImage(
           @c_pointer,                           # hSrcDS
@@ -73,7 +73,7 @@ module GDAL
           max_error,                            # dfMaxError
           progress_function,                    # pfnProgress
           progress_arg,                         # pProgressArg
-          warp_options_ptr                      # psOptions
+          warp_options_struct                   # psOptions
         )
       end
     end

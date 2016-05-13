@@ -37,7 +37,6 @@ RSpec.describe GDAL::Dataset do
 
   describe '#create_and_reproject_image' do
     let(:output_projection) { OGR::SpatialReference.new_from_epsg(3857).to_wkt }
-    before { FFI::GDAL::GDAL.GDALAllRegister }
 
     it 'creates a valid dataset' do
       subject.create_and_reproject_image(output_file, :GRA_NearestNeighbor, OGR::SpatialReference.new_from_epsg(3857).to_wkt, GDAL::Driver.by_name('GTiff'))
