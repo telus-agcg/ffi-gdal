@@ -85,6 +85,22 @@ module FFI
           FFI::GDAL::WarpOptions.ptr
         ],
         CPL::Error::CPLErr
+      attach_function :GDALCreateAndReprojectImage,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          :string,
+          :string,
+          :string,
+          FFI::GDAL::GDAL.find_type(:GDALDriverH),
+          :pointer,
+          ResampleAlg,
+          :double,
+          :double,
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
+          :pointer,
+          FFI::GDAL::WarpOptions.ptr
+        ],
+        CPL::Error::CPLErr
       attach_function :GDALAutoCreateWarpedVRT,
         [
           FFI::GDAL::GDAL.find_type(:GDALDatasetH),

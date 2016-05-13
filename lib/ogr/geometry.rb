@@ -240,7 +240,6 @@ module OGR
     end
 
     # @return [Fixnum]
-    # @todo This regularly crashes, so disabling it.
     def centroid
       point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 
