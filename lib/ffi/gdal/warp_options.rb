@@ -40,6 +40,11 @@ module FFI
         :post_warp_processor_arg, :pointer,
         :cutline, :pointer,
         :cutline_blend_distance, :double
+
+      def initialize
+        super
+        self[:progress] = Proc.new { true } if self[:progress].null?
+      end
     end
   end
 end
