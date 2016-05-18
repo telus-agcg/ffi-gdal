@@ -17,6 +17,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   `GDAL::DatasetMixins::WarpMethods#reproject_image`'s
   `destination_spatial_reference` named param to `destination_projection` which
   takes a String of WKT for a projection instead of an `OGR::SpatialReference`.
+* Added `GDAL::Options.to_hash` to convert a pointer of options to a Ruby Hash.
 
 ### Bug Fixes
 
