@@ -11,7 +11,7 @@ module FFI
       # Typedefs
       #------------------------------------------------------------------------
       typedef :pointer, :GDALWarpOperationH
-      callback :GDALMaskFunc,
+      MaskFunc = callback :GDALMaskFunc,
         [
           :pointer,
           :int,
