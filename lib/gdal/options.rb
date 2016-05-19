@@ -11,10 +11,20 @@ module GDAL
     #   +nil+.  If +false+, creates a 0-size pointer.
     # @return [FFI::MemoryPointer, nil]
     def self.pointer(hash, nil_on_empty: true)
-      if nil_on_empty
-        hash.empty? ? nil : new(hash).c_pointer
-      else
-        new(hash).c_pointer
+      return if nil_on_empty && hash.empty?
+
+      new(hash).c_pointer
+    end
+
+    # Takes a GDAL options pointer and turns it into a Ruby Hash.
+    #
+    # @param pointer [FFI::Pointer]
+    # @return [Hash]
+    def self.to_hash(pointer)
+      FFI::CPL::String.CSLCount(pointer).times.each_with_object({}) do |i, o|
+        key_and_value = FFI::CPL::String.CSLGetField(pointer, i)
+        key, value = key_and_value.split('=')
+        o[key.downcase.to_sym] = value
       end
     end
 
@@ -36,15 +46,6 @@ module GDAL
 
       options_ptr
     end
-
-    # def to_s
-    #   options_ptr = to_gdal
-    #   options_array = options_ptr.read_array_of_pointer(self.size)
-    #
-    #   0.upto(self.size).map do |i|
-    #     options_array[i].first.read_string
-    #   end
-    # end
 
     private
 
