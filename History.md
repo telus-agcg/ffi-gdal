@@ -26,6 +26,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `GDAL::RasterBandMixins::IOExtensions#write_xy_narray` no longer duplicates
   data when blocks have a remainder.
 * `GDAL::WarpOptions` should properly act as a wrapper for `FFI::GDAL::WarpOptions`.
+* `Updated extract methods to be compatible with latest `GDAL::Driver#create_dataset`.
 
 ## 1.0.0.beta6 / 2016-04-18
 
