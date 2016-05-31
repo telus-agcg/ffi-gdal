@@ -102,7 +102,7 @@ module OGR
         y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
         z_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size) if coordinate_dimension == 3
 
-        FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
+        num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
           x_buffer, x_stride, y_buffer,
           y_stride, z_buffer, z_stride)
 
