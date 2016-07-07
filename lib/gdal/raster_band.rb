@@ -149,16 +149,18 @@ module GDAL
     def no_data_value
       associated = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL::GDAL.GDALGetRasterNoDataValue(@c_pointer, associated)
+      value = nil if value == -10_000_000_000.0
 
       { value: value, is_associated: associated.read_bytes(1).to_bool }
     end
 
-    # Sets the no data value for this band.
+    # Sets the no data value for this band.  Do nothing if attempting to set to nil, because removing a no data value
+    # is impossible until GDAL 2.1.
     #
-    # @param value [Float]
+    # @param value [Float, nil]
     # @return [Boolean]
     def no_data_value=(value)
-      !!FFI::GDAL::GDAL.GDALSetRasterNoDataValue(@c_pointer, value)
+      !!FFI::GDAL::GDAL.GDALSetRasterNoDataValue(@c_pointer, value) if value
     end
 
     # @return [Fixnum]
