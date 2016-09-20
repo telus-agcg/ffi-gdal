@@ -33,6 +33,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `Updated extract methods to be compatible with latest `GDAL::Driver#create_dataset`.
 * `GDAL::MajorObject` now gets autoloaded.
 
+#### OGR
+
+* [AGDEV-17357] Define constants from C using `const_set` instead of `class_eval`.
+
 ## 1.0.0.beta6 / 2016-04-18
 
 ### New Features
