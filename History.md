@@ -21,6 +21,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Bug Fixes
 
+#### Core
+
+* Fixed specifying an alternate GDAL library using the `GDAL_LIBRARY_PATH`.
+
 #### GDAL
 
 * `GDAL::RasterBandMixins::IOExtensions#write_xy_narray` no longer duplicates

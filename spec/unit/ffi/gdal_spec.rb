@@ -9,6 +9,7 @@ RSpec.describe FFI::GDAL do
       end
 
       it 'returns GDAL_LIBRARY_PATH + libgdal file name' do
+        expect(Dir).to receive(:[]).with(%r{/pants/stuff\.+}).and_return '/pants/stuff.dylib'
         expect(described_class.find_lib('stuff')).to match %r{\A/pants/stuff\.+}
       end
     end
