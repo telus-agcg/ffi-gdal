@@ -113,23 +113,4 @@ RSpec.describe OGR::FieldDefinition do
       expect(subject).to be_ignored
     end
   end
-
-  describe '#as_json' do
-    it 'returns a Hash of attributes' do
-      expect(subject.as_json).to eq(
-        is_ignored: false,
-        justification: :OJUndefined,
-        name: 'test field',
-        precision: 0,
-        type: :OFTInteger,
-        width: 0
-      )
-    end
-  end
-
-  describe '#to_json' do
-    it 'returns a string' do
-      expect(subject.to_json).to be_a String
-    end
-  end
 end

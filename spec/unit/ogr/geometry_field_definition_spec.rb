@@ -68,20 +68,4 @@ RSpec.describe OGR::GeometryFieldDefinition do
       end
     end
   end
-
-  describe '#as_json' do
-    it 'returns a Hash of attributes' do
-      expect(subject.as_json). to eq(
-        is_ignored: false,
-        name: 'test gfld',
-        spatial_reference: nil,
-        type: :wkbUnknown
-      )
-    end
-  end
-
-  describe '#to_json' do
-    subject { geometry_field_definition.to_json }
-    it { is_expected.to be_a String }
-  end
 end

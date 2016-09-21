@@ -29,20 +29,6 @@ module GDAL
           color_entry_as_rgb(i)
         end
       end
-
-      # @return [Hash]
-      def as_json(_options = nil)
-        {
-          color_entry_count: color_entry_count,
-          color_entries: color_entries.map(&:as_json),
-          palette_interpretation: palette_interpretation
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
     end
   end
 end

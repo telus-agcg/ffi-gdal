@@ -30,6 +30,7 @@ module GDAL
   autoload :Driver,               gdal_require('gdal/driver')
   autoload :GeoTransform,         gdal_require('gdal/geo_transform')
   autoload :Logger,               gdal_require('gdal/logger')
+  autoload :MajorObject,          gdal_require('gdal/major_object')
   autoload :Options,              gdal_require('gdal/options')
   autoload :RasterAttributeTable, gdal_require('gdal/raster_attribute_table')
   autoload :RasterBand,           gdal_require('gdal/raster_band')

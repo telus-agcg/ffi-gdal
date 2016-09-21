@@ -1,9 +1,5 @@
-require_relative 'geometry_field_definition_extensions'
-
 module OGR
   class GeometryFieldDefinition
-    include GeometryFieldDefinitionExtensions
-
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 

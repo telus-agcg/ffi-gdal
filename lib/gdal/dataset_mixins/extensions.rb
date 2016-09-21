@@ -33,8 +33,6 @@ module GDAL
       #   Defaults to -9999.0.
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
-      # @return [GDAL::Dataset] The new NDVI dataset. *Be sure to call #close on
-      #   this object or the data may not persist!*
       def extract_ndvi(destination, red_band_number, nir_band_number, driver_name: 'GTiff',
         output_data_type: nil, remove_negatives: false, no_data_value: -9999.0, **options)
         red = raster_band(red_band_number)
@@ -46,7 +44,7 @@ module GDAL
         the_array = calculate_ndvi(red.to_na, nir.to_na, no_data_value, remove_negatives, output_data_type)
         driver = GDAL::Driver.by_name(driver_name)
 
-        ndvi = driver.create_dataset(destination, raster_x_size, raster_y_size,
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
           data_type: output_data_type, **options) do |ndvi_dataset|
           ndvi_dataset.geo_transform = geo_transform
           ndvi_dataset.projection = projection
@@ -55,10 +53,6 @@ module GDAL
           ndvi_band.write_xy_narray(the_array)
           ndvi_band.no_data_value = no_data_value
         end
-
-        ndvi.close
-
-        ndvi
       end
 
       # Extracts the NIR band and writes to a new file.  NOTE: be sure to close
@@ -74,8 +68,6 @@ module GDAL
       #   in this data type. Defaults to use the current data type.
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
-      # @return [GDAL::Dataset] The new NIR dataset. *Be sure to call #close on
-      #   this object or the data may not persist!*
       def extract_nir(destination, band_number, driver_name: 'GTiff', output_data_type: nil, **options)
         original_nir_band = raster_band(band_number)
         raise InvalidBandNumber, "Band #{band_number} found but was nil." if original_nir_band.nil?
@@ -83,7 +75,7 @@ module GDAL
         output_data_type ||= original_nir_band.data_type
         driver = GDAL::Driver.by_name(driver_name)
 
-        nir = driver.create_dataset(destination, raster_x_size, raster_y_size,
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
           data_type: output_data_type, **options) do |nir_dataset|
           nir_dataset.geo_transform = geo_transform
           nir_dataset.projection = projection
@@ -91,10 +83,6 @@ module GDAL
           nir_band = nir_dataset.raster_band(1)
           original_nir_band.copy_whole_raster(nir_band)
         end
-
-        nir.close
-
-        nir
       end
 
       # Extracts the RGB bands and writes to a new file.  NOTE: this closes the
@@ -111,7 +99,6 @@ module GDAL
       #   in this data type. Defaults to use the current data type.
       # @param options [Hash] Options that get used for creating the new NDVI
       #   dataset. See docs for GDAL::Driver#create_dataset.
-      # @return [GDAL::Dataset]
       def extract_natural_color(destination, red_band_number, green_band_number, blue_band_number,
         driver_name: 'GTiff', output_data_type: nil, **options)
         original_bands = {
@@ -123,7 +110,7 @@ module GDAL
         output_data_type ||= raster_band(1).data_type
         driver = GDAL::Driver.by_name(driver_name)
 
-        natural_color = driver.create_dataset(destination, raster_x_size, raster_y_size,
+        driver.create_dataset(destination, raster_x_size, raster_y_size,
           band_count: 3, data_type: output_data_type, **options) do |new_dataset|
           new_dataset.geo_transform = geo_transform
           new_dataset.projection = projection
@@ -137,10 +124,6 @@ module GDAL
           new_blue_band = new_dataset.raster_band(3)
           original_bands[:blue].copy_whole_raster(new_blue_band)
         end
-
-        natural_color.close
-
-        natural_color
       end
 
       # @param red_band_array [NArray]
@@ -365,29 +348,6 @@ module GDAL
         na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
 
         NArray[*na.transpose]
-      end
-
-      # @return [Hash]
-      def as_json(options = nil)
-        {
-          dataset: {
-            driver: driver.long_name,
-            file_list: file_list,
-            gcp_count: gcp_count,
-            gcp_projection: gcp_projection,
-            geo_transform: geo_transform.as_json(options),
-            projection: projection,
-            raster_count: raster_count,
-            raster_bands: raster_bands.map(&:as_json),
-            spatial_reference: spatial_reference.as_json(options)
-          },
-          metadata: all_metadata
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
       end
 
       private

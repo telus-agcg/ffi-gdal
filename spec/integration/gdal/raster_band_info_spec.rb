@@ -8,6 +8,13 @@ RSpec.describe 'Raster Band Info', type: :integration do
     File.expand_path(path, __dir__)
   end
 
+  let(:nodata_tiff) do
+    path = '../../../spec/support/images/123.tiff'
+    File.expand_path(path, __dir__)
+  end
+
+  let(:nodata_dataset) { GDAL::Dataset.open(nodata_tiff, 'r') }
+
   let(:tmp_tiff) { make_temp_test_file(original_tiff) }
   let(:dataset) { GDAL::Dataset.open(tmp_tiff, 'w') }
   after { dataset.close }
@@ -89,12 +96,27 @@ RSpec.describe 'Raster Band Info', type: :integration do
     end
   end
 
-  describe '#no_data_value' do
-    it 'is a Hash with :value and :is_associated keys' do
-      expect(subject.no_data_value).to be_an Hash
+  context 'no data not set' do
+    describe '#no_data_value' do
+      it 'is a Hash with :value and :is_associated keys' do
+        expect(subject.no_data_value).to be_an Hash
 
-      expect(subject.no_data_value[:value]).to be_a Float
-      expect(subject.no_data_value[:is_associated]).to_not be_nil
+        expect(subject.no_data_value[:value]).to be_nil
+        expect(subject.no_data_value[:is_associated]).to_not be_nil
+      end
+    end
+  end
+
+  context 'no data is set' do
+    subject { nodata_dataset.raster_band(1) }
+
+    describe '#no_data_value' do
+      it 'is a Hash with :value and :is_associated keys' do
+        expect(subject.no_data_value).to be_an Hash
+
+        expect(subject.no_data_value[:value]).to be_a Float
+        expect(subject.no_data_value[:is_associated]).to_not be_nil
+      end
     end
   end
 

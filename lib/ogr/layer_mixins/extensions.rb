@@ -66,7 +66,7 @@ module OGR
       #
       # @return [Array<OGR::Feature>]
       def features
-        each_feature.map { |f| f.clone }
+        each_feature.map(&:clone)
       end
 
       # @return [OGR::Polygon] A polygon derived from a LinearRing that connects
@@ -227,30 +227,6 @@ module OGR
         feature.destroy! if feature.c_pointer
 
         found_z_geom
-      end
-
-      # @return [Hash]
-      def as_json(options = nil)
-        {
-          layer: {
-            extent: extent.as_json(options),
-            feature_count: feature_count,
-            feature_definition: feature_definition.as_json(options),
-            features: each_feature.map { |f| f.as_json(options) },
-            fid_column: fid_column,
-            geometry_column: geometry_column,
-            geometry_type: geometry_type,
-            name: name,
-            spatial_reference: spatial_reference ? spatial_reference.as_json(options) : nil,
-            style_table: style_table ? style_table.as_json(options) : nil
-          },
-          metadata: nil # all_metadata
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
       end
 
       private

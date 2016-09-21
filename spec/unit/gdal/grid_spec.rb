@@ -12,6 +12,14 @@ RSpec.describe GDAL::Grid do
     it { is_expected.to respond_to :algorithm_type }
   end
 
+  describe '#create' do
+    context 'no points to grid' do
+      it 'raises a GDAL::NoValuesToGrid' do
+        expect { subject.create([], {}, nil) }.to raise_exception GDAL::NoValuesToGrid
+      end
+    end
+  end
+
   describe '#make_points_pointer' do
     context 'array has values' do
       let(:points) { [1, 2, 3, 4] }

@@ -2,6 +2,46 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta7 / 2016-09-21
+
+### Improvements
+
+* Removed all `#as_json` and `#to_json` definitions. They were out of date, not
+  used, and sometimes confusing (ex OGR::Geometries#to_json vs #to_geo_json).
+
+#### GDAL
+
+* Added wrapper for GDALCreateAndReprojectImage in
+  `gdal/dataset_mixins/warp_methods.rb`.
+* (BREAKING CHANGE) Additionally, changed
+  `GDAL::DatasetMixins::WarpMethods#reproject_image`'s
+  `destination_spatial_reference` named param to `destination_projection` which
+  takes a String of WKT for a projection instead of an `OGR::SpatialReference`.
+* Added `GDAL::Options.to_hash` to convert a pointer of options to a Ruby Hash.
+* Return `nil` for missing NODATA values in `GDAL::RasterBand#no_data_value` and
+  `#no_data_value=`.
+
+### Bug Fixes
+
+#### Core
+
+* Fixed specifying an alternate GDAL library using the `GDAL_LIBRARY_PATH`.
+
+#### GDAL
+
+* `GDAL::RasterBandMixins::IOExtensions#write_xy_narray` no longer duplicates
+  data when blocks have a remainder.
+* `GDAL::WarpOptions` should properly act as a wrapper for `FFI::GDAL::WarpOptions`.
+* `Updated extract methods to be compatible with latest `GDAL::Driver#create_dataset`.
+* `GDAL::MajorObject` now gets autoloaded.
+* Fix `GDAL::DatasetMixins::AlgorithmMethods` to use the right `FFI` module for
+  `#rasterize_geometries` and `#rasterize_layers`.
+
+#### OGR
+
+* [AGDEV-17357] Define constants from C using `const_set` instead of `class_eval`.
+* Fixed `OGR::GeometryTypes::Curve#points` (missing local variable).
+
 ## 1.0.0.beta6 / 2016-04-18
 
 ### New Features

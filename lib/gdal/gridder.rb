@@ -287,8 +287,13 @@ module GDAL
     # @return [Fixnum] The total number of blocks that should be iterated
     #   through during the grid+rasterize process.
     def build_block_count(block_x_size, block_y_size, raster_width, raster_height)
-      ((raster_width + block_x_size - 1) / block_x_size) *
-        ((raster_height + block_y_size - 1) / block_y_size)
+      build_block_size(raster_width, block_x_size) * build_block_size(raster_height, block_y_size)
+    end
+
+    # @param total_pixels [Fixnum] Number of pixels in the width or height.
+    # @param block_size [Fixnum] Size of the reported block.
+    def build_block_size(total_pixels, block_size)
+      (total_pixels + block_size - 1) / block_size
     end
   end
 end

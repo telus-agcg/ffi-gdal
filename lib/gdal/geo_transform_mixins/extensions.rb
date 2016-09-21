@@ -90,23 +90,6 @@ module GDAL
           pixel_height
         ]
       end
-
-      # @return [Hash]
-      def as_json(_options = nil)
-        {
-          x_origin: x_origin,
-          x_rotation: x_rotation,
-          pixel_width: pixel_width,
-          y_origin: y_origin,
-          y_rotation: y_rotation,
-          pixel_height: pixel_height
-        }
-      end
-
-      # @return [String]
-      def to_json(options = nil)
-        as_json(options).to_json
-      end
     end
   end
 end

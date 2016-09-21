@@ -50,7 +50,8 @@ module GDAL
     # @return [Array<Hash>, nil]
     def equal_count_ranges(range_count)
       sorted_pixels = @raster_band.to_na.sort
-      sorted_and_masked_pixels = sorted_pixels[sorted_pixels.ne(@raster_band.no_data_value[:value])]
+      no_data = @raster_band.no_data_value[:value]
+      sorted_and_masked_pixels = no_data ? sorted_pixels[sorted_pixels.ne(no_data)] : sorted_pixels
       return [] if sorted_and_masked_pixels.empty?
 
       range_size = (sorted_and_masked_pixels.size / range_count).to_i
@@ -89,11 +90,12 @@ module GDAL
       nodata_value = @raster_band.no_data_value[:value]
       band_pixels = @raster_band.to_na
       new_band_pixels = GDAL._narray_from_data_type(@raster_band.data_type, @raster_band.x_size, @raster_band.y_size)
-      new_band_pixels[band_pixels.eq(nodata_value)] = nodata_value
+      new_band_pixels[band_pixels.eq(nodata_value)] = nodata_value if nodata_value
+      data_pixels = nodata_value ? band_pixels.ne(nodata_value) : band_pixels
 
       @ranges.each do |r|
         new_band_pixels[
-          band_pixels.ne(nodata_value).
+          data_pixels.
           and(band_pixels.le(r[:range].max)).
           and(band_pixels.ge(r[:range].min))
         ] = r[:map_to]

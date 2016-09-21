@@ -40,7 +40,7 @@ module GDAL
         burn_values_ptr = FFI::MemoryPointer.new(:pointer, burn_values.size)
         burn_values_ptr.write_array_of_double(burn_values)
 
-        FFI::GDAL::GDAL.GDALRasterizeGeometries(@c_pointer,
+        FFI::GDAL::Alg.GDALRasterizeGeometries(@c_pointer,
           band_numbers.size,
           band_numbers_ptr,
           geometries.size,
@@ -94,7 +94,7 @@ module GDAL
         burn_values_ptr.write_array_of_double(burn_values)
         log "burn value ptr null? #{burn_values_ptr.null?}"
 
-        FFI::GDAL::GDAL.GDALRasterizeLayers(@c_pointer,     # hDS
+        FFI::GDAL::Alg.GDALRasterizeLayers(@c_pointer,      # hDS
           band_numbers.size,                                # nBandCount
           band_numbers_ptr,                                 # panBandList
           layers.size,                                      # nLayerCount

@@ -11,7 +11,7 @@ module FFI
       # Typedefs
       #------------------------------------------------------------------------
       typedef :pointer, :GDALWarpOperationH
-      callback :GDALMaskFunc,
+      MaskFunc = callback :GDALMaskFunc,
         [
           :pointer,
           :int,
@@ -77,6 +77,22 @@ module FFI
           :string,
           FFI::GDAL::GDAL.find_type(:GDALDatasetH),
           :string,
+          ResampleAlg,
+          :double,
+          :double,
+          FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
+          :pointer,
+          FFI::GDAL::WarpOptions.ptr
+        ],
+        CPL::Error::CPLErr
+      attach_function :GDALCreateAndReprojectImage,
+        [
+          FFI::GDAL::GDAL.find_type(:GDALDatasetH),
+          :string,
+          :string,
+          :string,
+          FFI::GDAL::GDAL.find_type(:GDALDriverH),
+          :pointer,
           ResampleAlg,
           :double,
           :double,

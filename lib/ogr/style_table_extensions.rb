@@ -20,15 +20,5 @@ module OGR
 
       styles
     end
-
-    # @return [Hash]
-    def as_json(_options = nil)
-      styles
-    end
-
-    # @return [String]
-    def to_json(options = nil)
-      as_json(options).to_json
-    end
   end
 end
