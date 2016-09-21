@@ -2,7 +2,7 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
-## [Unreleased] / yyyy-mm-dd
+## 1.0.0.beta7 / 2016-09-21
 
 ### Improvements
 
@@ -18,6 +18,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
   `destination_spatial_reference` named param to `destination_projection` which
   takes a String of WKT for a projection instead of an `OGR::SpatialReference`.
 * Added `GDAL::Options.to_hash` to convert a pointer of options to a Ruby Hash.
+* Return `nil` for missing NODATA values in `GDAL::RasterBand#no_data_value` and
+  `#no_data_value=`.
 
 ### Bug Fixes
 
@@ -32,10 +34,13 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 * `GDAL::WarpOptions` should properly act as a wrapper for `FFI::GDAL::WarpOptions`.
 * `Updated extract methods to be compatible with latest `GDAL::Driver#create_dataset`.
 * `GDAL::MajorObject` now gets autoloaded.
+* Fix `GDAL::DatasetMixins::AlgorithmMethods` to use the right `FFI` module for
+  `#rasterize_geometries` and `#rasterize_layers`.
 
 #### OGR
 
 * [AGDEV-17357] Define constants from C using `const_set` instead of `class_eval`.
+* Fixed `OGR::GeometryTypes::Curve#points` (missing local variable).
 
 ## 1.0.0.beta6 / 2016-04-18
 
