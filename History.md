@@ -21,12 +21,21 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ### Bug Fixes
 
+#### Core
+
+* Fixed specifying an alternate GDAL library using the `GDAL_LIBRARY_PATH`.
+
 #### GDAL
 
 * `GDAL::RasterBandMixins::IOExtensions#write_xy_narray` no longer duplicates
   data when blocks have a remainder.
 * `GDAL::WarpOptions` should properly act as a wrapper for `FFI::GDAL::WarpOptions`.
 * `Updated extract methods to be compatible with latest `GDAL::Driver#create_dataset`.
+* `GDAL::MajorObject` now gets autoloaded.
+
+#### OGR
+
+* [AGDEV-17357] Define constants from C using `const_set` instead of `class_eval`.
 
 ## 1.0.0.beta6 / 2016-04-18
 

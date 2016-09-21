@@ -35,7 +35,7 @@ module FFI
       lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
       if ENV['GDAL_LIBRARY_PATH']
-        return File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)
+        return Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)]
       end
 
       search_paths.map do |search_path|

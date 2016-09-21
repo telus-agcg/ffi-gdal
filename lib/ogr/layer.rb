@@ -20,7 +20,9 @@ module OGR
     include LayerMixins::OGRQueryFilterMethods
     include LayerMixins::OGRSQLMethods
 
-    class_eval FFI::OGR::Core::OGR_ALTER.to_ruby
+    FFI::OGR::Core::OGR_ALTER.constants.each do |_name, obj|
+      const_set(obj.ruby_name, obj.value.to_i(16))
+    end
 
     # @return [FFI::Pointer] C pointer to the C Layer.
     attr_reader :c_pointer
