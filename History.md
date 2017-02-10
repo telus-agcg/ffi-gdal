@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.betaX / 201x-xx-xx
+
+### Bug Fixes
+
+* Ensure `GDAL::RasterBandMixinsIOExtensions#read_blocks_by_block` always yields an Array of pixels.
+
 ## 1.0.0.beta7 / 2016-09-21
 
 ### Improvements
