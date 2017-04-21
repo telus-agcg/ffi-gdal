@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module RasterBandMixins
     # RasterBand methods added for dealing with colorizing.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
@@ -22,7 +24,7 @@ namespace :spec do
       --log-file=valgrind_output.log
     ].join(' ')
 
-    cmd = %[valgrind #{valgrind_options} bundle exec rake spec SPEC_OPTS="--format documentation"]
+    cmd = %(valgrind #{valgrind_options} bundle exec rake spec SPEC_OPTS="--format documentation")
     puts cmd
     system(cmd)
   end

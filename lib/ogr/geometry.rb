@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../ogr'
 require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'

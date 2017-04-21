@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'RMagick'
 require 'bundler/setup'
 require 'pry'

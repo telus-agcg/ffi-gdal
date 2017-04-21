@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module RasterBandMixins
     # Methods for reading & writing RasterBands that didn't come from GDAL.

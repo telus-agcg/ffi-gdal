@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
@@ -101,7 +103,8 @@ module OGR
       FFI::OGR::API.OGR_F_SetFieldStringList(
         @c_pointer,
         index,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -114,7 +117,8 @@ module OGR
         @c_pointer,
         index,
         values.size,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -127,7 +131,8 @@ module OGR
         @c_pointer,
         index,
         values.size,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -150,7 +155,8 @@ module OGR
         @c_pointer,
         index,
         value.length,
-        value_ptr)
+        value_ptr
+      )
     end
 
     # @param index [Fixnum]

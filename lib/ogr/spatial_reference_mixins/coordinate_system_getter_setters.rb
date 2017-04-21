@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module SpatialReferenceMixins
     module CoordinateSystemGetterSetters
@@ -76,7 +78,8 @@ module OGR
           @c_pointer,
           x_distance, y_distance, z_distance,
           x_rotation, y_rotation, z_rotation,
-          scaling_factor)
+          scaling_factor
+        )
 
         ogr_err.handle_result
       end
@@ -93,7 +96,8 @@ module OGR
           @c_pointer,
           name,
           horizontal_spatial_ref_ptr,
-          vertical_spatial_ref_ptr)
+          vertical_spatial_ref_ptr
+        )
 
         ogr_err.handle_result
       end
@@ -186,7 +190,8 @@ module OGR
           @c_pointer,
           target_key,
           authority,
-          code)
+          code
+        )
 
         ogr_err.handle_result
       end
@@ -278,7 +283,8 @@ module OGR
           zone,
           nad83,
           override_unit_label,
-          override_unit_transform)
+          override_unit_transform
+        )
 
         ogr_err.handle_result
       end
@@ -458,7 +464,8 @@ module OGR
           @c_pointer,
           center_lat, center_long,
           scale,
-          false_easting, false_northing)
+          false_easting, false_northing
+        )
 
         ogr_err.handle_result
       end

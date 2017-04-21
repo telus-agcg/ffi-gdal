@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/spatial_reference'
 
@@ -14,12 +16,12 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#morph_from_esri!' do
     let(:esri) do
-      <<-ESRI.strip
-GEOGCS["GCS_North_American_1983",
-   DATUM["D_North_American_1983",
-   SPHEROID["GRS_1980",6378137,298.257222101]],
-   PRIMEM["Greenwich",0],
-   UNIT["Degree",0.0174532925199433]]
+      <<~ESRI.strip
+        GEOGCS["GCS_North_American_1983",
+           DATUM["D_North_American_1983",
+           SPHEROID["GRS_1980",6378137,298.257222101]],
+           PRIMEM["Greenwich",0],
+           UNIT["Degree",0.0174532925199433]]
       ESRI
     end
 

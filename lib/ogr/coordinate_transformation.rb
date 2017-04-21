@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'narray'
 require_relative '../ogr'
 require_relative '../gdal'

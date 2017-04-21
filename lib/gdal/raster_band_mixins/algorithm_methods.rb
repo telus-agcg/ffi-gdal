@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module RasterBandMixins
     module AlgorithmMethods
@@ -34,7 +36,8 @@ module GDAL
             colors,
             color_table.c_pointer,
             progress_function,
-            progress_arg)
+            progress_arg
+          )
 
           color_table
         end
@@ -75,7 +78,8 @@ module GDAL
             output_ptr,
             color_table_ptr,
             progress_function,
-            progress_arg)
+            progress_arg
+          )
 
           output_band
         end
@@ -97,7 +101,8 @@ module GDAL
           x_offset,
           y_offset,
           x_size,
-          y_size)
+          y_size
+        )
       end
 
       # Computes the proximity of all pixels in the proximity_band to those in
@@ -134,7 +139,8 @@ module GDAL
           proximity_band_ptr,
           options_ptr,
           progress_function,
-          progress_arg)
+          progress_arg
+        )
       end
 
       # Fill selected raster regions by interpolation from the edges. It
@@ -324,7 +330,8 @@ module GDAL
           connectedness,
           options_ptr,
           progress_function,
-          progress_arg)
+          progress_arg
+        )
       end
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'uri'
 require 'json'
 require_relative '../gdal'

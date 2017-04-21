@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   class Gridder
     # Methods used for extracting points from a OGR::Layer. Only used when

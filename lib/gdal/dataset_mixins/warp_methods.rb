@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module DatasetMixins
     # Methods used for warping; most taken from gdalwarper.h.

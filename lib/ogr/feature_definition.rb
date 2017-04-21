@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../ogr'
 require_relative 'feature_definition_extensions'
 
@@ -67,7 +69,8 @@ module OGR
     def delete_field_definition(index)
       ogr_err = FFI::OGR::API.OGR_FD_DeleteFieldDefn(
         @c_pointer,
-        index)
+        index
+      )
 
       ogr_err.handle_result "Unable to delete field definition at index #{index}"
     end

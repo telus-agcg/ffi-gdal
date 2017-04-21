@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module DatasetMixins
     # Wrappers for Warp algorithm methods defined in gdal_alg.h.
@@ -185,7 +187,8 @@ module GDAL
           pixels_ptr,
           lines_ptr,
           extents_ptr,
-          options)
+          options
+        )
 
         extents_array = extents_ptr.read_array_of_double(4)
 

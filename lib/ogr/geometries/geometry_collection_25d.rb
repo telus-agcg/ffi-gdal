@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'geometry_collection'
 
 module OGR

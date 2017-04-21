@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'base_general_image_projection_transformer'
 
 module GDAL
@@ -16,7 +18,8 @@ module GDAL
           source_wkt,
           source_ptr,
           destination_wkt,
-          destination_ptr)
+          destination_ptr
+        )
 
         super()
       end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module NumericAsDataType
   # @param data_type [FFI::GDAL::GDAL::DataType]
   def to_data_type(data_type)

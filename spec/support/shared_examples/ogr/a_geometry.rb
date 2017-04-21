@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_examples 'a geometry' do
   require 'ogr'
 
@@ -353,7 +355,7 @@ RSpec.shared_examples 'a geometry' do
 
   describe '#wkb_size' do
     it 'returns a non-zero integer' do
-      expect(geometry.wkb_size).to be_a Fixnum
+      expect(geometry.wkb_size).to be_a Integer
 
       if geometry.name == 'LINEARRING'
         expect(geometry.wkb_size).to be_zero

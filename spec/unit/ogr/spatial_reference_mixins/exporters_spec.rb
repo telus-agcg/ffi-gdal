@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/spatial_reference'
 
@@ -46,7 +48,8 @@ RSpec.describe OGR::SpatialReference do
         expect(subject.to_pci).to eq(
           projection: 'LONG/LAT    D001',
           units: 'DEGREE',
-          projection_parameters: [])
+          projection_parameters: []
+        )
       end
     end
 
@@ -55,7 +58,8 @@ RSpec.describe OGR::SpatialReference do
         expect(subject.to_pci).to eq(
           projection: 'LONG/LAT    E012',
           units: 'DEGREE',
-          projection_parameters: [])
+          projection_parameters: []
+        )
       end
     end
   end
@@ -105,18 +109,18 @@ RSpec.describe OGR::SpatialReference do
       subject { described_class.new_from_epsg(4322) }
 
       it 'returns a well-known text String' do
-        expect(subject.to_pretty_wkt).to eq <<-WKT.strip
-GEOGCS["WGS 72",
-    DATUM["WGS_1972",
-        SPHEROID["WGS 72",6378135,298.26,
-            AUTHORITY["EPSG","7043"]],
-        TOWGS84[0,0,4.5,0,0,0.554,0.2263],
-        AUTHORITY["EPSG","6322"]],
-    PRIMEM["Greenwich",0,
-        AUTHORITY["EPSG","8901"]],
-    UNIT["degree",0.0174532925199433,
-        AUTHORITY["EPSG","9122"]],
-    AUTHORITY["EPSG","4322"]]
+        expect(subject.to_pretty_wkt).to eq <<~WKT.strip
+          GEOGCS["WGS 72",
+              DATUM["WGS_1972",
+                  SPHEROID["WGS 72",6378135,298.26,
+                      AUTHORITY["EPSG","7043"]],
+                  TOWGS84[0,0,4.5,0,0,0.554,0.2263],
+                  AUTHORITY["EPSG","6322"]],
+              PRIMEM["Greenwich",0,
+                  AUTHORITY["EPSG","8901"]],
+              UNIT["degree",0.0174532925199433,
+                  AUTHORITY["EPSG","9122"]],
+              AUTHORITY["EPSG","4322"]]
                                         WKT
       end
     end

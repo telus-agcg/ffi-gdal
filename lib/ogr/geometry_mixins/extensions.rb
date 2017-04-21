@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 module OGR
@@ -7,7 +9,7 @@ module OGR
       def utm_zone
         return unless spatial_reference
 
-        if spatial_reference.authority_code == '4326'.freeze
+        if spatial_reference.authority_code == '4326'
           self_as_4326 = self
         else
           self_as_4326 = dup

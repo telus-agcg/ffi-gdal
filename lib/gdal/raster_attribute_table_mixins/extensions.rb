@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 module GDAL
@@ -10,7 +12,7 @@ module GDAL
         case value.class
         when String then set_value_as_string(row, field, value)
         when Float then set_value_as_double(row, field, value)
-        when Fixnum then set_value_as_integer(row, field, value)
+        when Integer then set_value_as_integer(row, field, value)
         else raise GDAL::UnknownRasterAttributeTableType, "Unknown value type for value '#{value}'"
         end
       end

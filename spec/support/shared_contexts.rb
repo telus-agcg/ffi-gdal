@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context 'OGR::Layer, spatial_reference' do
   require 'ogr/driver'
   require 'ogr/spatial_reference'

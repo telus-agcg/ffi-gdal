@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'multi_point'
 
 module OGR

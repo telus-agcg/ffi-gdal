@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
@@ -20,7 +22,7 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe '.count' do
     it 'is a non-zero Integer' do
-      expect(GDAL::Driver.count).to be_a Fixnum
+      expect(GDAL::Driver.count).to be_a Integer
       expect(GDAL::Driver.count).to be > 0
     end
   end

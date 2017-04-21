@@ -1,4 +1,6 @@
-class Fixnum
+# frozen_string_literal: true
+
+class Integer
   def to_bool
     return true if self == 1
     return false if self == 0

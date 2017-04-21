@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module Transformers
     class GeolocationTransformer
@@ -19,7 +21,8 @@ module GDAL
         @c_pointer = FFI::GDAL::Alg.CreateGeoLocTransformer(
           base_dataset_ptr,
           geolocation_info_ptr,
-          reversed)
+          reversed
+        )
       end
 
       def destroy!

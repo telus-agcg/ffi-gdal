@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
@@ -24,14 +26,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
 
   describe '#x_size' do
     it 'is a non-zero Integer' do
-      expect(subject.x_size).to be_a Fixnum
+      expect(subject.x_size).to be_a Integer
       expect(subject.x_size).to be > 0
     end
   end
 
   describe '#y_size' do
     it 'is a non-zero Integer' do
-      expect(subject.y_size).to be_a Fixnum
+      expect(subject.y_size).to be_a Integer
       expect(subject.y_size).to be > 0
     end
   end
@@ -42,7 +44,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
 
   describe '#number' do
     it 'is a non-zero Integer' do
-      expect(subject.number).to be_a Fixnum
+      expect(subject.number).to be_a Integer
       expect(subject.number).to be > 0
     end
   end
@@ -122,7 +124,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
 
   describe '#overview_count' do
     it 'is a Fixnum' do
-      expect(subject.overview_count).to be_a Fixnum
+      expect(subject.overview_count).to be_a Integer
     end
   end
 
@@ -255,14 +257,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
     end
 
     it 'has :buckets as a Fixnum' do
-      expect(histogram[:buckets]).to be_a Fixnum if histogram
+      expect(histogram[:buckets]).to be_a Integer if histogram
     end
 
     it 'has :totals as an Array of 0 or 256 Fixnums' do
       if histogram
         expect(histogram[:totals]).to be_an Array
         expect(histogram[:totals].size).to eq(256).or eq(0)
-        expect(histogram[:totals].all? { |t| t.class == Fixnum }).to eq true
+        expect(histogram[:totals].all? { |t| t.class == Integer }).to eq true
       end
     end
   end

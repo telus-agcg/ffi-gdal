@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FFI
   module OGR
     autoload :API, File.expand_path('ogr/api.rb', __dir__)
