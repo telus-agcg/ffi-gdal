@@ -22,9 +22,9 @@ module OGR
                      fd_or_pointer
                    end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
-      end
+      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+
+      raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
     end
 
     def destroy!

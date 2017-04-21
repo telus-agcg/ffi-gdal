@@ -10,13 +10,13 @@ RSpec.describe OGR::SpatialReference do
     it 'changes the SRS to ESRI' do
       expect do
         subject.morph_to_esri!
-      end.to change { subject.to_wkt.size }
+      end.to(change { subject.to_wkt.size })
     end
   end
 
   describe '#morph_from_esri!' do
     let(:esri) do
-      <<~ESRI.strip
+      <<-ESRI.strip
         GEOGCS["GCS_North_American_1983",
            DATUM["D_North_American_1983",
            SPHEROID["GRS_1980",6378137,298.257222101]],
@@ -32,7 +32,7 @@ RSpec.describe OGR::SpatialReference do
 
       expect do
         subject.morph_from_esri!
-      end.to change { subject.to_wkt.size }
+      end.to(change { subject.to_wkt.size })
     end
   end
 end

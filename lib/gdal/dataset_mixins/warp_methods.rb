@@ -6,7 +6,7 @@ module GDAL
     module WarpMethods
       # @param destination_dataset [GDAL::Dataset]
       # @param resample_algorithm [Symbol] One from FFI::GDAL::Warper::GDALResampleAlg.
-      # @param destination_spatial_reference [String]
+      # @param destination_projection [String]
       # @param warp_memory_limit [Float] The amount of memory (in bytes) the API
       #   is allowed to use for caching. This is in addition to the amount of
       #   memory already allocated for caching (using GDALSetCacheMax). 0.0 uses

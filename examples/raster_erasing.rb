@@ -17,14 +17,7 @@ module Examples
       geo_transform = dest_dataset.geo_transform
 
       raster_band = dest_dataset.raster_band(1)
-      extent_polygon = dest_dataset.extent
-      buffer_size = if extent_polygon.area > 1
-                      extent_polygon.area / -5000
-                    else
-                      extent_polygon.area / -0.5
-                    end
-
-      extent_polygon = extent_polygon.buffer(buffer_size)
+      extent_polygon = buffer_extent(dest_dataset.extent)
 
       if extent_polygon.empty?
         raise 'Poorly buffered extent--you should play with these values to get this demo to work.'
@@ -42,6 +35,18 @@ module Examples
       dest_dataset.close
 
       puts "Erased dataset in #{Time.now - start}s. Output at '#{dest_path}'"
+    end
+
+    private
+
+    def buffer_extent(extent_polygon)
+      buffer_size = if extent_polygon.area > 1
+                      extent_polygon.area / -5000
+                    else
+                      extent_polygon.area / -0.5
+                    end
+
+      extent_polygon.buffer(buffer_size)
     end
   end
 end

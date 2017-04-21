@@ -74,13 +74,9 @@ module GDAL
         range_for_type(min, max)
       end
 
-      range_count.times.each_with_object([]) do |i, ranges|
+      Array.new(range_count) do |i|
         range = breakpoint_calculator.call(i)
-
-        ranges << {
-          range: range,
-          map_to: (i + 1).to_data_type(@raster_band.data_type)
-        }
+        { range: range, map_to: (i + 1).to_data_type(@raster_band.data_type) }
       end
     end
 

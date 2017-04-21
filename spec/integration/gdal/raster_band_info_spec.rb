@@ -171,7 +171,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
     it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
       min = subject.statistics[:minimum]
       unless min == -32_768.0
-        expect(subject.statistics[:minimum]).to satisfy { |v| v >= 0 || v == -32_768 }
+        expect(subject.statistics[:minimum]).to(satisfy { |v| v >= 0 || v == -32_768 })
         expect(subject.statistics[:minimum]).to be <= 255.0
       end
     end

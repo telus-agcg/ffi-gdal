@@ -218,7 +218,7 @@ module GDAL
       flag_list.reverse_each.with_index do |flag, i|
         flag = flag.to_i
 
-        if i == 0 && flag == 1
+        if i.zero? && flag == 1
           flags << :GMF_ALL_VALID
         elsif i == 1 && flag == 1
           flags << :GMF_PER_DATASET

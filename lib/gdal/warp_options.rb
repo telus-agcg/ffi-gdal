@@ -194,5 +194,9 @@ module GDAL
 
       @c_struct[meth]
     end
+
+    def respond_to_missing?(method_name, include_private = false)
+      FFI::GDAL::WarpOptions.members.include?(method_name) || super
+    end
   end
 end

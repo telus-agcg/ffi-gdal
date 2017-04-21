@@ -66,10 +66,7 @@ module GDAL
       # @param strings [Array<String>]
       # @return [FFI::MemoryPointer]
       def _string_array_to_pointer(strings)
-        string_pointers = strings.map do |string|
-          FFI::MemoryPointer.from_string(string.to_s)
-        end
-
+        string_pointers = strings.map { |string| FFI::MemoryPointer.from_string(string.to_s) }
         string_pointers << nil
         array_pointer = FFI::MemoryPointer.new(:pointer, strings.size + 1)
         i = 0

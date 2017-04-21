@@ -33,6 +33,7 @@ module GDAL
     # @param progress_block [Proc]
     # @param progress_arg [FFI::Pointer]
     # @return [FFI::MemoryPointer] Pointer to the grid data.
+    # rubocop:disable Metrics/ParameterLists
     def create(points, extents, data_pointer, output_size = { x: 256, y: 256 },
       progress_block = nil, progress_arg = nil)
       points = points.to_a if points.is_a? NArray
@@ -68,6 +69,7 @@ module GDAL
         progress_arg                                    # pProgressArg
       )
     end
+    # rubocop:enable Metrics/ParameterLists
 
     private
 

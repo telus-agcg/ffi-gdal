@@ -21,9 +21,9 @@ module OGR
                      name_or_pointer
                    end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
-      end
+      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+
+      raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
     end
 
     def release!

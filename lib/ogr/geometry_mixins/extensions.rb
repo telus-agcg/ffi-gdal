@@ -10,17 +10,17 @@ module OGR
         return unless spatial_reference
 
         if spatial_reference.authority_code == '4326'
-          self_as_4326 = self
+          self_as4326 = self
         else
-          self_as_4326 = dup
-          self_as_4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
+          self_as4326 = dup
+          self_as4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
         end
 
-        self_as_4326 = self_as_4326.buffer(0) unless self_as_4326.valid?
+        self_as4326 = self_as4326.buffer(0) unless self_as4326.valid?
 
-        return unless self_as_4326.point_on_surface.x
+        return unless self_as4326.point_on_surface.x
 
-        ((self_as_4326.point_on_surface.x + 180) / 6.to_f).floor + 1
+        ((self_as4326.point_on_surface.x + 180) / 6.to_f).floor + 1
       end
 
       # @return [Boolean]
