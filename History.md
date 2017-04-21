@@ -7,10 +7,12 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 ### Improvements
 
 * Ruby 2.3 frozen string compatibility.
+* Ruby 2.4 `DateTime` time zone handling in `OGR::Feature#set_field_date_time`.
 
 ### Bug Fixes
 
-* Ensure `GDAL::RasterBandMixinsIOExtensions#read_blocks_by_block` always yields an Array of pixels.
+* Ensure `GDAL::RasterBandMixinsIOExtensions#read_blocks_by_block` always yields
+  an Array of pixels.
 
 ## 1.0.0.beta7 / 2016-09-21
 

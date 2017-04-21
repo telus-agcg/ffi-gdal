@@ -163,7 +163,7 @@ module OGR
     # @param value [Date, Time, DateTime]
     def set_field_date_time(index, value)
       time = value.to_time
-      zone = OGR._format_time_zone_for_ogr(time.zone)
+      zone = OGR._format_time_zone_for_ogr(value.zone)
 
       FFI::OGR::API.OGR_F_SetFieldDateTime(@c_pointer, index,
         time.year,
