@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module Transformers
     class BaseGeneralImageProjectionTransformer
@@ -32,7 +34,8 @@ module GDAL
         geo_transform_ptr = GDAL._pointer(GDAL::GeoTransform, geo_transform)
 
         FFI::GDAL::Alg.GDALSetGenImgProjTransformerDstGeoTransform(
-          @c_pointer, geo_transform_ptr)
+          @c_pointer, geo_transform_ptr
+        )
       end
     end
   end

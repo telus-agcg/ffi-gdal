@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../geometry_mixins/container_mixins'
 
 module OGR

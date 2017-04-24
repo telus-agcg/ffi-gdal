@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module LayerMixins
     module OGRFieldMethods
@@ -81,7 +83,8 @@ module OGR
           @c_pointer,
           field_index,
           new_field_definition_ptr,
-          flags)
+          flags
+        )
 
         ogr_err.handle_result
       end
@@ -115,7 +118,8 @@ module OGR
         ogr_err = FFI::OGR::API.OGR_L_CreateGeomField(
           @c_pointer,
           geometry_field_definition_ptr,
-          approx_ok)
+          approx_ok
+        )
 
         ogr_err.handle_result
       end

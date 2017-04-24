@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
@@ -185,7 +187,7 @@ GEOGCS["WGS 84",
 
   describe '#gcp_count' do
     it 'is a Fixnum' do
-      expect(subject.gcp_count).to be_a Fixnum
+      expect(subject.gcp_count).to be_a Integer
     end
   end
 

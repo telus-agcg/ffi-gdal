@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Float
   # Converts a packed DMS value (DDDMMMSSS.SS) into decimal degrees.
   #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module DataSourceMixins
     # Helper methods for determining the current DataSource's capabilities.

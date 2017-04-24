@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/driver'
 
 RSpec.describe OGR::Driver do
   describe '.count' do
     subject { described_class.count }
-    it { is_expected.to be_a Fixnum }
+    it { is_expected.to be_a Integer }
   end
 
   describe '.by_name' do

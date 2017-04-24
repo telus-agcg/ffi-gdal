@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../gdal'
 require 'multi_xml'
 

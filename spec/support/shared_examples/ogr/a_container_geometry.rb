@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Requirements:
 #   * :child_geometry - one that the described class can
 RSpec.shared_examples 'a container geometry' do

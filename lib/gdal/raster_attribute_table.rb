@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../gdal'
 require_relative 'raster_attribute_table_mixins/extensions'
 

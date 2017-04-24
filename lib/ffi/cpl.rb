@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FFI
   module CPL
     autoload :Conv, File.expand_path('cpl/conv.rb', __dir__)

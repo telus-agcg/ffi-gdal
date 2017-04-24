@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../ogr'
 require_relative 'feature_definition_extensions'
 
@@ -19,9 +21,9 @@ module OGR
                      name_or_pointer
                    end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
-      end
+      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+
+      raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
     end
 
     def release!
@@ -67,7 +69,8 @@ module OGR
     def delete_field_definition(index)
       ogr_err = FFI::OGR::API.OGR_FD_DeleteFieldDefn(
         @c_pointer,
-        index)
+        index
+      )
 
       ogr_err.handle_result "Unable to delete field definition at index #{index}"
     end

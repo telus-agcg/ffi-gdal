@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../geometry_types/curve'
 
 module OGR
@@ -5,6 +7,7 @@ module OGR
     include OGR::Geometry
     include GeometryTypes::Curve
 
+    # rubocop:disable Metrics/ParameterLists
     def self.approximate_arc_angles(center_x, center_y, z, primary_radius, secondary_radius,
       rotation, start_angle, end_angle, max_angle_step_size_degrees = 0)
       geometry_ptr = FFI::GDAL::GDAL.OGR_G_ApproximateArcAngles(
@@ -22,6 +25,7 @@ module OGR
 
       new(geometry_ptr)
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def initialize(geometry_ptr = nil, spatial_reference: nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbLineString)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'gdal/geo_transform'
 require 'gdal/geo_transform_mixins/extensions'

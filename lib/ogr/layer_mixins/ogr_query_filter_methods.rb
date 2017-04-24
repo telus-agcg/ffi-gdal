@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module LayerMixins
     module OGRQueryFilterMethods
@@ -29,7 +31,8 @@ module OGR
         geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
 
         FFI::OGR::API.OGR_L_SetSpatialFilterEx(
-          @c_pointer, geometry_field_index, geometry_ptr)
+          @c_pointer, geometry_field_index, geometry_ptr
+        )
       end
 
       # Only features that geometrically intersect the given rectangle will be
@@ -47,7 +50,8 @@ module OGR
           min_x,
           min_y,
           max_x,
-          max_y)
+          max_y
+        )
       end
 
       # Only features that geometrically intersect the given rectangle will be
@@ -68,7 +72,8 @@ module OGR
           min_x,
           min_y,
           max_x,
-          max_y)
+          max_y
+        )
       end
 
       # Sets the attribute query string to be used when fetching Features using

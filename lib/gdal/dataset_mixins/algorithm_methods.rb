@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module DatasetMixins
     # Wrappers for Warp algorithm methods defined in gdal_alg.h.
@@ -16,7 +18,7 @@ module GDAL
       #   polygon or that are selected by Brezenham's line algorithm.  Defaults to
       #   +false+.
       # @option options burn_value_from ["Z"] Use the Z values of the geometries.
-      # @option @options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
+      # @option options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
       #   in overwriting of value, while ADD adds the new value to the existing
       #   raster, suitable for heatmaps for instance.
       def rasterize_geometries!(band_numbers, geometries, burn_values,
@@ -185,7 +187,8 @@ module GDAL
           pixels_ptr,
           lines_ptr,
           extents_ptr,
-          options)
+          options
+        )
 
         extents_array = extents_ptr.read_array_of_double(4)
 

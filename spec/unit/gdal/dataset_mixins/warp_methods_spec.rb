@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'gdal'
 
@@ -39,7 +41,8 @@ RSpec.describe GDAL::Dataset do
     let(:output_projection) { OGR::SpatialReference.new_from_epsg(3857).to_wkt }
 
     it 'creates a valid dataset' do
-      subject.create_and_reproject_image(output_file, :GRA_NearestNeighbor, OGR::SpatialReference.new_from_epsg(3857).to_wkt, GDAL::Driver.by_name('GTiff'))
+      subject.create_and_reproject_image(output_file, :GRA_NearestNeighbor,
+        OGR::SpatialReference.new_from_epsg(3857).to_wkt, GDAL::Driver.by_name('GTiff'))
 
       dest_dataset = GDAL::Dataset.open(output_file, 'r')
       expect(dest_dataset.projection).to match(/AUTHORITY\[\"EPSG\",\"3857\"\]/)

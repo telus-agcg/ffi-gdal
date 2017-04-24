@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'narray'
 require_relative '../../ffi-gdal'

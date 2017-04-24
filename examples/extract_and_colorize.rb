@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/setup'
 require 'pry'
 require 'ffi-gdal'
@@ -24,36 +26,31 @@ floyd.extract_natural_color('nc.tif', band_order: %i[nir red green blue]).close
 # NDVI as Float32
 floyd.extract_ndvi('ndvi_float.tif', band_order: %i[nir red green blue],
                                      data_type: :GDT_Float32,
-                                     remove_negatives: true
-                  ).close
+                                     remove_negatives: true).close
 
 # NDVI as Byte
 floyd.extract_ndvi('ndvi_byte.tif', band_order: %i[nir red green blue],
                                     data_type: :GDT_Byte,
                                     remove_negatives: true,
-                                    photometric: 'PALETTE'
-                  ).close
+                                    photometric: 'PALETTE').close
 
 # NDVI as UInt16
 floyd.extract_ndvi('ndvi_uint16.tif', band_order: %i[nir red green blue],
                                       data_type: :GDT_UInt16,
                                       remove_negatives: true,
-                                      photometric: 'PALETTE'
-                  ).close
+                                      photometric: 'PALETTE').close
 
 # GNDVI as Byte
 floyd.extract_gndvi('gndvi_byte.tif', band_order: %i[nir red green blue],
                                       data_type: :GDT_Byte,
                                       remove_negatives: true,
-                                      photometric: 'PALETTE'
-                   ).close
+                                      photometric: 'PALETTE').close
 
 # GNDVI as UInt16
 floyd.extract_gndvi('gndvi_uint16.tif', band_order: %i[nir red green blue],
                                         data_type: :GDT_UInt16,
                                         remove_negatives: true,
-                                        photometric: 'PALETTE'
-                   ).close
+                                        photometric: 'PALETTE').close
 
 #---
 # Colorize after extraction...

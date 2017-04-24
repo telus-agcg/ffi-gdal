@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   # Info about GDAL data types (GDT symbols).
   class DataType

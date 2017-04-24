@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../ogr'
 require_relative 'style_table_extensions'
 

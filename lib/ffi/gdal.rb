@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ffi'
 require 'ffi/tools/const_generator'
 require_relative 'gdal/exceptions'

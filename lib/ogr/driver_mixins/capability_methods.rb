@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module DriverMixins
     # Helper methods for testing capabilities of the current driver.
