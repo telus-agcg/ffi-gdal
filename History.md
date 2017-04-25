@@ -2,7 +2,7 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
-## 1.0.0.betaX / 201x-xx-xx
+## 1.0.0.beta8 / 2017-04-24
 
 ### Improvements
 
