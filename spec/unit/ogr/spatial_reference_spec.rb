@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/spatial_reference'
 
@@ -12,7 +14,7 @@ RSpec.describe OGR::SpatialReference do
       end
 
       it 'has Strings with no underscores' do
-        expect(subject).to satisfy { |v| !v.include?('_') }
+        expect(subject).to(satisfy { |v| !v.include?('_') })
       end
     end
 
@@ -25,7 +27,7 @@ RSpec.describe OGR::SpatialReference do
       end
 
       it 'has Strings with underscores' do
-        expect(subject).to satisfy { |v| !v.include?(' ') }
+        expect(subject).to(satisfy { |v| !v.include?(' ') })
       end
     end
   end

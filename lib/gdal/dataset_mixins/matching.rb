@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module DatasetMixins
     module Matching
@@ -15,7 +17,8 @@ module GDAL
           @c_pointer,
           other_dataset_ptr,
           options_ptr,
-          gcp_count_ptr)
+          gcp_count_ptr
+        )
 
         { count: gcp_count_ptr.read_int, gcp: gcp }
       end

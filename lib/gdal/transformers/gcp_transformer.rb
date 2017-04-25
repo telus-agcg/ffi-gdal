@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module Transformers
     class GCPTransformer
@@ -25,13 +27,15 @@ module GDAL
                          gcp_list.size,
                          gcp_list_ptr,
                          requested_polynomial_order,
-                         reversed)
+                         reversed
+                       )
                      else
                        FFI::GDAL::Alg.GDALCreateGCPTransformer(
                          gcp_list.size,
                          gcp_list_ptr,
                          requested_polynomial_order,
-                         reversed)
+                         reversed
+                       )
                      end
       end
 

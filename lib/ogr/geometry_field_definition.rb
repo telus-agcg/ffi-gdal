@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   class GeometryFieldDefinition
     # @return [FFI::Pointer]
@@ -79,7 +81,8 @@ module OGR
 
       FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @c_pointer,
-        spatial_ref_ptr)
+        spatial_ref_ptr
+      )
     end
 
     # @return [Boolean]

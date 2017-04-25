@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
@@ -20,9 +22,9 @@ module OGR
                      fd_or_pointer
                    end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
-        raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
-      end
+      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+
+      raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
     end
 
     def destroy!
@@ -101,7 +103,8 @@ module OGR
       FFI::OGR::API.OGR_F_SetFieldStringList(
         @c_pointer,
         index,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -114,7 +117,8 @@ module OGR
         @c_pointer,
         index,
         values.size,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -127,7 +131,8 @@ module OGR
         @c_pointer,
         index,
         values.size,
-        values_ptr)
+        values_ptr
+      )
     end
 
     # @param index [Fixnum]
@@ -150,14 +155,15 @@ module OGR
         @c_pointer,
         index,
         value.length,
-        value_ptr)
+        value_ptr
+      )
     end
 
     # @param index [Fixnum]
     # @param value [Date, Time, DateTime]
     def set_field_date_time(index, value)
       time = value.to_time
-      zone = OGR._format_time_zone_for_ogr(time.zone)
+      zone = OGR._format_time_zone_for_ogr(value.zone)
 
       FFI::OGR::API.OGR_F_SetFieldDateTime(@c_pointer, index,
         time.year,

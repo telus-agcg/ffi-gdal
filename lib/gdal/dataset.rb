@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
@@ -300,6 +302,7 @@ module GDAL
     # @param band_space [Fixnum] The byte offset from the start of one band's
     #   data to the start of the next. If defaulted (0), the size of
     #   +line_space+ * +buffer_y_size* is used.
+    # rubocop:disable: Metrics/MethodLength
     def raster_io(access_flag, buffer = nil,
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
       buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: nil,
@@ -343,6 +346,7 @@ module GDAL
 
       buffer
     end
+    # rubocop:enable: Metrics/MethodLength
 
     private
 
@@ -353,13 +357,13 @@ module GDAL
     # @return [Fixnum]
     def parse_mask_flag_symbols(*flags)
       flags.reduce(0) do |result, flag|
-        result |= case flag
-                  when :GMF_ALL_VALID then 0x01
-                  when :GMF_PER_DATASET then 0x02
-                  when :GMF_PER_ALPHA then 0x04
-                  when :GMF_NODATA then 0x08
-                  else 0
-                  end
+        result | case flag
+                 when :GMF_ALL_VALID then 0x01
+                 when :GMF_PER_DATASET then 0x02
+                 when :GMF_PER_ALPHA then 0x04
+                 when :GMF_NODATA then 0x08
+                 else 0
+                 end
       end
     end
 

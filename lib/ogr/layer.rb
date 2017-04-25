@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../ogr'
 require_relative '../gdal'
 require_relative 'layer_mixins/extensions'

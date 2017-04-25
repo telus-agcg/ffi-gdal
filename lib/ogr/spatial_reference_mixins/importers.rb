@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module SpatialReferenceMixins
     module Importers
@@ -198,7 +200,8 @@ module OGR
           projection_system_code,
           zone,
           proj_ptr,
-          datum)
+          datum
+        )
 
         ogr_err.handle_result
       end
@@ -227,7 +230,8 @@ module OGR
           @c_pointer,
           projection_name,
           datum_name,
-          linear_unit_name)
+          linear_unit_name
+        )
 
         ogr_err.handle_result
       end

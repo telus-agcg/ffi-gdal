@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   # This is used to override GDAL's built-in error handling.  By default, GDAL
   # only logs errors to STDOUT, which doesn't allow a whole lot of flexibility.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'narray'
 require_relative '../gdal'
 require_relative 'gridder_options'
@@ -249,7 +251,8 @@ module GDAL
         block_number.to_f / block_count,
         (block_number + 1).to_f / block_count,
         @options.progress_formatter,
-        nil)
+        nil
+      )
     end
 
     # Determines how large of a chunk of data to grid and rasterize.

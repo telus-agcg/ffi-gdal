@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   class CorruptData < RuntimeError
   end
@@ -12,7 +14,7 @@ module OGR
           msg
         elsif driver.is_a? String
           "Driver not found with name '#{driver}'."
-        elsif driver.is_a? Fixnum
+        elsif driver.is_a? Integer
           "Driver at index #{driver} not found."
         end
 

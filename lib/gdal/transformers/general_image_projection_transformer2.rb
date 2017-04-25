@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'base_general_image_projection_transformer'
 
 module GDAL
@@ -43,7 +45,8 @@ module GDAL
         @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer2(
           source_ptr,
           destination_ptr,
-          options_ptr)
+          options_ptr
+        )
 
         super()
       end

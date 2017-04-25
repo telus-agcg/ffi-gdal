@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   class NoneGeometry
     include OGR::Geometry

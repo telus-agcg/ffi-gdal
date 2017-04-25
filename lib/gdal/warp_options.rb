@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../gdal'
 
 module GDAL
@@ -191,6 +193,10 @@ module GDAL
       super unless FFI::GDAL::WarpOptions.members.include?(meth)
 
       @c_struct[meth]
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      FFI::GDAL::WarpOptions.members.include?(method_name) || super
     end
   end
 end

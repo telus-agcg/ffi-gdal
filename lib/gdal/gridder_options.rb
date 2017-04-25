@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'grid'
 require_relative 'options'
 require_relative '../ogr'

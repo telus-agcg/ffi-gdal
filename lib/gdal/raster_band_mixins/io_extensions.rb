@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module RasterBandMixins
     # Methods for reading & writing RasterBands that didn't come from GDAL.
@@ -136,7 +138,7 @@ module GDAL
             read_block(x_block_number, y_block_number, data_pointer)
             pixels = GDAL._read_pointer(data_pointer, data_type, block_buffer_size)
 
-            yield(pixels, x_block_size, y_block_size)
+            yield(Array(pixels), x_block_size, y_block_size)
           end
         end
       end

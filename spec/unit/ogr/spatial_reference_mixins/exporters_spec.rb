@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/spatial_reference'
 
@@ -46,7 +48,8 @@ RSpec.describe OGR::SpatialReference do
         expect(subject.to_pci).to eq(
           projection: 'LONG/LAT    D001',
           units: 'DEGREE',
-          projection_parameters: [])
+          projection_parameters: []
+        )
       end
     end
 
@@ -55,7 +58,8 @@ RSpec.describe OGR::SpatialReference do
         expect(subject.to_pci).to eq(
           projection: 'LONG/LAT    E012',
           units: 'DEGREE',
-          projection_parameters: [])
+          projection_parameters: []
+        )
       end
     end
   end
@@ -117,7 +121,7 @@ GEOGCS["WGS 72",
     UNIT["degree",0.0174532925199433,
         AUTHORITY["EPSG","9122"]],
     AUTHORITY["EPSG","4322"]]
-                                        WKT
+        WKT
       end
     end
 

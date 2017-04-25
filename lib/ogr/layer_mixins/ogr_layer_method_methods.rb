@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module OGR
   module LayerMixins
     # OGR::Layer methods: Ruby methods that operate on a OGR::Layer using a

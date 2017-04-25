@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'gdal/driver'
 require 'gdal/raster_band_classifier'
@@ -129,7 +131,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it 'retains its NODATA pixels' do
-        expect { subject.classify! }.to_not change { raster_band.to_na.eq(-9999.0).count_true }
+        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
       end
     end
 
@@ -159,7 +161,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it 'retains its NODATA pixels' do
-        expect { subject.classify! }.to_not change { raster_band.to_na.eq(-9999.0).count_true }
+        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
         pixels = raster_band.to_na
         expect(pixels.eq(-9999).count_true).to eq 640
         expect(pixels.eq(0).count_true).to eq 0
@@ -190,7 +192,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it 'retains its NODATA pixels' do
-        expect { subject.classify! }.to_not change { raster_band.to_na.eq(-9999.0).count_true }
+        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
       end
     end
   end

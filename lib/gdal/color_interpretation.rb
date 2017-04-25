@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   class ColorInterpretation
     # @param gdal_color_interp [FFI::GDAL::ColorInterp]

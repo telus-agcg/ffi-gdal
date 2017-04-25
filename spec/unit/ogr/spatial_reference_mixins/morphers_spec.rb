@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'ogr/spatial_reference'
 
@@ -8,18 +10,18 @@ RSpec.describe OGR::SpatialReference do
     it 'changes the SRS to ESRI' do
       expect do
         subject.morph_to_esri!
-      end.to change { subject.to_wkt.size }
+      end.to(change { subject.to_wkt.size })
     end
   end
 
   describe '#morph_from_esri!' do
     let(:esri) do
       <<-ESRI.strip
-GEOGCS["GCS_North_American_1983",
-   DATUM["D_North_American_1983",
-   SPHEROID["GRS_1980",6378137,298.257222101]],
-   PRIMEM["Greenwich",0],
-   UNIT["Degree",0.0174532925199433]]
+        GEOGCS["GCS_North_American_1983",
+           DATUM["D_North_American_1983",
+           SPHEROID["GRS_1980",6378137,298.257222101]],
+           PRIMEM["Greenwich",0],
+           UNIT["Degree",0.0174532925199433]]
       ESRI
     end
 
@@ -30,7 +32,7 @@ GEOGCS["GCS_North_American_1983",
 
       expect do
         subject.morph_from_esri!
-      end.to change { subject.to_wkt.size }
+      end.to(change { subject.to_wkt.size })
     end
   end
 end

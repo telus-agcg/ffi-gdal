@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module Transformers
     class RPCTransformer
@@ -33,7 +35,8 @@ module GDAL
           rpc_info,
           reversed,
           pixel_error_threshold,
-          options_ptr)
+          options_ptr
+        )
       end
 
       def destroy!

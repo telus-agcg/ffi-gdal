@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'narray'
 require_relative '../gdal'
 require_relative 'raster_band_mixins/algorithm_extensions'
@@ -216,7 +218,7 @@ module GDAL
       flag_list.reverse_each.with_index do |flag, i|
         flag = flag.to_i
 
-        if i == 0 && flag == 1
+        if i.zero? && flag == 1
           flags << :GMF_ALL_VALID
         elsif i == 1 && flag == 1
           flags << :GMF_PER_DATASET
@@ -273,7 +275,7 @@ module GDAL
       standard_deviation = FFI::MemoryPointer.new(:double)
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { Hash.new }
+      handler.on_warning = proc { {} }
       handler.on_none = proc do
         {
           minimum: min.read_double,

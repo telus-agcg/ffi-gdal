@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GDAL
   module Transformers
     class ApproximateTransformer
@@ -18,7 +20,8 @@ module GDAL
         @c_pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
           base_transformer_function,
           transformer_arg_ptr,
-          max_error)
+          max_error
+        )
       end
 
       def destroy!

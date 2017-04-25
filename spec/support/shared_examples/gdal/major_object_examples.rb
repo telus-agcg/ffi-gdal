@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_examples 'a major object' do
   describe '#metadata_domain_list' do
     it 'is an Array of Strings' do
