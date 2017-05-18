@@ -98,8 +98,8 @@ RSpec.describe GDAL::RasterBandClassifier do
     end
 
     context 'all nodata pixels' do
-      let(:band_narray) { NArray.byte(0) }
-      before { allow(raster_band).to receive(:to_na).and_return(band_narray) }
+      let(:band_narray) { Numo::Int8.new(3, 5).fill(0) }
+      before { allow(raster_band).to receive(:to_nna).and_return(band_narray) }
 
       it 'returns an empty Array' do
         expect(subject.equal_count_ranges(10)).to eq([])
@@ -193,6 +193,42 @@ RSpec.describe GDAL::RasterBandClassifier do
 
       it 'retains its NODATA pixels' do
         expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
+      end
+    end
+  end
+
+  describe '#masked_pixels' do
+    let(:pixels) { dataset.raster_band(1).to_nna }
+    let(:raster_band) { double 'Band', no_data_value: { value: nodata_value } }
+
+    before { subject.instance_variable_set(:@raster_band, raster_band) }
+
+    context 'nodata is NaN' do
+      let(:nodata_value) { Float::NAN }
+      let(:pixels) { Numo::DFloat.cast(dataset.raster_band(1).to_nna) }
+
+      before do
+        pixels[pixels.eq(0)] = nodata_value
+      end
+
+      it 'removes all nodata values' do
+        expect(subject.send(:masked_pixels, pixels).isnan.count_true).to eq 0
+      end
+    end
+
+    context 'nodata is a number' do
+      let(:nodata_value) { 0 }
+
+      it 'removes all nodata values' do
+        expect(subject.send(:masked_pixels, pixels).eq(0).count_true).to eq 0
+      end
+    end
+
+    context 'nodata is nil' do
+      let(:nodata_value) { nil }
+
+      it 'returns the original pixels' do
+        expect(subject.send(:masked_pixels, pixels)).to eq pixels
       end
     end
   end

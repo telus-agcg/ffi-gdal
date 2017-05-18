@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'narray'
+require 'numo/narray'
 require_relative '../gdal'
 require_relative 'raster_band_mixins/algorithm_extensions'
 require_relative 'raster_band_mixins/algorithm_methods'
