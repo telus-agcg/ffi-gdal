@@ -24,7 +24,7 @@ module OGR
 
           begin
             yield feature
-          rescue
+          rescue StandardError
             feature.destroy!
             raise
           end
@@ -52,7 +52,7 @@ module OGR
 
           begin
             yield feature_ptr
-          rescue
+          rescue StandardError
             FFI::OGR::API.OGR_F_Destroy(feature_ptr)
             raise
           end

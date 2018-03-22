@@ -1,6 +1,12 @@
 ---
 inherit_from: .rubocop_todo.yml
 
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
 Lint/UselessAssignment:
   Exclude:
     - examples/geometries.rb
@@ -44,29 +50,27 @@ Metrics/ParameterLists:
     - lib/gdal/warp_operation.rb
     - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
 
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   Exclude:
     - lib/ogr/layer_mixins/ogr_field_methods.rb
     - lib/ogr/layer_mixins/ogr_query_filter_methods.rb
     - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
 
-Style/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
-
-Style/Documentation:
-  Enabled: false
-
-Style/DotPosition:
-  EnforcedStyle: trailing
-
-Style/DoubleNegation:
-  Enabled: false
-
-Style/FileName:
+Naming/FileName:
   Exclude:
     - Rakefile
     - lib/ffi-gdal.rb
     - spec/ffi-gdal_spec.rb
+
+Naming/PredicateName:
+  Exclude:
+    - lib/ogr/geometry_mixins/extensions.rb
+
+Style/Documentation:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
 
 Style/FormatString:
   EnforcedStyle: percent
@@ -76,10 +80,6 @@ Style/PercentLiteralDelimiters:
     '%i': '[]'
     '%w': '[]'
     '%W': '[]'
-
-Style/PredicateName:
-  Exclude:
-    - lib/ogr/geometry_mixins/extensions.rb
 
 Style/SymbolArray:
   Enabled: true

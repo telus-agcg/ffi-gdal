@@ -6,9 +6,7 @@ module GDAL
   module ColorTableMixins
     module Extensions
       def color_entries_for(color_number)
-        unless (1..4).to_a.include? color_number
-          raise "Invalid ColorEntry number 'color#{color_number}'"
-        end
+        raise "Invalid ColorEntry number 'color#{color_number}'" unless (1..4).to_a.include? color_number
 
         Array.new(color_entry_count) do |i|
           color_entry(i).send("color#{color_number}".to_sym)

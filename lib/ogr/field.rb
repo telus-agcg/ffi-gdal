@@ -52,7 +52,7 @@ module OGR
 
     # TODO: This blows up when another value type has been set.
     def string
-      return '' if @c_struct[:string] && @c_struct[:string].null?
+      return '' if @c_struct[:string]&.null?
 
       @c_struct[:string].read_string
     end

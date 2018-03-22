@@ -619,9 +619,7 @@ module OGR
 
       linear_ring = OGR::LinearRing.new
 
-      if line_string.spatial_reference
-        linear_ring.spatial_reference = line_string.spatial_reference.clone
-      end
+      linear_ring.spatial_reference = line_string.spatial_reference.clone if line_string.spatial_reference
 
       linear_ring.import_from_wkt(line_string.to_wkt.tr('LINESTRING', 'LINEARRING'))
       linear_ring.close_rings! if close_rings

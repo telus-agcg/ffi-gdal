@@ -46,7 +46,7 @@ Style/GuardClause:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 # SupportedStyles: auto_detection, squiggly, active_support, powerpack, unindent
-Style/IndentHeredoc:
+Layout/IndentHeredoc:
   Exclude:
     - 'spec/integration/gdal/dataset_info_spec.rb'
     - 'spec/unit/ogr/spatial_reference_mixins/exporters_spec.rb'

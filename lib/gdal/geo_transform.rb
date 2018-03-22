@@ -170,9 +170,7 @@ module GDAL
     def compose(other_geo_transform)
       other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
 
-      unless other_ptr
-        raise GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'"
-      end
+      raise GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'" unless other_ptr
 
       new_gt_ptr = self.class.new_pointer
       FFI::GDAL::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)

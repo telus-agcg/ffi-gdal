@@ -27,9 +27,7 @@ module GDAL
     def self.by_name(name)
       driver_ptr = FFI::GDAL::GDAL.GDALGetDriverByName(name)
 
-      if driver_ptr.null?
-        raise InvalidDriverName, "'#{name}' is not a valid driver name."
-      end
+      raise InvalidDriverName, "'#{name}' is not a valid driver name." if driver_ptr.null?
 
       new(driver_ptr)
     end
@@ -39,9 +37,7 @@ module GDAL
     # @return [GDAL::Driver]
     # @raise [GDAL::InvalidDriverIndex] If driver at +index+ does not exist.
     def self.at_index(index)
-      if index > count
-        raise InvalidDriverIndex, "index must be between 0 and #{count - 1}."
-      end
+      raise InvalidDriverIndex, "index must be between 0 and #{count - 1}." if index > count
 
       driver_ptr = FFI::GDAL::GDAL.GDALGetDriver(index)
 
@@ -176,7 +172,7 @@ module GDAL
     def copy_dataset(source_dataset, destination_path, progress_block = nil, progress_arg = nil, strict: true,
       **options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
-      raise GDAL::OpenFailure, "Source dataset couldn't be read" if source_dataset_ptr && source_dataset_ptr.null?
+      raise GDAL::OpenFailure, "Source dataset couldn't be read" if source_dataset_ptr&.null?
 
       options_ptr = GDAL::Options.pointer(options)
 

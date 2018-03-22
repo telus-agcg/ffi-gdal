@@ -112,9 +112,7 @@ module OGR
     # @param options [Hash] Driver-specific options.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
-      unless can_create_layer?
-        raise OGR::UnsupportedOperation, 'This data source does not support creating layers.'
-      end
+      raise OGR::UnsupportedOperation, 'This data source does not support creating layers.' unless can_create_layer?
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
@@ -122,9 +120,7 @@ module OGR
       layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name,
         spatial_ref_ptr, geometry_type, options_obj)
 
-      unless layer_ptr
-        raise OGR::InvalidLayer, "Unable to create layer '#{name}'."
-      end
+      raise OGR::InvalidLayer, "Unable to create layer '#{name}'." unless layer_ptr
 
       @layers << OGR::Layer.new(layer_ptr)
 
@@ -149,9 +145,7 @@ module OGR
     # @param index [Fixnum]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
-      unless can_delete_layer?
-        raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.'
-      end
+      raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
 
       ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
 
