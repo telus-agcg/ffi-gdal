@@ -25,7 +25,7 @@ module OGR
     # @return [Proc]
     def error_class_map(error_class)
       {
-        OGRERR_NONE: proc { true },
+        OGRERR_NONE: ->(_msg) { true },
         OGRERR_NOT_ENOUGH_DATA: ->(msg) { raise_exception(OGR::NotEnoughData, msg) },
         OGRERR_NOT_ENOUGH_MEMORY: ->(msg) { raise_exception(::NoMemoryError, msg) },
         OGRERR_UNSUPPORTED_GEOMETRY_TYPE: ->(msg) { raise_exception(OGR::UnsupportedGeometryType, msg) },
