@@ -392,6 +392,7 @@ module OGR
 
       formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
 
+      # rubocop:disable Style/DateTime
       if formatted_tz
         DateTime.new(
           year_ptr.read_int,
@@ -412,6 +413,7 @@ module OGR
           second_ptr.read_int
         )
       end
+      # rubocop:enable Style/DateTime
     end
 
     # @return [String]

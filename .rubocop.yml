@@ -66,6 +66,15 @@ Naming/PredicateName:
   Exclude:
     - lib/ogr/geometry_mixins/extensions.rb
 
+Naming/UncommunicativeMethodParamName:
+  Exclude:
+    - lib/gdal/raster_band_mixins/io_extensions.rb
+    - lib/ogr/geometries/line_string.rb
+    - lib/ogr/geometries/line_string_25d.rb
+    - lib/ogr/geometries/point.rb
+    - lib/ogr/geometries/point_25d.rb
+    - lib/ogr/geometry_types/curve.rb
+
 Style/Documentation:
   Enabled: false
 
