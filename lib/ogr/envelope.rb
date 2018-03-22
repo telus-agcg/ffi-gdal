@@ -71,7 +71,7 @@ module OGR
 
     # @param new_z_min [Float]
     def z_min=(new_z_min)
-      return nil unless @c_struct.is_a? FFI::OGR::Envelope3D
+      return unless @c_struct.is_a? FFI::OGR::Envelope3D
 
       @c_struct[:min_z] = new_z_min
     end
@@ -85,7 +85,7 @@ module OGR
 
     # @param new_z_max [Float]
     def z_max=(new_z_max)
-      return nil unless @c_struct.is_a? FFI::OGR::Envelope3D
+      return unless @c_struct.is_a? FFI::OGR::Envelope3D
 
       @c_struct[:max_z] = new_z_max
     end

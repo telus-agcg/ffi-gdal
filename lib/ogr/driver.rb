@@ -74,9 +74,7 @@ module OGR
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
 
-      if data_source_ptr.null?
-        raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}"
-      end
+      raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}" if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr, nil)
     end
@@ -124,9 +122,7 @@ module OGR
     def copy_data_source(source_data_source, new_file_name, **options)
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
 
-      if source_ptr.nil? || source_ptr.null?
-        raise OGR::InvalidDataSource, source_data_source
-      end
+      raise OGR::InvalidDataSource, source_data_source if source_ptr.nil? || source_ptr.null?
 
       options_ptr = GDAL::Options.pointer(options)
 

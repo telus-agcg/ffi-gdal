@@ -258,7 +258,7 @@ module GDAL
           spatial_ref = OGR::SpatialReference.new(projection)
           begin
             spatial_ref.auto_identify_epsg!
-          rescue
+          rescue StandardError
             OGR::UnsupportedSRS
           end
         end
@@ -276,9 +276,7 @@ module GDAL
           layer.create_field(OGR::FieldDefinition.new(field_name, :OFTInteger))
           band = raster_band(band_number)
 
-          unless band
-            raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}"
-          end
+          raise GDAL::InvalidBandNumber, "Unknown band number: #{band_number}" unless band
 
           pixel_value_field = layer.feature_definition.field_index(field_name)
           options = { pixel_value_field: pixel_value_field }

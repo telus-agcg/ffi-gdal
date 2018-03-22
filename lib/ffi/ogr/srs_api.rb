@@ -39,7 +39,6 @@ module FFI
       # -----------------------------------------------------------------------
       # Constants
       # -----------------------------------------------------------------------
-      # rubocop:disable Metrics/BlockLength
       SRS_UL = FFI::ConstGenerator.new('SRS_UL') do |gen|
         gen.include FFI::GDAL._file_with_constants('ogr_srs_api.h')
         gen.const :SRS_UL_METER,              '%s', nil, :METER_LABEL, &:inspect
@@ -96,7 +95,6 @@ module FFI
         gen.const :SRS_UL_INDIAN_CHAIN,       '%s', nil, :INDIAN_CHAIN_LABEL, &:inspect
         gen.const :SRS_UL_INDIAN_CHAIN_CONV,  '%s', nil, :METER_TO_INDIAN_CHAIN, &:to_f
       end
-      # rubocop:enable Metrics/BlockLength
 
       SRS_UL.calculate
 

@@ -25,9 +25,7 @@ module OGR
       # @param feature [OGR::Feature] [description]
       # @return [Boolean]
       def create_feature(feature)
-        unless can_sequential_write?
-          raise OGR::UnsupportedOperation, 'This layer does not support feature creation.'
-        end
+        raise OGR::UnsupportedOperation, 'This layer does not support feature creation.' unless can_sequential_write?
 
         ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
 
@@ -41,9 +39,7 @@ module OGR
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
       def delete_feature(feature_id)
-        unless can_delete_feature?
-          raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.'
-        end
+        raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.' unless can_delete_feature?
 
         ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
 
@@ -63,9 +59,7 @@ module OGR
       #
       # @param new_feature [OGR::Feature, FFI::Pointer]
       def feature=(new_feature)
-        unless can_random_write?
-          raise OGR::UnsupportedOperation, '#feature= not supported by this Layer'
-        end
+        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless can_random_write?
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
@@ -79,9 +73,7 @@ module OGR
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
-        unless can_random_read?
-          raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer'
-        end
+        raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer' unless can_random_read?
 
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)
         return nil if feature_pointer.null?

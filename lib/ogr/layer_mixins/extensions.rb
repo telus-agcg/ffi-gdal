@@ -24,7 +24,7 @@ module OGR
 
           begin
             yield feature
-          rescue
+          rescue StandardError
             feature.destroy!
             raise
           end
@@ -52,7 +52,7 @@ module OGR
 
           begin
             yield feature_ptr
-          rescue
+          rescue StandardError
             FFI::OGR::API.OGR_F_Destroy(feature_ptr)
             raise
           end
@@ -128,7 +128,6 @@ module OGR
         # I've tried refactoring chunks of this out to separate methods and
         # performance suffers greatly. Since this is a key part of gridding (at
         # least at this point), it needs to be as fast as possible.
-        # rubocop:disable Metrics/BlockLength
         each_feature_pointer do |feature_ptr|
           field_values = field_indices.map.with_index do |j, attribute_index|
             FFI::OGR::API.send("OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
@@ -211,7 +210,6 @@ module OGR
             "Not sure how to extract point_values for a #{geom_type}"
           end
         end
-        # rubocop:enable Metrics/BlockLength
 
         log "#point_values took #{Time.now - start}s"
 

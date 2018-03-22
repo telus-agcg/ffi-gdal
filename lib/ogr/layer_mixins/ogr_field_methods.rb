@@ -12,9 +12,7 @@ module OGR
       #   different form, depending on the limitations of the format driver.
       # @return [Boolean]
       def create_field(field_definition, approx_ok = false)
-        unless can_create_field?
-          raise OGR::UnsupportedOperation, 'This layer does not support field creation.'
-        end
+        raise OGR::UnsupportedOperation, 'This layer does not support field creation.' unless can_create_field?
 
         field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
         ogr_err = FFI::OGR::API.OGR_L_CreateField(@c_pointer, field_definition_ptr, approx_ok)
@@ -26,9 +24,7 @@ module OGR
       #
       # @return +true+ if successful, otherwise raises an OGR exception.
       def delete_field(field_id)
-        unless can_delete_field?
-          raise OGR::UnsupportedOperation, 'This driver does not support field deletion.'
-        end
+        raise OGR::UnsupportedOperation, 'This driver does not support field deletion.' unless can_delete_field?
 
         ogr_err = FFI::OGR::API.OGR_L_DeleteField(@c_pointer, field_id)
 
@@ -39,9 +35,7 @@ module OGR
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
       # @return [Boolean]
       def reorder_fields(*new_order)
-        unless can_reorder_fields?
-          raise OGR::UnsupportedOperation, 'This driver does not support field reordering.'
-        end
+        raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
         return false if new_order.empty?
         return false if new_order.any? { |i| i > feature_definition.field_count }
@@ -58,9 +52,7 @@ module OGR
       # @param old_position [Fixnum]
       # @param new_position [Fixnum]
       def reorder_field(old_position, new_position)
-        unless can_reorder_fields?
-          raise OGR::UnsupportedOperation, 'This driver does not support field reordering.'
-        end
+        raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
         ogr_err = FFI::OGR::API.OGR_L_ReorderField(@c_pointer, old_position, new_position)
 

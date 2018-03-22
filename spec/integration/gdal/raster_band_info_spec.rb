@@ -58,9 +58,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
 
   describe '#color_table' do
     it 'is a GDAL::ColorTable' do
-      if subject.color_table
-        expect(subject.color_table).to be_a GDAL::ColorTable
-      end
+      expect(subject.color_table).to be_a GDAL::ColorTable if subject.color_table
     end
   end
 
