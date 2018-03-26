@@ -2,7 +2,7 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
-## 1.0.0.x / 2018-mm-dd
+## 1.0.0.beta9 / 2018-03-26
 
 ### Bug Fixes
 
