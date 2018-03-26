@@ -51,20 +51,22 @@ module GDAL
     # @param range_count [Fixnum] The number of ranges to create.
     # @return [Array<Hash>, nil]
     def equal_count_ranges(range_count)
-      sorted_pixels = @raster_band.to_na.sort
-      no_data = @raster_band.no_data_value[:value]
-      sorted_and_masked_pixels = no_data ? sorted_pixels[sorted_pixels.ne(no_data)] : sorted_pixels
-      return [] if sorted_and_masked_pixels.empty?
+      pixels = @raster_band.to_nna
+      masked_pixels = masked_pixels(pixels)
 
+      return [] if masked_pixels.empty?
+
+      sorted_and_masked_pixels = masked_pixels.to_a.sort
       range_size = (sorted_and_masked_pixels.size / range_count).to_i
 
-      log "Masked pixel count/total pixel count: #{sorted_and_masked_pixels.size}/#{sorted_pixels.size}"
+      log "Masked pixel count/total pixel count: #{sorted_and_masked_pixels.size}/#{pixels.size}"
       log "Min pixel value: #{sorted_and_masked_pixels.min}"
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
       break_values = Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq
       log "Break values: #{break_values}"
+
       return if break_values.uniq.size != range_count
 
       breakpoint_calculator = lambda do |range_number|
@@ -85,27 +87,58 @@ module GDAL
     # values, so if you don't want to overwrite the Dataset you're working with,
     # you should copy it first.
     def classify!
-      nodata_value = @raster_band.no_data_value[:value]
-      band_pixels = @raster_band.to_na
-      new_band_pixels = GDAL._narray_from_data_type(@raster_band.data_type, @raster_band.x_size, @raster_band.y_size)
-      new_band_pixels[band_pixels.eq(nodata_value)] = nodata_value if nodata_value
-      data_pixels = nodata_value ? band_pixels.ne(nodata_value) : band_pixels
+      band_pixels = @raster_band.to_nna
+      new_band_pixels = band_pixels.clone
+      data_pixels = if nodata_value
+                      nodata_is_nan? ? ~band_pixels.isnan : band_pixels.ne(nodata_value)
+                    else
+                      Numo::Bit.cast(band_pixels.new_ones)
+                    end
 
       @ranges.each do |r|
-        new_band_pixels[
-          data_pixels.
-          and(band_pixels.le(r[:range].max)).
-          and(band_pixels.ge(r[:range].min))
-        ] = r[:map_to]
+        new_band_pixels[data_pixels & band_pixels.le(r[:range].max) & band_pixels.ge(r[:range].min)] = r[:map_to]
       end
 
+      mask_nan(new_band_pixels, data_pixels) if nodata_is_nan?
       @raster_band.write_xy_narray(new_band_pixels)
+    end
+
+    # @return [Numeric] NODATA value for the @raster_band.
+    def nodata_value
+      @raster_band.no_data_value[:value]
+    end
+
+    # @return [Boolean] True if NODATA is NaN.
+    def nodata_is_nan?
+      nodata_value.is_a?(Float) && nodata_value.nan?
     end
 
     private
 
+    # @param pixels [Numo::NArray]
+    # @return [Numo::NArray]
+    def masked_pixels(pixels)
+      no_data = @raster_band.no_data_value[:value]
+
+      if no_data
+        mask = no_data.is_a?(Float) && no_data.nan? ? ~pixels.isnan : pixels.ne(no_data)
+        pixels[mask]
+      else
+        pixels
+      end
+    end
+
     def range_for_type(min, max)
       min.to_data_type(@raster_band.data_type)..max.to_data_type(@raster_band.data_type)
+    end
+
+    # Set nodata pixels to 0 and set the nodata value to 0.
+    #
+    # @param new_band_pixels [Numo::NArray]
+    # @param data_pixels [Numo::Bit]
+    def mask_nan(new_band_pixels, data_pixels)
+      new_band_pixels[~data_pixels] = 0
+      @raster_band.no_data_value = 0
     end
   end
 end

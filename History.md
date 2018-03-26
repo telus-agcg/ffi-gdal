@@ -2,6 +2,16 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta9 / 2018-03-26
+
+### Bug Fixes
+
+* [AGDEV-30729] Change `OGERR_NONE` to use a lambda.
+
+### Improvements
+
+* Fix some new rubocops.
+
 ## 1.0.0.beta8 / 2017-04-24
 
 ### Improvements

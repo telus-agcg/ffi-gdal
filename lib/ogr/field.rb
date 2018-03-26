@@ -52,7 +52,7 @@ module OGR
 
     # TODO: This blows up when another value type has been set.
     def string
-      return '' if @c_struct[:string] && @c_struct[:string].null?
+      return '' if @c_struct[:string]&.null?
 
       @c_struct[:string].read_string
     end
@@ -186,6 +186,7 @@ module OGR
 
       formatted_tz = OGR._format_time_zone_for_ruby(c_date[:tz_flag].to_i)
 
+      # rubocop:disable Style/DateTime
       DateTime.new(c_date[:year],
         c_date[:month],
         c_date[:day],
@@ -193,6 +194,7 @@ module OGR
         c_date[:minute],
         c_date[:second],
         formatted_tz)
+      # rubocop:enable Style/DateTime
     end
 
     # @param new_date [Date, Time, DateTime]

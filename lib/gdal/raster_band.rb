@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'narray'
+require 'numo/narray'
 require_relative '../gdal'
 require_relative 'raster_band_mixins/algorithm_extensions'
 require_relative 'raster_band_mixins/algorithm_methods'
@@ -140,7 +141,7 @@ module GDAL
     def category_names=(names)
       names_pointer = GDAL._string_array_to_pointer(names)
 
-      !!FFI::GDAL::GDAL.GDALSetRasterCategoryNames(@c_pointer, names_pointer)
+      FFI::GDAL::GDAL.GDALSetRasterCategoryNames(@c_pointer, names_pointer)
     end
 
     # The no data value for a band is generally a special marker value used to

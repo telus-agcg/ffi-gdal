@@ -70,9 +70,7 @@ module OGR
         # field = FieldDefinition.new('Name', :OFTString)
         # field.width = 32
 
-        unless layer
-          raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'."
-        end
+        raise OGR::InvalidLayer, "Unable to create layer '#{layer_name}'." unless layer
 
         feature = layer.create_feature(layer_name)
         feature.geometry = self
