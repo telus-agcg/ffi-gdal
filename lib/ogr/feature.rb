@@ -339,7 +339,7 @@ module OGR
     # @param index [Fixnum]
     # @return [String]
     def field_as_string(index)
-      FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index)
+      FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index).force_encoding(Encoding::UTF_8)
     end
 
     # @param index [Fixnum]
