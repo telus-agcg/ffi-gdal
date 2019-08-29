@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta10 / 2019-08-28
+
+### Bug Fixes
+
+* [DEV-7980] Ensure `OGR::Feature#field_as_string` returns a UTF-8 encoded String.
+
 ## 1.0.0.beta9 / 2018-03-26
 
 ### Bug Fixes

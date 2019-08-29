@@ -6,6 +6,11 @@ Ruby wrapper around GDAL, using FFI, along with some helper methods.
 Installation
 ------------
 
+For Ubuntu you need to install libgdal-dev via:
+
+    sudo apt-get install libgdal-dev
+
+
 Add this line to your application's Gemfile:
 
     gem 'ffi-gdal'
