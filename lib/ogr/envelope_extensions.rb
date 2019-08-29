@@ -26,7 +26,7 @@ module OGR
     # GeoTransform.
     #
     # @param geo_transform [GDAL::GeoTransform]
-    # @return [Hash{x_min => Fixnum, y_min => Fixnum, x_max => Fixnum, y_max => Fixnum}]
+    # @return [Hash{x_min => Integer, y_min => Integer, x_max => Integer, y_max => Integer}]
     def world_to_pixels(geo_transform)
       min_values = geo_transform.world_to_pixel(x_min, y_max)
       max_values = geo_transform.world_to_pixel(x_max, y_min)

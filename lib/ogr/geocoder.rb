@@ -52,7 +52,7 @@ module OGR
     #   the address into elements.  Only works with some geocoding services.
     # @option options countrycodes [Array<String, Symbol>] Limit the search to a
     #   specific country or countries.  Only works with some geocoding services.
-    # @option options limit [Fixnum] Limit the number of records returned.  Only
+    # @option options limit [Integer] Limit the number of records returned.  Only
     #   works with some geocoding services.
     # @option options raw_feature ["YES"] Adds a raw feature to the returned
     #   feature that includes that raw XML response body.

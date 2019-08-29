@@ -5,9 +5,9 @@ require 'json'
 module GDAL
   module RasterAttributeTableMixins
     module Extensions
-      # @param row [Fixnum]
-      # @param field [Fixnum]
-      # @param value [String, Float, Fixnum]
+      # @param row [Integer]
+      # @param field [Integer]
+      # @param value [String, Float, Integer]
       def set_value(row, field, value)
         case value.class
         when String then set_value_as_string(row, field, value)
@@ -19,7 +19,7 @@ module GDAL
 
       # Get +column_name+, +column_usage+, +column_type+ as a Hash.
       #
-      # @param index [Fixnum]
+      # @param index [Integer]
       # @return [Hash]
       def column(index)
         {

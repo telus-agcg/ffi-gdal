@@ -40,14 +40,14 @@ module GDAL
 
     # The raster width in pixels.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def x_size
       FFI::GDAL::GDAL.GDALGetRasterBandXSize(@c_pointer)
     end
 
     # The raster height in pixels.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def y_size
       FFI::GDAL::GDAL.GDALGetRasterBandYSize(@c_pointer)
     end
@@ -62,7 +62,7 @@ module GDAL
     # The number of band within the associated dataset that this band
     # represents.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def number
       FFI::GDAL::GDAL.GDALGetBandNumber(@c_pointer)
     end
@@ -86,7 +86,7 @@ module GDAL
     # @return [Boolean]
     def color_interpretation=(new_color_interp)
       !!FFI::GDAL::GDAL.GDALSetRasterColorInterpretation(@c_pointer,
-        new_color_interp)
+                                                         new_color_interp)
     end
 
     # Gets the associated GDAL::ColorTable. Note that it remains owned by the
@@ -119,7 +119,7 @@ module GDAL
     # accessing the format. For many formats this is simply a whole scanline
     # in which case x is set to #x_size, and y is set to 1.
     #
-    # @return [Hash{x => Fixnum, y => Fixnum}]
+    # @return [Hash{x => Integer, y => Integer}]
     def block_size
       x_pointer = FFI::MemoryPointer.new(:int)
       y_pointer = FFI::MemoryPointer.new(:int)
@@ -166,7 +166,7 @@ module GDAL
       !!FFI::GDAL::GDAL.GDALSetRasterNoDataValue(@c_pointer, value) if value
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def overview_count
       FFI::GDAL::GDAL.GDALGetOverviewCount(@c_pointer)
     end
@@ -176,7 +176,7 @@ module GDAL
       FFI::GDAL::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero? ? false : true
     end
 
-    # @param index [Fixnum] Must be between 0 and (#overview_count - 1).
+    # @param index [Integer] Must be between 0 and (#overview_count - 1).
     # @return [GDAL::RasterBand]
     def overview(index)
       return nil if overview_count.zero?
@@ -192,7 +192,7 @@ module GDAL
     # If the band doesn't have any overviews or none of the overviews have
     # enough samples, it will return the same band.
     #
-    # @param desired_samples [Fixnum] The returned band will have at least this
+    # @param desired_samples [Integer] The returned band will have at least this
     #   many pixels.
     # @return [GDAL::RasterBand] An optimal overview or the same raster band if
     #   the raster band has no overviews.
@@ -288,12 +288,12 @@ module GDAL
 
       handler.custom_handle do
         FFI::GDAL::GDAL.GDALGetRasterStatistics(@c_pointer,
-          approx_ok,
-          force,
-          min,
-          max,
-          mean,
-          standard_deviation)
+                                                approx_ok,
+                                                force,
+                                                min,
+                                                max,
+                                                mean,
+                                                standard_deviation)
       end
     end
 
@@ -444,8 +444,8 @@ module GDAL
     # @yieldparam completion [Float] The ration completed as a decimal.
     # @yieldparam message [String] Message string to display.
     #
-    # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
-    #   totals => Array<Fixnum>}] Returns +nil+ if no default histogram is
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
+    #   totals => Array<Integer>}] Returns +nil+ if no default histogram is
     #   available.
     def default_histogram(force = false, &block)
       min_pointer = FFI::MemoryPointer.new(:double)
@@ -494,7 +494,7 @@ module GDAL
     #
     # @param min [Float] The lower bound of the histogram.
     # @param max [Float] The upper bound of the histogram.
-    # @param buckets [Fixnum]
+    # @param buckets [Integer]
     # @param include_out_of_range [Boolean] If +true+, values below the
     #   histogram range will be mapped into the first bucket of the output
     #   data; values above the range will be mapped into the last bucket. If
@@ -506,8 +506,8 @@ module GDAL
     # @yieldparam completion [Float] The ration completed as a decimal.
     # @yieldparam message [String] Message string to display.
     #
-    # @return [Hash{minimum => Float, maximum => Float, buckets => Fixnum,
-    #   totals => Array<Fixnum>}]
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
+    #   totals => Array<Integer>}]
     #
     # @see #default_histogram for more info.
     def histogram(min, max, buckets, include_out_of_range: false,
@@ -534,14 +534,14 @@ module GDAL
 
       handler.custom_handle do
         FFI::GDAL::GDAL.GDALGetRasterHistogram(@c_pointer,
-          min.to_f,
-          max.to_f,
-          buckets,
-          histogram_pointer,
-          include_out_of_range,
-          approx_ok,
-          progress_proc,
-          nil)
+                                               min.to_f,
+                                               max.to_f,
+                                               buckets,
+                                               histogram_pointer,
+                                               include_out_of_range,
+                                               approx_ok,
+                                               progress_proc,
+                                               nil)
       end
     end
 
@@ -563,10 +563,10 @@ module GDAL
       options_ptr = GDAL::Options.pointer(options)
 
       !!FFI::GDAL::GDAL.GDALRasterBandCopyWholeRaster(@c_pointer,
-        destination_pointer,
-        options_ptr,
-        progress,
-        nil)
+                                                      destination_pointer,
+                                                      options_ptr,
+                                                      progress,
+                                                      nil)
     end
 
     # IO access for raster data in this band. Default values are set up to
@@ -582,35 +582,36 @@ module GDAL
     # @param access_flag [Symbol] Must be 'r' or 'w'.
     # @param buffer [FFI::MemoryPointer] Allows for passing in your own buffer,
     #   which is really only useful when writing.
-    # @param x_size [Fixnum] The number of pixels per line to operate on.
+    # @param x_size [Integer] The number of pixels per line to operate on.
     #   Defaults to the value of {{#x_size}}.
-    # @param y_size [Fixnum] The number of lines to operate on. Defaults to the
+    # @param y_size [Integer] The number of lines to operate on. Defaults to the
     #   value of {{#y_size}}.
-    # @param x_offset [Fixnum] The pixel number in the line to start operating
+    # @param x_offset [Integer] The pixel number in the line to start operating
     #   on. Note that when using this, {#x_size} - +x_offset+ should be >= 0,
     #   otherwise this means you're telling the method to read past the end of
     #   the line. Defaults to 0.
-    # @param y_offset [Fixnum] The line number to start operating on. Note that
+    # @param y_offset [Integer] The line number to start operating on. Note that
     #   when using this, {#y_size} - +y_offset+ should be >= 0, otherwise this
     #   means you're telling the method to read more lines than the raster has.
     #   Defaults to 0.
-    # @param buffer_x_size [Fixnum] The width of the buffer image in which to
+    # @param buffer_x_size [Integer] The width of the buffer image in which to
     #   read/write the raster data into/from. Typically this should be the same
     #   size as +x_size+; if it's different, GDAL will resample accordingly.
-    # @param buffer_y_size [Fixnum] The height of the buffer image in which to
+    # @param buffer_y_size [Integer] The height of the buffer image in which to
     #   read/write the raster data into/from. Typically this should be the same
     #   size as +y_size+; if it's different, GDAL will resample accordingly.
     # @param buffer_data_type [FFI::GDAL::GDAL::DataType] Can be used to convert the
     #   data to a different type. You must account for this when reading/writing
     #   to/from your buffer--your buffer size must be +buffer_x_size+ *
     #   +buffer_y_size+. Defaults to {{#data_type}}.
-    # @param pixel_space [Fixnum] The byte offset from the start of one pixel
+    # @param pixel_space [Integer] The byte offset from the start of one pixel
     #   value in the buffer to the start of the next pixel value within a line.
     #   If defaulted (0), the size of +buffer_data_type+ is used.
-    # @param line_space [Fixnum] The byte offset from the start of one line in
+    # @param line_space [Integer] The byte offset from the start of one line in
     #   the buffer to the start of the next. If defaulted (0), the size of
     #   +buffer_data_type+ * +buffer_x_size* is used.
     # @return [FFI::MemoryPointer] Pointer to the data that was read/written.
+    # rubocop:disable Metrics/ParameterLists
     def raster_io(access_flag, buffer = nil,
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
       buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
@@ -641,13 +642,14 @@ module GDAL
 
       buffer
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # Read a block of image data, more efficiently than #read.  Doesn't
     # resample or do data type conversion.
     #
-    # @param x_block_number [Fixnum] The horizontal block offset, with 0 indicating
+    # @param x_block_number [Integer] The horizontal block offset, with 0 indicating
     #   the left-most block, 1 the next block, etc.
-    # @param y_block_number [Fixnum] The vertical block offset, with 0 indicating the
+    # @param y_block_number [Integer] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
     # @param image_buffer [FFI::Pointer] Optional pointer to use for reading
     #   the data into. If not provided, one will be created and returned.
@@ -662,9 +664,9 @@ module GDAL
       image_buffer
     end
 
-    # @param x_block_number [Fixnum] The horizontal block offset, with 0 indicating
+    # @param x_block_number [Integer] The horizontal block offset, with 0 indicating
     #   the left-most block, 1 the next block, etc.
-    # @param y_block_number [Fixnum] The vertical block offset, with 0 indicating the
+    # @param y_block_number [Integer] The vertical block offset, with 0 indicating the
     #   top-most block, 1 the next block, etc.
     # @param data_pointer [FFI::Pointer] Optional pointer to write the data to.
     #   If not provided, one will be created and returned.

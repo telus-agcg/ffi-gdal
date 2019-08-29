@@ -20,7 +20,7 @@ module OGR
 
       unless @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
         raise OGR::InvalidGeometryFieldDefinition,
-          "Unable to create #{self.class.name} from #{name_or_pointer}"
+              "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
 
       @read_only = false

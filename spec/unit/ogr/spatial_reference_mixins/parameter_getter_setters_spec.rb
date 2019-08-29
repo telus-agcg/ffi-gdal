@@ -71,7 +71,7 @@ RSpec.describe OGR::SpatialReference do
     context 'using a known label and value' do
       it 'sets the new label and value' do
         subject.set_linear_units_and_update_parameters(OGR::SpatialReference::FOOT_LABEL,
-          OGR::SpatialReference::METER_TO_FOOT)
+                                                       OGR::SpatialReference::METER_TO_FOOT)
         expect(subject.linear_units).to eq(unit_name: 'Foot (International)', value: 0.3048)
       end
     end

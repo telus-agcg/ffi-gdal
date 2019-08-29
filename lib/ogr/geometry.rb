@@ -10,6 +10,7 @@ module OGR
       def create(type)
         geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometry(type)
         return if geometry_pointer.null?
+
         geometry_pointer.autorelease = false
 
         factory(geometry_pointer)
@@ -74,7 +75,7 @@ module OGR
         geometry_ptr_ptr.write_pointer(geometry_ptr)
 
         FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
-          spatial_ref_pointer, geometry_ptr_ptr)
+                                          spatial_ref_pointer, geometry_ptr_ptr)
 
         return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
 
@@ -173,19 +174,19 @@ module OGR
       FFI::OGR::API.OGR_G_Empty(@c_pointer)
     end
 
-    # @return [Fixnum] 0 for points, 1 for lines, 2 for surfaces.
+    # @return [Integer] 0 for points, 1 for lines, 2 for surfaces.
     def dimension
       FFI::OGR::API.OGR_G_GetDimension(@c_pointer)
     end
 
     # The dimension of coordinates in this geometry (i.e. 2d vs 3d).
     #
-    # @return [Fixnum] 2 or 3, but 0 in the case of an empty point.
+    # @return [Integer] 2 or 3, but 0 in the case of an empty point.
     def coordinate_dimension
       FFI::OGR::API.OGR_G_GetCoordinateDimension(@c_pointer)
     end
 
-    # @param new_coordinate_dimension [Fixnum]
+    # @param new_coordinate_dimension [Integer]
     def coordinate_dimension=(new_coordinate_dimension)
       unless [2, 3].include?(new_coordinate_dimension)
         raise "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
@@ -228,25 +229,25 @@ module OGR
       FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def geometry_count
       FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
     end
     alias count geometry_count
 
-    # @return [Fixnum]
+    # @return [Integer]
     def point_count
       return 0 if empty?
 
       FFI::OGR::API.OGR_G_GetPointCount(@c_pointer)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def centroid
       point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 
       ogr_err = FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
-      return if point.c_pointer.null? || ogr_err > 0
+      return if point.c_pointer.null? || ogr_err.positive?
 
       point
     end
@@ -350,8 +351,8 @@ module OGR
     # @return [Boolean]
     def ring?
       FFI::OGR::API.OGR_G_IsRing(@c_pointer)
-    rescue GDAL::Error => ex
-      return false if ex.message.include? 'IllegalArgumentException'
+    rescue GDAL::Error => e
+      return false if e.message.include? 'IllegalArgumentException'
 
       raise
     end
@@ -447,7 +448,7 @@ module OGR
     # @return [Boolean]
     def transform!(coordinate_transformation)
       coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
-        coordinate_transformation)
+                                      coordinate_transformation)
 
       return if coord_trans_ptr.nil? || coord_trans_ptr.null?
 
@@ -505,7 +506,7 @@ module OGR
     # contains the buffer region around the geometry that this was called on.
     #
     # @param distance [Float] The buffer distance to be applied.
-    # @param quad_segments [Fixnum] The number of segments to use to approximate
+    # @param quad_segments [Integer] The number of segments to use to approximate
     #   a 90 degree (quadrant) of curvature.
     # @return [OGR::Polygon]
     def buffer(distance, quad_segments = 30)
@@ -536,7 +537,7 @@ module OGR
 
     # The exact number of bytes required to hold the WKB of this object.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def wkb_size
       FFI::OGR::API.OGR_G_WkbSize(@c_pointer)
     end
@@ -664,6 +665,7 @@ module OGR
     # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
     def initialize_from_pointer(geometry_ptr)
       raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
+
       @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
     end
 

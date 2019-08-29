@@ -3,32 +3,32 @@
 module GDAL
   # Getters and setters for the GDAL environment.
   module EnvironmentMethods
-    # @return [Fixnum] The maximum cache memory.
+    # @return [Integer] The maximum cache memory.
     def cache_max
       FFI::GDAL::GDAL.GDALGetCacheMax
     end
 
-    # @param bytes [Fixnum]
+    # @param bytes [Integer]
     def cache_max=(bytes)
       FFI::GDAL::GDAL.GDALSetCacheMax(bytes)
     end
 
-    # @return [Fixnum] The maximum cache memory.
+    # @return [Integer] The maximum cache memory.
     def cache_max64
       FFI::GDAL::GDAL.GDALGetCacheMax64
     end
 
-    # @param bytes [Fixnum]
+    # @param bytes [Integer]
     def cache_max64=(bytes)
       FFI::GDAL::GDAL.GDALSetCacheMax64(bytes)
     end
 
-    # @return [Fixnum] The amount of used cache memory.
+    # @return [Integer] The amount of used cache memory.
     def cache_used
       FFI::GDAL::GDAL.GDALGetCacheUsed
     end
 
-    # @return [Fixnum] The amount of used cache memory.
+    # @return [Integer] The amount of used cache memory.
     def cache_used64
       FFI::GDAL::GDAL.GDALGetCacheUsed64
     end

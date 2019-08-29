@@ -5,7 +5,7 @@ require 'json'
 module OGR
   module GeometryMixins
     module Extensions
-      # @return [Fixnum] The number of the UTM zone this geometry belongs to.
+      # @return [Integer] The number of the UTM zone this geometry belongs to.
       def utm_zone
         return unless spatial_reference
 

@@ -18,7 +18,7 @@ module OGR
         FFI::OGR::API.OGR_G_GetZ(@c_pointer, point_number)
       end
 
-      # @param [Fixnum] Index of the point to get.
+      # @param [Integer] Index of the point to get.
       # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
       def point(number)
         x_ptr = FFI::MemoryPointer.new(:double)
@@ -39,7 +39,7 @@ module OGR
       # OGR_G_GetPoint only returns coordinates, this allows getting the point
       # as an OGR::Point.
       #
-      # @param [Fixnum] Index of the point to get.
+      # @param [Integer] Index of the point to get.
       # @return [OGR::Point]
       # TODO: Move to an extension.
       def point_geometry(number)
@@ -63,7 +63,7 @@ module OGR
         end
       end
 
-      # @param index [Fixnum] The index of the vertex to assign.
+      # @param index [Integer] The index of the vertex to assign.
       # @param x [Number]
       # @param y [Number]
       # @param z [Number]
@@ -105,8 +105,8 @@ module OGR
         z_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size) if coordinate_dimension == 3
 
         num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
-          x_buffer, x_stride, y_buffer,
-          y_stride, z_buffer, z_stride)
+                                                   x_buffer, x_stride, y_buffer,
+                                                   y_stride, z_buffer, z_stride)
 
         log 'Got different number of points than point_count in #point_values' unless num_points == point_count
 
@@ -135,7 +135,7 @@ module OGR
         end
       end
 
-      # @param new_count [Fixnum]
+      # @param new_count [Integer]
       def point_count=(new_count)
         FFI::OGR::API.OGR_G_SetPointCount(@c_pointer, new_count)
       end

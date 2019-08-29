@@ -12,9 +12,9 @@ module FFI
       # TODO: Seems like this should return an array of GCPs, not just a single
       # GCP.
       attach_function :GDALComputeMatchingPoints,
-        [GDAL.find_type(:GDALDatasetH), GDAL.find_type(:GDALDatasetH), :pointer, :pointer],
-        # :pointer
-        GCP.ptr
+                      [GDAL.find_type(:GDALDatasetH), GDAL.find_type(:GDALDatasetH), :pointer, :pointer],
+                      # :pointer
+                      GCP.ptr
     end
   end
 end

@@ -78,7 +78,7 @@ module OGR
       default_value_ptr = FFI::MemoryPointer.new(:double)
 
       result = FFI::OGR::SRSAPI.OPTGetParameterInfo(projection_method, parameter_name,
-        name_ptr_ptr, type_ptr_ptr, default_value_ptr)
+                                                    name_ptr_ptr, type_ptr_ptr, default_value_ptr)
 
       return {} unless result
 

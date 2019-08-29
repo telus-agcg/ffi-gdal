@@ -32,8 +32,8 @@ module OGR
     #
     # @param name [String]
     # @param type [FFI::OGR::FieldType]
-    # @param width [Fixnum]
-    # @param precision [Fixnum]
+    # @param width [Integer]
+    # @param precision [Integer]
     # @param justification [FFI::OGR::Justification]
     def set(name, type, width, precision, justification)
       FFI::OGR::API.OGR_Fld_Set(
@@ -66,12 +66,12 @@ module OGR
       FFI::OGR::API.OGR_Fld_SetJustify(@c_pointer, new_value)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def precision
       FFI::OGR::API.OGR_Fld_GetPrecision(@c_pointer)
     end
 
-    # @param new_value [Fixnum]
+    # @param new_value [Integer]
     def precision=(new_value)
       FFI::OGR::API.OGR_Fld_SetPrecision(@c_pointer, new_value)
     end
@@ -86,12 +86,12 @@ module OGR
       FFI::OGR::API.OGR_Fld_SetType(@c_pointer, new_value)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def width
       FFI::OGR::API.OGR_Fld_GetWidth(@c_pointer)
     end
 
-    # @param new_value [Fixnum]
+    # @param new_value [Integer]
     def width=(new_value)
       FFI::OGR::API.OGR_Fld_SetWidth(@c_pointer, new_value)
     end

@@ -38,12 +38,12 @@ module OGR
       FFI::OGR::API.OGR_FD_GetName(@c_pointer)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def field_count
       FFI::OGR::API.OGR_FD_GetFieldCount(@c_pointer)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [OGR::FieldDefinition]
     def field_definition(index)
       field_definition_ptr =
@@ -64,7 +64,7 @@ module OGR
       FFI::OGR::API.OGR_FD_AddFieldDefn(@c_pointer, field_definition_ptr)
     end
 
-    # @param index [Fixnum] Index of the field definition to delete.
+    # @param index [Integer] Index of the field definition to delete.
     # @return [Boolean]
     def delete_field_definition(index)
       ogr_err = FFI::OGR::API.OGR_FD_DeleteFieldDefn(
@@ -76,11 +76,11 @@ module OGR
     end
 
     # @param name [String]
-    # @return [Fixnum] nil if no match found
+    # @return [Integer] nil if no match found
     def field_index(name)
       result = FFI::OGR::API.OGR_FD_GetFieldIndex(@c_pointer, name)
 
-      result < 0 ? nil : result
+      result.negative? ? nil : result
     end
 
     # @return [FFI::OGR::API::WKBGeometryType]
@@ -113,12 +113,12 @@ module OGR
       FFI::OGR::API.OGR_FD_SetStyleIgnored(@c_pointer, ignore)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def geometry_field_count
       FFI::OGR::API.OGR_FD_GetGeomFieldCount(@c_pointer)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [OGR::GeometryFieldDefinition]
     def geometry_field_definition(index)
       geometry_field_definition_ptr =
@@ -129,26 +129,26 @@ module OGR
     end
 
     # @param name [String]
-    # @return [Fixnum]
+    # @return [Integer]
     def geometry_field_index(name)
       result = FFI::OGR::API.OGR_FD_GetGeomFieldIndex(@c_pointer, name)
 
-      result < 0 ? nil : result
+      result.negative? ? nil : result
     end
 
     # @param geometry_field_definition [OGR::GeometryFieldDefinition, FFI::Pointer]
     def add_geometry_field_definition(geometry_field_definition)
       geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition,
-        geometry_field_definition)
+                                                    geometry_field_definition)
       FFI::OGR::API.OGR_FD_AddGeomFieldDefn(@c_pointer,
-        geometry_field_definition_ptr)
+                                            geometry_field_definition_ptr)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [Boolean]
     def delete_geometry_field_definition(index)
       ogr_err = FFI::OGR::API.OGR_FD_DeleteGeomFieldDefn(@c_pointer,
-        index)
+                                                         index)
 
       ogr_err.handle_result "Unable to delete geometry field definition at index #{index}"
     end

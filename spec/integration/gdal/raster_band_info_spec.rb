@@ -27,14 +27,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#x_size' do
     it 'is a non-zero Integer' do
       expect(subject.x_size).to be_a Integer
-      expect(subject.x_size).to be > 0
+      expect(subject.x_size).to be_positive
     end
   end
 
   describe '#y_size' do
     it 'is a non-zero Integer' do
       expect(subject.y_size).to be_a Integer
-      expect(subject.y_size).to be > 0
+      expect(subject.y_size).to be_positive
     end
   end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#number' do
     it 'is a non-zero Integer' do
       expect(subject.number).to be_a Integer
-      expect(subject.number).to be > 0
+      expect(subject.number).to be_positive
     end
   end
 
@@ -121,7 +121,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
   end
 
   describe '#overview_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.overview_count).to be_a Integer
     end
   end
@@ -254,11 +254,11 @@ RSpec.describe 'Raster Band Info', type: :integration do
       expect(histogram[:maximum]).to be_a Float if histogram
     end
 
-    it 'has :buckets as a Fixnum' do
+    it 'has :buckets as an Integer' do
       expect(histogram[:buckets]).to be_a Integer if histogram
     end
 
-    it 'has :totals as an Array of 0 or 256 Fixnums' do
+    it 'has :totals as an Array of 0 or 256 Integers' do
       if histogram
         expect(histogram[:totals]).to be_an Array
         expect(histogram[:totals].size).to eq(256).or eq(0)

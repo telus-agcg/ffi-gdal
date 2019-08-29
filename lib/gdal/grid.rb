@@ -25,10 +25,10 @@ module GDAL
     end
 
     # @param points [Array,NArray] An Array containing all x, y, and z points.
-    # @param extents [Hash{x_min: Fixnum, y_min: Fixnum, x_max: Fixnum, y_max: Fixnum}]
+    # @param extents [Hash{x_min: Integer, y_min: Integer, x_max: Integer, y_max: Integer}]
     # @param data_pointer [FFI::Pointer] Pointer that will contain the gridded
     #   data (after this method is done).
-    # @param output_size [Hash{x: Fixnum, y: Fixnum}] Overall dimensions of the
+    # @param output_size [Hash{x: Integer, y: Integer}] Overall dimensions of the
     #   area of the output raster to grid.
     # @param progress_block [Proc]
     # @param progress_arg [FFI::Pointer]
@@ -74,6 +74,7 @@ module GDAL
     # @param points [Array]
     def make_points_pointer(points)
       raise GDAL::Error, 'No points to make pointer for' if points.compact.empty?
+
       input_coordinates_ptr = FFI::MemoryPointer.new(:double, points.length)
       input_coordinates_ptr.write_array_of_double(points)
 

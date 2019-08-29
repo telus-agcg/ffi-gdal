@@ -20,10 +20,10 @@ module GDAL
       # been flushed to disk. To work with the file, you'll need to reopen it.
       #
       # @param destination [String] Path to output the new dataset to.
-      # @param red_band_number [Fixnum] Number of the band in the dataset that
+      # @param red_band_number [Integer] Number of the band in the dataset that
       #   contains red data. Note that you can pass in band numbers of other
       #   types to perform NDVI using that type (ex. GNDVI).
-      # @param nir_band_number [Fixnum] Number of the band in the dataset that
+      # @param nir_band_number [Integer] Number of the band in the dataset that
       #   contains near-infrared data data.
       # @param driver_name [String] The driver name to use for creating the
       #   dataset. Defaults to "GTiff".
@@ -47,7 +47,7 @@ module GDAL
         driver = GDAL::Driver.by_name(driver_name)
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-          data_type: output_data_type, **options) do |ndvi_dataset|
+                              data_type: output_data_type, **options) do |ndvi_dataset|
           ndvi_dataset.geo_transform = geo_transform
           ndvi_dataset.projection = projection
 
@@ -62,7 +62,7 @@ module GDAL
       # to the file.
       #
       # @param destination [String] The destination file path.
-      # @param band_number [Fixnum] The number of the band that is the NIR band.
+      # @param band_number [Integer] The number of the band that is the NIR band.
       #   Remember that raster bands are 1-indexed, not 0-indexed.
       # @param driver_name [String] the GDAL::Driver short name to use for the
       #   new dataset.
@@ -78,7 +78,7 @@ module GDAL
         driver = GDAL::Driver.by_name(driver_name)
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-          data_type: output_data_type, **options) do |nir_dataset|
+                              data_type: output_data_type, **options) do |nir_dataset|
           nir_dataset.geo_transform = geo_transform
           nir_dataset.projection = projection
 
@@ -92,9 +92,9 @@ module GDAL
       # work with the file, you'll need to reopen it.
       #
       # @param destination [String] The destination file path.
-      # @param red_band_number [Fixnum]
-      # @param green_band_number [Fixnum]
-      # @param blue_band_number [Fixnum]
+      # @param red_band_number [Integer]
+      # @param green_band_number [Integer]
+      # @param blue_band_number [Integer]
       # @param driver_name [String] the GDAL::Driver short name to use for the
       #   new dataset.
       # @param output_data_type [FFI::GDAL::DataType] Resulting dataset will be
@@ -113,7 +113,7 @@ module GDAL
         driver = GDAL::Driver.by_name(driver_name)
 
         driver.create_dataset(destination, raster_x_size, raster_y_size,
-          band_count: 3, data_type: output_data_type, **options) do |new_dataset|
+                              band_count: 3, data_type: output_data_type, **options) do |new_dataset|
           new_dataset.geo_transform = geo_transform
           new_dataset.projection = projection
 
@@ -242,9 +242,9 @@ module GDAL
       #   to use when turning the raster into a vector image.
       # @param layer_name_prefix [String] Prefix of the name to give the new
       #   vector layer.
-      # @param band_numbers [Array<Fixnum>,Fixnum] Number of the raster band or
-      #   bands from this dataset to vectorize.  Can be a single Fixnum or array
-      #   of Fixnums.
+      # @param band_numbers [Array<Integer>,Integer] Number of the raster band or
+      #   bands from this dataset to vectorize.  Can be a single Integer or array
+      #   of Integers.
       # @return [OGR::DataSource]
       def to_vector(file_name, vector_driver_name, geometry_type: :wkbUnknown,
         layer_name_prefix: 'band_number', band_numbers: [1],
@@ -318,7 +318,7 @@ module GDAL
       end
 
       # @param wkt_geometry_string [String]
-      # @param wkt_srid [Fixnum]
+      # @param wkt_srid [Integer]
       # @return [Boolean]
       def contains_geometry?(wkt_geometry_string, wkt_srid = 4326)
         source_srs = OGR::SpatialReference.new_from_epsg(wkt_srid)
@@ -326,7 +326,7 @@ module GDAL
         @raster_geometry ||= extent
 
         coordinate_transformation = OGR::CoordinateTransformation.new(source_srs,
-          @raster_geometry.spatial_reference)
+                                                                      @raster_geometry.spatial_reference)
         source_geometry.transform!(coordinate_transformation)
 
         @raster_geometry.contains? source_geometry

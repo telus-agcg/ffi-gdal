@@ -48,8 +48,8 @@ module GDAL
 
       # Convenience method for directly setting a single pixel value.
       #
-      # @param x [Fixnum] Pixel number in the row to set.
-      # @param y [Fixnum] Row number of the pixel to set.
+      # @param x [Integer] Pixel number in the row to set.
+      # @param y [Integer] Row number of the pixel to set.
       # @param new_value [Number] The value to set the pixel to.
       def set_pixel_value(x, y, new_value)
         data_pointer = GDAL._pointer_from_data_type(data_type)
@@ -60,8 +60,8 @@ module GDAL
 
       # Convenience method for directly getting a single pixel value.
       #
-      # @param x [Fixnum] Pixel number in the row to get.
-      # @param y [Fixnum] Row number of the pixel to get.
+      # @param x [Integer] Pixel number in the row to get.
+      # @param y [Integer] Row number of the pixel to get.
       # @return [Number]
       def pixel_value(x, y)
         output = raster_io('r', x_size: 1, y_size: 1, x_offset: x, y_offset: y, buffer_x_size: 1, buffer_y_size: 1)
@@ -74,8 +74,8 @@ module GDAL
       # x and y counts for when the total number of pixels and lines does not
       # divide evenly using GDAL's block count.
       #
-      # @return [Hash{x => Fixnum, x_remainder => Fixnum, y => Fixnum,
-      #   y_remainder => Fixnum}]
+      # @return [Hash{x => Integer, x_remainder => Integer, y => Integer,
+      #   y_remainder => Integer}]
       # @see http://www.gdal.org/classGDALRasterBand.html#a09e1d83971ddff0b43deffd54ef25eef
       def block_count
         x_size_plus_block_size = x_size + block_size[:x]
@@ -91,7 +91,7 @@ module GDAL
 
       # The buffer size to use for block-based IO, based on #block_size.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       def block_buffer_size
         block_size[:x] * block_size[:y]
       end
@@ -120,10 +120,10 @@ module GDAL
       #
       # @yieldparam pixels [Array<Number>] An Array the same size as
       #   {#block_buffer_size} containing all pixel values in the current block.
-      # @yieldparam x_block_size [Fixnum] Instead of using only #{RasterBand#block_size},
+      # @yieldparam x_block_size [Integer] Instead of using only #{RasterBand#block_size},
       #   it will tell you the size of each block--handy for when the last block
       #   is smaller than the rest.
-      # @yieldparam y_block_size [Fixnum] Same as +x_block_siz+ but for y.
+      # @yieldparam y_block_size [Integer] Same as +x_block_siz+ but for y.
       # @return [Enumerator, nil]
       def read_blocks_by_block
         return enum_for(:read_blocks_by_block) unless block_given?
@@ -150,9 +150,9 @@ module GDAL
       # GDAL reports that the block size to read is 60, we still need to know
       # to read those last 5 lines when using block-related methods.
       #
-      # @param block_number [Fixnum] The number of the y block when iterating
+      # @param block_number [Integer] The number of the y block when iterating
       #   through y blocks.
-      # @return [Fixnum] The number of lines to read as part of the block.
+      # @return [Integer] The number of lines to read as part of the block.
       def calculate_y_block_size(block_number)
         # If it's the last block...
         if block_number == (block_count[:y] - 1)
@@ -167,9 +167,9 @@ module GDAL
       # and GDAL reports that the block size to read is 60, we still need to
       # know to read those last 5 pixels when using block-related methods.
       #
-      # @param block_number [Fixnum] The number of the x block when iterating
+      # @param block_number [Integer] The number of the x block when iterating
       #   through x blocks.
-      # @return [Fixnum] The number of pixels to read as part of the block.
+      # @return [Integer] The number of pixels to read as part of the block.
       def calculate_x_block_size(block_number)
         # If it's the last block...
         if block_number == (block_count[:x] - 1)

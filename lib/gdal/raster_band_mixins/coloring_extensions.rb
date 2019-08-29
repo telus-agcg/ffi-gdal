@@ -9,7 +9,7 @@ module GDAL
       # on the number of colors given.  Note that this will overwrite any existing
       # color table that may be set on this band.
       #
-      # @param colors [Array<Fixnum, String>, Fixnum, String] Can be a single or
+      # @param colors [Array<Integer, String>, Integer, String] Can be a single or
       #   many colors, given as either R, G, and B integers (0-255) or as strings
       #   of Hex.
       #
@@ -45,7 +45,7 @@ module GDAL
           # TODO: Fix possible uninitialized rgb_array
           rgb_array = hex_to_rgb(color) unless color.is_a?(Array)
           table.add_color_entry(color_entry_index,
-            rgb_array[0], rgb_array[1], rgb_array[2], 255)
+                                rgb_array[0], rgb_array[1], rgb_array[2], 255)
         end
 
         self.color_table = table
@@ -54,7 +54,7 @@ module GDAL
       # Gets the colors from the associated ColorTable and returns an Array of
       # those, where each ColorEntry is [R, G, B, A].
       #
-      # @return [Array<Array<Fixnum>>]
+      # @return [Array<Array<Integer>>]
       def colors_as_rgb
         return [] unless color_table
 

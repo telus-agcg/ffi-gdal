@@ -55,6 +55,7 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Argument to be passed to
       #   +progress_function+.
       # @param warp_options [GDAL::WarpOptions] Warp options, normally empty.
+      # rubocop:disable Metrics/ParameterLists
       def create_and_reproject_image(destination_file_name, resample_algorithm, destination_projection,
         destination_driver, creation_options: {},
         warp_memory_limit: 0.0, max_error: 0.0,
@@ -78,6 +79,7 @@ module GDAL
           warp_options_struct                   # psOptions
         )
       end
+      # rubocop:enable Metrics/ParameterLists
     end
   end
 end

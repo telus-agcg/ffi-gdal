@@ -51,14 +51,14 @@ module GDAL
       #   raster_band = dataset.raster_band(1)
       #
       #   raster_band.simple_erase! do |x, y, value|
-      #     if x < (raster_band.x_size / 2) && y < (raster_band.y_size / 2) && value < 0
+      #     if x < (raster_band.x_size / 2) && y < (raster_band.y_size / 2) && value.negative?
       #       false
       #     else
       #       true
       #     end
       #   end
       #
-      # @return [Fixnum] The number of pixels that were erased.
+      # @return [Integer] The number of pixels that were erased.
       def simple_erase!
         erase_value = no_data_value[:value]
         write_buffer = GDAL._buffer_from_data_type(data_type, x_size)
@@ -66,7 +66,7 @@ module GDAL
 
         unless erase_value
           raise GDAL::NoRasterEraseValue,
-            'Cannot erase values, RasterBand does not have a NODATA value set'
+                'Cannot erase values, RasterBand does not have a NODATA value set'
         end
 
         y_size.times do |line_num|
@@ -98,7 +98,7 @@ module GDAL
 
       # @param write_buffer [FFI::Buffer]
       # @param pixel_values [Array<Number>]
-      # @param line_number [Fixnum]
+      # @param line_number [Integer]
       def rewrite_pixel_row(write_buffer, pixel_values, line_number)
         GDAL._write_pointer(write_buffer, data_type, pixel_values)
         raster_io('w', write_buffer, x_size: x_size, y_size: 1, y_offset: line_number)

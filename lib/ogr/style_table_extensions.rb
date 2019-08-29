@@ -15,6 +15,7 @@ module OGR
       loop do
         style = next_style
         break unless style
+
         styles[last_style_name] = style
       end
 

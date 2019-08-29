@@ -30,7 +30,7 @@ module GDAL
 
       private
 
-      # Checks to make sure that a) if an input_field_name option was give, that
+      # Checks to make sure that a) if an input_field_name option was given, that
       # the layer actually has that field, or b) that the layer has Z values set.
       # Without one of these two things, there's no values to pass along to
       # interpolate.
@@ -42,10 +42,12 @@ module GDAL
       def ensure_z_values
         if layer_missing_specified_field?
           raise OGR::InvalidFieldName, "Field name not found in layer: '#{@options.input_field_name}'"
-        elsif !@options.input_field_name && !@source_layer.any_geometries_with_z?
-          raise GDAL::NoValuesToGrid,
-            "No input_field_name option given and source layer #{@source_layer.name} has no Z values."
         end
+
+        return unless !@options.input_field_name && !@source_layer.any_geometries_with_z?
+
+        raise GDAL::NoValuesToGrid,
+              "No input_field_name option given and source layer #{@source_layer.name} has no Z values."
       end
 
       # @param layer [OGR::Layer] The layer from which to extract point values.

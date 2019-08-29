@@ -35,7 +35,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
         expect(subject.color_entry(0)).to be_a GDAL::ColorEntry
       end
 
-      it 'has 4 Fixnum values, >= 0' do
+      it 'has 4 Integer values, >= 0' do
         expect(subject.color_entry(0).color1).to eq 0
         expect(subject.color_entry(0).color2).to eq 0
         expect(subject.color_entry(0).color3).to eq 0
@@ -53,7 +53,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
         expect(subject.color_entry_as_rgb(0)).to be_a GDAL::ColorEntry
       end
 
-      it 'has 4 Fixnum values, >= 0' do
+      it 'has 4 Integer values, >= 0' do
         expect(subject.color_entry(0).color1).to eq 0
         expect(subject.color_entry(0).color2).to eq 0
         expect(subject.color_entry(0).color3).to eq 0

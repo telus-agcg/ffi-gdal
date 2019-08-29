@@ -7,73 +7,21 @@ Layout/AlignParameters:
 Layout/DotPosition:
   EnforcedStyle: trailing
 
-Lint/UselessAssignment:
-  Exclude:
-    - examples/geometries.rb
-    - examples/testing_gdal.rb
-
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
     - spec/support/shared_examples/**/*.rb
 
-# Commenting out until .rubocop_todo things are fixed.
-# Metrics/ClassLength:
-#   Max: 300
-
 Metrics/LineLength:
   Max: 120
 
-# Commenting out until .rubocop_todo things are fixed.
-# Metrics/MethodLength:
-#   Max: 20
-
-Metrics/ModuleLength:
-  Exclude:
-    - lib/ffi/gdal/alg.rb
-    - lib/ffi/gdal/gdal.rb
-    - lib/ffi/ogr/api.rb
-    - lib/ffi/ogr/srs_api.rb
-  Max: 300
-
-Metrics/ParameterLists:
-  Exclude:
-    - lib/gdal/dataset.rb
-    - lib/gdal/dataset_mixins/algorithm_methods.rb
-    - lib/gdal/dataset_mixins/extensions.rb
-    - lib/gdal/dataset_mixins/warp_methods.rb
-    - lib/gdal/driver.rb
-    - lib/gdal/raster_band.rb
-    - lib/gdal/raster_band_mixins/algorithm_methods.rb
-    - lib/gdal/transformers/general_image_projection_transformer.rb
-    - lib/gdal/virtual_dataset.rb
-    - lib/gdal/warp_operation.rb
-    - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
-
-Naming/AccessorMethodName:
-  Exclude:
-    - lib/ogr/layer_mixins/ogr_field_methods.rb
-    - lib/ogr/layer_mixins/ogr_query_filter_methods.rb
-    - lib/ogr/spatial_reference_mixins/coordinate_system_getter_setters.rb
-
 Naming/FileName:
   Exclude:
-    - Rakefile
     - lib/ffi-gdal.rb
     - spec/ffi-gdal_spec.rb
 
-Naming/PredicateName:
-  Exclude:
-    - lib/ogr/geometry_mixins/extensions.rb
-
 Naming/UncommunicativeMethodParamName:
-  Exclude:
-    - lib/gdal/raster_band_mixins/io_extensions.rb
-    - lib/ogr/geometries/line_string.rb
-    - lib/ogr/geometries/line_string_25d.rb
-    - lib/ogr/geometries/point.rb
-    - lib/ogr/geometries/point_25d.rb
-    - lib/ogr/geometry_types/curve.rb
+  AllowedNames: [x, y, z]
 
 Style/Documentation:
   Enabled: false
@@ -96,9 +44,6 @@ Style/SymbolArray:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  Include:
-    - Gemfile
-    - ffi-gdal.gemspec
   Exclude:
     - vendor/bundle/**/*
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.6

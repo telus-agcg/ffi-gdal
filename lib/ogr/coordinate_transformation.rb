@@ -13,7 +13,7 @@ module OGR
         FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
       else
         raise OGR::UnsupportedOperation,
-          'Your version of GDAL/OGR does not support OCTProj4Normalize'
+              'Your version of GDAL/OGR does not support OCTProj4Normalize'
       end
     end
 
@@ -83,7 +83,7 @@ module OGR
     # @param x_vertices [Array<Float>]
     # @param y_vertices [Array<Float>]
     # @param z_vertices [Array<Float>]
-    # @yieldparam point_count [Fixnum]
+    # @yieldparam point_count [Integer]
     # @yieldparam x_ptr [FFI::MemortyPointer]
     # @yieldparam y_ptr [FFI::MemortyPointer]
     # @yieldparam z_ptr [FFI::MemortyPointer]

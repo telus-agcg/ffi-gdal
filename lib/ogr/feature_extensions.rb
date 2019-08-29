@@ -28,7 +28,7 @@ module OGR
     # +field_as_[type]+ method if you just want the data in it's originally
     # intended form.
     #
-    # @param index [Fixnum] Index of the field to retrieve the data for.
+    # @param index [Integer] Index of the field to retrieve the data for.
     # @return [Number, String, Array]
     # @raise [OGR::UnsupportedFieldType] if the associated FieldDefinition's
     #   type has not yet been mapped here (to know how to return the value).
@@ -50,7 +50,7 @@ module OGR
       when :OFTInteger64List  then field_as_integer_lsit(index)
       when :OFTMaxType        then field_as_date_time(index)
       else raise OGR::UnsupportedFieldType,
-        "Don't know how to fetch field for field type: #{field_type}"
+                 "Don't know how to fetch field for field type: #{field_type}"
       end
     end
 

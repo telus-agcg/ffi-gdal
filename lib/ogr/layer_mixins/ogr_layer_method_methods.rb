@@ -150,12 +150,12 @@ module OGR
         result_layer_ptr = output_layer.c_pointer
 
         ogr_err = FFI::OGR::API.send(method_name,
-          @c_pointer,
-          method_layer_ptr,
-          result_layer_ptr,
-          options_ptr,
-          progress,
-          nil)
+                                     @c_pointer,
+                                     method_layer_ptr,
+                                     result_layer_ptr,
+                                     options_ptr,
+                                     progress,
+                                     nil)
         ogr_err.handle_result
 
         output_layer

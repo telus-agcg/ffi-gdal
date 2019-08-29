@@ -8,7 +8,7 @@ module OGR
       end
 
       module ClassMethods
-        # @param code [Fixnum]
+        # @param code [Integer]
         # @return [OGR::SpatialReference]
         def new_from_epsg(code)
           srs = new
@@ -17,7 +17,7 @@ module OGR
           srs
         end
 
-        # @param code [Fixnum]
+        # @param code [Integer]
         # @return [OGR::SpatialReference]
         def new_from_epsga(code)
           srs = new
@@ -126,7 +126,7 @@ module OGR
         end
       end
 
-      # @param code [Fixnum]
+      # @param code [Integer]
       # @raise [GDAL::UnsupportedOperation] On unknown EPSG code.
       def import_from_epsg(code)
         ogr_err = FFI::OGR::SRSAPI.OSRImportFromEPSG(@c_pointer, code)
@@ -134,7 +134,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param code [Fixnum]
+      # @param code [Integer]
       def import_from_epsga(code)
         ogr_err = FFI::OGR::SRSAPI.OSRImportFromEPSGA(@c_pointer, code)
 
@@ -183,9 +183,9 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param projection_system_code [Fixnum]
-      # @param zone [Fixnum]
-      # @param datum [Fixnum]
+      # @param projection_system_code [Integer]
+      # @param zone [Integer]
+      # @param datum [Integer]
       # @param proj_params [Array<Float>]
       def import_from_usgs(projection_system_code, zone, datum, *proj_params)
         if proj_params.empty?
