@@ -46,9 +46,9 @@ module GDAL
     # points, and writes out the newly gridder raster.
     def grid!
       dataset = build_dataset(@options.output_driver,
-        @dest_file_name,
-        @options.output_data_type,
-        @options.output_creation_options)
+                              @dest_file_name,
+                              @options.output_data_type,
+                              @options.output_creation_options)
 
       grid_and_write(dataset.raster_band(1), dataset.geo_transform)
 
@@ -74,10 +74,10 @@ module GDAL
     # @return [GDAL::Dataset]
     def build_dataset(driver, dest_file_name, data_type, creation_options = {})
       dataset = driver.create_dataset(dest_file_name,
-        output_width,
-        output_height,
-        data_type: data_type,
-        **creation_options)
+                                      output_width,
+                                      output_height,
+                                      data_type: data_type,
+                                      **creation_options)
 
       dataset.projection = build_output_spatial_reference
       dataset.geo_transform = build_output_geo_transform
@@ -146,12 +146,12 @@ module GDAL
       @y_max ||= @options.output_y_extent.fetch(:max) { @source_layer.extent.y_max }
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def output_width
       @options.output_size[:width]
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def output_height
       @options.output_size[:height]
     end
@@ -159,7 +159,7 @@ module GDAL
     # Figures out the proper block sizes to use for iterating over layer pixels,
     # gridding them, and writing them to the raster file.
     #
-    # @param raster_band_block_size [Fixnum]
+    # @param raster_band_block_size [Integer]
     def each_block(raster_band_block_size)
       data_type_size = @options.output_data_type_size
       block_size = build_block_sizes(raster_band_block_size, data_type_size)
@@ -202,7 +202,7 @@ module GDAL
         extents = { x_min: grid_x_min, x_max: grid_x_max, y_min: grid_y_min, y_max: grid_y_max }
 
         @options.grid.create(points, extents, data_ptr, output_size,
-          progress_arg, scaled_progress_ptr)
+                             progress_arg, scaled_progress_ptr)
 
         raster_band.raster_io('w', data_ptr, x_offset: x_offset, y_offset: y_offset,
                                              x_size: x_request, y_size: y_request,
@@ -210,9 +210,9 @@ module GDAL
       end
     end
 
-    # @param raster_band_block_size [Hash{x: Fixnum, y: Fixnum}]
-    # @param data_type_size [Fixnum]
-    # @return [Hash{x: Fixnum, y: Fixnum}]
+    # @param raster_band_block_size [Hash{x: Integer, y: Integer}]
+    # @param data_type_size [Integer]
+    # @return [Hash{x: Integer, y: Integer}]
     def build_block_sizes(raster_band_block_size, data_type_size)
       block_x_size = raster_band_block_size[:x]
       block_y_size = raster_band_block_size[:y]
@@ -241,8 +241,8 @@ module GDAL
     # blocks.
     #
     # @see http://gdal.sourcearchive.com/documentation/1.7.2/gdal_8h_904fbbb050e16c9d0ac028dc5113ef27.html
-    # @param block_number [Fixnum]
-    # @param block_count [Fixnum]
+    # @param block_number [Integer]
+    # @param block_count [Integer]
     # @return [FFI::Pointer]
     def build_scaled_progress_pointer(block_number, block_count)
       return unless @options.progress_formatter
@@ -257,9 +257,9 @@ module GDAL
 
     # Determines how large of a chunk of data to grid and rasterize.
     #
-    # @param block_size [Fixnum]
-    # @param raster_border [Fixnum]
-    # @return [Fixnum]
+    # @param block_size [Integer]
+    # @param raster_border [Integer]
+    # @return [Integer]
     def build_data_request_size(block_size, offset, raster_border)
       request = block_size
 
@@ -273,8 +273,8 @@ module GDAL
     # @param min [Float]
     # @param pixel_size [Float]
     # @param offset [Float]
-    # @param request_size [Fixnum]
-    # @return [Array<Fixnum, Fixnum>] The min and max values based on the given
+    # @param request_size [Integer]
+    # @return [Array<Integer, Integer>] The min and max values based on the given
     #   parameters.
     def build_grid_extents(min, pixel_size, offset, request_size)
       grid_min = min + pixel_size * offset
@@ -283,18 +283,18 @@ module GDAL
       [grid_min, grid_max]
     end
 
-    # @param block_x_size [Fixnum]
-    # @param block_y_size [Fixnum]
-    # @param raster_width [Fixnum]
-    # @param raster_height [Fixnum]
-    # @return [Fixnum] The total number of blocks that should be iterated
+    # @param block_x_size [Integer]
+    # @param block_y_size [Integer]
+    # @param raster_width [Integer]
+    # @param raster_height [Integer]
+    # @return [Integer] The total number of blocks that should be iterated
     #   through during the grid+rasterize process.
     def build_block_count(block_x_size, block_y_size, raster_width, raster_height)
       build_block_size(raster_width, block_x_size) * build_block_size(raster_height, block_y_size)
     end
 
-    # @param total_pixels [Fixnum] Number of pixels in the width or height.
-    # @param block_size [Fixnum] Size of the reported block.
+    # @param total_pixels [Integer] Number of pixels in the width or height.
+    # @param block_size [Integer] Size of the reported block.
     def build_block_size(total_pixels, block_size)
       (total_pixels + block_size - 1) / block_size
     end

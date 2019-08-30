@@ -29,7 +29,7 @@ module GDAL
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @param size [Fixnum] Size of the pointer to allocate.
+      # @param size [Integer] Size of the pointer to allocate.
       # @return [FFI::MemoryPointer]
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -38,7 +38,7 @@ module GDAL
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @param size [Fixnum] Size of the pointer to allocate.
+      # @param size [Integer] Size of the pointer to allocate.
       # @return [FFI::Buffer]
       def _buffer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -159,7 +159,7 @@ module GDAL
       # @param pointer [FFI::Pointer] The pointer to read from.
       # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when reading.
-      # @param length [Fixnum] The amount of data to read from the pointer. If
+      # @param length [Integer] The amount of data to read from the pointer. If
       #   > 1, the "read_array_of_" method will be called.
       # @return [Number, Array<Number>]
       def _read_pointer(pointer, data_type, length = 1)
@@ -176,7 +176,7 @@ module GDAL
       # @param pointer [FFI::Pointer] The pointer to write to.
       # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when writing.
-      # @param data [Fixnum] The data to write to the pointer. If it's an Array
+      # @param data [Integer] The data to write to the pointer. If it's an Array
       #   with size > 1, the "write_array_of_" method will be called.
       def _write_pointer(pointer, data_type, data)
         if data.is_a?(Array) && data.size > 1

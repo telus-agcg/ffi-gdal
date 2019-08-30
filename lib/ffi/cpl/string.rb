@@ -17,8 +17,8 @@ module FFI
       # Enums
       #------------------------------------------------------------------------
       ValueType = enum :CPL_VALUE_STRING,
-        :CPL_VALUE_REAL,
-        :CPL_VALUE_INTEGER
+                       :CPL_VALUE_REAL,
+                       :CPL_VALUE_INTEGER
 
       #------------------------------------------------------------------------
       # Functions
@@ -31,8 +31,8 @@ module FFI
       attach_function :CSLMerge, %i[pointer pointer], :pointer
       attach_function :CSLTokenizeString, %i[string], :pointer
       attach_function :CSLTokenizeStringComplex,
-        %i[string string int int],
-        :pointer
+                      %i[string string int int],
+                      :pointer
       attach_function :CSLTokenizeString2, %i[string string int], :pointer
       attach_function :CSLPrint, %i[pointer pointer], :int
       attach_function :CSLLoad, %i[string], :pointer

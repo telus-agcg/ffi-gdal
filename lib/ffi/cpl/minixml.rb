@@ -13,10 +13,10 @@ module FFI
       # Enums
       #-------------------------------------------------------------------------
       XMLNodeType = enum :CXT_Element, 0,
-        :CXT_Text, 1,
-        :CXT_Attribute, 2,
-        :CXT_Comment, 3,
-        :CXT_Literal, 4
+                         :CXT_Text, 1,
+                         :CXT_Attribute, 2,
+                         :CXT_Comment, 3,
+                         :CXT_Literal, 4
 
       #-------------------------------------------------------------------------
       # Functions
@@ -32,8 +32,8 @@ module FFI
       attach_function :CPLRemoveXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :bool
       attach_function :CPLAddXMLSibling, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
       attach_function :CPLCreateXMLElementAndValue,
-        [CPL::XMLNode.ptr, :string, :string],
-        CPL::XMLNode.ptr
+                      [CPL::XMLNode.ptr, :string, :string],
+                      CPL::XMLNode.ptr
       attach_function :CPLCloneXMLTree, [CPL::XMLNode.ptr], CPL::XMLNode.ptr
       attach_function :CPLSetXMLValue, [CPL::XMLNode.ptr, :string, :string], :bool
       attach_function :CPLStripXMLNamespace, [CPL::XMLNode.ptr, :string, :bool], :void

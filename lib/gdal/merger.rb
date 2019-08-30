@@ -37,7 +37,7 @@ module GDAL
         uly_candidates = [dest_dataset.geo_transform.y_origin, d.geo_transform.y_origin]
         lry_candidates = [dest_dataset.lower_right_y, d.lower_right_y]
 
-        if dest_dataset.geo_transform.y_origin < 0
+        if dest_dataset.geo_transform.y_origin.negative?
           dest_uly = uly_candidates.min
           dest_lry = lry_candidates.max
         else

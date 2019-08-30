@@ -275,7 +275,7 @@ RSpec.describe OGR::Feature do
   end
 
   describe '#set_field_date_time + #field_as_date_time' do
-    let(:date_time) { DateTime.now } # rubocop:disable Style/DateTime
+    let(:date_time) { DateTime.now }
 
     context 'to a valid index' do
       it 'adds the field' do

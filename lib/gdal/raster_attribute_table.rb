@@ -52,26 +52,26 @@ module GDAL
       FFI::GDAL::GDAL.GDALRATChangesAreWrittenToFile(@c_pointer)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def column_count
       FFI::GDAL::GDAL.GDALRATGetColumnCount(@c_pointer)
     end
 
-    # @param index [Fixnum] The column number.
+    # @param index [Integer] The column number.
     # @return [String]
     def column_name(index)
       FFI::GDAL::GDAL.GDALRATGetNameOfCol(@c_pointer, index)
     end
     alias name_of_col column_name
 
-    # @param index [Fixnum] The column number.
+    # @param index [Integer] The column number.
     # @return [GDALRATFieldUsage]
     def column_usage(index)
       FFI::GDAL::GDAL.GDALRATGetUsageOfCol(@c_pointer, index)
     end
     alias usage_of_col column_usage
 
-    # @param index [Fixnum] The column number.
+    # @param index [Integer] The column number.
     # @return [GDALRATFieldType]
     def column_type(index)
       FFI::GDAL::GDAL.GDALRATGetTypeOfCol(@c_pointer, index)
@@ -79,10 +79,10 @@ module GDAL
     alias type_of_col column_type
 
     # @param field_usage [GDALRATFieldUsage]
-    # @return [Fixnum] The column number or nil.
+    # @return [Integer] The column number or nil.
     def column_of_usage(field_usage)
       column_number = FFI::GDAL::GDAL.GDALRATGetColOfUsage(@c_pointer, field_usage)
-      return if column_number < 0
+      return if column_number.negative?
 
       column_number
     end
@@ -95,12 +95,12 @@ module GDAL
       FFI::GDAL::GDAL.GDALRATCreateColumn(@c_pointer, name, type, usage)
     end
 
-    # @return [Fixnum] The number of rows.
+    # @return [Integer] The number of rows.
     def row_count
       FFI::GDAL::GDAL.GDALRATGetRowCount(@c_pointer)
     end
 
-    # @return [Fixnum] The number of rows.
+    # @return [Integer] The number of rows.
     def row_count=(count)
       FFI::GDAL::GDAL.GDALRATSetRowCount(@c_pointer, count)
     end
@@ -108,55 +108,55 @@ module GDAL
     # Get the row for a pixel value.
     #
     # @param pixel_value [Float]
-    # @return [Fixnum] Index of the row or nil.
+    # @return [Integer] Index of the row or nil.
     def row_of_value(pixel_value)
       row_index = FFI::GDAL::GDAL.GDALRATGetRowOfValue(@c_pointer, pixel_value)
-      return if row_index < 0
+      return if row_index.negative?
 
       row_index
     end
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
     # @return [String]
     def value_as_string(row, field)
       FFI::GDAL::GDAL.GDALRATGetValueAsString(@c_pointer, row, field)
     end
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
-    # @return [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
+    # @return [Integer]
     def value_as_integer(row, field)
       FFI::GDAL::GDAL.GDALRATGetValueAsInt(@c_pointer, row, field)
     end
     alias value_as_int value_as_integer
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
     # @return [Float]
     def value_as_double(row, field)
       FFI::GDAL::GDAL.GDALRATGetValueAsDouble(@c_pointer, row, field)
     end
     alias value_as_float value_as_double
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
     # @param value [String]
     def set_value_as_string(row, field, value)
       FFI::GDAL::GDAL.GDALRATSetValueAsString(@c_pointer, row, field, value)
     end
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
     # @param value [Float]
     def set_value_as_double(row, field, value)
       FFI::GDAL::GDAL.GDALRATSetValueAsDouble(@c_pointer, row, field, value)
     end
     alias set_value_as_float set_value_as_double
 
-    # @param row [Fixnum]
-    # @param field [Fixnum]
-    # @param value [Fixnum]
+    # @param row [Integer]
+    # @param field [Integer]
+    # @param value [Integer]
     def set_value_as_integer(row, field, value)
       FFI::GDAL::GDAL.GDALRATSetValueAsInt(@c_pointer, row, field, value)
     end
@@ -181,7 +181,7 @@ module GDAL
       FFI::GDAL::GDAL.GDALRATSetLinearBinning(@c_pointer, row_0_minimum, bin_size)
     end
 
-    # @param entry_count [Fixnum] The number of entries to produce.  The default
+    # @param entry_count [Integer] The number of entries to produce.  The default
     #   will try to auto-determine the number.
     # @return [GDAL::ColorTable, nil]
     def to_color_table(entry_count = -1)

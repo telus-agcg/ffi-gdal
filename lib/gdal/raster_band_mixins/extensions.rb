@@ -64,7 +64,7 @@ module GDAL
 
       # The total number of pixels in the raster band.
       #
-      # @return [Fixnum]
+      # @return [Integer]
       def pixel_count
         x_size * y_size
       end

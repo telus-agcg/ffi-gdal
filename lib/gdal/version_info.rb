@@ -46,8 +46,8 @@ module GDAL
       FFI::GDAL.GDALVersionInfo('--version')
     end
 
-    # @param major [Fixnum]
-    # @param minor [Fixnum]
+    # @param major [Integer]
+    # @param minor [Integer]
     # @return [Boolean] +true+ if the runtime GDAL library matches the given
     #   version params.
     def check_version(major, minor)

@@ -360,7 +360,7 @@ RSpec.shared_examples 'a geometry' do
       if geometry.name == 'LINEARRING'
         expect(geometry.wkb_size).to be_zero
       else
-        expect(geometry.wkb_size).to be > 0
+        expect(geometry.wkb_size).to be_positive
       end
     end
   end

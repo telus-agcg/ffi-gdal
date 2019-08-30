@@ -45,7 +45,7 @@ RSpec.describe FFI::GDAL do
 
     context 'ENV["GDAL_LIBRARY_PATH"] is not set' do
       it 'returns a bunch of directories' do
-        expect(described_class.search_paths.size).to be > 0
+        expect(described_class.search_paths.size).to be_positive
       end
     end
   end

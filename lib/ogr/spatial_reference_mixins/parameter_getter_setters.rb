@@ -4,7 +4,7 @@ module OGR
   module SpatialReferenceMixins
     module ParameterGetterSetters
       # @param name [String] The case-insensitive tree node to look for.
-      # @param child [Fixnum] The child of the node to fetch.
+      # @param child [Integer] The child of the node to fetch.
       # @return [String, nil]
       def attribute_value(name, child = 0)
         FFI::OGR::SRSAPI.OSRGetAttrValue(@c_pointer, name, child)
@@ -66,7 +66,7 @@ module OGR
       #   transform the value to meters.
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
         ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(@c_pointer, unit_label,
-          transform_to_meters.to_f)
+                                                                        transform_to_meters.to_f)
 
         ogr_err.handle_result
       end

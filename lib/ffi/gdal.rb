@@ -16,7 +16,7 @@ module FFI
     autoload :Grid, File.expand_path('gdal/grid.rb', __dir__)
     autoload :GridDataMetricsOptions, File.expand_path('gdal/grid_data_metrics_options.rb', __dir__)
     autoload :GridInverseDistanceToAPowerOptions,
-      File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
+             File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
     autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__)
     autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__)
     autoload :Matching, File.expand_path('gdal/matching.rb', __dir__)

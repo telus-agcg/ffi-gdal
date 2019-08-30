@@ -37,7 +37,7 @@ module OGR
       FFI::OGR::API.OGR_ST_SetUnit(@c_pointer, new_unit, ground_to_paper_scale)
     end
 
-    # @param param_number [Fixnum]
+    # @param param_number [Integer]
     # @return [Float, nil]
     def param_as_double(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
@@ -47,15 +47,15 @@ module OGR
     end
     alias param_as_float param_as_double
 
-    # @param param_number [Fixnum]
+    # @param param_number [Integer]
     # @param value [Float]
     def set_param_as_double(param_number, value)
       FFI::OGR::API.OGR_ST_SetParamDbl(@c_pointer, param_number, value)
     end
     alias set_param_as_float set_param_as_double
 
-    # @param param_number [Fixnum]
-    # @return [Fixnum, nil]
+    # @param param_number [Integer]
+    # @return [Integer, nil]
     def param_as_number(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
       value = FFI::OGR::API.OGR_ST_GetParamNum(@c_pointer, param_number, value_is_null_ptr)
@@ -64,14 +64,14 @@ module OGR
     end
     alias param_as_integer param_as_number
 
-    # @param param_number [Fixnum]
-    # @param value [Fixnum]
+    # @param param_number [Integer]
+    # @param value [Integer]
     def set_param_as_number(param_number, value)
       FFI::OGR::API.OGR_ST_SetParamNum(@c_pointer, param_number, value)
     end
     alias set_param_as_integer set_param_as_number
 
-    # @param param_number [Fixnum]
+    # @param param_number [Integer]
     # @return [String, nil]
     def param_as_string(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
@@ -80,7 +80,7 @@ module OGR
       value_is_null_ptr.read_int.to_bool ? nil : value
     end
 
-    # @param param_number [Fixnum]
+    # @param param_number [Integer]
     # @param value [String]
     def set_param_as_string(param_number, value)
       FFI::OGR::API.OGR_ST_SetParamStr(@c_pointer, param_number, value)
@@ -89,7 +89,7 @@ module OGR
     # Returns the R, G, B, A components of a #RRGGBB[AA] formatted string.
     #
     # @param color_string [String]
-    # @return [Hash{red => Fixnum, green => Fixnum, blue => Fixnum, alpha => Fixnum}]
+    # @return [Hash{red => Integer, green => Integer, blue => Integer, alpha => Integer}]
     def rgb_from_string(color_string)
       red_ptr = FFI::MemoryPointer.new(:int)
       green_ptr = FFI::MemoryPointer.new(:int)
@@ -97,7 +97,7 @@ module OGR
       alpha_ptr = FFI::MemoryPointer.new(:int)
 
       boolean_result = FFI::OGR::API.OGR_ST_GetRGBFromString(@c_pointer,
-        color_string, red_ptr, green_ptr, blue_ptr, alpha_ptr)
+                                                             color_string, red_ptr, green_ptr, blue_ptr, alpha_ptr)
 
       if boolean_result
         {

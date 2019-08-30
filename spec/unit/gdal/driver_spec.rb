@@ -6,7 +6,7 @@ require 'gdal/driver'
 RSpec.describe GDAL::Driver do
   describe '.count' do
     subject { described_class.count }
-    it { is_expected.to be > 0 }
+    it { is_expected.to be_positive }
   end
 
   describe '.by_name' do

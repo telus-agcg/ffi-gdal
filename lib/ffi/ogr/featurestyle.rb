@@ -12,9 +12,9 @@ module FFI
       # Enums
       #------------------------------------------------------------------------
       StyleType = enum :OGRSTypeString,
-        :OGRSTypeDouble,
-        :OGRSTypeInteger,
-        :OGRSTypeBoolean
+                       :OGRSTypeDouble,
+                       :OGRSTypeInteger,
+                       :OGRSTypeBoolean
 
       #------------------------------------------------------------------------
       # Typedefs

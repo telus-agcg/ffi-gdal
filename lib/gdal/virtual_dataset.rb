@@ -41,6 +41,7 @@ module GDAL
       FFI::GDAL::VRT.VRTAddSource(vrt_band, new_source)
     end
 
+    # rubocop:disable Metrics/ParameterLists
     # @return [Boolean]
     def add_simple_source(vrt_band, source_band, no_data_value,
       src_x_offset: 0, src_y_offset: 0, src_x_size: nil, src_y_size: nil,
@@ -83,6 +84,7 @@ module GDAL
         no_data_value     # dfNoDataValue
       )
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # @param vrt_band [FFI::Pointer]
     # @param read_function [Proc]

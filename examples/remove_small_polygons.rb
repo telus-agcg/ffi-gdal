@@ -11,7 +11,7 @@ GDAL::Logger.logging_enabled = true
 module Examples
   class RemoveSmallPolygons < ::Thor
     desc 'filter SOURCE_PATH DEST_PATH SIZE',
-      'Removes polygons from SOURCE that are under SIZE'
+         'Removes polygons from SOURCE that are under SIZE'
     option :band_number, type: :numeric, default: 1
     def filter(source_path, dest_path, size)
       puts "Copying source '#{source_path}' to '#{dest_path}'..."

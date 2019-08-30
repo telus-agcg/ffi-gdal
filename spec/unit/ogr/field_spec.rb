@@ -184,7 +184,7 @@ RSpec.describe OGR::Field do
 
   describe '#date= + #date' do
     context 'valid date' do
-      let(:now) { DateTime.now } # rubocop:disable Style/DateTime
+      let(:now) { DateTime.now }
 
       it 'sets the date' do
         subject.date = now

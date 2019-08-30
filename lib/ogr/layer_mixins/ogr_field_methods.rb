@@ -31,7 +31,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param new_order [Array<Fixnum>] An array that orders field indexes by
+      # @param new_order [Array<Integer>] An array that orders field indexes by
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
       # @return [Boolean]
       def reorder_fields(*new_order)
@@ -49,8 +49,8 @@ module OGR
       # Puts the field whose index is +old_position+ into index at +new_position+
       # and shuffles the other indexes accordingly.
       #
-      # @param old_position [Fixnum]
-      # @param new_position [Fixnum]
+      # @param old_position [Integer]
+      # @param new_position [Integer]
       def reorder_field(old_position, new_position)
         raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
@@ -59,10 +59,10 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param field_index [Fixnum]
+      # @param field_index [Integer]
       # @param new_field_definition [OGR::FieldDefinition] The definition for
       #   which to base the Field at +field_index+ off of.
-      # @param flags [Fixnum] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
+      # @param flags [Integer] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
       def alter_field_definition(field_index, new_field_definition, flags)
         unless can_alter_field_definition?
@@ -86,11 +86,11 @@ module OGR
       # @param field_name [String]
       # @param exact_match [Boolean] If +false+ and the field doesn't exist in the
       #   given form, the driver will try to make changes to make a match.
-      # @return [Fixnum] Index of the field or +nil+ if the field doesn't exist.
+      # @return [Integer] Index of the field or +nil+ if the field doesn't exist.
       def find_field_index(field_name, exact_match = true)
         result = FFI::OGR::API.OGR_L_FindFieldIndex(@c_pointer, field_name, exact_match)
 
-        result < 0 ? nil : result
+        result.negative? ? nil : result
       end
 
       # Creates and writes a new geometry to the layer. Note: not all drivers
@@ -122,7 +122,7 @@ module OGR
       #
       # @param field_names [Array<String>]
       # @return [Boolean]
-      def set_ignored_fields(*field_names)
+      def set_ignored_fields(*field_names) # rubocop:disable Naming/AccessorMethodName
         return false if field_names.empty?
 
         fields_ptr = GDAL._string_array_to_pointer(field_names)

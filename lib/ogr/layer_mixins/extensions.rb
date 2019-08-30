@@ -160,6 +160,7 @@ module OGR
 
             count.times do |ring_num|
               next if ring_num.zero?
+
               ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(geom_ptr, ring_num)
 
               extract_ring_points(ring_ptr, x_ptr, y_ptr) do |points|
@@ -197,6 +198,7 @@ module OGR
 
               count.times do |ring_num|
                 next if ring_num.zero?
+
                 ring_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(polygon_ptr, ring_num)
                 ring_ptr.autorelease = false
 
@@ -207,7 +209,7 @@ module OGR
               end
             end
           else raise OGR::UnsupportedGeometryType,
-            "Not sure how to extract point_values for a #{geom_type}"
+                     "Not sure how to extract point_values for a #{geom_type}"
           end
         end
 
@@ -224,6 +226,7 @@ module OGR
 
         each_feature_pointer do |feature_ptr|
           break if found_z_geom
+
           geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)
           geom_ptr.autorelease = false
           coordinate_dimension = FFI::OGR::API.OGR_G_GetCoordinateDimension(geom_ptr)

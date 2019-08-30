@@ -15,11 +15,11 @@ module GDAL
       # @option options [String] dst_srs Use to override +destination_dataset+'s WKT
       #   SRS.
       # @option options [Boolean] gcps_ok (true)
-      # @option options [Fixnum] refine_minimum_gcps Minimum amount of GCPs that
+      # @option options [Integer] refine_minimum_gcps Minimum amount of GCPs that
       #   should be available after the refinement.
       # @option options [Float] refine_tolerance The tolerance that specifies
       #   when a GCP will be eliminated.
-      # @option options [Fixnum] max_gcp_order Max order to use for GCP-derived
+      # @option options [Integer] max_gcp_order Max order to use for GCP-derived
       #   polynomials, if possible. Default is to auto-select based on the number
       #   of GCPs. A value of -1 triggers use of Thin Plate Spline instead of
       #   polynomials.

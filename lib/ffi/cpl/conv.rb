@@ -117,11 +117,11 @@ module FFI
       attach_function :CPLCloseFileInZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_function :CPLCloseZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_function :CPLZLibDeflate,
-        %i[pointer size_t int pointer size_t pointer],
-        :pointer
+                      %i[pointer size_t int pointer size_t pointer],
+                      :pointer
       attach_function :CPLZLibInflate,
-        %i[pointer size_t pointer size_t pointer],
-        :pointer
+                      %i[pointer size_t pointer size_t pointer],
+                      :pointer
 
       attach_function :CPLValidateXML, %i[string string pointer], :int
       attach_function :CPLsetlocale, %i[int string], :string

@@ -15,7 +15,7 @@ module GDAL
 
     GDAL_DOCS_URL = 'http://gdal.org'
 
-    # @return [Fixnum]
+    # @return [Integer]
     def self.count
       FFI::GDAL::GDAL.GDALGetDriverCount
     end
@@ -32,7 +32,7 @@ module GDAL
       new(driver_ptr)
     end
 
-    # @param index [Fixnum] Index of the registered driver.  Must be less than
+    # @param index [Integer] Index of the registered driver.  Must be less than
     #   GDAL::Driver.count.
     # @return [GDAL::Driver]
     # @raise [GDAL::InvalidDriverIndex] If driver at +index+ does not exist.
@@ -119,9 +119,9 @@ module GDAL
     # out all data to the destination, you must call #close on the dataset!
     #
     # @param filename [String]
-    # @param x_size [Fixnum] Width of created raster in pixels.
-    # @param y_size [Fixnum] Height of created raster in pixels.
-    # @param band_count [Fixnum]
+    # @param x_size [Integer] Width of created raster in pixels.
+    # @param y_size [Integer] Height of created raster in pixels.
+    # @param band_count [Integer]
     # @param data_type [FFI::GDAL::GDAL::DataType]
     # @return [GDAL::Dataset] If no block is given, returns the *open*
     #   (writable) dataset; you'll need to close it. If a block is given,

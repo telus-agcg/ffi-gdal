@@ -62,19 +62,19 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#raster_x_size' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_x_size).to eq 101
     end
   end
 
   describe '#raster_y_size' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_y_size).to eq 101
     end
   end
 
   describe '#raster_count' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_count).to eq 1
     end
   end

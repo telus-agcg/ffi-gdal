@@ -7,7 +7,7 @@ module OGR
       #
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def set_local_cs(name)
+      def set_local_cs(name) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetLocalCS(@c_pointer, name)
 
         ogr_err.handle_result
@@ -18,7 +18,7 @@ module OGR
       #
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def set_proj_cs(name)
+      def set_proj_cs(name) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetProjCS(@c_pointer, name)
 
         ogr_err.handle_result
@@ -29,7 +29,7 @@ module OGR
       #
       # @param name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def set_geoc_cs(name)
+      def set_geoc_cs(name) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetGeocCS(@c_pointer, name)
 
         ogr_err.handle_result
@@ -42,7 +42,7 @@ module OGR
       # @return +true+ if successful, otherwise raises an OGR exception.
       # @raise [NotImplementedError] If your version of GDAL/OGR doesn't define
       #   the C function needed for this.
-      def set_well_known_geog_cs(name)
+      def set_well_known_geog_cs(name) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@c_pointer, name)
 
         ogr_err.handle_result
@@ -50,7 +50,7 @@ module OGR
       alias well_known_geog_cs= set_well_known_geog_cs
 
       # @param definition [String]
-      def set_from_user_input(definition)
+      def set_from_user_input(definition) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetFromUserInput(@c_pointer, definition)
 
         ogr_err.handle_result 'Invalid projection info given.'
@@ -184,7 +184,7 @@ module OGR
       # @param target_key [String] The partial or complete path to the node to
       #   set an authority on ("PROJCS", "GEOGCS|UNIT").
       # @param authority [String] I.e. "EPSG".
-      # @param code [Fixnum] Code value for the authority.
+      # @param code [Integer] Code value for the authority.
       def set_authority(target_key, authority, code)
         ogr_err = FFI::OGR::SRSAPI.OSRSetAuthority(
           @c_pointer,
@@ -214,7 +214,7 @@ module OGR
 
       # @param projection_name [String]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def set_projection(projection_name)
+      def set_projection(projection_name) # rubocop:disable Naming/AccessorMethodName
         ogr_err = FFI::OGR::SRSAPI.OSRSetProjection(@c_pointer, projection_name)
 
         ogr_err.handle_result
@@ -252,7 +252,7 @@ module OGR
         FFI::OGR::SRSAPI.OSRGetNormProjParm(@c_pointer, name, default_value, nil)
       end
 
-      # @param zone [Fixnum]
+      # @param zone [Integer]
       # @param north [Boolean] True for northern hemisphere, false for southern.
       def set_utm(zone, north)
         ogr_err = FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, north)
@@ -261,7 +261,7 @@ module OGR
       end
 
       # @param hemisphere [Symbol] :north or :south.
-      # @return [Fixnum] The zone, or 0 if this isn't a UTM definition.
+      # @return [Integer] The zone, or 0 if this isn't a UTM definition.
       def utm_zone(hemisphere = :north)
         north =
           case hemisphere
@@ -275,7 +275,7 @@ module OGR
         FFI::OGR::SRSAPI.OSRGetUTMZone(@c_pointer, north_ptr)
       end
 
-      # @param zone [Fixnum] State plane zone number (USGS numbering scheme).
+      # @param zone [Integer] State plane zone number (USGS numbering scheme).
       # @param nad83 [Boolean] Use NAD83 zone definition or not.
       def set_state_plane(zone, nad83 = true, override_unit_label = nil, override_unit_transform = 0.0)
         ogr_err = FFI::OGR::SRSAPI.OSRSetStatePlaneWithUnits(
@@ -289,7 +289,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param axis_number [Fixnum] The Axis to query (0 or 1.)
+      # @param axis_number [Integer] The Axis to query (0 or 1.)
       # @param target_key [String]
       # @return [String, nil]
       def axis(axis_number, target_key = nil)

@@ -95,8 +95,8 @@ module GDAL
       FFI::CPL::Error.CPLPopErrorHandler
 
       result(FFI::CPL::Error.CPLGetLastErrorType,
-        FFI::CPL::Error.CPLGetLastErrorNo,
-        FFI::CPL::Error.CPLGetLastErrorMsg)
+             FFI::CPL::Error.CPLGetLastErrorNo,
+             FFI::CPL::Error.CPLGetLastErrorMsg)
     end
 
     private

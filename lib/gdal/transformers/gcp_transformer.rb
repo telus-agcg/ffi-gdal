@@ -12,7 +12,7 @@ module GDAL
       attr_reader :c_pointer
 
       # @param gcp_list [Array<FFI::GDAL::GCP>]
-      # @param requested_polynomial_order [Fixnum] 1, 2, or 3.
+      # @param requested_polynomial_order [Integer] 1, 2, or 3.
       # @param reversed [Boolean]
       def initialize(gcp_list, requested_polynomial_order, reversed = false, tolerance: nil, minimum_gcps: nil)
         gcp_list_ptr = FFI::MemoryPointer.new(:pointer, gcp_list.size)

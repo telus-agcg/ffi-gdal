@@ -58,7 +58,7 @@ module OGR
     # @param _other_feature [OGR::Feature]
     # @param _be_forgiving [Boolean] +true+ if the operation should continue
     #   despite lacking output fields matching some of the source fields.
-    # @param with_map [Array<Fixnum>]
+    # @param with_map [Array<Integer>]
     # TODO: Implement +with_map+
     def set_from!(_other_feature, _be_forgiving = false, with_map: nil)
       raise NotImplementedError, 'with_map: is not yet supported' if with_map
@@ -71,30 +71,30 @@ module OGR
     # This will always be the same as the field count for the feature
     # definition.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def field_count
       FFI::OGR::API.OGR_F_GetFieldCount(@c_pointer)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param value [String]
     def set_field_string(index, value)
       FFI::OGR::API.OGR_F_SetFieldString(@c_pointer, index, value)
     end
 
-    # @param index [Fixnum]
-    # @param value [Fixnum]
+    # @param index [Integer]
+    # @param value [Integer]
     def set_field_integer(index, value)
       FFI::OGR::API.OGR_F_SetFieldInteger(@c_pointer, index, value)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param value [Float]
     def set_field_double(index, value)
       FFI::OGR::API.OGR_F_SetFieldDouble(@c_pointer, index, value)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param values [Array<String>]
     # @raise [GDAL::Error] If index isn't valid
     def set_field_string_list(index, values)
@@ -107,8 +107,8 @@ module OGR
       )
     end
 
-    # @param index [Fixnum]
-    # @param values [Array<Fixnum>]
+    # @param index [Integer]
+    # @param values [Array<Integer>]
     def set_field_integer_list(index, values)
       values_ptr = FFI::MemoryPointer.new(:int, values.size)
       values_ptr.write_array_of_int(values)
@@ -121,7 +121,7 @@ module OGR
       )
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param values [Array<Float>]
     def set_field_double_list(index, values)
       values_ptr = FFI::MemoryPointer.new(:double, values.size)
@@ -135,7 +135,7 @@ module OGR
       )
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param field [OGR::Field]
     def set_field_raw(index, field)
       usable_raw_field = field.c_struct
@@ -143,7 +143,7 @@ module OGR
       FFI::OGR::API.OGR_F_SetFieldRaw(@c_pointer, index, usable_raw_field)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param value [String]
     def set_field_binary(index, value)
       raise TypeError, 'value must be a binary string' unless value.is_a? String
@@ -159,23 +159,23 @@ module OGR
       )
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param value [Date, Time, DateTime]
     def set_field_date_time(index, value)
       time = value.to_time
       zone = OGR._format_time_zone_for_ogr(value.zone)
 
       FFI::OGR::API.OGR_F_SetFieldDateTime(@c_pointer, index,
-        time.year,
-        time.month,
-        time.day,
-        time.hour,
-        time.min,
-        time.sec,
-        zone)
+                                           time.year,
+                                           time.month,
+                                           time.day,
+                                           time.hour,
+                                           time.min,
+                                           time.sec,
+                                           zone)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [OGR::FieldDefinition]
     def field_definition(index)
       field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@c_pointer, index)
@@ -185,20 +185,20 @@ module OGR
     end
 
     # @param name [String]
-    # @return [Fixnum, nil]
+    # @return [Integer, nil]
     def field_index(name)
       result = FFI::OGR::API.OGR_F_GetFieldIndex(@c_pointer, name)
 
-      result < 0 ? nil : result
+      result.negative? ? nil : result
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [Boolean]
     def field_set?(index)
       FFI::OGR::API.OGR_F_IsFieldSet(@c_pointer, index)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     def unset_field(index)
       FFI::OGR::API.OGR_F_UnsetField(@c_pointer, index)
     end
@@ -235,12 +235,12 @@ module OGR
       OGR::Geometry.factory(geometry_ptr)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def fid
       FFI::OGR::API.OGR_F_GetFID(@c_pointer)
     end
 
-    # @param new_fid [Fixnum]
+    # @param new_fid [Integer]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fid=(new_fid)
       ogr_err = FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
@@ -250,12 +250,12 @@ module OGR
 
     # The number of Geometries in this feature.
     #
-    # @return [Fixnum]
+    # @return [Integer]
     def geometry_field_count
       FFI::OGR::API.OGR_F_GetGeomFieldCount(@c_pointer)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [OGR::GeometryFieldDefinition] A read-only
     #   OGR::GeometryFieldDefinition.
     # @raise [OGR::InvalidGeometryFieldDefinition] If there isn't one at
@@ -271,12 +271,12 @@ module OGR
     end
 
     # @param name [String]
-    # @return [Fixnum]
+    # @return [Integer]
     def geometry_field_index(name)
       FFI::OGR::API.OGR_F_GetGeomFieldIndex(@c_pointer, name)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [OGR::Geometry, nil] A read-only OGR::Geometry.
     def geometry_field(index)
       geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@c_pointer, index)
@@ -285,7 +285,7 @@ module OGR
       OGR::Geometry.factory(geometry_ptr)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @param geometry [OGR::Geometry]
     def set_geometry_field(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
@@ -302,14 +302,14 @@ module OGR
     end
     alias equals? equal?
 
-    # @param index [Fixnum]
-    # @return [Fixnum]
+    # @param index [Integer]
+    # @return [Integer]
     def field_as_integer(index)
       FFI::OGR::API.OGR_F_GetFieldAsInteger(@c_pointer, index)
     end
 
-    # @param index [Fixnum]
-    # @return [Array<Fixnum>]
+    # @param index [Integer]
+    # @return [Array<Integer>]
     def field_as_integer_list(index)
       list_size_ptr = FFI::MemoryPointer.new(:int)
       list_ptr =
@@ -319,13 +319,13 @@ module OGR
       list_ptr.read_array_of_int(list_size_ptr.read_int)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [Float]
     def field_as_double(index)
       FFI::OGR::API.OGR_F_GetFieldAsDouble(@c_pointer, index)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [Array<Float>]
     def field_as_double_list(index)
       list_size_ptr = FFI::MemoryPointer.new(:int)
@@ -336,13 +336,13 @@ module OGR
       list_ptr.read_array_of_double(list_size_ptr.read_int)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [String]
     def field_as_string(index)
       FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index).force_encoding(Encoding::UTF_8)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [Array<String>]
     def field_as_string_list(index)
       list_ptr =
@@ -352,7 +352,7 @@ module OGR
       list_ptr.get_array_of_string(0)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [String]
     def field_as_binary(index)
       byte_count_ptr = FFI::MemoryPointer.new(:int)
@@ -363,7 +363,7 @@ module OGR
       )
 
       byte_count = byte_count_ptr.read_int
-      string = byte_count > 0 ? binary_data.read_bytes(byte_count) : ''
+      string = byte_count.positive? ? binary_data.read_bytes(byte_count) : ''
 
       string.unpack('C*')
     end
@@ -391,8 +391,6 @@ module OGR
       return nil unless result
 
       formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
-
-      # rubocop:disable Style/DateTime
       if formatted_tz
         DateTime.new(
           year_ptr.read_int,
@@ -413,7 +411,6 @@ module OGR
           second_ptr.read_int
         )
       end
-      # rubocop:enable Style/DateTime
     end
 
     # @return [String]

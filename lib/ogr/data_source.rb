@@ -77,12 +77,12 @@ module OGR
       OGR::Driver.new(driver_ptr)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def layer_count
       FFI::OGR::API.OGR_DS_GetLayerCount(@c_pointer)
     end
 
-    # @param index [Fixnum] 0-offset index of the layer to retrieve.
+    # @param index [Integer] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
       @layers.fetch(index) do
@@ -118,7 +118,7 @@ module OGR
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name,
-        spatial_ref_ptr, geometry_type, options_obj)
+                                                   spatial_ref_ptr, geometry_type, options_obj)
 
       raise OGR::InvalidLayer, "Unable to create layer '#{name}'." unless layer_ptr
 
@@ -136,13 +136,13 @@ module OGR
       options_ptr = GDAL::Options.pointer(options)
 
       layer_ptr = FFI::OGR::API.OGR_DS_CopyLayer(@c_pointer, source_layer_ptr,
-        new_name, options_ptr)
+                                                 new_name, options_ptr)
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
       raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
@@ -162,7 +162,7 @@ module OGR
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
       layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr,
-        dialect)
+                                                  dialect)
 
       return nil if layer_ptr.null?
 

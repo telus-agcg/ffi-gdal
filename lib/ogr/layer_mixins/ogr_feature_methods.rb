@@ -34,7 +34,7 @@ module OGR
 
       # Deletes the feature from the layer.
       #
-      # @param feature_id [Fixnum] ID of the Feature to delete.
+      # @param feature_id [Integer] ID of the Feature to delete.
       # @return +true+ if successful, otherwise raises an OGR exception.
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
@@ -50,7 +50,7 @@ module OGR
       # expensive to determine the feature count, -1 may be returned.
       #
       # @param force [Boolean] Force the calculation even if it's expensive.
-      # @return [Fixnum]
+      # @return [Integer]
       def feature_count(force = true)
         FFI::OGR::API.OGR_L_GetFeatureCount(@c_pointer, force)
       end
@@ -69,7 +69,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param index [Fixnum] The 0-based index of the feature to get.  It should
+      # @param index [Integer] The 0-based index of the feature to get.  It should
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
@@ -98,7 +98,7 @@ module OGR
 
       # Sets the index for #next_feature.
       #
-      # @param feature_index [Fixnum]
+      # @param feature_index [Integer]
       # @return [Boolean]
       def next_feature_index=(feature_index)
         ogr_err = FFI::OGR::API.OGR_L_SetNextByIndex(@c_pointer, feature_index)
@@ -107,7 +107,7 @@ module OGR
       end
       alias set_next_by_index next_feature_index=
 
-      # @return [Fixnum]
+      # @return [Integer]
       def features_read
         FFI::OGR::API.OGR_L_GetFeaturesRead(@c_pointer)
       end

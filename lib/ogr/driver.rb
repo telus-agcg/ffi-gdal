@@ -16,7 +16,7 @@ module OGR
     include GDAL::Logger
     include DriverMixins::CapabilityMethods
 
-    # @return [Fixnum]
+    # @return [Integer]
     def self.count
       FFI::OGR::API.OGRGetDriverCount
     end
@@ -31,7 +31,7 @@ module OGR
       new(driver_ptr)
     end
 
-    # @param index [Fixnum] Index of the registered driver.  Must be less than
+    # @param index [Integer] Index of the registered driver.  Must be less than
     #   OGR::Driver.count.
     # @return [OGR::Driver]
     # @raise [OGR::DriverNotFound] if a driver at +index+ isn't found.
@@ -94,7 +94,7 @@ module OGR
       options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@c_pointer,
-        file_name, options_ptr)
+                                                              file_name, options_ptr)
       return nil if data_source_ptr.null?
 
       ds = OGR::DataSource.new(data_source_ptr, 'w')
@@ -127,7 +127,7 @@ module OGR
       options_ptr = GDAL::Options.pointer(options)
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_CopyDataSource(@c_pointer,
-        source_ptr, new_file_name, options_ptr)
+                                                            source_ptr, new_file_name, options_ptr)
       return nil if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr, nil)

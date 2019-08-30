@@ -6,13 +6,13 @@ module GDAL
     # The size in bits.
     #
     # @param gdal_data_type [FFI::GDAL::GDAL::DataType]
-    # @return [Fixnum]
+    # @return [Integer]
     def self.size(gdal_data_type)
       FFI::GDAL::GDAL.GDALGetDataTypeSize(gdal_data_type)
     end
 
     # @param gdal_data_type [FFI::GDAL::GDAL::DataType]
-    # @return [Fixnum]
+    # @return [Integer]
     def self.complex?(gdal_data_type)
       FFI::GDAL::GDAL.GDALDataTypeIsComplex(gdal_data_type)
     end

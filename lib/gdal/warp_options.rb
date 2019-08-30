@@ -23,8 +23,8 @@ module GDAL
           else
             @c_struct[k] = options[k]
           end
-        rescue ArgumentError => ex
-          new_message = "#{k}; #{ex.message}"
+        rescue ArgumentError => e
+          new_message = "#{k}; #{e.message}"
           raise $ERROR_INFO, new_message, $ERROR_INFO.backtrace
         end
       end
@@ -58,7 +58,7 @@ module GDAL
       @c_struct[:destination_dataset] = dataset.c_pointer
     end
 
-    # @param band_numbers [Array<Fixnum>]
+    # @param band_numbers [Array<Integer>]
     def source_bands=(band_numbers)
       bands_ptr = FFI::MemoryPointer.new(:int, band_numbers.length)
       bands_ptr.write_array_of_int(band_numbers)
@@ -67,7 +67,7 @@ module GDAL
       @c_struct[:band_count] = band_numbers.length if band_numbers.length > @c_struct[:band_count]
     end
 
-    # @return [Array<Fixnum>]
+    # @return [Array<Integer>]
     def source_bands
       pointer = @c_struct[:source_bands]
       return [] if pointer.null?
@@ -75,7 +75,7 @@ module GDAL
       pointer.read_array_of_int(@c_struct[:band_count])
     end
 
-    # @param band_numbers [Array<Fixnum>]
+    # @param band_numbers [Array<Integer>]
     def destination_bands=(band_numbers)
       bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.length)
       bands_ptr.write_array_of_int(band_numbers)
@@ -84,7 +84,7 @@ module GDAL
       @c_struct[:band_count] = band_numbers.length if band_numbers.length > @c_struct[:band_count]
     end
 
-    # @return [Array<Fixnum>]
+    # @return [Array<Integer>]
     def destination_bands
       pointer = @c_struct[:destination_bands]
       return [] if pointer.null?
@@ -101,6 +101,7 @@ module GDAL
     # @param geometry [OGR::Geometry]
     def cutline=(geometry)
       raise 'Not a geom' unless geometry.is_a?(OGR::Geometry)
+
       @cutline = geometry
 
       @c_struct[:cutline] = geometry.c_pointer

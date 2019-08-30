@@ -140,7 +140,7 @@ module GDAL
     def input_clipping_geometry=(geometry)
       unless geometry.is_a?(OGR::Geometry)
         raise OGR::InvalidGeometry,
-          "Clipping geometry must be a OGR::Geometry type, but was a #{geometry.class}"
+              "Clipping geometry must be a OGR::Geometry type, but was a #{geometry.class}"
       end
 
       @input_clipping_geometry = geometry
@@ -152,13 +152,13 @@ module GDAL
 
       unless data_types.include?(type)
         raise GDAL::InvalidDataType,
-          "output_data_type must be one of #{data_types} but was #{type}"
+              "output_data_type must be one of #{data_types} but was #{type}"
       end
 
       @grid.data_type = @output_data_type = type
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def output_data_type_size
       GDAL::DataType.size(@output_data_type) / 8
     end
@@ -169,7 +169,7 @@ module GDAL
 
       unless driver_names.include?(format)
         raise GDAL::InvalidDriverName,
-          "output_form must be one of #{driver_names} but was #{format}"
+              "output_form must be one of #{driver_names} but was #{format}"
       end
 
       @output_format = format
@@ -183,14 +183,14 @@ module GDAL
       @output_driver ||= GDAL::Driver.by_name(@output_format)
     end
 
-    # @param min_max [Array<Fixnum>, Hash{min => Number, max => Number}]
+    # @param min_max [Array<Integer>, Hash{min => Number, max => Number}]
     def output_x_extent=(min_max)
       min, max = extract_min_max(min_max, :min, :max)
 
       @output_x_extent = { min: min, max: max }
     end
 
-    # @param min_max [Array<Fixnum>, Hash{min => Number, max => Number}]
+    # @param min_max [Array<Integer>, Hash{min => Number, max => Number}]
     def output_y_extent=(min_max)
       min, max = extract_min_max(min_max, :min, :max)
 
@@ -213,7 +213,7 @@ module GDAL
     def output_projection=(spatial_reference)
       unless spatial_reference.is_a?(OGR::SpatialReference)
         raise OGR::InvalidSpatialReference,
-          "output_projection must be an OGR::SpatialReference but was a #{spatial_reference.class}"
+              "output_projection must be an OGR::SpatialReference but was a #{spatial_reference.class}"
       end
 
       @output_projection = spatial_reference
@@ -251,7 +251,7 @@ module GDAL
     def extract_min_max_from_array(content, min_name, max_name)
       unless content.length == 2
         raise ArgumentError,
-          "Please supply only 2 elements, one for #{min_name}, one for #{max_name}"
+              "Please supply only 2 elements, one for #{min_name}, one for #{max_name}"
       end
 
       [content[0], content[1]]

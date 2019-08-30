@@ -34,7 +34,7 @@ module OGR
         ogr_err.handle_result
       end
 
-      # @param geometry_index [Fixnum]
+      # @param geometry_index [Integer]
       # @param delete [Boolean]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def remove_geometry(geometry_index, delete = true)
@@ -46,7 +46,7 @@ module OGR
       # If this geometry is a container, this fetches the geometry at the
       # sub_geometry_index.
       #
-      # @param sub_geometry_index [Fixnum]
+      # @param sub_geometry_index [Integer]
       # @return [OGR::Geometry]
       def geometry_at(sub_geometry_index)
         build_geometry do
@@ -68,10 +68,10 @@ module OGR
         ogrerr_ptr = FFI::MemoryPointer.new(:pointer)
 
         new_geometry_ptr = FFI::OGR::API.OGRBuildPolygonFromEdges(@c_pointer,
-          best_effort,
-          auto_close,
-          tolerance,
-          ogrerr_ptr)
+                                                                  best_effort,
+                                                                  auto_close,
+                                                                  tolerance,
+                                                                  ogrerr_ptr)
 
         ogrerr_int = ogrerr_ptr.read_int
         ogrerr = FFI::OGR::Core::Err[ogrerr_int]

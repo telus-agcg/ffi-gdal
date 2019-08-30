@@ -39,19 +39,19 @@ RSpec.describe 'Dataset Info', type: :integration do
   end
 
   describe '#raster_x_size' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_x_size).to eq 101
     end
   end
 
   describe '#raster_y_size' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_y_size).to eq 101
     end
   end
 
   describe '#raster_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_count).to eq 1
     end
   end
@@ -186,7 +186,7 @@ RSpec.describe 'Dataset Info', type: :integration do
   end
 
   describe '#gcp_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.gcp_count).to be_a Integer
     end
   end

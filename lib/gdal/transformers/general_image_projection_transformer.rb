@@ -10,7 +10,7 @@ module GDAL
       # @param source_wkt [String]
       # @param destination_wkt [String]
       # @param gcp_use_ok [Boolean]
-      # @param order [Fixnum]
+      # @param order [Integer]
       def initialize(source_dataset, destination_dataset: nil, source_wkt: nil, destination_wkt: nil,
         gcp_use_ok: false, order: 0)
         source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)

@@ -48,7 +48,7 @@ module GDAL
     # calculate evenly-weighted ranges.  If there are remainder values at the
     # max end of the values, those get lumped in with the last range.
     #
-    # @param range_count [Fixnum] The number of ranges to create.
+    # @param range_count [Integer] The number of ranges to create.
     # @return [Array<Hash>, nil]
     def equal_count_ranges(range_count)
       pixels = @raster_band.to_nna

@@ -17,8 +17,8 @@ module GDAL
         # pixel dimensions. Assumes north-up.
         #
         # @param envelope [OGR::Envelope]
-        # @param raster_width [Fixnum]
-        # @param raster_height [Fixnum]
+        # @param raster_width [Integer]
+        # @param raster_height [Integer]
         def new_from_envelope(envelope, raster_width, raster_height)
           gt = GDAL::GeoTransform.new
           gt.x_origin = envelope.x_min
@@ -35,7 +35,7 @@ module GDAL
       #
       # @param x_geo [Number]
       # @param y_geo [Number]
-      # @return [Hash{pixel => Fixnum, line Fixnum}]
+      # @return [Hash{pixel => Integer, line Integer}]
       def world_to_pixel(x_geo, y_geo)
         pixel = world_to_x_pixel(x_geo)
         line = world_to_y_pixel(y_geo)
@@ -47,7 +47,7 @@ module GDAL
       # +x_geo+ coordinate.
       #
       # @param x_geo [Number]
-      # @return [Fixnum]
+      # @return [Integer]
       # @raise [GDAL::InvalidGeoTransform] if {GDAL::GeoTransform#pixel_width}
       #   is 0.
       def world_to_x_pixel(x_geo)
@@ -62,7 +62,7 @@ module GDAL
       # coordinate.
       #
       # @param y_geo [Number]
-      # @return [Fixnum]
+      # @return [Integer]
       # @raise [GDAL::InvalidGeoTransform] if {GDAL::GeoTransform#pixel_height}
       #   is 0.
       def world_to_y_pixel(y_geo)
