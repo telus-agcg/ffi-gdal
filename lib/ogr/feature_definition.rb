@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
+require_relative '../gdal'
 require_relative '../ogr'
-require_relative 'feature_definition_extensions'
 
 module OGR
   class FeatureDefinition
-    include FeatureDefinitionExtensions
-
     # @return [FFI::Pointer] C pointer of the C FeatureDefn.
     attr_reader :c_pointer
 

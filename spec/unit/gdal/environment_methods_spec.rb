@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/environment_methods'
 
 RSpec.describe GDAL::EnvironmentMethods do

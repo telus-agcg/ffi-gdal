@@ -81,9 +81,6 @@ module FFI
       attach_function :CPLIsUTF8, %i[string int], :int
       attach_function :CPLForceToASCII, %i[string int char], :string
       attach_function :CPLStrlenUTF8, %i[string], :int
-
-      attach_function :CPLURLGetValue, %i[string string], :CPLString
-      attach_function :CPLURLAddKVP, %i[string string string], :CPLString
     end
   end
 end

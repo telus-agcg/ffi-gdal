@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/coordinate_transformation'
 
 RSpec.describe OGR::CoordinateTransformation do

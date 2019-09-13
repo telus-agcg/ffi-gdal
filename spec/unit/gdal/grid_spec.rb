@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/grid'
 
 RSpec.describe GDAL::Grid do

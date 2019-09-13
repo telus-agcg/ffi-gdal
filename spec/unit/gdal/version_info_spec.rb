@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/version_info'
 
 RSpec.describe GDAL::VersionInfo do

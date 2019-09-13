@@ -36,3 +36,4 @@ valgrind_output.log
 .byebug_history
 
 .tags
+/spec/examples.txt

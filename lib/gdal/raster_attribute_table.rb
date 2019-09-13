@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require_relative '../gdal'
-require_relative 'raster_attribute_table_mixins/extensions'
 
 module GDAL
   class RasterAttributeTable
-    include RasterAttributeTableMixins::Extensions
-
     # Create an object from a ColorTable.
     #
     # @param color_table [GDAL::ColorTable, FFI::Pointer]

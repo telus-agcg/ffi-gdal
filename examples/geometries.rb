@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'pry'
 require 'ffi-gdal'
+require 'ogr'
 
 _data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
 

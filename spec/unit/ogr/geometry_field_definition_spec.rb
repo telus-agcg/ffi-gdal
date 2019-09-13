@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry_field_definition'
 require 'ogr/spatial_reference'
 

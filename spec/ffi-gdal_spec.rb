@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ffi-gdal'
 
 RSpec.describe FFI do

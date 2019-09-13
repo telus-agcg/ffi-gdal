@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'pry'
 require 'ffi-gdal'
 
 include GDAL::Logger # rubocop:disable Style/MixinUsage
@@ -14,7 +13,6 @@ data_source = OGR::DataSource.open('../spec/support/shapefiles/states_21basic/st
 layer = data_source.layer(0)
 extent = layer.extent
 
-# extent = geometry.envelope.world_to_pixels(floyd.geo_transform)
 # x_min = extent[:x_origin]
 # x_max = extent[:x_max]
 # y_min = extent[:y_origin]

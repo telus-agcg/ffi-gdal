@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::Geometry do
@@ -673,7 +672,7 @@ RSpec.describe OGR::Geometry do
 
     context 'wkbLinearRing' do
       subject { described_class.type_to_name(:wkbLinearRing) }
-      it { is_expected.to eq 'Unrecognised: 101' }
+      it { is_expected.to eq 'Unrecognized: 101' }
     end
   end
 

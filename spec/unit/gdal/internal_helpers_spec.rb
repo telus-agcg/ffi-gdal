@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/internal_helpers'
 require 'ogr/spatial_reference'
 require 'gdal/dataset'

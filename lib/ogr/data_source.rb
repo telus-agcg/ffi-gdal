@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 require 'uri'
-require 'json'
 require_relative '../gdal'
 require_relative '../ogr'
-require_relative 'data_source_extensions'
 require_relative 'data_source_mixins/capability_methods'
 require_relative '../gdal/major_object'
 
@@ -12,7 +10,6 @@ module OGR
   class DataSource
     include GDAL::MajorObject
     include GDAL::Logger
-    include DataSourceExtensions
     include DataSourceMixins::CapabilityMethods
 
     # Same as +.new+.

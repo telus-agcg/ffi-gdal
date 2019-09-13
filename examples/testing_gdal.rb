@@ -2,7 +2,6 @@
 
 require 'RMagick'
 require 'bundler/setup'
-require 'pry'
 require 'ffi-gdal'
 
 GDAL::Logger.logging_enabled = true

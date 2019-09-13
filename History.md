@@ -2,6 +2,13 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## Unreleased
+
+### Removed
+
+* [DEV-361] Move extension methods to ffi-gdal-extensions.
+* Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
+
 ## 1.0.0.beta10 / 2019-08-28
 
 ### Bug Fixes

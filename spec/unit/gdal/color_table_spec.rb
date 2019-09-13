@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/color_table'
 
 RSpec.describe GDAL::ColorTable do
