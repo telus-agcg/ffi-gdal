@@ -3,7 +3,6 @@
 require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
-require_relative 'driver_mixins/extensions'
 
 module GDAL
   # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working
@@ -11,7 +10,6 @@ module GDAL
   class Driver
     include MajorObject
     include GDAL::Logger
-    include DriverMixins::Extensions
 
     GDAL_DOCS_URL = 'http://gdal.org'
 

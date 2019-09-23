@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
@@ -14,8 +13,8 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context 'empty SRS' do
-      it 'raises an OGR::NotEnoughData' do
-        expect { subject.to_erm }.to raise_exception OGR::NotEnoughData
+      it 'raises an OGR::UnsupportedSRS' do
+        expect { subject.to_erm }.to raise_exception OGR::UnsupportedSRS
       end
     end
   end

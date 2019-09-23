@@ -4,7 +4,6 @@ require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
 require_relative 'major_object'
-require_relative 'dataset_mixins/extensions'
 require_relative 'dataset_mixins/matching'
 require_relative 'dataset_mixins/algorithm_methods'
 require_relative 'dataset_mixins/warp_methods'
@@ -15,7 +14,6 @@ module GDAL
   # definition of all bands.
   class Dataset
     include MajorObject
-    include DatasetMixins::Extensions
     include DatasetMixins::Matching
     include DatasetMixins::AlgorithmMethods
     include DatasetMixins::WarpMethods
@@ -348,6 +346,17 @@ module GDAL
       buffer
     end
     # rubocop:enable Metrics/ParameterLists
+
+    # Creates a OGR::SpatialReference object from the dataset's projection.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference
+      return @spatial_reference if @spatial_reference
+
+      return nil if projection.empty?
+
+      @spatial_reference = OGR::SpatialReference.new(projection)
+    end
 
     private
 

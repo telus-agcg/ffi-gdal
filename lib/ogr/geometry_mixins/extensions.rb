@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module OGR
   module GeometryMixins
     module Extensions

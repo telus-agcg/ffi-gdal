@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do

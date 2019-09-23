@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/style_tool'
 
 RSpec.describe OGR::StyleTool do

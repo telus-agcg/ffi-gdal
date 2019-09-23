@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/style_table'
 
 RSpec.describe OGR::StyleTable do
@@ -90,19 +89,6 @@ RSpec.describe OGR::StyleTable do
       subject.next_style
       subject.reset_style_string_reading
       expect(subject.next_style).to eq '12345'
-    end
-  end
-
-  describe '#styles' do
-    subject do
-      st = described_class.new
-      st.add_style('style1', '12345')
-      st.add_style('style2', '67890')
-      st
-    end
-
-    it 'returns the styles as a Hash' do
-      expect(subject.styles).to eq('style1' => '12345', 'style2' => '67890')
     end
   end
 end

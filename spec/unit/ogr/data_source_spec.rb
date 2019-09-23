@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/data_source'
 require 'ogr/spatial_reference'
 
@@ -90,7 +89,7 @@ RSpec.describe OGR::DataSource do
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('unknown layer')
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that is the given geometry type' do
@@ -103,7 +102,7 @@ RSpec.describe OGR::DataSource do
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that is the given geometry type' do
@@ -118,7 +117,7 @@ RSpec.describe OGR::DataSource do
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that uses that spatial reference' do
@@ -135,7 +134,7 @@ RSpec.describe OGR::DataSource do
     it 'adds a new OGR::Layer to @layers' do
       expect do
         subject.copy_layer(unknown_layer, 'meow layer')
-      end.to change { subject.layers.size }.by 1
+      end.to change { subject.layer_count }.by 1
     end
 
     it 'makes a copy of the layer' do

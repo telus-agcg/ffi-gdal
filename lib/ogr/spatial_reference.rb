@@ -2,7 +2,6 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
-require_relative 'spatial_reference_extensions'
 require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
 require_relative 'spatial_reference_mixins/exporters'
 require_relative 'spatial_reference_mixins/importers'
@@ -16,7 +15,6 @@ module OGR
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
     include GDAL::Logger
-    include SpatialReferenceExtensions
     include SpatialReferenceMixins::CoordinateSystemGetterSetters
     include SpatialReferenceMixins::Exporters
     include SpatialReferenceMixins::Importers

@@ -3,12 +3,9 @@
 require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
-require_relative 'feature_extensions'
 
 module OGR
   class Feature
-    include FeatureExtensions
-
     # @return [FFI::Pointer] C pointer of the C Feature.
     attr_reader :c_pointer
 

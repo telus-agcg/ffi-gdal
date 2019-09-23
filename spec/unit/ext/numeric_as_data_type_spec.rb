@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Numeric do
   let(:integer_data_types) do
     %i[GDT_Byte GDT_UInt16 GDT_Int16 GDT_UInt32 GDT_Int32]

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr'
 
 RSpec.describe 'OGR::Layer' do
@@ -47,13 +46,6 @@ RSpec.describe 'OGR::Layer' do
     it { is_expected.to be >= 0 }
   end
 
-  describe '#features' do
-    subject { layer0.features }
-    it { is_expected.to be_an Array }
-    specify { expect(subject.first).to be_a OGR::Feature }
-    specify { expect(subject.size).to eq layer0.feature_count }
-  end
-
   describe '#feature_definition' do
     subject { layer0.feature_definition }
     it { is_expected.to be_a OGR::FeatureDefinition }
@@ -84,12 +76,5 @@ RSpec.describe 'OGR::Layer' do
   describe '#style_table' do
     subject { layer0.style_table }
     it { is_expected.to be_nil }
-  end
-
-  describe '#geometry_from_extent' do
-    it 'is a Polygon' do
-      geometry = subject.geometry_from_extent
-      expect(geometry).to be_a OGR::Polygon
-    end
   end
 end

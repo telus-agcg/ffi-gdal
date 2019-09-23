@@ -359,7 +359,6 @@ module OGR
 
     # @param other_geometry [OGR::Geometry]
     # @return [OGR::Geometry]
-    # @todo This regularly crashes, so disabling it.
     def intersection(other_geometry)
       build_geometry do
         FFI::OGR::API.OGR_G_Intersection(@c_pointer, other_geometry.c_pointer)

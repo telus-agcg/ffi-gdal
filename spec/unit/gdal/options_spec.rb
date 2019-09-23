@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/options'
 
 RSpec.describe GDAL::Options do

@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
+require_relative '../gdal'
 require_relative '../ogr'
-require_relative 'style_table_extensions'
 
 module OGR
   class StyleTable
-    include StyleTableExtensions
-
     # @return [FFI::Pointer] C pointer to the C style table.
     attr_reader :c_pointer
 

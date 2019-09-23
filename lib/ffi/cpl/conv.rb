@@ -49,7 +49,7 @@ module FFI
       attach_function :CPLScanString, %i[string int int int], :string
       attach_function :CPLScanDouble, %i[string int], :double
       attach_function :CPLScanLong, %i[string int], :long
-      attach_function :CPLScanLong, %i[string int], :ulong
+      attach_function :CPLScanULong, %i[string int], :ulong
       attach_function :CPLScanUIntBig, %i[string int], Port.find_type(:GUIntBig)
       attach_function :CPLScanPointer, %i[string int], :pointer
       attach_function :CPLPrintString, %i[string string int], :int

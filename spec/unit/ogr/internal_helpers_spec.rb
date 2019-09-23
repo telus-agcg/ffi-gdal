@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/internal_helpers'
 
 RSpec.describe OGR::InternalHelpers do

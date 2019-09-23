@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
@@ -84,7 +83,7 @@ RSpec.describe OGR::Layer do
 
     describe '#supports_curve_geometries?' do
       subject { layer.supports_curve_geometries? }
-      it { is_expected.to eq false }
+      it { is_expected.to eq true }
     end
   end
 end

@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require_relative '../ogr'
-require_relative 'envelope_extensions'
 
 module OGR
   class Envelope
-    include EnvelopeExtensions
-
     # @return [FFI::OGR::Envelope, FFI::OGR::Envelope3D] The C struct that this
     #   object wraps.
     attr_reader :c_struct

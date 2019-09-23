@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -41,7 +40,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
         expect(subject.color_entry(0).color3).to eq 0
         expect(subject.color_entry(0).color4).to eq 255
 
-        expect(subject.color_entry(1).color1).to eq 192
+        expect(subject.color_entry(1).color1).to eq 191
         expect(subject.color_entry(1).color2).to eq 0
         expect(subject.color_entry(1).color3).to eq 0
         expect(subject.color_entry(1).color4).to eq 255
@@ -59,7 +58,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
         expect(subject.color_entry(0).color3).to eq 0
         expect(subject.color_entry(0).color4).to eq 255
 
-        expect(subject.color_entry(1).color1).to eq 192
+        expect(subject.color_entry(1).color1).to eq 191
         expect(subject.color_entry(1).color2).to eq 0
         expect(subject.color_entry(1).color3).to eq 0
         expect(subject.color_entry(1).color4).to eq 255

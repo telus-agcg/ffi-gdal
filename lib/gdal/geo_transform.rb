@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require_relative '../gdal'
-require_relative 'geo_transform_mixins/extensions'
 
 module GDAL
   class GeoTransform
-    include GeoTransformMixins::Extensions
-
     # @return [FFI::Pointer] A pointer that can be used to hold a GeoTransform.
     def self.new_pointer
       FFI::MemoryPointer.new(:double, 6)
@@ -41,8 +38,6 @@ module GDAL
       self.pixel_height ||= 1.0
       self.x_rotation ||= 0.0
       self.y_rotation ||= 0.0
-
-      to_a
     end
 
     def null?

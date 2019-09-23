@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do

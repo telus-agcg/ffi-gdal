@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/warp_options'
 
 RSpec.describe GDAL::WarpOptions do

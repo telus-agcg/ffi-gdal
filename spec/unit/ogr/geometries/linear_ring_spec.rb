@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::LinearRing do
@@ -24,10 +23,6 @@ RSpec.describe OGR::LinearRing do
   end
 
   subject { linear_ring }
-
-  describe '#closed' do
-    it { is_expected.to be_closed }
-  end
 
   describe '#name' do
     subject { linear_ring.name }
