@@ -12,7 +12,7 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      callback :CPLFileFinder, %i[string string], :string
+      callback :CPLFileFinder, %i[string string], :pointer
 
       #---------
       # Config
