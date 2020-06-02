@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta11 / 2020-06-02
+
+### Bug Fixes
+
+* Change CPLFileFinder callback return type to pointer.
+
 ## 1.0.0.beta10 / 2019-08-28
 
 ### Bug Fixes
