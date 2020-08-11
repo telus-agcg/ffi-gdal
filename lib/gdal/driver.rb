@@ -55,7 +55,7 @@ module GDAL
 
     # @param driver [GDAL::Driver, FFI::Pointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(GDAL::Driver, driver)
+      @c_pointer = GDAL._pointer(GDAL::Driver, driver, true, false)
 
       ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
         FFI::GDAL::GDAL.GDALDestroyDriver(ptr) unless ptr.nil? || ptr.null?
@@ -226,7 +226,7 @@ module GDAL
       if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        GDAL._pointer(GDAL::Dataset, dataset)
+        GDAL._pointer(GDAL::Dataset, dataset, true, false)
       end
     end
   end

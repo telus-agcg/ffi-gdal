@@ -21,7 +21,7 @@ module GDAL
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band)
-      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band)
+      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, true, false)
     end
 
     # @return [Boolean]

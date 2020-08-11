@@ -42,6 +42,8 @@ module GDAL
               "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
       end
 
+      @c_pointer.autorelease = false
+
       @color_entries = []
 
       case palette_interpretation

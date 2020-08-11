@@ -9,7 +9,7 @@ module GDAL
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
     # @return [GDAL::RasterAttributeTable]
     def self.from_color_table(color_table)
-      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
+      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, true, false)
       rat_ptr = FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
       FFI::GDAL::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
 
@@ -22,6 +22,7 @@ module GDAL
     # @param pointer [FFI::Pointer]
     def initialize(pointer = nil)
       @c_pointer = pointer || FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
+      @c_pointer.autorelease = false
 
       ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
         FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(ptr) unless ptr.nil? || ptr.null?

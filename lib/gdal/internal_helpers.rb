@@ -10,12 +10,12 @@ module GDAL
     module ClassMethods
       # Internal factory method for returning a pointer from +variable+, which could
       # be either of +klass+ class or a type of FFI::Pointer.
-      def _pointer(klass, variable, warn_on_nil = true)
+      def _pointer(klass, variable, warn_on_nil = true, autorelease = true)
         if variable.is_a?(klass)
-          variable.c_pointer.autorelease = true
+          variable.c_pointer.autorelease = autorelease
           variable.c_pointer
         elsif variable.is_a? FFI::Pointer
-          variable.autorelease = true
+          variable.autorelease = autorelease
           variable
         else
           if warn_on_nil && Logger.logging_enabled

@@ -201,12 +201,11 @@ module GDAL
     end
 
     # @param new_transform [GDAL::GeoTransform, FFI::Pointer]
-    # @return [GDAL::GeoTransform]
     def geo_transform=(new_transform)
       new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
       FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
 
-      @geo_transform = new_transform.is_a?(FFI::Pointer) ? GeoTransform.new(new_pointer) : new_transform
+      nil
     end
 
     # @return [Integer]
