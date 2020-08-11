@@ -29,8 +29,8 @@ RSpec.describe GDAL::Dataset do
         allow(described_class).to receive(:new).and_return dataset
 
         expect(dataset).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }.
-          to yield_with_args(dataset)
+        expect { |b| described_class.open('blarg', 'r', &b) }
+          .to yield_with_args(dataset)
       end
     end
   end
@@ -100,10 +100,11 @@ RSpec.describe GDAL::Dataset do
 
   describe '#projection' do
     let(:expected_wkt) do
-      'GEOGCS["unknown",DATUM["unknown",SPHEROID["Bessel 1841",' \
-        '6377397.155,299.1528128000033,AUTHORITY["EPSG","7004"]],' \
+      'GEOGCS["unknown",DATUM["unnamed",SPHEROID["Bessel 1841",' \
+        '6377397.155,299.152812800003,AUTHORITY["EPSG","7004"]],' \
         'TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],' \
-        'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]]'
+        'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433,' \
+        'AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST]]'
     end
 
     it 'returns the projection string' do

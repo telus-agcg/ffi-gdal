@@ -99,8 +99,8 @@ RSpec.describe 'Driver Info', type: :integration do
       let(:source_file) { __FILE__ }
 
       it 'copies the file' do
-        expect { subject.copy_dataset_files(source_file, dest_tiff) }.
-          to raise_exception(GDAL::OpenFailure)
+        expect { subject.copy_dataset_files(source_file, dest_tiff) }
+          .to raise_exception(GDAL::OpenFailure)
       end
     end
   end
@@ -138,8 +138,8 @@ RSpec.describe 'Driver Info', type: :integration do
   describe '#delete_dataset' do
     context 'dataset exists' do
       it 'removes the related files' do
-        expect { subject.delete_dataset(tmp_source_tiff) }.
-          to change { File.exist?(tmp_source_tiff) }.from(true).to(false)
+        expect { subject.delete_dataset(tmp_source_tiff) }
+          .to change { File.exist?(tmp_source_tiff) }.from(true).to(false)
       end
     end
 
@@ -155,8 +155,8 @@ RSpec.describe 'Driver Info', type: :integration do
       after { File.unlink('tmp/meow.tif') if File.exist?('tmp/meow.tif') }
 
       it 'removes the related files' do
-        expect { subject.rename_dataset(tmp_source_tiff, 'tmp/meow.tif') }.
-          to change { File.exist?('tmp/meow.tif') }.from(false).to(true)
+        expect { subject.rename_dataset(tmp_source_tiff, 'tmp/meow.tif') }
+          .to change { File.exist?('tmp/meow.tif') }.from(false).to(true)
       end
     end
 

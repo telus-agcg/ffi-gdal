@@ -1,11 +1,8 @@
 ---
 inherit_from: .rubocop_todo.yml
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
-
-Layout/DotPosition:
-  EnforcedStyle: trailing
 
 Metrics/BlockLength:
   Exclude:
@@ -20,7 +17,7 @@ Naming/FileName:
     - lib/ffi-gdal.rb
     - spec/ffi-gdal_spec.rb
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames: [x, y, z]
 
 Style/Documentation:

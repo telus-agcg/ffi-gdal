@@ -27,7 +27,6 @@ module GDAL
       ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
         FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(ptr) unless ptr.nil? || ptr.null?
       end)
-
     end
 
     def destroy!

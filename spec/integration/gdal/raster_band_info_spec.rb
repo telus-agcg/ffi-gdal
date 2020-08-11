@@ -161,8 +161,8 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#statistics' do
     it 'returns a Hash with populated values' do
       expect(subject.statistics).to be_a Hash
-      expect(%i[minimum maximum mean standard_deviation]).
-        to eq subject.statistics.keys
+      expect(%i[minimum maximum mean standard_deviation])
+        .to eq subject.statistics.keys
     end
 
     it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
