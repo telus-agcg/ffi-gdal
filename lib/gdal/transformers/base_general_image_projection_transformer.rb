@@ -10,6 +10,12 @@ module GDAL
 
       attr_reader :c_pointer
 
+      def initialize
+        ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyGenImgProjTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
+      end
+
       def destroy!
         return unless @c_pointer
 

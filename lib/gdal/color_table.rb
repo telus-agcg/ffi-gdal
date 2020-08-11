@@ -33,6 +33,10 @@ module GDAL
           palette_interp_or_pointer
         end
 
+      ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+        FFI::GDAL::GDAL.GDALDestroyColorTable(ptr) unless ptr.nil? || ptr.null?
+      end)
+
       if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
         raise GDAL::InvalidColorTable,
               "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"

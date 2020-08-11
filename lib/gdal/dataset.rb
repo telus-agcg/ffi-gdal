@@ -74,6 +74,10 @@ module GDAL
           path_or_pointer
         end
 
+      ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+        FFI::GDAL::GDAL.GDALClose(ptr) unless ptr.nil? || ptr.null?
+      end)
+
       raise OpenFailure, path_or_pointer if @c_pointer.null?
 
       @geo_transform = nil

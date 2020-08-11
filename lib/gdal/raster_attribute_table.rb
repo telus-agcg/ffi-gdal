@@ -22,6 +22,11 @@ module GDAL
     # @param pointer [FFI::Pointer]
     def initialize(pointer = nil)
       @c_pointer = pointer || FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
+
+      ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+        FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(ptr) unless ptr.nil? || ptr.null?
+      end)
+
     end
 
     def destroy!

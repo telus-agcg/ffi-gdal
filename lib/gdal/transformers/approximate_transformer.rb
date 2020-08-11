@@ -22,6 +22,10 @@ module GDAL
           transformer_arg_ptr,
           max_error
         )
+
+        ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyApproxTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
 
       def destroy!

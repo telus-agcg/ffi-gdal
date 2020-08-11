@@ -56,6 +56,10 @@ module GDAL
     # @param driver [GDAL::Driver, FFI::Pointer]
     def initialize(driver)
       @c_pointer = GDAL._pointer(GDAL::Driver, driver)
+
+      ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+        FFI::GDAL::GDAL.GDALDestroyDriver(ptr) unless ptr.nil? || ptr.null?
+      end)
     end
 
     # @return [String]
