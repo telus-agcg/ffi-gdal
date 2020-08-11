@@ -9,7 +9,7 @@ module GDAL
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
     # @return [GDAL::RasterAttributeTable]
     def self.from_color_table(color_table)
-      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, true, false)
+      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
       rat_ptr = FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
       FFI::GDAL::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
 

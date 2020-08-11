@@ -13,7 +13,7 @@ module GDAL
 
       # @param gcp_list [Array<FFI::GDAL::GCP>]
       # @param reversed [Boolean]
-      def initialize(gcp_list, reversed = false)
+      def initialize(gcp_list, reversed: false)
         gcp_list_ptr = FFI::MemoryPointer.new(:pointer, gcp_list.size)
 
         # TODO: fasterer: each_with_index is slower than loop

@@ -65,7 +65,7 @@ module OGR
     end
 
     # @return [OGR::Envelope]
-    def extent(force = true)
+    def extent(force: true)
       envelope = FFI::OGR::Envelope.new
       FFI::OGR::API.OGR_L_GetExtent(@c_pointer, envelope, force)
       return nil if envelope.null?
@@ -74,7 +74,7 @@ module OGR
     end
 
     # @return [OGR::Envelope]
-    def extent_by_geometry(geometry_field_index, force = true)
+    def extent_by_geometry(geometry_field_index, force: true)
       envelope = FFI::OGR::Envelope.new
       FFI::OGR::API.OGR_L_GetExtentEx(@c_pointer, geometry_field_index, envelope, force)
       return nil if envelope.null?

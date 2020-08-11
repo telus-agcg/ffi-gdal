@@ -29,7 +29,7 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
-    def self.open(path, access_flag, shared_open = true)
+    def self.open(path, access_flag, shared_open: true)
       ds = new(path, access_flag, shared_open)
 
       if block_given?
@@ -55,7 +55,7 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
-    def initialize(path_or_pointer, access_flag, shared_open = true)
+    def initialize(path_or_pointer, access_flag, shared_open: true)
       @c_pointer =
         if path_or_pointer.is_a? String
           file_path = begin
@@ -247,9 +247,10 @@ module GDAL
     #   overviews from.
     # @see http://www.gdal.org/gdaladdo.html
     def build_overviews(resampling, overview_levels, band_numbers: nil, &progress)
-      resampling_string = if resampling.is_a? String
+      resampling_string = case resampling
+                          when String
                             resampling.upcase
-                          elsif resampling.is_a? Symbol
+                          when Symbol
                             resampling.to_s.upcase
                           end
 

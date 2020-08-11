@@ -4,6 +4,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ## Unreleased
 
+### Changed
+
+- *BREAKING*: All methods with default boolean args are now keyword args.
+
 ### Removed
 
 * [DEV-361] Move extension methods to ffi-gdal-extensions.

@@ -14,9 +14,10 @@ module GDAL
 
     # @param struct_or_ptr [FFI::GDAL::RPCInfo, FFI::Pointer]
     def initialize(struct_or_ptr = nil)
-      @c_struct = if struct_or_ptr.is_a? FFI::GDAL::RPCInfo
+      @c_struct = case struct_or_ptr
+                  when FFI::GDAL::RPCInfo
                     struct_or_ptr
-                  elsif struct_or_ptr.is_a? FFI::Pointer
+                  when FFI::Pointer
                     FFI::GDAL::RPCInfo.new(struct_or_ptr)
                   else
                     FFI::GDAL::RPCInfo.new

@@ -21,7 +21,7 @@ module GDAL
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band)
-      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, true, false)
+      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, autorelease: false)
     end
 
     # @return [Boolean]
@@ -143,7 +143,7 @@ module GDAL
     def no_data_value
       associated = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL::GDAL.GDALGetRasterNoDataValue(@c_pointer, associated)
-      value = nil if value == -10_000_000_000.0
+      value = nil if value.to_d == -10_000_000_000.0.to_d
 
       { value: value, is_associated: associated.read_bytes(1).to_bool }
     end
@@ -260,7 +260,7 @@ module GDAL
     #   calculating can be done without rescanning the image.
     # @return [Hash{minimum: Float, maximum: Float, mean: Float,
     #   standard_deviation: Float}]
-    def statistics(approx_ok = true, force = true)
+    def statistics(approx_ok: true, force: true)
       min = FFI::MemoryPointer.new(:double)
       max = FFI::MemoryPointer.new(:double)
       mean = FFI::MemoryPointer.new(:double)
@@ -438,7 +438,7 @@ module GDAL
     # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
     #   totals => Array<Integer>}] Returns +nil+ if no default histogram is
     #   available.
-    def default_histogram(force = false, &block)
+    def default_histogram(force: false, &block)
       min_pointer = FFI::MemoryPointer.new(:double)
       max_pointer = FFI::MemoryPointer.new(:double)
       buckets_pointer = FFI::MemoryPointer.new(:int)

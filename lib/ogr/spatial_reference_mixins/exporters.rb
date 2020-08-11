@@ -84,7 +84,7 @@ module OGR
 
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
       #   +EXTENSION+ nodes.
-      def to_pretty_wkt(simplify = false)
+      def to_pretty_wkt(simplify: false)
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
         ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
         ogr_err.handle_result

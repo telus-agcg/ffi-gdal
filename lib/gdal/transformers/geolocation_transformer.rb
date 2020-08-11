@@ -14,7 +14,7 @@ module GDAL
       # @param base_dataset [GDAL::Dataset]
       # @param geolocation_info [Array<String>]
       # @param reversed [Boolean]
-      def intialize(base_dataset, geolocation_info, reversed = false)
+      def intialize(base_dataset, geolocation_info, reversed: false)
         base_dataset_ptr = GDAL._pointer(GDAL::Dataset, base_dataset)
         geolocation_info_ptr = GDAL._string_array_to_pointer(geolocation_info)
 

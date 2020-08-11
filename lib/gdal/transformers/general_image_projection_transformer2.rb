@@ -39,7 +39,7 @@ module GDAL
       #   the center of the image.
       def initialize(source_dataset, destination_dataset: nil, **options)
         source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
-        destination_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, false)
+        destination_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, warn_on_nil: false)
         options_ptr = GDAL::Options.pointer(options)
 
         @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer2(

@@ -32,11 +32,12 @@ module GDAL
 
     # @param geo_transform [FFI::Pointer]
     def initialize(geo_transform = nil)
-      @c_pointer = if geo_transform
-                     GDAL._pointer(GDAL::GeoTransform, geo_transform, true, false)
-                   else
-                     self.class.new_pointer
-                   end
+      @c_pointer =
+        if geo_transform
+          GDAL._pointer(GDAL::GeoTransform, geo_transform, autorelease: false)
+        else
+          self.class.new_pointer
+        end
 
       self.pixel_width ||= 1.0
       self.pixel_height ||= 1.0

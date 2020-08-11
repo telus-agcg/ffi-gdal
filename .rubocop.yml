@@ -1,6 +1,9 @@
 ---
 inherit_from: .rubocop_todo.yml
 
+Layout/LineLength:
+  Max: 120
+
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
@@ -8,9 +11,6 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
     - spec/support/shared_examples/**/*.rb
-
-Metrics/LineLength:
-  Max: 120
 
 Naming/FileName:
   Exclude:
@@ -43,4 +43,5 @@ AllCops:
   DisplayStyleGuide: true
   Exclude:
     - vendor/bundle/**/*
+  NewCops: enable
   TargetRubyVersion: 2.6

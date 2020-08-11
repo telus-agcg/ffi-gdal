@@ -28,7 +28,7 @@ module GDAL
       # @option options [Number] rpc_dem_missing_value Value of DEM height that
       #   must be unsed in case the DEM has a nodata value at the sampling point,
       #   or if its extent doesn't cover the requested coordinate.
-      def initialize(rpc_info, pixel_error_threshold, reversed = false, **options)
+      def initialize(rpc_info, pixel_error_threshold, reversed: false, **options)
         options_ptr = GDAL::Options.pointer(options)
 
         @c_pointer = FFI::GDAL::Alg.GDALCreateRPCTransformer(

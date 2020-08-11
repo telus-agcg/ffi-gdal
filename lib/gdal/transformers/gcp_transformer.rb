@@ -14,7 +14,7 @@ module GDAL
       # @param gcp_list [Array<FFI::GDAL::GCP>]
       # @param requested_polynomial_order [Integer] 1, 2, or 3.
       # @param reversed [Boolean]
-      def initialize(gcp_list, requested_polynomial_order, reversed = false, tolerance: nil, minimum_gcps: nil)
+      def initialize(gcp_list, requested_polynomial_order, reversed: false, tolerance: nil, minimum_gcps: nil)
         gcp_list_ptr = FFI::MemoryPointer.new(:pointer, gcp_list.size)
 
         # TODO: fasterer: each_with_index is slower than loop

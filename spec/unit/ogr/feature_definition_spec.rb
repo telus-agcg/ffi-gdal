@@ -151,7 +151,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'set to not ignore' do
       it 'causes the geometry to be ignored' do
-        subject.ignore_geometry! false
+        subject.ignore_geometry! ignore: false
         expect(subject.geometry_ignored?).to eq false
       end
     end
@@ -174,7 +174,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'set to not ignore' do
       it 'causes the style to be ignored' do
-        subject.ignore_style! false
+        subject.ignore_style! ignore: false
         expect(subject.style_ignored?).to eq false
       end
     end
