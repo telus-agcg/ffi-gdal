@@ -35,17 +35,19 @@ module OGR
 
     RADIAN_TO_RADIAN = 1.0
 
-    # @return [Array<String>]
-    def self.projection_methods(strip_underscores: false)
-      methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
-      count = FFI::CPL::String.CSLCount(methods_ptr_ptr)
+    if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 3
+      # @return [Array<String>]
+      def self.projection_methods(strip_underscores: false)
+        methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
+        count = FFI::CPL::String.CSLCount(methods_ptr_ptr)
 
-      # For some reason #get_array_of_string leaves off the first 6.
-      pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
+        # For some reason #get_array_of_string leaves off the first 6.
+        pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
 
-      list = pointer_array.map(&:read_string).sort
+        list = pointer_array.map(&:read_string).sort
 
-      strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
+        strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
+      end
     end
 
     # @param projection_method [String] One of
@@ -101,6 +103,10 @@ module OGR
       FFI::OGR::SRSAPI.OSRCleanup
     end
 
+    def self.release(pointer)
+      FFI::OGR::SRSAPI.OSRRelease(pointer) if pointer && !pointer.null?
+    end
+
     # @return [FFI::Pointer] C pointer to the C Spatial Reference.
     attr_reader :c_pointer
 
@@ -113,7 +119,7 @@ module OGR
     # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
     #   String]
     def initialize(spatial_reference_or_wkt = nil)
-      @c_pointer =
+      pointer =
         case spatial_reference_or_wkt.class.name
         when 'OGR::SpatialReference'
           spatial_reference_or_wkt.c_pointer
@@ -125,15 +131,14 @@ module OGR
           log "Dunno what to do with #{spatial_reference_or_wkt}"
         end
 
-      return if @c_pointer && !@c_pointer.null?
+      raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
 
-      raise OGR::CreateFailure, 'Unable to create SpatialReference.'
+      @c_pointer = FFI::AutoPointer.new(pointer, SpatialReference.method(:release))
+      # @c_pointer = pointer
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::SRSAPI.OSRDestroySpatialReference(@c_pointer)
+      SpatialReference.release(@c_pointer)
       @c_pointer = nil
     end
 
@@ -181,20 +186,22 @@ module OGR
       ogr_err.handle_result
     end
 
-    # @return +true+ if successful, otherwise raises an OGR exception.
-    def fixup!
-      ogr_err = FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
+    if GDAL.major_version < 3
+      # @return +true+ if successful, otherwise raises an OGR exception.
+      def fixup!
+        ogr_err = FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
 
-      ogr_err.handle_result
-    end
+        ogr_err.handle_result
+      end
 
-    # Strips all OGC coordinate transformation parameters.
-    #
-    # @return +true+ if successful, otherwise raises an OGR exception.
-    def strip_ct_parameters!
-      ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
+      # Strips all OGC coordinate transformation parameters.
+      #
+      # @return +true+ if successful, otherwise raises an OGR exception.
+      def strip_ct_parameters!
+        ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
 
-      ogr_err.handle_result
+        ogr_err.handle_result
+      end
     end
 
     # Sets the EPSG authority info if possible.

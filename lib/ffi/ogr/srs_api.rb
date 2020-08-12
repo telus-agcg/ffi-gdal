@@ -132,9 +132,12 @@ module FFI
       attach_function :OSRRelease, %i[OGRSpatialReferenceH], :void
 
       attach_function :OSRValidate, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRFixupOrdering, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRFixup, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRStripCTParms, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
+
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 3
+        attach_function :OSRFixupOrdering, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
+        attach_function :OSRFixup, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
+        attach_function :OSRStripCTParms, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
+      end
 
       attach_function :OSRImportFromEPSG, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
       attach_function :OSRImportFromEPSGA, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
@@ -155,6 +158,9 @@ module FFI
       attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
 
       attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i >= 3
+        attach_function :OSRExportToWktEx, %i[OGRSpatialReferenceH pointer pointer], FFI::OGR::Core::Err
+      end
       attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH pointer bool], FFI::OGR::Core::Err
       attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
       attach_function :OSRExportToPCI,
@@ -391,16 +397,18 @@ module FFI
       attach_function :OCTTransformEx,
                       %i[OGRCoordinateTransformationH int pointer pointer pointer pointer],
                       :bool
-      attach_function :OCTProj4Normalize, %i[string], :string
+      attach_function :OCTProj4Normalize, %i[string], :string if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 3
 
       # ~~~~~~~~~~~~~
       # Parameters
       # ~~~~~~~~~~~~~
-      attach_function :OPTGetProjectionMethods, %i[], :pointer
-      attach_function :OPTGetParameterList, %i[string pointer], :pointer
-      attach_function :OPTGetParameterInfo,
-                      %i[string string pointer pointer pointer],
-                      :int
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 3
+        attach_function :OPTGetProjectionMethods, %i[], :pointer
+        attach_function :OPTGetParameterList, %i[string pointer], :pointer
+        attach_function :OPTGetParameterInfo,
+                        %i[string string pointer pointer pointer],
+                        :int
+      end
     end
   end
 end

@@ -23,6 +23,10 @@ module GDAL
       FFI::GDAL.GDALVersionInfo('RELEASE_NAME')
     end
 
+    def major_version
+      @major_version ||= release_name[0].to_i
+    end
+
     # The long licensing info.
     #
     # @return [String]

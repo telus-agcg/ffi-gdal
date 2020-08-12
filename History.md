@@ -9,6 +9,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 - `GDAL::ColorTable.new_pointer`
 - `GDAL::Dataset.new_pointer`
 - `GDAL::RasterAttributeTable.new_pointer`
+- `GDAL::VersionInfo#major_version`
 
 ### Changed
 
@@ -33,6 +34,15 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 * [DEV-361] Move extension methods to ffi-gdal-extensions.
 * Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
+* Conditionally removed for GDAL 3:
+    * `OSRFixupOrdering`
+    * `OSRFixup`
+    * `OSRStripCTParms`
+    * `OCTProj4Normalize`
+    * `OCTCleanupProjMutext`
+    * `OPTGetProjectionMethods`
+    * `OPTGetmarameterList`
+    * `OPTGetParameterInfo`
 
 ## 1.0.0.beta11 / 2020-06-02
 

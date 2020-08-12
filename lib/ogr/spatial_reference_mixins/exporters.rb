@@ -76,7 +76,11 @@ module OGR
       # @return [String]
       def to_wkt
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
+        ogr_err = if GDAL.major_version < 3
+                    FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
+                  else
+                    FFI::OGR::SRSAPI.OSRExportToWktEx(@c_pointer, wkt_ptr_ptr, nil)
+                  end
         ogr_err.handle_result
 
         GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
