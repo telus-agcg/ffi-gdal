@@ -7,6 +7,12 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 ### Changed
 
 - *BREAKING*: All methods with default boolean args are now keyword args.
+- `GDAL::Options` no longer subclasses `Hash`.
+
+### Fixed
+
+- Fixed dangling pointer in `GDAL::Options.pointer` when building the string
+  list.
 
 ### Removed
 
