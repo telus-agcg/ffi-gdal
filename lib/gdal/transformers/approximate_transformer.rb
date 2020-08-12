@@ -17,13 +17,13 @@ module GDAL
         base_transformer_function = base_transformer.function
         transformer_arg_ptr = base_transformer.c_pointer
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
+        pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
           base_transformer_function,
           transformer_arg_ptr,
           max_error
         )
 
-        ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
           FFI::GDAL::Alg.GDALDestroyApproxTransformer(ptr) unless ptr.nil? || ptr.null?
         end)
       end

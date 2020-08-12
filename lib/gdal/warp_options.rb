@@ -181,6 +181,7 @@ module GDAL
 
       pointer = FFI::MemoryPointer.new(:pointer, band_procs.length)
       pointer.write_array_of_pointer(funcs)
+
       @c_struct[:source_per_band_validity_mask_function] = pointer
     end
 
@@ -193,7 +194,7 @@ module GDAL
       @c_struct[meth]
     end
 
-    def respond_to_missing?(method_name, include_private: false)
+    def respond_to_missing?(method_name, include_private = false)
       FFI::GDAL::WarpOptions.members.include?(method_name) || super
     end
   end

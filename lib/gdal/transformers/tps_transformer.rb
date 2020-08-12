@@ -21,7 +21,11 @@ module GDAL
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateTPSTransformer(gcp_list.size, gcp_list_ptr, reversed)
+        pointer = FFI::GDAL::Alg.GDALCreateTPSTransformer(gcp_list.size, gcp_list_ptr, reversed)
+
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyTPSTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
 
       def destroy!

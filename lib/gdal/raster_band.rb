@@ -19,9 +19,15 @@ module GDAL
     # @return [FFI::Pointer] C pointer to the C raster band.
     attr_reader :c_pointer
 
+    attr_reader :dataset
+
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
     def initialize(raster_band)
       @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, autorelease: false)
+
+      # Init the dataset too--the dataset owns the raster band, so when the
+      # dataset gets closed, the raster band gets cleaned up.
+      @dataset = init_dataset
     end
 
     # @return [Boolean]
@@ -58,16 +64,6 @@ module GDAL
       FFI::GDAL::GDAL.GDALGetBandNumber(@c_pointer)
     end
 
-    # @return [GDAL::Dataset, nil]
-    def dataset(access_flag = 'r')
-      return @dataset if @dataset
-
-      dataset_ptr = FFI::GDAL::GDAL.GDALGetBandDataset(@c_pointer)
-      return nil if dataset_ptr.null?
-
-      @dataset = GDAL::Dataset.new(dataset_ptr, access_flag, true)
-    end
-
     # @return [Symbol] One of FFI::GDAL::GDAL::ColorInterp.
     def color_interpretation
       FFI::GDAL::GDAL.GDALGetRasterColorInterpretation(@c_pointer)
@@ -95,7 +91,8 @@ module GDAL
 
     # @param new_color_table [GDAL::ColorTable]
     def color_table=(new_color_table)
-      color_table_pointer = GDAL._pointer(GDAL::ColorTable, new_color_table)
+      color_table_pointer = GDAL::ColorTable.new_pointer(new_color_table)
+
       FFI::GDAL::GDAL.GDALSetRasterColorTable(@c_pointer, color_table_pointer)
     end
 
@@ -393,7 +390,8 @@ module GDAL
 
     # @return [GDAL::RasterAttributeTable]
     def default_raster_attribute_table=(rat_table)
-      rat_table_ptr = GDAL._pointer(GDAL::RasterAttributeTable, rat_table)
+      rat_table_ptr = GDAL::RasterAttributeTable.new_pointer(rat_table)
+
       FFI::GDAL::GDAL.GDALSetDefaultRAT(@c_pointer, rat_table_ptr)
     end
 
@@ -703,6 +701,16 @@ module GDAL
       value = FFI::GDAL::GDAL.GDALGetRasterMaximum(@c_pointer, is_tight)
 
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
+    end
+
+    private
+
+    # @return [GDAL::Dataset, nil]
+    def init_dataset
+      dataset_ptr = FFI::GDAL::GDAL.GDALGetBandDataset(@c_pointer)
+      return nil if dataset_ptr.null?
+
+      GDAL::Dataset.new(dataset_ptr, access_flag, shared_open: true)
     end
   end
 end

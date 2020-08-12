@@ -22,21 +22,25 @@ module GDAL
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end
 
-        @c_pointer = if tolerance || minimum_gcps
-                       FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
-                         gcp_list.size,
-                         gcp_list_ptr,
-                         requested_polynomial_order,
-                         reversed
-                       )
-                     else
-                       FFI::GDAL::Alg.GDALCreateGCPTransformer(
-                         gcp_list.size,
-                         gcp_list_ptr,
-                         requested_polynomial_order,
-                         reversed
-                       )
-                     end
+        pointer = if tolerance || minimum_gcps
+                    FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
+                      gcp_list.size,
+                      gcp_list_ptr,
+                      requested_polynomial_order,
+                      reversed
+                    )
+                  else
+                    FFI::GDAL::Alg.GDALCreateGCPTransformer(
+                      gcp_list.size,
+                      gcp_list_ptr,
+                      requested_polynomial_order,
+                      reversed
+                    )
+                  end
+
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyGCPTransformer(ptr)
+        end)
       end
 
       def destroy!

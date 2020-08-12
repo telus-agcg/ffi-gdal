@@ -10,12 +10,6 @@ module GDAL
 
       attr_reader :c_pointer
 
-      def initialize
-        ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
-          FFI::GDAL::Alg.GDALDestroyGenImgProjTransformer(ptr) unless ptr.nil? || ptr.null?
-        end)
-      end
-
       def destroy!
         return unless @c_pointer
 
@@ -42,6 +36,14 @@ module GDAL
         FFI::GDAL::Alg.GDALSetGenImgProjTransformerDstGeoTransform(
           @c_pointer, geo_transform_ptr
         )
+      end
+
+      private
+
+      def init_pointer(pointer)
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyGenImgProjTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
     end
   end

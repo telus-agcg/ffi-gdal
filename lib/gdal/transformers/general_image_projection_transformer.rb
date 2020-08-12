@@ -13,10 +13,12 @@ module GDAL
       # @param order [Integer]
       def initialize(source_dataset, destination_dataset: nil, source_wkt: nil, destination_wkt: nil,
         gcp_use_ok: false, order: 0)
-        source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
-        dest_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, warn_on_nil: false)
+        super()
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(
+        source_ptr = GDAL::Dataset.new_pointer(source_dataset)
+        dest_ptr = GDAL::Dataset.new_pointer(destination_dataset, warn_on_nil: false)
+
+        pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(
           source_ptr,
           source_wkt,
           dest_ptr,
@@ -25,9 +27,9 @@ module GDAL
           0.0,
           order
         )
-        raise if @c_pointer.null?
+        raise if pointer.null?
 
-        super()
+        init_pointer(pointer)
       end
     end
   end

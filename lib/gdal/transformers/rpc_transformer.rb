@@ -31,12 +31,16 @@ module GDAL
       def initialize(rpc_info, pixel_error_threshold, reversed: false, **options)
         options_ptr = GDAL::Options.pointer(options)
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateRPCTransformer(
+        pointer = FFI::GDAL::Alg.GDALCreateRPCTransformer(
           rpc_info,
           reversed,
           pixel_error_threshold,
           options_ptr
         )
+
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyRPCTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
 
       def destroy!

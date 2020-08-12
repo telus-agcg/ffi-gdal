@@ -4,15 +4,30 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ## Unreleased
 
+### Added
+
+- `GDAL::ColorTable.new_pointer`
+- `GDAL::Dataset.new_pointer`
+- `GDAL::RasterAttributeTable.new_pointer`
+
 ### Changed
 
 - *BREAKING*: All methods with default boolean args are now keyword args.
+- `GDAL::Dataset.open` now defaults to `shared_open: false`.
+- `GDAL::Dataset.close` now checks that the internal pointer isn't null.
 - `GDAL::Options` no longer subclasses `Hash`.
+- `GDAL::RasterBand#initialize` now initializes its related `GDAL::Dataset`,
+  ensuring the `Dataset` stays in memory while working with the `RasterBand`.
 
 ### Fixed
 
+- `GDAL::ColorTable#initialize` ensures the related pointer is cleaned up.
+- `GDAL::Dataset#geo_transform` ensures the related pointer is cleaned up.
 - Fixed dangling pointer in `GDAL::Options.pointer` when building the string
   list.
+- `GDAL::RasterAttributeTable#initialize` ensures the related pointer is cleaned up.
+- `GDAL::Transformers::*` ensure the related pointer is cleaned up.
+- `GDAL::WarpOperation#initialize` ensures the related pointer is cleaned up.
 
 ### Removed
 

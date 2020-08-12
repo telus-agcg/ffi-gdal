@@ -18,11 +18,15 @@ module GDAL
         base_dataset_ptr = GDAL._pointer(GDAL::Dataset, base_dataset)
         geolocation_info_ptr = GDAL._string_array_to_pointer(geolocation_info)
 
-        @c_pointer = FFI::GDAL::Alg.CreateGeoLocTransformer(
+        pointer = FFI::GDAL::Alg.CreateGeoLocTransformer(
           base_dataset_ptr,
           geolocation_info_ptr,
           reversed
         )
+
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyGeoLocTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
 
       def destroy!

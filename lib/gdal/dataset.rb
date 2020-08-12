@@ -29,8 +29,8 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
-    def self.open(path, access_flag, shared_open: true)
-      ds = new(path, access_flag, shared_open)
+    def self.open(path, access_flag, shared_open: false)
+      ds = new(path, access_flag, shared_open: shared_open)
 
       if block_given?
         result = yield ds
@@ -39,6 +39,14 @@ module GDAL
       else
         ds
       end
+    end
+
+    def self.new_pointer(dataset, warn_on_nil: true)
+      pointer = GDAL._pointer(GDAL::Dataset, dataset, warn_on_nil: warn_on_nil)
+
+      FFI::AutoPointer.new(pointer, lambda do |ptr|
+        FFI::GDAL::GDAL.GDALClose(ptr) unless ptr.nil? || ptr.null?
+      end)
     end
 
     #---------------------------------------------------------------------------
@@ -55,7 +63,7 @@ module GDAL
     # @param access_flag [String] 'r' or 'w'.
     # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
-    def initialize(path_or_pointer, access_flag, shared_open: true)
+    def initialize(path_or_pointer, access_flag, shared_open: false)
       @c_pointer =
         if path_or_pointer.is_a? String
           file_path = begin
@@ -74,10 +82,6 @@ module GDAL
           path_or_pointer
         end
 
-      ObjectSpace.define_finalizer(@c_pointer, lambda do |ptr|
-        FFI::GDAL::GDAL.GDALClose(ptr) unless ptr.nil? || ptr.null?
-      end)
-
       raise OpenFailure, path_or_pointer if @c_pointer.null?
 
       @geo_transform = nil
@@ -87,7 +91,7 @@ module GDAL
 
     # Close the dataset.
     def close
-      return unless @c_pointer
+      return unless @c_pointer && !@c_pointer.null?
 
       FFI::GDAL::GDAL.GDALClose(@c_pointer)
       @c_pointer = nil
@@ -194,7 +198,6 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
-      geo_transform_pointer.autorelease = false
       FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
@@ -392,18 +395,18 @@ module GDAL
     # Makes a pointer of +band_numbers+.
     #
     # @param band_numbers [Array<Integer>]
-    # @return [Array<FFI::Pointer, Integer>]
+    # @return [Array<FFI::AutoPointer, Integer>]
     def band_numbers_args(band_numbers)
       if band_numbers
         band_count = band_numbers.size
-        band_numbers_ptr = FFI::MemoryPointer.new(:int, band_count)
-        band_numbers_ptr.write_array_of_int(band_numbers)
-      else
-        band_numbers_ptr = nil
-        band_count = 0
-      end
+        ptr = FFI::MemoryPointer.new(:int, band_count)
+        ptr.write_array_of_int(band_numbers)
+        ptr.autorelease = false
 
-      [band_numbers_ptr, band_count]
+        [ptr, band_count]
+      else
+        [FFI::MemoryPointer.new(:int, 0), 0]
+      end
     end
   end
 end

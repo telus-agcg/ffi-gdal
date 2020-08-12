@@ -14,7 +14,11 @@ module GDAL
       # @param source_wkt [String]
       # @param destination_wkt [String]
       def initialize(source_wkt, destination_wkt)
-        @c_pointer = FFI::GDAL::Alg.GDALCreateReprojectionTransformer(source_wkt, destination_wkt)
+        pointer = FFI::GDAL::Alg.GDALCreateReprojectionTransformer(source_wkt, destination_wkt)
+
+        @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
+          FFI::GDAL::Alg.GDALDestroyReprojectionTransformer(ptr) unless ptr.nil? || ptr.null?
+        end)
       end
 
       def destroy!

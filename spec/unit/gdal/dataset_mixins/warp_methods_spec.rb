@@ -12,7 +12,7 @@ RSpec.describe GDAL::Dataset do
 
   after { FileUtils.rm_rf(output_dir) if Dir.exist?(output_dir) }
 
-  subject { described_class.open(source_file_path, 'r', false) }
+  subject { described_class.open(source_file_path, 'r', shared_open: false) }
 
   describe '#reproject_image' do
     let(:dest_dataset) do
