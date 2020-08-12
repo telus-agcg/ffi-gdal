@@ -665,7 +665,13 @@ module OGR
     def initialize_from_pointer(geometry_ptr)
       raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
 
-      @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
+      pointer = GDAL._pointer(OGR::Geometry, geometry_ptr, autorelease: false)
+
+      if pointer.null?
+        raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
+      end
+
+      @c_pointer = pointer
     end
 
     def build_geometry
