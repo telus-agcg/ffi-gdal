@@ -32,9 +32,13 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 - `GDAL::Dataset#geo_transform` ensures the related pointer is cleaned up.
 - Fixed dangling pointer in `GDAL::Options.pointer` when building the string
   list.
-- `GDAL::RasterAttributeTable#initialize` ensures the related pointer is cleaned up.
+- `GDAL::RasterAttributeTable#initialize` ensures the related pointer is cleaned
+  up.
 - `GDAL::Transformers::*` ensure the related pointer is cleaned up.
 - `GDAL::WarpOperation#initialize` ensures the related pointer is cleaned up.
+- `OGR::SpatialReferenceMixins::Exporters#to_pretty_wkt` and `to_wkt` would
+  error when using a spatial ref that didn't have a coordinate system set; it
+  now returns an empty string. (This was possibly only on GDAL >= 3)
 
 ### Removed
 

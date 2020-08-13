@@ -97,11 +97,16 @@ module OGR
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
       #   +EXTENSION+ nodes.
       def to_pretty_wkt(simplify: false)
+        return String.new if @c_pointer.null?
+
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
         ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
-        ogr_err.handle_result
 
-        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        if wkt_ptr_ptr.null?
+          ogr_err.handle_result 'Unable to generate pretty WKT'
+        else
+          GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        end
       end
 
       # @return [String]

@@ -117,15 +117,16 @@ RSpec.describe OGR::SpatialReference do
       it 'returns a well-known text String' do
         expect(subject.to_pretty_wkt).to eq <<~WKT.strip
           GEOGCS["WGS 72",
-              DATUM["WGS_1972",
+              DATUM["World_Geodetic_System_1972",
                   SPHEROID["WGS 72",6378135,298.26,
                       AUTHORITY["EPSG","7043"]],
-                  TOWGS84[0,0,4.5,0,0,0.554,0.2263],
                   AUTHORITY["EPSG","6322"]],
               PRIMEM["Greenwich",0,
                   AUTHORITY["EPSG","8901"]],
               UNIT["degree",0.0174532925199433,
                   AUTHORITY["EPSG","9122"]],
+              AXIS["Latitude",NORTH],
+              AXIS["Longitude",EAST],
               AUTHORITY["EPSG","4322"]]
         WKT
       end
