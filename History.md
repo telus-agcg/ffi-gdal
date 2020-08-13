@@ -45,6 +45,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
     * `OPTGetProjectionMethods`
     * `OPTGetmarameterList`
     * `OPTGetParameterInfo`
+* `GDAL::MajorObject#description=`
 
 ## 1.0.0.beta11 / 2020-06-02
 
