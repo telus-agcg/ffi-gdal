@@ -47,7 +47,7 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe '#help_topic' do
     it 'is http://gdal.org/frmt_gtiff.html' do
-      expect(subject.help_topic).to eq 'http://gdal.org/frmt_gtiff.html'
+      expect(subject.help_topic).to eq 'http://gdal.org/drivers/raster/gtiff.html'
     end
   end
 
