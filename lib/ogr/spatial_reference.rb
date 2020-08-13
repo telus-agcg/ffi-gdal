@@ -134,8 +134,7 @@ module OGR
 
       raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
 
-      @c_pointer = FFI::AutoPointer.new(pointer, SpatialReference.method(:release))
-      # @c_pointer = pointer
+      @c_pointer = pointer
     end
 
     def destroy!

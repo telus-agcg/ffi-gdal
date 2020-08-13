@@ -43,7 +43,9 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(converted_options)
 
-      @c_pointer = FFI::GDAL::GDAL.OGRGeocodeCreateSession(options_ptr)
+      pointer = FFI::GDAL::GDAL.OGRGeocodeCreateSession(options_ptr)
+
+      @c_pointer = FFI::AutoPointer.new(pointer, Geocoder.method(:release))
     end
 
     def destroy!

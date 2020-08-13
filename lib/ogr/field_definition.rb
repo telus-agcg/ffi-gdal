@@ -15,15 +15,18 @@ module OGR
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::FieldType]
     def initialize(name_or_pointer, type)
-      @c_pointer = if name_or_pointer.is_a? String
-                     FFI::OGR::API.OGR_Fld_Create(name_or_pointer, type)
-                   else
-                     name_or_pointer
-                   end
+      pointer = if name_or_pointer.is_a? String
+                  FFI::OGR::API.OGR_Fld_Create(name_or_pointer, type)
+                else
+                  name_or_pointer
+                end
 
-      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
+        raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
 
-      raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      @c_pointer = FFI::AutoPointer.new(pointer, FieldDefinition.method(:release))
+      @c_pointer.autorelease = false
     end
 
     def destroy!

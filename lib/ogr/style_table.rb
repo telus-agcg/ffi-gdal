@@ -17,9 +17,11 @@ module OGR
 
     # @param [FFI::Pointer] c_pointer
     def initialize(c_pointer = nil)
-      @c_pointer = c_pointer || FFI::OGR::API.OGR_STBL_Create
+      pointer = c_pointer || FFI::OGR::API.OGR_STBL_Create
 
-      raise 'Unable to create StyleTable' if @c_pointer.null?
+      raise 'Unable to create StyleTable' if pointer.null?
+
+      @c_pointer = pointer
     end
 
     def destroy!

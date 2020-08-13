@@ -18,15 +18,17 @@ module OGR
     #   a FeatureDefinition (i.e. normal Feature creation) or a Pointer (in the
     #   case a handle to a C OGR Feature needs to be wrapped with this object).
     def initialize(fd_or_pointer)
-      @c_pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
-                     FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
-                   else
-                     fd_or_pointer
-                   end
+      pointer = if fd_or_pointer.is_a? OGR::FeatureDefinition
+                  FFI::OGR::API.OGR_F_Create(fd_or_pointer.c_pointer)
+                else
+                  fd_or_pointer
+                end
 
-      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
+        raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
+      end
 
-      raise OGR::InvalidFeature, "Unable to create Feature with #{fd_or_pointer}"
+      @c_pointer = pointer
     end
 
     def destroy!
@@ -179,6 +181,8 @@ module OGR
     # @return [OGR::FieldDefinition]
     def field_definition(index)
       field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@c_pointer, index)
+      field_pointer.autorelease = false
+
       return nil if field_pointer.null?
 
       OGR::FieldDefinition.new(field_pointer, nil)
@@ -207,6 +211,8 @@ module OGR
     def definition
       feature_defn_ptr = FFI::OGR::API.OGR_F_GetDefnRef(@c_pointer)
       return nil if feature_defn_ptr.null?
+
+      feature_defn_ptr.autorelease = false
 
       OGR::FeatureDefinition.new(feature_defn_ptr)
     end

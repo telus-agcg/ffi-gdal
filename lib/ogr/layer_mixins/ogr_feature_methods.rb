@@ -8,6 +8,8 @@ module OGR
       # @return [OGR::FeatureDefinition,nil]
       def definition
         feature_defn_pointer = FFI::OGR::API.OGR_L_GetLayerDefn(@c_pointer)
+        feature_defn_pointer.autorelease = false
+
         return nil if feature_defn_pointer.null?
 
         # This object should not be modified.

@@ -53,9 +53,7 @@ module GDAL
               "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
       end
 
-      @c_pointer = FFI::AutoPointer.new(pointer, lambda do |ptr|
-        FFI::GDAL::GDAL.GDALDestroyColorTable(ptr) unless ptr.nil? || ptr.null?
-      end)
+      @c_pointer = FFI::AutoPointer.new(pointer, ColorTable.method(:release))
 
       @color_entries = []
 
