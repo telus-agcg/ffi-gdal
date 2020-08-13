@@ -7,7 +7,7 @@ RSpec.describe OGR::SpatialReference do
     it 'sets the LOCAL_CS' do
       expect do
         subject.set_local_cs('darrel')
-      end.to change { subject.to_wkt }.from('').to('LOCAL_CS["darrel"]')
+      end.to change { subject.to_wkt }.from('').to(start_with('LOCAL_CS["darrel"'))
     end
   end
 
@@ -15,7 +15,7 @@ RSpec.describe OGR::SpatialReference do
     it 'sets the PROJCS' do
       expect do
         subject.set_proj_cs('darrel')
-      end.to change { subject.to_wkt }.from('').to('PROJCS["darrel"]')
+      end.to change { subject.to_wkt }.from('').to(start_with('PROJCS["darrel"'))
     end
   end
 
@@ -23,7 +23,7 @@ RSpec.describe OGR::SpatialReference do
     it 'sets the GEOCCS' do
       expect do
         subject.set_geoc_cs('darrel')
-      end.to change { subject.to_wkt }.from('').to('GEOCCS["darrel"]')
+      end.to change { subject.to_wkt }.from('').to(start_with('GEOCCS["darrel"'))
     end
   end
 
@@ -31,8 +31,8 @@ RSpec.describe OGR::SpatialReference do
     context 'valid input' do
       it 'sets the GEOCCS' do
         expect do
-          subject.set_from_user_input('GEOCCS["darrel"]')
-        end.to change { subject.to_wkt }.from('').to('GEOCCS["darrel"]')
+          subject.set_from_user_input('EPSG:900913')
+        end.to change { subject.to_wkt }.from('').to(start_with('PROJCS["Google Maps Global Mercator'))
       end
     end
 

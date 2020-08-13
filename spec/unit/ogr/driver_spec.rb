@@ -80,10 +80,12 @@ RSpec.describe OGR::Driver do
         end
       end
 
-      context 'using a driver that does not support the file type' do
-        it 'raises an OGR::InvalidDataSource' do
-          expect { memory_driver.open(shapefile_path, 'r') }
-            .to raise_exception OGR::InvalidDataSource
+      if GDAL.major_version < 2
+        context 'using a driver that does not support the file type' do
+          it 'raises an OGR::InvalidDataSource' do
+            expect { memory_driver.open(shapefile_path, 'r') }
+              .to raise_exception OGR::InvalidDataSource
+          end
         end
       end
     end

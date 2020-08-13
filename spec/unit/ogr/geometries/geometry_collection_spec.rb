@@ -87,7 +87,7 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         it 'returns WKT with the merged strings' do
-          expect(subject.to_wkt).to eq 'POLYGON ((0 0,0 1,0 2,1 1,1 2,1 3))'
+          expect(subject.to_wkt).to eq 'POLYGON ((0 0,0 1,0 2,1 2,1 3))'
         end
       end
 
@@ -147,7 +147,7 @@ RSpec.describe OGR::GeometryCollection do
 
         it 'returns WKT with the merged strings' do
           expect(subject.to_wkt)
-            .to eq 'POLYGON ((0 0 0,0 1 0,0 2 0,1 1 0,1 2 0,1 3 0,0 0 0))'
+            .to eq 'POLYGON ((0 0 0,0 1 0,0 2 0,1 2 0,0 0 0))'
         end
       end
 

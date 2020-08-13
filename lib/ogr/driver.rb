@@ -82,11 +82,11 @@ module OGR
     # @param access_flag [String] 'r' or 'w'.
     # @return [OGR::DataSource, nil]
     def open(file_name, access_flag = 'r')
-      update = OGR._boolean_access_flag(access_flag)
-
       data_source_ptr = if GDAL.major_version >= 2
-                          FFI::GDAL::GDAL.GDALOpenEx(file_name, update, nil, nil, nil)
+                          access_flag = OGR._open_flag(access_flag)
+                          FFI::GDAL::GDAL.GDALOpenEx(file_name, access_flag, nil, nil, nil)
                         else
+                          update = OGR._boolean_access_flag(access_flag)
                           FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
                         end
 
