@@ -68,13 +68,13 @@ RSpec.describe OGR::SpatialReference do
       subject { described_class.new_from_epsg(4322) }
 
       it 'returns a PROJ4 String' do
-        expect(subject.to_proj4).to eq('+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs ')
+        expect(subject.to_proj4).to eq('+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs')
       end
     end
 
     context 'empty SRS' do
-      it 'raises a GDAL::UnsupportedOperation' do
-        expect { subject.to_proj4 }.to raise_exception GDAL::UnsupportedOperation
+      it 'raises a OGR::Failure' do
+        expect { subject.to_proj4 }.to raise_exception OGR::Failure
       end
     end
   end
@@ -84,10 +84,17 @@ RSpec.describe OGR::SpatialReference do
       subject { described_class.new_from_epsg(4322) }
 
       let(:expected_wkt) do
-        'GEOGCS["WGS 72",DATUM["WGS_1972",SPHEROID["WGS 72",6378135,298.26,' \
-          'AUTHORITY["EPSG","7043"]],TOWGS84[0,0,4.5,0,0,0.554,0.2263],' \
-          'AUTHORITY["EPSG","6322"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],' \
-          'UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],' \
+        'GEOGCS["WGS 72",' \
+          'DATUM["World_Geodetic_System_1972",' \
+            'SPHEROID["WGS 72",6378135,298.26,' \
+              'AUTHORITY["EPSG","7043"]],' \
+            'AUTHORITY["EPSG","6322"]],' \
+          'PRIMEM["Greenwich",0,' \
+            'AUTHORITY["EPSG","8901"]],' \
+          'UNIT["degree",0.0174532925199433,' \
+            'AUTHORITY["EPSG","9122"]],' \
+          'AXIS["Latitude",NORTH],' \
+          'AXIS["Longitude",EAST],' \
           'AUTHORITY["EPSG","4322"]]'
       end
 

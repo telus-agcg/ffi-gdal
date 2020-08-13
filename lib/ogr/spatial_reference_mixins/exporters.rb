@@ -73,8 +73,13 @@ module OGR
         }
       end
 
+      # @param options
+      # @option options [Boolean] :multiline (defaults to false)
+      # @option options [String] :format SFSQL/WKT1_SIMPLE/WKT1/WKT1_GDAL/WKT1_ESRI/WKT2_2015/WKT2_2018/WKT2/DEFAULT
       # @return [String]
-      def to_wkt
+      def to_wkt(options = {})
+        return String.new if @c_pointer.null?
+
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
 
         ogr_err = if GDAL.major_version >= 3
@@ -82,9 +87,11 @@ module OGR
                   else
                     FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
                   end
-        ogr_err.handle_result
-
-        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        if wkt_ptr_ptr.null?
+          ogr_err.handle_result 'Unable to generate WKT'
+        else
+          GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        end
       end
 
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
