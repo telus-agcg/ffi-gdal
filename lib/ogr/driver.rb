@@ -18,14 +18,22 @@ module OGR
 
     # @return [Integer]
     def self.count
-      FFI::OGR::API.OGRGetDriverCount
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALGetDriverCount
+      else
+        FFI::OGR::API.OGRGetDriverCount
+      end
     end
 
     # @param name [String] Short name of the registered OGRDriver.
     # @return [OGR::Driver]
     # @raise [OGR::DriverNotFound] if a driver with +name+ isn't found.
     def self.by_name(name)
-      driver_ptr = FFI::OGR::API.OGRGetDriverByName(name)
+      driver_ptr = if GDAL.major_version >= 2
+                     FFI::GDAL::GDAL.GDALGetDriverByName(name)
+                   else
+                     FFI::OGR::API.OGRGetDriverByName(name)
+                   end
       raise OGR::DriverNotFound, name if driver_ptr.null?
 
       new(driver_ptr)
@@ -38,7 +46,11 @@ module OGR
     def self.at_index(index)
       raise OGR::DriverNotFound, index if index > count
 
-      driver_ptr = FFI::OGR::API.OGRGetDriver(index)
+      driver_ptr = if GDAL.major_version >= 2
+                     FFI::GDAL::GDAL.GDALGetDriver(index)
+                   else
+                     FFI::OGR::API.OGRGetDriver(index)
+                   end
       return nil if driver_ptr.null?
       raise OGR::DriverNotFound, index if driver_ptr.null?
 
@@ -72,7 +84,11 @@ module OGR
     def open(file_name, access_flag = 'r')
       update = OGR._boolean_access_flag(access_flag)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
+      data_source_ptr = if GDAL.major_version >= 2
+                          FFI::GDAL::GDAL.GDALOpenEx(file_name, update, nil, nil, nil)
+                        else
+                          FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
+                        end
 
       raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}" if data_source_ptr.null?
 
@@ -93,8 +109,27 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@c_pointer,
-                                                              file_name, options_ptr)
+      data_source_ptr =
+        if GDAL.major_version >= 2
+          # Per the docs: In GDAL 2, the arguments nXSize, nYSize and nBands can be passed to 0 when
+          # creating a vector-only dataset for a compatible driver.
+          FFI::GDAL::GDAL.GDALCreate(
+            @c_pointer,
+            file_name,
+            0,
+            0,
+            0,
+            0,
+            options_ptr
+          )
+        else
+          FFI::OGR::API.OGR_Dr_CreateDataSource(
+            @c_pointer,
+            file_name,
+            options_ptr
+          )
+        end
+
       return nil if data_source_ptr.null?
 
       ds = OGR::DataSource.new(data_source_ptr, 'w')
@@ -110,7 +145,11 @@ module OGR
         raise OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
       end
 
-      ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
+      ogr_err = if GDAL.major_version >= 2
+                  FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+                else
+                  FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
+                end
 
       ogr_err.handle_result
     end
@@ -125,9 +164,29 @@ module OGR
       raise OGR::InvalidDataSource, source_data_source if source_ptr.nil? || source_ptr.null?
 
       options_ptr = GDAL::Options.pointer(options)
+      strict = false
+      progress_function = nil
+      progress_data = nil
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_CopyDataSource(@c_pointer,
-                                                            source_ptr, new_file_name, options_ptr)
+      data_source_ptr = if GDAL.major_version >= 2
+                          FFI::GDAL::GDAL.GDALCreateCopy(
+                            @c_pointer,
+                            new_file_name,
+                            source_ptr,
+                            strict,
+                            options_ptr,
+                            progress_function,
+                            progress_data
+                          )
+                        else
+                          FFI::OGR::API.OGR_Dr_CopyDataSource(
+                            @c_pointer,
+                            source_ptr,
+                            new_file_name,
+                            options_ptr
+                          )
+                        end
+
       return nil if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr, nil)
@@ -136,7 +195,11 @@ module OGR
     # @param [String] capability
     # @return [Boolean]
     def test_capability(capability)
-      FFI::OGR::API.OGR_Dr_TestCapability(@c_pointer, capability)
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALGetMetadataItem(@c_pointer, capability, nil) == 'YES'
+      else
+        FFI::OGR::API.OGR_Dr_TestCapability(@c_pointer, capability)
+      end
     end
   end
 end

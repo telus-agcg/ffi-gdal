@@ -35,7 +35,7 @@ module OGR
 
     RADIAN_TO_RADIAN = 1.0
 
-    if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 3
+    if GDAL.major_version < 3
       # @return [Array<String>]
       def self.projection_methods(strip_underscores: false)
         methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods

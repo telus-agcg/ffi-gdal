@@ -40,7 +40,12 @@ module OGR
         if path_or_pointer.is_a?(String)
           uri = URI.parse(path_or_pointer)
           file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+
+          if GDAL.major_version >= 2
+            FFI::GDAL::GDAL.GDALOpenEx(file_path, OGR._open_flag(access_flag, shared_mode: false), nil, nil, nil)
+          else
+            FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+          end
         else
           path_or_pointer
         end
@@ -63,12 +68,20 @@ module OGR
     #
     # @return [String]
     def name
-      FFI::OGR::API.OGR_DS_GetName(@c_pointer)
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALGetDescription(@c_pointer)
+      else
+        FFI::OGR::API.OGR_DS_GetName(@c_pointer)
+      end
     end
 
     # @return [OGR::Driver]
     def driver
-      driver_ptr = FFI::OGR::API.OGR_DS_GetDriver(@c_pointer)
+      driver_ptr = if GDAL.major_version >= 2
+                     FFI::GDAL::GDAL.GDALGetDatasetDriver(@c_pointer)
+                   else
+                     FFI::OGR::API.OGR_DS_GetDriver(@c_pointer)
+                   end
       return nil if driver_ptr.nil?
 
       OGR::Driver.new(driver_ptr)
@@ -76,14 +89,23 @@ module OGR
 
     # @return [Integer]
     def layer_count
-      FFI::OGR::API.OGR_DS_GetLayerCount(@c_pointer)
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALDatasetGetLayerCount(@c_pointer)
+      else
+        FFI::OGR::API.OGR_DS_GetLayerCount(@c_pointer)
+      end
     end
 
     # @param index [Integer] 0-offset index of the layer to retrieve.
     # @return [OGR::Layer]
     def layer(index)
       @layers.fetch(index) do
-        layer_pointer = FFI::OGR::API.OGR_DS_GetLayer(@c_pointer, index)
+        layer_pointer = if GDAL.major_version >= 2
+                          FFI::GDAL::GDAL.GDALDatasetGetLayer(@c_pointer, index)
+                        else
+                          FFI::OGR::API.OGR_DS_GetLayer(@c_pointer, index)
+                        end
+
         return nil if layer_pointer.null?
 
         l = OGR::Layer.new(layer_pointer)
@@ -96,7 +118,11 @@ module OGR
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)
-      layer_pointer = FFI::OGR::API.OGR_DS_GetLayerByName(@c_pointer, name)
+      layer_pointer = if GDAL.major_version >= 2
+                        FFI::GDAL::GDAL.GDALDatasetGetLayerByName(@c_pointer, name)
+                      else
+                        FFI::OGR::API.OGR_DS_GetLayerByName(@c_pointer, name)
+                      end
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
@@ -114,8 +140,23 @@ module OGR
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name,
-                                                   spatial_ref_ptr, geometry_type, options_obj)
+      layer_ptr = if GDAL.major_version >= 2
+                    FFI::GDAL::GDAL.GDALDatasetCreateLayer(
+                      @c_pointer,
+                      name,
+                      spatial_ref_ptr,
+                      geometry_type,
+                      options_obj
+                    )
+                  else
+                    FFI::OGR::API.OGR_DS_CreateLayer(
+                      @c_pointer,
+                      name,
+                      spatial_ref_ptr,
+                      geometry_type,
+                      options_obj
+                    )
+                  end
 
       raise OGR::InvalidLayer, "Unable to create layer '#{name}'." unless layer_ptr
 
@@ -132,8 +173,22 @@ module OGR
       source_layer_ptr = GDAL._pointer(OGR::Layer, source_layer)
       options_ptr = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::OGR::API.OGR_DS_CopyLayer(@c_pointer, source_layer_ptr,
-                                                 new_name, options_ptr)
+      layer_ptr = if GDAL.major_version >= 2
+                    FFI::GDAL::GDAL.GDALDatasetCopyLayer(
+                      @c_pointer,
+                      source_layer_ptr,
+                      new_name,
+                      options_ptr
+                    )
+                  else
+                    FFI::OGR::API.OGR_DS_CopyLayer(
+                      @c_pointer,
+                      source_layer_ptr,
+                      new_name,
+                      options_ptr
+                    )
+                  end
+
       return nil if layer_ptr.null?
 
       OGR::Layer.new(layer_ptr)
@@ -144,7 +199,11 @@ module OGR
     def delete_layer(index)
       raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
 
-      ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
+      ogr_err = if GDAL.major_version >= 2
+                  FFI::GDAL::GDAL.GDALDatasetDeleteLayer(@c_pointer, index)
+                else
+                  FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
+                end
 
       ogr_err.handle_result "Unable to delete layer #{index}"
     end
@@ -158,8 +217,21 @@ module OGR
     def execute_sql(command, spatial_filter = nil, dialect = nil)
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
-      layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr,
-                                                  dialect)
+      layer_ptr = if GDAL.major_version >= 2
+                    FFI::GDAL::GDAL.GDALDatasetExecuteSQL(
+                      @c_pointer,
+                      command,
+                      geometry_ptr,
+                      dialect
+                    )
+                  else
+                    FFI::OGR::API.OGR_DS_ExecuteSQL(
+                      @c_pointer,
+                      command,
+                      geometry_ptr,
+                      dialect
+                    )
+                    end
 
       return nil if layer_ptr.null?
 
@@ -171,7 +243,12 @@ module OGR
     # @param layer [OGR::Layer, FFI::Pointer]
     def release_result_set(layer)
       layer_ptr = GDAL._pointer(OGR::Layer, layer)
-      FFI::OGR::API.OGR_DS_ReleaseResultSet(@c_pointer, layer_ptr)
+
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALDatasetReleaseResultSet(@c_pointer, layer_ptr)
+      else
+        FFI::OGR::API.OGR_DS_ReleaseResultSet(@c_pointer, layer_ptr)
+      end
     end
 
     # @return [OGR::StyleTable, nil]
@@ -200,7 +277,11 @@ module OGR
     #   ODsCCurveGeometries.
     # @return [Boolean]
     def test_capability(capability)
-      FFI::OGR::API.OGR_DS_TestCapability(@c_pointer, capability)
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALDatasetTestCapability(@c_pointer, capability)
+      else
+        FFI::OGR::API.OGR_DS_TestCapability(@c_pointer, capability)
+      end
     end
 
     # @return [Boolean]

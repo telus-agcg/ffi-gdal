@@ -21,6 +21,22 @@ module OGR
         end
       end
 
+      def _open_flag(access_flag, shared_mode: false)
+        driver_kind_flag = FFI::GDAL::GDAL::GDAL_OF_VECTOR
+
+        access_mode_flag = case access_flag
+                           when 'w' then FFI::GDAL::GDAL::GDAL_OF_UPDATE
+                           when 'r' then FFI::GDAL::GDAL::GDAL_OF_READONLY
+                           else raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
+                           end
+
+        shared_mode_flag = shared_mode ? FFI::GDAL::GDAL::GDAL_OF_SHARED : 0
+
+        verbose_error_flag = FFI::GDAL::GDAL::GDAL_OF_VERBOSE_ERROR
+
+        driver_kind_flag & access_mode_flag & shared_mode_flag & verbose_error_flag
+      end
+
       # OGR's time zone rules:
       #   * 0 = unknown
       #   * 1 = local time

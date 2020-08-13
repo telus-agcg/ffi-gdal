@@ -57,8 +57,8 @@ module FFI
       attach_function :OGR_G_ForceToMultiLineString, %i[OGRGeometryH], :OGRGeometryH
 
       attach_function :OGR_G_GetDimension, %i[OGRGeometryH], :int
-      attach_function :OGR_G_GetCoordinateDimension, %i[OGRGeometryH], :int
-      attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
+      attach_function :OGR_G_GetCoordinateDimension, %i[OGRGeometryH], :int # deprecated
+      attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void # deprecated
       attach_function :OGR_G_Clone, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_GetEnvelope,
                       [:OGRGeometryH, FFI::OGR::Envelope.ptr],
@@ -455,29 +455,54 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # DataSource-related
       # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
-      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string
-      attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
-      attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
-      attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH
-      attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
-      attach_function :OGR_DS_GetDriver, %i[OGRDataSourceH], :OGRSFDriverH
-      attach_function :OGR_DS_CreateLayer,
-                      [
-                        :OGRDataSourceH,
-                        :string,
-                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
-                        FFI::OGR::Core::WKBGeometryType, :pointer
-                      ],
-                      :OGRLayerH
-      attach_function :OGR_DS_CopyLayer,
-                      %i[OGRDataSourceH OGRLayerH string pointer],
-                      :OGRLayerH
-      attach_function :OGR_DS_TestCapability, %i[OGRDataSourceH string], :bool
-      attach_function :OGR_DS_ExecuteSQL,
-                      %i[OGRDataSourceH string OGRGeometryH string],
-                      :OGRLayerH
-      attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 2
+        # Replaced with GDALDatasetGetLayer
+        attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
+
+        # Replaced with GDALDatasetGetLayerByName
+        attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH
+
+        # Replaced with GDALDatasetGetLayerCount
+        attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
+
+        # Replaced with GDALGetDescription
+        attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string
+
+        # Replaced with GDALDatasetCopyLayer
+        attach_function :OGR_DS_CopyLayer,
+                        %i[OGRDataSourceH OGRLayerH string pointer],
+                        :OGRLayerH
+
+        # Replaced with GDALDatasetCreateLayer
+        attach_function :OGR_DS_CreateLayer,
+                        [
+                          :OGRDataSourceH,
+                          :string,
+                          FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                          FFI::OGR::Core::WKBGeometryType, :pointer
+                        ],
+                        :OGRLayerH
+
+        # Replaced with GDALDatasetDeleteLayer
+        attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
+
+        # Replaced with GDALClose
+        attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
+
+        # Replaced with GDALDatasetExecuteSQL
+        attach_function :OGR_DS_ExecuteSQL,
+                        %i[OGRDataSourceH string OGRGeometryH string],
+                        :OGRLayerH
+
+        # Replaced with GDALDatasetReleaseResultSet
+        attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
+
+        # Replaced with GDALDatasetTestCapability
+        attach_function :OGR_DS_TestCapability, %i[OGRDataSourceH string], :bool
+
+        # Replaced by GDALGetDatasetDriver
+        attach_function :OGR_DS_GetDriver, %i[OGRDataSourceH], :OGRSFDriverH
+      end
 
       attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core::Err
       attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
@@ -490,13 +515,25 @@ module FFI
       # Driver-related
       # ~~~~~~~~~~~~~~~~
       attach_function :OGR_Dr_GetName, %i[OGRSFDriverH], :string
-      attach_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
-      attach_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :bool
-      attach_function :OGR_Dr_CreateDataSource, %i[OGRSFDriverH string pointer], :OGRDataSourceH
-      attach_function :OGR_Dr_CopyDataSource,
-                      %i[OGRSFDriverH OGRDataSourceH string pointer],
-                      :OGRDataSourceH
-      attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
+
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 2
+        # Replaced by GDALOpenEx
+        attach_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
+
+        # Replaced by GDALGetMetadataItem
+        attach_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :bool
+
+        # Replaced by GDALCreateCopy
+        attach_function :OGR_Dr_CopyDataSource,
+                        %i[OGRSFDriverH OGRDataSourceH string pointer],
+                        :OGRDataSourceH
+
+        # Replaced by GDALCreate
+        attach_function :OGR_Dr_CreateDataSource, %i[OGRSFDriverH string pointer], :OGRDataSourceH
+
+        # Replaced by GDALDeleteDataset
+        attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
+      end
 
       # ~~~~~~~~~~~~~~~~
       # Style Manager-related
@@ -547,18 +584,34 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Main functions
       # ~~~~~~~~~~~~~~~~
-      attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i < 2
+        # Replaced by GDALGetDriver
+        attach_function :OGRGetDriver, %i[int], :OGRSFDriverH
+
+        # Replaced by GDALGetDriverByName
+        attach_function :OGRGetDriverByName, %i[string], :OGRSFDriverH
+
+        # Replaced by GDALGetDriverCount
+        attach_function :OGRGetDriverCount, [], :int
+
+        # Replaced by GDALOpenEx
+        attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
+
+        # Replaced by GDALOpenEx
+        attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
+
+        # Replaced by GDALAllRegister
+        attach_function :OGRRegisterAll, [], :void
+
+        # Replaced by GDALClose
+        attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
+      end
+
       attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
       attach_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
-      attach_function :OGRGetDriverCount, [], :int
-      attach_function :OGRGetDriver, %i[int], :OGRSFDriverH
-      attach_function :OGRGetDriverByName, %i[string], :OGRSFDriverH
       attach_function :OGRGetOpenDSCount, [], :int
       attach_function :OGRGetOpenDS, %i[int], :OGRDataSourceH
 
-      attach_function :OGRRegisterAll, [], :void
       attach_function :OGRCleanupAll, [], :void
     end
   end

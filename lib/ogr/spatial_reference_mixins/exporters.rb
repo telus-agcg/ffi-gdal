@@ -76,10 +76,11 @@ module OGR
       # @return [String]
       def to_wkt
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = if GDAL.major_version < 3
-                    FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
+
+        ogr_err = if GDAL.major_version >= 3
+                    FFI::OGR::SRSAPI.OSRExportToWktEx(@c_pointer, wkt_ptr_ptr, GDAL::Options.pointer(options))
                   else
-                    FFI::OGR::SRSAPI.OSRExportToWktEx(@c_pointer, wkt_ptr_ptr, nil)
+                    FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
                   end
         ogr_err.handle_result
 

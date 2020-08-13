@@ -10,6 +10,20 @@ module FFI
       extend ::FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
+      GDAL_OF_ALL = 0x00
+      GDAL_OF_ARRAY_BLOCK_ACCESS = 0x100
+      GDAL_OF_DEFAULT_BLOCK_ACCESS = 0
+      GDAL_OF_GNM = 0x08
+      GDAL_OF_HASHSET_BLOCK_ACCESS = 0x200
+      GDAL_OF_INTERNAL = 0x80
+      GDAL_OF_MULTIDIM_RASTER = 0x10
+      GDAL_OF_RASTER = 0x02
+      GDAL_OF_READONLY = 0x00
+      GDAL_OF_SHARED = 0x20
+      GDAL_OF_UPDATE = 0x01
+      GDAL_OF_VECTOR = 0x04
+      GDAL_OF_VERBOSE_ERROR = 0x40
+
       # ----------------------------------------------------------------
       # Enums
       # ----------------------------------------------------------------
@@ -102,6 +116,11 @@ module FFI
       typedef :pointer, :GDALRasterAttributeTableH
       typedef :pointer, :GDALAsyncReaderH
 
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i >= 2
+        typedef :pointer, :OGRLayerH
+        typedef :pointer, :OGRGeometryH
+      end
+
       # When using, make sure to return +true+ if the operation should continue;
       #   +false+ if the user has cancelled.
       callback :GDALProgressFunc,
@@ -165,6 +184,10 @@ module FFI
       # Dataset
       # ~~~~~~~~~~~~~~~~~~~
       # Class-level functions
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i >= 2
+        attach_function :GDALOpenEx, [:string, Access, :pointer, :pointer, :pointer], :GDALDatasetH
+      end
+
       attach_function :GDALOpen, [:string, Access], :GDALDatasetH
       attach_function :GDALOpenShared,
                       [:string, Access],
@@ -280,36 +303,38 @@ module FFI
                       ], FFI::CPL::Error::CPLErr
 
       # OGR datasets.  Not found in v1.11.1
-      # attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
-      # attach_function :GDALDatasetGetLayer, [:GDALDatasetH, :int], :OGRLayerH
-      # attach_function :GDALDatasetGetLayerByName, [:GDALDatasetH, :string], :OGRLayerH
-      # attach_function :GDALDatasetDeleteLayer, [:GDALDatasetH, :int], FFI::OGR::::OGRErr
-      # attach_function :GDALDatasetCreateLayer,
-      #   [
-      #     :GDALDatasetH,
-      #     :string,
-      #     FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
-      #     FFI::OGR::::OGRwkbGeometryType,
-      #     :pointer
-      #   ],
-      #   :OGRLayerH
-      # attach_function :GDALDatasetCopyLayer,
-      #   [:GDALDatasetH, :OGRLayerH, :string, :pointer],
-      #   :OGRLayerH
-      # attach_function :GDALDatasetTestCapability, [:GDALDatasetH, :string], :int
-      # attach_function :GDALDatasetExecuteSQL,
-      #   [:GDALDatasetH, :string, :OGRGeometryH, :string],
-      #   :OGRLayerH
-      # attach_function :GDALDatasetReleaseResultSet,
-      #   %i[GDALDatasetH OGRLayerH],
-      #   :void
-      # attach_function :GDALDatasetGetStyleTable, [:GDALDatasetH], :OGRStyleTableH
-      # attach_function :GDALDatasetSetStyleTableDirectly,
-      #   %i[GDALDatasetH OGRStyleTableH],
-      #   :void
-      # attach_function :GDALDatasetSetStyleTable,
-      #   %i[GDALDatasetH OGRStyleTableH],
-      #   :void
+      if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i >= 2
+        attach_function :GDALDatasetGetLayerCount, [:GDALDatasetH], :int
+        attach_function :GDALDatasetGetLayer, %i[GDALDatasetH int], :OGRLayerH
+        attach_function :GDALDatasetGetLayerByName, %i[GDALDatasetH string], :OGRLayerH
+        attach_function :GDALDatasetDeleteLayer, %i[GDALDatasetH int], FFI::OGR::Core::Err
+        attach_function :GDALDatasetCreateLayer,
+                        [
+                          :GDALDatasetH,
+                          :string,
+                          FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                          FFI::OGR::Core::WKBGeometryType,
+                          :pointer
+                        ],
+                        :OGRLayerH
+        attach_function :GDALDatasetCopyLayer,
+                        %i[GDALDatasetH OGRLayerH string pointer],
+                        :OGRLayerH
+        attach_function :GDALDatasetTestCapability, %i[GDALDatasetH string], :bool
+        attach_function :GDALDatasetExecuteSQL,
+                        %i[GDALDatasetH string OGRGeometryH string],
+                        :OGRLayerH
+        attach_function :GDALDatasetReleaseResultSet,
+                        %i[GDALDatasetH OGRLayerH],
+                        :void
+        # attach_function :GDALDatasetGetStyleTable, [:GDALDatasetH], :OGRStyleTableH
+        # attach_function :GDALDatasetSetStyleTableDirectly,
+        #                 %i[GDALDatasetH OGRStyleTableH],
+        #                 :void
+        # attach_function :GDALDatasetSetStyleTable,
+        #                 %i[GDALDatasetH OGRStyleTableH],
+        #                 :void
+      end
 
       attach_function :GDALCreateDatasetMaskBand, %i[GDALDatasetH int], FFI::CPL::Error::CPLErr
       attach_function :GDALDatasetCopyWholeRaster,

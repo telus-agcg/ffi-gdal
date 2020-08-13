@@ -7,7 +7,11 @@ require_relative 'ogr/exceptions'
 module OGR
   include InternalHelpers
 
-  FFI::OGR::API.OGRRegisterAll
+  if FFI::GDAL.GDALVersionInfo('RELEASE_NAME')[0].to_i >= 2
+    FFI::GDAL::GDAL.GDALAllRegister
+  else
+    FFI::OGR::API.OGRRegisterAll
+  end
 
   def self.ogr_require(path)
     File.expand_path(path, __dir__)

@@ -2,6 +2,7 @@
 
 require 'date'
 require_relative '../ogr'
+require_relative '../gdal'
 
 module OGR
   class Field

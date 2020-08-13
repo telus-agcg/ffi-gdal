@@ -13,7 +13,11 @@ RSpec.describe OGR::SpatialReference do
 
       it 'does not treat as lat/lon' do
         subject.import_from_epsg(4326)
-        expect(subject.epsg_treats_as_lat_long?).to eq false
+        if GDAL.major_version >= 3
+          expect(subject.epsg_treats_as_lat_long?).to eq true
+        else
+          expect(subject.epsg_treats_as_lat_long?).to eq false
+        end
       end
     end
 
