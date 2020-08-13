@@ -39,6 +39,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 - `OGR::SpatialReferenceMixins::Exporters#to_pretty_wkt` and `to_wkt` would
   error when using a spatial ref that didn't have a coordinate system set; it
   now returns an empty string. (This was possibly only on GDAL >= 3)
+- `OGR::SpatialReferenceMixins::Importers#new_from_epsga` now calls
+  `import_from_epsga` instead of `import_from_epsg`.
 
 ### Removed
 

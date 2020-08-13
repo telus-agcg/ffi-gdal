@@ -21,7 +21,7 @@ module OGR
         # @return [OGR::SpatialReference]
         def new_from_epsga(code)
           srs = new
-          srs.import_from_epsg(code)
+          srs.import_from_epsga(code)
 
           srs
         end
