@@ -11,6 +11,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 - `GDAL::RasterAttributeTable.new_pointer`
 - `GDAL::VersionInfo#major_version`
 - `FFI::OGR::SRSAPI.OSRExportToWktEx` for GDAL 3.
+- Added class method `release` to classes & modules that might need to
+  auto-release their pointers.
 
 ### Changed
 

@@ -8,6 +8,11 @@ module OGR
     # @param value [Boolean]
     attr_writer :read_only
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      FFI::OGR::API.OGR_GFld_Destroy(pointer) unless pointer.nil? || pointer.null?
+    end
+
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::API::WKBGeometryType]
     def initialize(name_or_pointer, type = :wkbUnknown)
@@ -32,9 +37,7 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_GFld_Destroy(@c_pointer)
+      GeometryFieldDefinition.release(@c_pointer)
       @c_pointer = nil
     end
 

@@ -7,6 +7,11 @@ module OGR
     # @return [FFI::Pointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      FFI::OGR::API.OGR_Fld_Destroy(pointer) unless pointer.nil? || pointer.null?
+    end
+
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::FieldType]
     def initialize(name_or_pointer, type)
@@ -22,9 +27,8 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
+      FieldDefinition.release(@c_pointer)
 
-      FFI::OGR::API.OGR_Fld_Destroy(@c_pointer)
       @c_pointer = nil
     end
 

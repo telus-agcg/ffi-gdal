@@ -136,6 +136,13 @@ module OGR
       def merge_geometry_types(main, extra)
         FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
       end
+
+      # @param pointer [FFI::Pointer]
+      def release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::OGR::API.OGR_G_DestroyGeometry(pointer)
+      end
     end
 
     extend ClassMethods
@@ -154,9 +161,7 @@ module OGR
     attr_reader :c_pointer
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_G_DestroyGeometry(@c_pointer)
+      self.class.release(@c_pointer)
       @c_pointer = nil
     end
 

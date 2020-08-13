@@ -5,6 +5,13 @@ require_relative '../ogr'
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html
   class Geocoder
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.OGRGeocodeDestroySession(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C geocoding session.
     attr_reader :c_pointer
 
@@ -40,9 +47,7 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::GDAL::GDAL.OGRGeocodeDestroySession(@c_pointer)
+      Geocoder.release(@c_pointer)
       @c_pointer = nil
     end
 

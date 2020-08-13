@@ -24,22 +24,23 @@ module GDAL
       end)
     end
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return if pointer.nil? || pointer.null?
+
+      FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(pointer)
+    end
+
     # @return [FFI::Pointer] The C pointer that represents the C RAT.
     attr_reader :c_pointer
 
     # @param pointer [FFI::Pointer]
     def initialize(pointer = nil)
-      c_pointer = pointer || FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
-
-      @c_pointer = FFI::AutoPointer.new(c_pointer, lambda do |ptr|
-        FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(ptr) unless ptr.nil? || ptr.null?
-      end)
+      @c_pointer = pointer || FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(@c_pointer)
+      RasterAttributeTable.release(@c_pointer)
       @c_pointer = nil
     end
 

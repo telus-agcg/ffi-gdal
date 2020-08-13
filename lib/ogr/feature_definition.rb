@@ -5,6 +5,13 @@ require_relative '../ogr'
 
 module OGR
   class FeatureDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer || pointer.null?
+
+      FFI::OGR::API.OGR_FD_Release(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer of the C FeatureDefn.
     attr_reader :c_pointer
 
@@ -25,9 +32,7 @@ module OGR
     end
 
     def release!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_FD_Release(@c_pointer)
+      FeatureDefinition.release(@c_pointer)
       @c_pointer = nil
     end
 

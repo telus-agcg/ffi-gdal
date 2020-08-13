@@ -29,6 +29,17 @@ module OGR
       end
     end
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer&.null?
+
+      if GDAL.major_version >= 2
+        FFI::GDAL::GDAL.GDALClose(pointer)
+      else
+        FFI::OGR::API.OGRReleaseDataSource(pointer)
+      end
+    end
+
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
@@ -57,9 +68,6 @@ module OGR
 
     # Closes opened data source and releases allocated resources.
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
       @c_pointer = nil
     end
     alias close destroy!

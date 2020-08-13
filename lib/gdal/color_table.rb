@@ -30,6 +30,13 @@ module GDAL
       end)
     end
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.GDALDestroyColorTable(pointer)
+    end
+
     # @param palette_interp_or_pointer [FFI::GDAL::PaletteInterp,
     #   FFI::Pointer]
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
@@ -63,9 +70,7 @@ module GDAL
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::GDAL::GDAL.GDALDestroyColorTable(@c_pointer)
+      ColorTable.release(@c_pointer)
       @c_pointer = nil
     end
 

@@ -6,6 +6,11 @@ require_relative '../gdal'
 
 module OGR
   class Feature
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      FFI::OGR::API.OGR_F_Destroy(pointer) unless pointer.nil? || pointer.null?
+    end
+
     # @return [FFI::Pointer] C pointer of the C Feature.
     attr_reader :c_pointer
 
@@ -25,9 +30,7 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_F_Destroy(@c_pointer)
+      Feature.release(@c_pointer)
       @c_pointer = nil
     end
 

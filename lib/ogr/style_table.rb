@@ -5,6 +5,13 @@ require_relative '../ogr'
 
 module OGR
   class StyleTable
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_STBL_Destroy(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C style table.
     attr_reader :c_pointer
 
@@ -16,9 +23,7 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::OGR::API.OGR_STBL_Destroy(@c_pointer)
+      StyleTable.release(@c_pointer)
       @c_pointer = nil
     end
 

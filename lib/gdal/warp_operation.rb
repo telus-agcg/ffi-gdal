@@ -4,6 +4,13 @@ require_relative '../gdal'
 
 module GDAL
   class WarpOperation
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::Warper.GDALDestroyWarpOperation(pointer)
+    end
+
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
@@ -18,9 +25,7 @@ module GDAL
     end
 
     def destroy!
-      return unless @c_pointer
-
-      FFI::GDAL::Warper.GDALDestroyWarpOperation(@c_pointer)
+      WarpOperation.release(@c_pointer)
       @c_pointer = nil
     end
 

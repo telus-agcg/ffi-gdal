@@ -103,6 +103,7 @@ module OGR
       FFI::OGR::SRSAPI.OSRCleanup
     end
 
+    # @param pointer [FFI::Pointer]
     def self.release(pointer)
       FFI::OGR::SRSAPI.OSRRelease(pointer) if pointer && !pointer.null?
     end
