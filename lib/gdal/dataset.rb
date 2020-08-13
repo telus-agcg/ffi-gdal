@@ -405,7 +405,10 @@ module GDAL
 
         [ptr, band_count]
       else
-        [FFI::MemoryPointer.new(:int, 0), 0]
+        pointer = FFI::MemoryPointer.new(:int, 0)
+        pointer.autorelease = false
+
+        [pointer, 0]
       end
     end
   end
