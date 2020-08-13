@@ -10,6 +10,38 @@ module FFI
       extend ::FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
+      # Dataset capabilities
+      ODS_C_CREATE_LAYER = 'CreateLayer'
+      ODS_C_DELETE_LAYER = 'DeleteLayer'
+      ODS_C_CREATE_GEOM_FIELD_AFTER_CREATE_LAYER = 'CreateGeomFieldAfterCreateLayer'
+      ODS_C_CURVE_GEOMETRIES = 'CurveGeometries'
+      ODS_C_TRANSACTIONS = 'Transactions'
+      ODS_C_EMULATED_TRANSACTIONS = 'EmulatedTransactions'
+      ODS_C_RANDOM_LAYER_READ = 'RandomLayerRead'
+      ODS_C_RANDOM_LAYER_WRITE = 'RandomLayerWrite'
+
+      # Layer capabilities
+      OL_C_RANDOM_READ = 'RandomRead'
+      OL_C_SEQUENTIAL_WRITE = 'SequentialWrite'
+      OL_C_RANDOM_WRITE = 'RandomWrite'
+      OL_C_FAST_SPATIAL_FILTER = 'FastSpatialFilter'
+      OL_C_FAST_FEATURE_COUNT = 'FastFeatureCount'
+      OL_C_FAST_GET_EXTENT = 'FastGetExtent'
+      OL_C_FAST_SET_NEXT_BY_INDEX = 'FastSetNextByIndex'
+      OL_C_CREATE_FIELD = 'CreateField'
+      OL_C_CREATE_GEOM_FIELD = 'CreateGeomField'
+      OL_C_DELETE_FIELD = 'DeleteField'
+      OL_C_REORDER_FIELDS = 'ReorderFields'
+      OL_C_ALTER_FIELD_DEFN = 'AlterFieldDefn'
+      OL_C_DELETE_FEATURE = 'DeleteFeature'
+      OL_C_STRINGS_AS_UTF8 = 'StringsAsUTF8'
+      OL_C_TRANSACTIONS = 'Transactions'
+      OL_C_CURVE_GEOMETRIES = 'CurveGeometries'
+
+      # Driver capabilities
+      ODR_C_CREATE_DATA_SOURCE = 'CreateDataSource'
+      ODR_C_DELETE_DATA_SOURCE = 'DeleteDataSource'
+
       #------------------------------------------------------------------------
       # Enums
       #------------------------------------------------------------------------

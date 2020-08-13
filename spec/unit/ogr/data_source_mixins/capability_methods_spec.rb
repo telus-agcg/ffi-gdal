@@ -27,5 +27,25 @@ RSpec.describe OGR::DataSource do
       subject { data_source.supports_curve_geometries? }
       it { is_expected.to eq true }
     end
+
+    describe '#supports_transactions?' do
+      subject { data_source.supports_transactions? }
+      it { is_expected.to eq true }
+    end
+
+    describe '#supports_emulated_transactions?' do
+      subject { data_source.supports_emulated_transactions? }
+      it { is_expected.to eq true }
+    end
+
+    describe '#supports_random_layer_read?' do
+      subject { data_source.supports_random_layer_read? }
+      it { is_expected.to eq true }
+    end
+
+    describe '#supports_random_layer_write?' do
+      subject { data_source.supports_random_layer_write? }
+      it { is_expected.to eq true }
+    end
   end
 end

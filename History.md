@@ -20,6 +20,7 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 - `GDAL::Options` no longer subclasses `Hash`.
 - `GDAL::RasterBand#initialize` now initializes its related `GDAL::Dataset`,
   ensuring the `Dataset` stays in memory while working with the `RasterBand`.
+- Constantized strings for testing capabilities.
 
 ### Fixed
 
