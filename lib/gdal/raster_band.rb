@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
 require 'narray'
 require_relative '../gdal'
 require_relative 'raster_band_mixins/algorithm_methods'
