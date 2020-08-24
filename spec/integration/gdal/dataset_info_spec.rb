@@ -257,8 +257,8 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'unknown resampling algorithm' do
       it 'creates an .ovr file with the same base name as the dataset file' do
-        expect { subject.build_overviews(:stuff, [2, 4, 8]) }.
-          to raise_exception(GDAL::Error)
+        expect { subject.build_overviews(:stuff, [2, 4, 8]) }
+          .to raise_exception(GDAL::Error)
       end
     end
   end
@@ -304,8 +304,8 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'read, buffer size too small' do
       it 'raises a GDAL::BufferTooSmall' do
-        expect { subject.raster_io('r', read_buffer) }.
-          to raise_exception GDAL::BufferTooSmall
+        expect { subject.raster_io('r', read_buffer) }
+          .to raise_exception GDAL::BufferTooSmall
       end
     end
 

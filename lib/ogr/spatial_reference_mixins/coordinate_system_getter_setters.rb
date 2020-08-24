@@ -144,7 +144,7 @@ module OGR
       #   semi-major is found.  If set to +true+, this will return that value if
       #   the semi-major isn't found.
       # @return [Float]
-      def semi_major(return_wgs84_on_nil = false)
+      def semi_major(return_wgs84_on_nil: false)
         err_ptr = FFI::MemoryPointer.new(:int)
         value = FFI::OGR::SRSAPI.OSRGetSemiMajor(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
@@ -158,7 +158,7 @@ module OGR
       #   semi-major is found.  If set to +true+, this will return that value if
       #   the semi-major isn't found.
       # @return [Float]
-      def semi_minor(return_wgs84_on_nil = false)
+      def semi_minor(return_wgs84_on_nil: false)
         err_ptr = FFI::MemoryPointer.new(:int)
         value = FFI::OGR::SRSAPI.OSRGetSemiMinor(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
@@ -172,7 +172,7 @@ module OGR
       #   if no semi-major is found.  If set to +true+, this will return that
       #   value if the semi-major isn't found.
       # @return [Float]
-      def spheroid_inverse_flattening(return_wgs84_on_nil = false)
+      def spheroid_inverse_flattening(return_wgs84_on_nil: false)
         err_ptr = FFI::MemoryPointer.new(:int)
         value = FFI::OGR::SRSAPI.OSRGetInvFlattening(@c_pointer, err_ptr)
         ogr_err = FFI::OGR::Core::Err[err_ptr.read_int]
@@ -277,7 +277,7 @@ module OGR
 
       # @param zone [Integer] State plane zone number (USGS numbering scheme).
       # @param nad83 [Boolean] Use NAD83 zone definition or not.
-      def set_state_plane(zone, nad83 = true, override_unit_label = nil, override_unit_transform = 0.0)
+      def set_state_plane(zone, override_unit_label = nil, override_unit_transform = 0.0, nad83: true)
         ogr_err = FFI::OGR::SRSAPI.OSRSetStatePlaneWithUnits(
           @c_pointer,
           zone,

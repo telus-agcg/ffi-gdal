@@ -4,10 +4,21 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ## Unreleased
 
+### Changed
+
+- *BREAKING*: All methods with default boolean args are now keyword args.
+- *BREAKING*: `required_ruby_version` set to `>= 2.6`
+
+### Fixed
+
+- `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
+  float value.
+
 ### Removed
 
 * [DEV-361] Move extension methods to ffi-gdal-extensions.
 * Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
+* `GDAL::MajorObject#description=`
 
 ## 1.0.0.beta11 / 2020-06-02
 

@@ -8,7 +8,7 @@ RSpec.describe GDAL::Dataset do
   end
 
   subject do
-    described_class.open(file_path, 'r', false)
+    described_class.open(file_path, 'r', shared: false)
   end
 
   it_behaves_like 'a major object'
@@ -29,8 +29,8 @@ RSpec.describe GDAL::Dataset do
         allow(described_class).to receive(:new).and_return dataset
 
         expect(dataset).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }.
-          to yield_with_args(dataset)
+        expect { |b| described_class.open('blarg', 'r', &b) }
+          .to yield_with_args(dataset)
       end
     end
   end

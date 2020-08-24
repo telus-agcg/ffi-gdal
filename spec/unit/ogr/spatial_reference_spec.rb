@@ -5,7 +5,7 @@ require 'ogr/spatial_reference'
 RSpec.describe OGR::SpatialReference do
   describe '.projection_methods' do
     context 'strip underscores' do
-      subject { described_class.projection_methods(true) }
+      subject { described_class.projection_methods(strip_underscores: true) }
 
       it 'returns an Array of Strings' do
         expect(subject).to be_an Array
@@ -18,7 +18,7 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context 'not strip underscores' do
-      subject { described_class.projection_methods(false) }
+      subject { described_class.projection_methods(strip_underscores: false) }
 
       it 'returns an Array of Strings' do
         expect(subject).to be_an Array

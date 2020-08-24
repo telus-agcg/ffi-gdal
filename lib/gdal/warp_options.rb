@@ -4,10 +4,7 @@ require_relative '../gdal'
 
 module GDAL
   class WarpOptions
-    attr_reader :c_struct
-    attr_reader :source_dataset
-    attr_reader :destination_dataset
-    attr_reader :cutline
+    attr_reader :c_struct, :source_dataset, :destination_dataset, :cutline
 
     def initialize(options = {})
       @c_struct = FFI::GDAL::WarpOptions.new
@@ -196,7 +193,7 @@ module GDAL
       @c_struct[meth]
     end
 
-    def respond_to_missing?(method_name, include_private = false)
+    def respond_to_missing?(method_name, include_private = false) # rubocop:disable Style/OptionalBooleanParameter
       FFI::GDAL::WarpOptions.members.include?(method_name) || super
     end
   end

@@ -69,13 +69,13 @@ RSpec.describe OGR::Layer do
   describe '#extent_by_geometry' do
     context 'force is false' do
       it 'returns an OGR::Envelope' do
-        expect(subject.extent_by_geometry(0, false)).to be_a OGR::Envelope
+        expect(subject.extent_by_geometry(0, force: false)).to be_a OGR::Envelope
       end
     end
 
     context 'force is true' do
       it 'returns an OGR::Envelope' do
-        expect(subject.extent_by_geometry(0, true)).to be_a OGR::Envelope
+        expect(subject.extent_by_geometry(0, force: true)).to be_a OGR::Envelope
       end
     end
   end

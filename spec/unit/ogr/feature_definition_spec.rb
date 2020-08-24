@@ -128,8 +128,8 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'invalid geometry type' do
       it 'raises an ArgumenError' do
-        expect { subject.geometry_type = :bubbles }.
-          to raise_exception ArgumentError
+        expect { subject.geometry_type = :bubbles }
+          .to raise_exception ArgumentError
       end
     end
   end
@@ -151,7 +151,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'set to not ignore' do
       it 'causes the geometry to be ignored' do
-        subject.ignore_geometry! false
+        subject.ignore_geometry! ignore: false
         expect(subject.geometry_ignored?).to eq false
       end
     end
@@ -174,7 +174,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'set to not ignore' do
       it 'causes the style to be ignored' do
-        subject.ignore_style! false
+        subject.ignore_style! ignore: false
         expect(subject.style_ignored?).to eq false
       end
     end
@@ -190,8 +190,8 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#geometry_field_definition' do
     context 'default, at 0' do
       it 'returns an OGR::GeometryFieldDefinition' do
-        expect(subject.geometry_field_definition(0)).
-          to be_a OGR::GeometryFieldDefinition
+        expect(subject.geometry_field_definition(0))
+          .to be_a OGR::GeometryFieldDefinition
       end
 
       it 'has a type that is the same as the feature' do

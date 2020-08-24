@@ -12,8 +12,8 @@ RSpec.describe OGR::Layer do
       end
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.create_field(OGR::FieldDefinition.new('test', :OFTInteger)) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.create_field(OGR::FieldDefinition.new('test', :OFTInteger)) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
@@ -393,8 +393,8 @@ RSpec.describe OGR::Layer do
       end
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.create_geometry_field(geometry_field_def) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.create_geometry_field(geometry_field_def) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
@@ -414,8 +414,8 @@ RSpec.describe OGR::Layer do
 
     context 'invalid field names given' do
       it 'raises an OGR::Failure' do
-        expect { subject.set_ignored_fields('meow', 'bobo') }.
-          to raise_exception OGR::Failure
+        expect { subject.set_ignored_fields('meow', 'bobo') }
+          .to raise_exception OGR::Failure
       end
     end
 

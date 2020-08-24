@@ -141,9 +141,9 @@ if $PROGRAM_NAME == __FILE__
   source_dataset = GDAL::Dataset.open(source_path, 'r')
   puts "source srid: #{source_dataset.spatial_reference.authority_code.to_i}"
 
-  dest_dataset = Examples::Warping.
-                 create_destination_reprojected_dataset(source_dataset, dest_path,
-                                                        source_dataset.spatial_reference.authority_code.to_i)
+  dest_dataset = Examples::Warping
+                 .create_destination_reprojected_dataset(source_dataset, dest_path,
+                                                         source_dataset.spatial_reference.authority_code.to_i)
   # Examples::Warping.copy_dataset(source_dataset, dest_path)
   # dest_dataset = GDAL::Dataset.open(dest_path, 'w')
 

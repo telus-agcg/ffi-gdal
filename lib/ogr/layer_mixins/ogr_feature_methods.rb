@@ -51,7 +51,7 @@ module OGR
       #
       # @param force [Boolean] Force the calculation even if it's expensive.
       # @return [Integer]
-      def feature_count(force = true)
+      def feature_count(force: true)
         FFI::OGR::API.OGR_L_GetFeatureCount(@c_pointer, force)
       end
 

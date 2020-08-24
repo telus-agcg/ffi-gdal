@@ -97,7 +97,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_geometry!(ignore = true)
+    def ignore_geometry!(ignore: true)
       FFI::OGR::API.OGR_FD_SetGeometryIgnored(@c_pointer, ignore)
     end
 
@@ -107,7 +107,7 @@ module OGR
     end
 
     # @param ignore [Boolean]
-    def ignore_style!(ignore = true)
+    def ignore_style!(ignore: true)
       FFI::OGR::API.OGR_FD_SetStyleIgnored(@c_pointer, ignore)
     end
 

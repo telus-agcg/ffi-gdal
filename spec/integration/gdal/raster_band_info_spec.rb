@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+require 'bigdecimal/util'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -161,13 +163,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#statistics' do
     it 'returns a Hash with populated values' do
       expect(subject.statistics).to be_a Hash
-      expect(%i[minimum maximum mean standard_deviation]).
-        to eq subject.statistics.keys
+      expect(%i[minimum maximum mean standard_deviation])
+        .to eq subject.statistics.keys
     end
 
     it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
       min = subject.statistics[:minimum]
-      unless min == -32_768.0
+
+      unless min.to_d == -32_768.0.to_d
         expect(subject.statistics[:minimum]).to(satisfy { |v| v >= 0 || v == -32_768 })
         expect(subject.statistics[:minimum]).to be <= 255.0
       end

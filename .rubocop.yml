@@ -1,26 +1,23 @@
 ---
 inherit_from: .rubocop_todo.yml
 
-Layout/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
+Layout/LineLength:
+  Max: 120
 
-Layout/DotPosition:
-  EnforcedStyle: trailing
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
 
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
     - spec/support/shared_examples/**/*.rb
 
-Metrics/LineLength:
-  Max: 120
-
 Naming/FileName:
   Exclude:
     - lib/ffi-gdal.rb
     - spec/ffi-gdal_spec.rb
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames: [x, y, z]
 
 Style/Documentation:
@@ -46,4 +43,5 @@ AllCops:
   DisplayStyleGuide: true
   Exclude:
     - vendor/bundle/**/*
+  NewCops: enable
   TargetRubyVersion: 2.6

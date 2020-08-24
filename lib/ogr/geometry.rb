@@ -612,7 +612,7 @@ module OGR
     # method for doing so.
     #
     # @return [OGR::LinearRing]
-    def to_linear_ring(close_rings = false)
+    def to_linear_ring(close_rings: false)
       line_string = to_line_string
 
       return line_string unless line_string.is_a?(OGR::LineString)

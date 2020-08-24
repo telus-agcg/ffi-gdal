@@ -14,7 +14,7 @@ module GDAL
       def initialize(source_dataset, destination_dataset: nil, source_wkt: nil, destination_wkt: nil,
         gcp_use_ok: false, order: 0)
         source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
-        dest_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, false)
+        dest_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, warn_on_nil: false)
 
         @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(
           source_ptr,

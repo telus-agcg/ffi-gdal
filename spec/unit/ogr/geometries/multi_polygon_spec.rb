@@ -35,8 +35,8 @@ RSpec.describe OGR::MultiPolygon do
     end
 
     it 'does a union on the geometry' do
-      expect(subject.union_cascaded.to_wkt).
-        to eq 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
+      expect(subject.union_cascaded.to_wkt)
+        .to eq 'POLYGON ((0 0,0 1,1 1,1 0,0 0))'
     end
   end
 end

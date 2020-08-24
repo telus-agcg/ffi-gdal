@@ -92,8 +92,8 @@ RSpec.describe OGR::Layer do
       before { expect(subject).to receive(:can_random_write?).and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
@@ -125,8 +125,8 @@ RSpec.describe OGR::Layer do
   describe '#next_feature_index=' do
     context 'no features' do
       it 'raises an OGR::Failure' do
-        expect { subject.next_feature_index = 123 }.
-          to raise_exception OGR::Failure
+        expect { subject.next_feature_index = 123 }
+          .to raise_exception OGR::Failure
       end
     end
 
