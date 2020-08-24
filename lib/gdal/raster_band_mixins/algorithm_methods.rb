@@ -227,7 +227,7 @@ module GDAL
       # @return [OGR::Layer]
       def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
         raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
 
@@ -314,7 +314,7 @@ module GDAL
       # @param options [Hash] None supported in GDAL as of this writing.
       def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
 
         if destination_band.nil? || destination_band.null?

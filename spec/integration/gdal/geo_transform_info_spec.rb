@@ -24,8 +24,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#x_origin=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.x_origin = 12.34 }.to change { subject.x_origin }.
-          from(-12.51100000000001).to(12.34)
+        expect { subject.x_origin = 12.34 }.to change { subject.x_origin }
+          .from(-12.51100000000001).to(12.34)
       end
     end
 
@@ -45,8 +45,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#y_origin=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.y_origin = 12.34 }.to change { subject.y_origin }.
-          from(109.03599999999999).to(12.34)
+        expect { subject.y_origin = 12.34 }.to change { subject.y_origin }
+          .from(109.03599999999999).to(12.34)
       end
     end
 
@@ -66,8 +66,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#pixel_width=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.pixel_width = 12.34 }.to change { subject.pixel_width }.
-          from(0).to(12.34)
+        expect { subject.pixel_width = 12.34 }.to change { subject.pixel_width }
+          .from(0).to(12.34)
       end
     end
 
@@ -87,8 +87,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#x_rotation=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.x_rotation = 12.34 }.to change { subject.x_rotation }.
-          from(0.1850509803921595).to(12.34)
+        expect { subject.x_rotation = 12.34 }.to change { subject.x_rotation }
+          .from(0.1850509803921595).to(12.34)
       end
     end
 
@@ -108,8 +108,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#y_rotation=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.y_rotation = 12.34 }.to change { subject.y_rotation }.
-          from(-0.3001842105263167).to(12.34)
+        expect { subject.y_rotation = 12.34 }.to change { subject.y_rotation }
+          .from(-0.3001842105263167).to(12.34)
       end
     end
 
@@ -129,8 +129,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   describe '#pixel_height=' do
     context 'param is a number' do
       it 'sets the value' do
-        expect { subject.pixel_height = 12.34 }.to change { subject.pixel_height }.
-          from(0.0).to(12.34)
+        expect { subject.pixel_height = 12.34 }.to change { subject.pixel_height }
+          .from(0.0).to(12.34)
       end
     end
 
@@ -150,8 +150,8 @@ RSpec.describe 'GeoTransform Info', type: :integration do
 
     context 'really large pixel and line' do
       it '(oddly) returns a Hash with mapped geo values' do
-        expect(subject.apply_geo_transform(1_000_000_000_000, 10_000_000_000_000)).
-          to eq(x_geo: 1_850_509_803_909.084, y_geo: -300_184_210_417.2807)
+        expect(subject.apply_geo_transform(1_000_000_000_000, 10_000_000_000_000))
+          .to eq(x_geo: 1_850_509_803_909.084, y_geo: -300_184_210_417.2807)
       end
     end
 

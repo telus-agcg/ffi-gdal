@@ -32,7 +32,7 @@ RSpec.describe GDAL::InternalHelpers do
 
     context 'variable is nil' do
       it 'returns nil' do
-        expect(subject._pointer(GDAL::Dataset, nil, false)).to be_nil
+        expect(subject._pointer(GDAL::Dataset, nil, warn_on_nil: false)).to be_nil
       end
     end
   end
@@ -95,8 +95,8 @@ RSpec.describe GDAL::InternalHelpers do
 
     context 'data type is not one listed' do
       it 'raises a GDAL::InvalidDataType' do
-        expect { tester._gdal_data_type_to_ffi(:blargh) }.
-          to raise_exception(GDAL::InvalidDataType)
+        expect { tester._gdal_data_type_to_ffi(:blargh) }
+          .to raise_exception(GDAL::InvalidDataType)
       end
     end
   end
@@ -221,8 +221,8 @@ RSpec.describe GDAL::InternalHelpers do
 
     context 'unknown data_type' do
       it 'raises a GDAL::InvalidDataType exception' do
-        expect { GDAL._gdal_data_type_to_narray(:meow) }.
-          to raise_exception(GDAL::InvalidDataType)
+        expect { GDAL._gdal_data_type_to_narray(:meow) }
+          .to raise_exception(GDAL::InvalidDataType)
       end
     end
   end
@@ -269,8 +269,8 @@ RSpec.describe GDAL::InternalHelpers do
 
     context 'unknown GDAL data_type' do
       it 'raises a GDAL::InvalidDataType exception' do
-        expect { GDAL._narray_from_data_type(:bobo) }.
-          to raise_exception(GDAL::InvalidDataType)
+        expect { GDAL._narray_from_data_type(:bobo) }
+          .to raise_exception(GDAL::InvalidDataType)
       end
     end
   end

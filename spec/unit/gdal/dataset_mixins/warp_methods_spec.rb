@@ -12,7 +12,7 @@ RSpec.describe GDAL::Dataset do
 
   after { FileUtils.rm_rf(output_dir) if Dir.exist?(output_dir) }
 
-  subject { described_class.open(source_file_path, 'r', false) }
+  subject { described_class.open(source_file_path, 'r', shared: false) }
 
   describe '#reproject_image' do
     let(:dest_dataset) do
@@ -31,7 +31,7 @@ RSpec.describe GDAL::Dataset do
       subject.reproject_image(dest_dataset, :GRA_CubicSpline)
 
       dest_dataset.flush_cache
-      expect(dest_dataset.projection).to match(/AUTHORITY\[\"EPSG\",\"3857\"\]/)
+      expect(dest_dataset.projection).to match(/AUTHORITY\["EPSG","3857"\]/)
       expect(dest_dataset.raster_count).to eq(subject.raster_count)
     end
   end
@@ -45,7 +45,7 @@ RSpec.describe GDAL::Dataset do
                                          GDAL::Driver.by_name('GTiff'))
 
       dest_dataset = GDAL::Dataset.open(output_file, 'r')
-      expect(dest_dataset.projection).to match(/AUTHORITY\[\"EPSG\",\"3857\"\]/)
+      expect(dest_dataset.projection).to match(/AUTHORITY\["EPSG","3857"\]/)
       expect(dest_dataset.raster_count).to eq(subject.raster_count)
 
       dest_driver = dest_dataset.driver

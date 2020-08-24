@@ -37,7 +37,7 @@ module OGR
       # @param geometry_index [Integer]
       # @param delete [Boolean]
       # @return +true+ if successful, otherwise raises an OGR exception.
-      def remove_geometry(geometry_index, delete = true)
+      def remove_geometry(geometry_index, delete: true)
         ogr_err = FFI::OGR::API.OGR_G_RemoveGeometry(@c_pointer, geometry_index, delete)
 
         ogr_err.handle_result

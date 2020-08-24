@@ -11,7 +11,7 @@ module OGR
       # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
       #   different form, depending on the limitations of the format driver.
       # @return [Boolean]
-      def create_field(field_definition, approx_ok = false)
+      def create_field(field_definition, approx_ok: false)
         raise OGR::UnsupportedOperation, 'This layer does not support field creation.' unless can_create_field?
 
         field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
@@ -87,7 +87,7 @@ module OGR
       # @param exact_match [Boolean] If +false+ and the field doesn't exist in the
       #   given form, the driver will try to make changes to make a match.
       # @return [Integer] Index of the field or +nil+ if the field doesn't exist.
-      def find_field_index(field_name, exact_match = true)
+      def find_field_index(field_name, exact_match: true)
         result = FFI::OGR::API.OGR_L_FindFieldIndex(@c_pointer, field_name, exact_match)
 
         result.negative? ? nil : result
@@ -100,7 +100,7 @@ module OGR
       #   to use for creating the new field.
       # @param approx_ok [Boolean]
       # @return [Boolean]
-      def create_geometry_field(geometry_field_def, approx_ok = false)
+      def create_geometry_field(geometry_field_def, approx_ok: false)
         unless can_create_geometry_field?
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end

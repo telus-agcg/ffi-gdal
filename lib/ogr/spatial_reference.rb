@@ -36,7 +36,7 @@ module OGR
     RADIAN_TO_RADIAN = 1.0
 
     # @return [Array<String>]
-    def self.projection_methods(strip_underscores = false)
+    def self.projection_methods(strip_underscores: false)
       methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
       count = FFI::CPL::String.CSLCount(methods_ptr_ptr)
 

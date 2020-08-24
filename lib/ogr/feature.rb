@@ -57,7 +57,7 @@ module OGR
     #   despite lacking output fields matching some of the source fields.
     # @param with_map [Array<Integer>]
     # TODO: Implement +with_map+
-    def set_from!(_other_feature, _be_forgiving = false, with_map: nil)
+    def set_from!(_other_feature, _be_forgiving: false, with_map: nil)
       raise NotImplementedError, 'with_map: is not yet supported' if with_map
 
       ogr_err = FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
@@ -439,9 +439,10 @@ module OGR
     private
 
     def c_pointer_from(feature)
-      if feature.is_a? OGR::Feature
+      case feature
+      when OGR::Feature
         feature.c_pointer
-      elsif feature.is_a? FFI::Pointer
+      when FFI::Pointer
         feature
       end
     end
