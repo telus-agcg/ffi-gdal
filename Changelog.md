@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   float value.
 - Fixed lots of use-after-free crashes resulting from misuse of
   `FFI::Pointer#autorelease`.
+- `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
+  incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 
 ### Removed
 
