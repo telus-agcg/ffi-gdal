@@ -55,7 +55,7 @@ module GDAL
 
     # @param driver [GDAL::Driver, FFI::Pointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(GDAL::Driver, driver)
+      @c_pointer = GDAL._pointer(GDAL::Driver, driver, autorelease: false)
     end
 
     # @return [String]
@@ -222,7 +222,7 @@ module GDAL
       if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        GDAL._pointer(GDAL::Dataset, dataset)
+        GDAL._pointer(GDAL::Dataset, dataset, autorelease: false)
       end
     end
   end

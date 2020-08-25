@@ -8,12 +8,19 @@ module GDAL
         FFI::GDAL::Alg::GenImgProjTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyGenImgProjTransformer(pointer)
+      end
+
+      # @return [FFI::Pointer]
       attr_reader :c_pointer
 
       def destroy!
-        return unless @c_pointer
+        BaseGeneralImageProjectionTransformer.release(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyGenImgProjTransformer(@c_pointer)
         @c_pointer = nil
       end
 
@@ -36,6 +43,12 @@ module GDAL
         FFI::GDAL::Alg.GDALSetGenImgProjTransformerDstGeoTransform(
           @c_pointer, geo_transform_ptr
         )
+      end
+
+      private
+
+      def init_pointer(pointer)
+        @c_pointer = FFI::AutoPointer.new(pointer, BaseGeneralImageProjectionTransformer.method(:release))
       end
     end
   end

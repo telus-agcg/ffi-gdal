@@ -19,6 +19,21 @@ module GDAL
   class ColorTable
     include ColorTableMixins::Extensions
 
+    # @param color_table [GDAL::ColorTable]
+    # @return [FFI::AutoPointer]
+    def self.new_pointer(color_table)
+      ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
+
+      FFI::AutoPointer.new(ptr, ColorTable.method(:release))
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.GDALDestroyColorTable(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C color table.
     attr_reader :c_pointer
 
@@ -26,18 +41,19 @@ module GDAL
     #   FFI::Pointer]
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
-      @c_pointer =
+      pointer =
         if FFI::GDAL::GDAL::PaletteInterp[palette_interp_or_pointer]
           FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
         else
           palette_interp_or_pointer
         end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
         raise GDAL::InvalidColorTable,
               "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
       end
 
+      @c_pointer = pointer
       @color_entries = []
 
       case palette_interpretation
@@ -51,9 +67,8 @@ module GDAL
     end
 
     def destroy!
-      return unless @c_pointer
+      ColorTable.release(@c_pointer)
 
-      FFI::GDAL::GDAL.GDALDestroyColorTable(@c_pointer)
       @c_pointer = nil
     end
 

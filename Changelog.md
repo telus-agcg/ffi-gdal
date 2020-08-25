@@ -4,6 +4,10 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 ## Unreleased
 
+### Added
+
+- Added `.release` class method for many `GDAL` types
+
 ### Changed
 
 - *BREAKING*: All methods with default boolean args are now keyword args.
@@ -13,6 +17,8 @@ Format for this file derived from [http://keepachangelog.com](http://keepachange
 
 - `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
   float value.
+- Fixed lots of use-after-free crashes resulting from misuse of
+  `FFI::Pointer#autorelease`.
 
 ### Removed
 

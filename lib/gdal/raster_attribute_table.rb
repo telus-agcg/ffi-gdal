@@ -9,11 +9,26 @@ module GDAL
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
     # @return [GDAL::RasterAttributeTable]
     def self.from_color_table(color_table)
-      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
+      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
       rat_ptr = FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
       FFI::GDAL::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
 
       new(rat_ptr)
+    end
+
+    # @param raster_attribute_table [GDAL::RasterAttributeTable]
+    # @return [FFI::AutoPointer]
+    def self.new_pointer(raster_attribute_table)
+      ptr = GDAL._pointer(GDAL::Dataset, raster_attribute_table, autorelease: false)
+
+      FFI::AutoPointer.new(ptr, RasterAttributeTable.method(:release))
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(pointer)
     end
 
     # @return [FFI::Pointer] The C pointer that represents the C RAT.
@@ -25,9 +40,8 @@ module GDAL
     end
 
     def destroy!
-      return unless @c_pointer
+      RasterAttributeTable.release(@c_pointer)
 
-      FFI::GDAL::GDAL.GDALDestroyRasterAttributeTable(@c_pointer)
       @c_pointer = nil
     end
 

@@ -8,19 +8,27 @@ module GDAL
         FFI::GDAL::Alg::ReprojectionTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyReprojectionTransformer(pointer)
+      end
+
       # @return [FFI::Pointer] C pointer to the C reprojection transformer.
       attr_reader :c_pointer
 
       # @param source_wkt [String]
       # @param destination_wkt [String]
       def initialize(source_wkt, destination_wkt)
-        @c_pointer = FFI::GDAL::Alg.GDALCreateReprojectionTransformer(source_wkt, destination_wkt)
+        pointer = FFI::GDAL::Alg.GDALCreateReprojectionTransformer(source_wkt, destination_wkt)
+
+        @c_pointer = FFI::AutoPointer.new(pointer, ReprojectionTransformer.method(:release))
       end
 
       def destroy!
-        return unless @c_pointer
+        ReprojectionTransformer.release(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyReprojectionTransformer(@c_pointer)
         @c_pointer = nil
       end
 

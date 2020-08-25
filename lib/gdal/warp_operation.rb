@@ -4,19 +4,28 @@ require_relative '../gdal'
 
 module GDAL
   class WarpOperation
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::Warper.GDALDestroyWarpOperation(pointer)
+    end
+
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
     # @param warp_options [GDAL::WarpOptions]
     def initialize(warp_options)
-      @c_pointer = FFI::GDAL::Warper.GDALCreateWarpOperation(warp_options.c_struct)
-      raise GDAL::Error, 'Unable to create warp operation' if @c_pointer.null?
+      pointer = FFI::GDAL::Warper.GDALCreateWarpOperation(warp_options.c_struct)
+
+      raise GDAL::Error, 'Unable to create warp operation' if pointer.null?
+
+      @c_pointer = FFI::AutoPointer.new(pointer, WarpOperation.method(:release))
     end
 
     def destroy!
-      return unless @c_pointer
+      WarpOperation.release(@c_pointer)
 
-      FFI::GDAL::Warper.GDALDestroyWarpOperation(@c_pointer)
       @c_pointer = nil
     end
 

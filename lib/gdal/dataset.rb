@@ -41,6 +41,21 @@ module GDAL
       end
     end
 
+    # @param dataset [GDAL::Dataset]
+    # @return [FFI::AutoPointer]
+    def self.new_pointer(dataset, warn_on_nil: true)
+      ptr = GDAL._pointer(GDAL::Dataset, dataset, warn_on_nil: warn_on_nil, autorelease: false)
+
+      FFI::AutoPointer.new(ptr, Dataset.method(:release))
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.GDALClose(pointer)
+    end
+
     #---------------------------------------------------------------------------
     # Instance methods
     #---------------------------------------------------------------------------
@@ -83,9 +98,8 @@ module GDAL
 
     # Close the dataset.
     def close
-      return unless @c_pointer
+      Dataset.release(@c_pointer)
 
-      FFI::GDAL::GDAL.GDALClose(@c_pointer)
       @c_pointer = nil
     end
 
@@ -190,7 +204,6 @@ module GDAL
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
-      geo_transform_pointer.autorelease = false
       FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
@@ -391,18 +404,16 @@ module GDAL
     # Makes a pointer of +band_numbers+.
     #
     # @param band_numbers [Array<Integer>]
-    # @return [Array<FFI::Pointer, Integer>]
+    # @return [Array<FFI::AutoPointer, Integer>]
     def band_numbers_args(band_numbers)
-      if band_numbers
-        band_count = band_numbers.size
-        band_numbers_ptr = FFI::MemoryPointer.new(:int, band_count)
-        band_numbers_ptr.write_array_of_int(band_numbers)
-      else
-        band_numbers_ptr = nil
-        band_count = 0
-      end
+      band_count = band_numbers&.size || 0
+      ptr = FFI::MemoryPointer.new(:int, band_count)
 
-      [band_numbers_ptr, band_count]
+      ptr.write_array_of_int(band_numbers) if band_numbers
+
+      ptr.autorelease = false
+
+      [ptr, band_count]
     end
   end
 end
