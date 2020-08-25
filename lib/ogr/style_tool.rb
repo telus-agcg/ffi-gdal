@@ -4,16 +4,26 @@ require_relative '../ogr'
 
 module OGR
   class StyleTool
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_ST_Destroy(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C style tool.
     attr_reader :c_pointer
 
     # @param style_tool_class [FFI::OGR::Core::STClassId] Must be one of :OGRSTCPen,
     #   :OGRSTCBrush, :OGRSTCSymbol, :OGRSTCLabel.
     def initialize(style_tool_class)
-      @c_pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
-      return if @c_pointer && !@c_pointer.null?
+      pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
 
-      raise OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
+      if !pointer || pointer.null?
+        raise OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
+      end
+
+      @c_pointer = FFI::AutoPointer.new(pointer, StyleTool.method(:release))
     end
 
     # @return [String, nil]

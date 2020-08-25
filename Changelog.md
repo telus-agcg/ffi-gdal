@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - *BREAKING*: All methods with default boolean args are now keyword args.
 - *BREAKING*: `required_ruby_version` set to `>= 2.6`
+- BREAKING: `OGR::DataSource#copy_data_source` now raises instead of returning
+  `nil` on a failure to copy.
 
 ### Fixed
 
@@ -24,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `FFI::Pointer#autorelease`.
 - `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
+- `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid
+  free-after-use.
 
 ### Removed
 

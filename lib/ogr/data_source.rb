@@ -29,6 +29,22 @@ module OGR
       end
     end
 
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_DS_Destroy(pointer)
+    end
+
+    # Use to release the resulting data pointer from #execute_sql.
+    #
+    # @param pointer [FFI::Pointer]
+    def self.release_result_set(data_source_pointer, layer_pointer)
+      return unless data_source_pointer && !data_source_pointer.null? && layer_pointer && !layer_pointer.null?
+
+      FFI::OGR::API.OGR_DS_ReleaseResultSet(data_source_pointer, layer_pointer)
+    end
+
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
@@ -45,16 +61,21 @@ module OGR
           path_or_pointer
         end
 
-      raise OGR::OpenFailure, file_path if @c_pointer.null?
+      if @c_pointer.null?
+        error_msg = FFI::CPL::Error.CPLGetLastErrorMsg
+        error_type = FFI::CPL::Error.CPLGetLastErrorType
+        FFI::CPL::Error.CPLErrorReset
+
+        raise OGR::OpenFailure, "#{error_type}: #{error_msg} (#{file_path})"
+      end
 
       @layers = []
     end
 
     # Closes opened data source and releases allocated resources.
     def destroy!
-      return unless @c_pointer
+      DataSource.release(@c_pointer)
 
-      FFI::OGR::API.OGR_DS_Destroy(@c_pointer)
       @c_pointer = nil
     end
     alias close destroy!
@@ -63,7 +84,11 @@ module OGR
     #
     # @return [String]
     def name
-      FFI::OGR::API.OGR_DS_GetName(@c_pointer)
+      # This is an internal string and should not be modified or freed.
+      name_ptr = FFI::OGR::API.OGR_DS_GetName(@c_pointer)
+      name_ptr.autorelease = false
+
+      name_ptr.read_string_to_null
     end
 
     # @return [OGR::Driver]
@@ -83,7 +108,10 @@ module OGR
     # @return [OGR::Layer]
     def layer(index)
       @layers.fetch(index) do
+        # The returned layer remains owned by the OGRDataSource and should not be deleted by the application.
         layer_pointer = FFI::OGR::API.OGR_DS_GetLayer(@c_pointer, index)
+        layer_pointer.autorelease = false
+
         return nil if layer_pointer.null?
 
         l = OGR::Layer.new(layer_pointer)
@@ -96,7 +124,10 @@ module OGR
     # @param name [String]
     # @return [OGR::Layer]
     def layer_by_name(name)
+      # The returned layer remains owned by the OGRDataSource and should not be deleted by the application.
       layer_pointer = FFI::OGR::API.OGR_DS_GetLayerByName(@c_pointer, name)
+      layer_pointer.autorelease = false
+
       return nil if layer_pointer.null?
 
       OGR::Layer.new(layer_pointer)
@@ -114,8 +145,8 @@ module OGR
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
-      layer_ptr = FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name,
-                                                   spatial_ref_ptr, geometry_type, options_obj)
+      layer_ptr =
+        FFI::OGR::API.OGR_DS_CreateLayer(@c_pointer, name, spatial_ref_ptr, geometry_type, options_obj)
 
       raise OGR::InvalidLayer, "Unable to create layer '#{name}'." unless layer_ptr
 
@@ -158,25 +189,21 @@ module OGR
     def execute_sql(command, spatial_filter = nil, dialect = nil)
       geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
 
-      layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr,
-                                                  dialect)
+      layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr, dialect)
+      layer_ptr.autorelease = false
 
       return nil if layer_ptr.null?
 
-      OGR::Layer.new(layer_ptr)
-    end
-
-    # Use to release the resulting data pointer from #execute_sql.
-    #
-    # @param layer [OGR::Layer, FFI::Pointer]
-    def release_result_set(layer)
-      layer_ptr = GDAL._pointer(OGR::Layer, layer)
-      FFI::OGR::API.OGR_DS_ReleaseResultSet(@c_pointer, layer_ptr)
+      OGR::Layer.new(FFI::AutoPointer.new(layer_ptr, lambda { |ptr|
+        DataSource.release_result_set(@c_pointer, ptr)
+      }))
     end
 
     # @return [OGR::StyleTable, nil]
     def style_table
       style_table_ptr = FFI::OGR::API.OGR_DS_GetStyleTable(@c_pointer)
+      style_table_ptr.autorelease = false
+
       return nil if style_table_ptr.null?
 
       OGR::StyleTable.new(style_table_ptr)

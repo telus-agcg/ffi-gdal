@@ -8,6 +8,8 @@ module OGR
       # @return [OGR::FeatureDefinition,nil]
       def definition
         feature_defn_pointer = FFI::OGR::API.OGR_L_GetLayerDefn(@c_pointer)
+        feature_defn_pointer.autorelease = false
+
         return nil if feature_defn_pointer.null?
 
         # This object should not be modified.
@@ -75,6 +77,7 @@ module OGR
       def feature(index)
         raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer' unless can_random_read?
 
+        # This feature needs to be Destroyed.
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)
         return nil if feature_pointer.null?
 

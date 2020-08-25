@@ -456,7 +456,7 @@ module FFI
       # DataSource-related
       # ~~~~~~~~~~~~~~~~
       attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
-      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string
+      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :pointer
       attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
       attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
       attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH

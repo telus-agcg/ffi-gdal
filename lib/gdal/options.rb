@@ -16,7 +16,6 @@ module GDAL
       return if hash.empty?
 
       options_ptr = FFI::MemoryPointer.new(:pointer)
-      options_ptr.autorelease = false
 
       hash.each do |key, value|
         # Note, we started off with a MemoryPointer above, but this returns a
@@ -24,9 +23,9 @@ module GDAL
         options_ptr = FFI::CPL::String.CSLAddNameValue(options_ptr, key.to_s.upcase, value.to_s)
       end
 
-      FFI::AutoPointer.new(options_ptr, lambda { |ptr|
-        FFI::CPL::String.CSLDestroy(ptr)
-      })
+      options_ptr.autorelease = false
+
+      FFI::AutoPointer.new(options_ptr, Options.method(:releae))
     end
 
     # Takes a GDAL options pointer and turns it into a Ruby Hash.
@@ -45,6 +44,13 @@ module GDAL
         key, value = key_and_value.split('=')
         o[key.downcase.to_sym] = value
       end
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return if pointer.nil? || pointer.null?
+
+      FFI::CPL::String.CSLDestroy(pointer)
     end
   end
 end

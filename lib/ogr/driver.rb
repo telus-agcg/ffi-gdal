@@ -39,7 +39,6 @@ module OGR
       raise OGR::DriverNotFound, index if index > count
 
       driver_ptr = FFI::OGR::API.OGRGetDriver(index)
-      return nil if driver_ptr.null?
       raise OGR::DriverNotFound, index if driver_ptr.null?
 
       new(driver_ptr)
@@ -126,9 +125,10 @@ module OGR
 
       options_ptr = GDAL::Options.pointer(options)
 
-      data_source_ptr = FFI::OGR::API.OGR_Dr_CopyDataSource(@c_pointer,
-                                                            source_ptr, new_file_name, options_ptr)
-      return nil if data_source_ptr.null?
+      data_source_ptr =
+        FFI::OGR::API.OGR_Dr_CopyDataSource(@c_pointer, source_ptr, new_file_name, options_ptr)
+
+      raise OGR::InvalidDataSource, "Unable to copy data source to #{new_file_name}" if data_source_ptr.null?
 
       OGR::DataSource.new(data_source_ptr, nil)
     end

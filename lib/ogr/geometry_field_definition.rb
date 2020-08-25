@@ -2,6 +2,13 @@
 
 module OGR
   class GeometryFieldDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_GFld_Destroy(pointer)
+    end
+
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
@@ -11,18 +18,30 @@ module OGR
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::API::WKBGeometryType]
     def initialize(name_or_pointer, type = :wkbUnknown)
-      @c_pointer =
-        if name_or_pointer.is_a? String
-          FFI::OGR::API.OGR_GFld_Create(name_or_pointer, type)
-        else
+      pointer =
+        case name_or_pointer
+        when String
+          ptr = FFI::OGR::API.OGR_GFld_Create(name_or_pointer, type)
+          ptr.autorelease = false
+
+          FFI::AutoPointer.new(ptr, GeometryFieldDefinition.method(:release))
+        when FFI::AutoPointer
           name_or_pointer
+        when FFI::Pointer
+          ptr = name_or_pointer
+          ptr.autorelease = false
+
+          FFI::AutoPointer.new(ptr, GeometryFieldDefinition.method(:release))
+        else
+          log "Dunno what to do with #{name_or_pointer}"
         end
 
-      unless @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
         raise OGR::InvalidGeometryFieldDefinition,
               "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
 
+      @c_pointer = pointer
       @read_only = false
     end
 
@@ -32,9 +51,8 @@ module OGR
     end
 
     def destroy!
-      return unless @c_pointer
+      GeometryFieldDefinition.release(@c_pointer)
 
-      FFI::OGR::API.OGR_GFld_Destroy(@c_pointer)
       @c_pointer = nil
     end
 
@@ -69,15 +87,20 @@ module OGR
       if spatial_ref_ptr.nil? || spatial_ref_ptr.null?
         nil
       else
+        spatial_ref_ptr.autorelease = false
+
         OGR::SpatialReference.new(spatial_ref_ptr)
       end
     end
 
+    # This function drops the reference of the previously set SRS object and
+    # acquires a new reference on the passed object (if non-NULL).
+    #
     # @param new_spatial_reference [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_reference)
       raise OGR::ReadOnlyObject if @read_only
 
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference)
+      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference, autorelease: false)
 
       FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @c_pointer,

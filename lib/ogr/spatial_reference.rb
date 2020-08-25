@@ -35,6 +35,7 @@ module OGR
 
     RADIAN_TO_RADIAN = 1.0
 
+    # @deprecated This was removed in GDAL 3.0.
     # @return [Array<String>]
     def self.projection_methods(strip_underscores: false)
       methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
@@ -48,6 +49,7 @@ module OGR
       strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
     end
 
+    # @deprecated This was removed in GDAL 3.0.
     # @param projection_method [String] One of
     #   OGR::SpatialReference.projection_methods.
     # @return [Hash{parameter => Array<String>, user_visible_name => String}]
@@ -68,6 +70,7 @@ module OGR
 
     # Fetch info about a single parameter of a projection method.
     #
+    # @deprecated This was removed in GDAL 3.0.
     # @param projection_method [String]
     # @param parameter_name [String]
     def self.parameter_info(projection_method, parameter_name)
@@ -101,39 +104,77 @@ module OGR
       FFI::OGR::SRSAPI.OSRCleanup
     end
 
+    # This static method will destroy a OGRSpatialReference. It is equivalent
+    # to calling delete on the object, but it ensures that the deallocation is
+    # properly executed within the OGR libraries heap on platforms where this
+    # can matter (win32).
+    #
+    # @param pointer [FFI::Pointer]
+    def self.destroy(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::SRSAPI.OSRDestroySpatialReference(pointer)
+    end
+
+    # Decrements the reference count by one, and destroy if zero.
+    #
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::SRSAPI.OSRRelease(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C Spatial Reference.
     attr_reader :c_pointer
 
     # Builds a spatial reference object using either the passed-in WKT string,
     # OGR::SpatialReference object, or a pointer to an in-memory
-    # SpatialReference object.  If nothing is passed in, an empty
+    # SpatialReference object. If nothing is passed in, an empty
     # SpatialReference object is created, in which case you'll need to populate
     # relevant attributes.
     #
-    # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer,
-    #   String]
+    # If a OGR::SpatialReference is given, this clones that object so it can
+    # have it's own object (relevant for cleaning up when garbage collecting).
+    #
+    # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer, String]
     def initialize(spatial_reference_or_wkt = nil)
-      @c_pointer =
+      pointer =
         case spatial_reference_or_wkt.class.name
         when 'OGR::SpatialReference'
-          spatial_reference_or_wkt.c_pointer
+          ptr = spatial_reference_or_wkt.c_pointer
+          ptr.autorelease = false
+
+          # We don't know when the other SR will get garbage collected, to use
+          # .release here.
+          FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
         when 'String', 'NilClass'
-          FFI::OGR::SRSAPI.OSRNewSpatialReference(spatial_reference_or_wkt)
-        when 'FFI::Pointer', 'FFI::MemoryPointer'
+          ptr = FFI::OGR::SRSAPI.OSRNewSpatialReference(spatial_reference_or_wkt)
+          ptr.autorelease = false
+
+          # We're instantiating a new SR, so we can use .destroy.
+          FFI::AutoPointer.new(ptr, SpatialReference.method(:destroy))
+        when 'FFI::AutoPointer'
           spatial_reference_or_wkt
+        when 'FFI::Pointer', 'FFI::MemoryPointer'
+          ptr = spatial_reference_or_wkt
+          ptr.autorelease = false
+
+          # We don't know when the other SR will get garbage collected, to use
+          # .release here.
+          FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
         else
           log "Dunno what to do with #{spatial_reference_or_wkt}"
         end
 
-      return if @c_pointer && !@c_pointer.null?
+      raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
 
-      raise OGR::CreateFailure, 'Unable to create SpatialReference.'
+      @c_pointer = pointer
     end
 
     def destroy!
-      return unless @c_pointer
+      SpatialReference.destroy(@c_pointer)
 
-      FFI::OGR::SRSAPI.OSRDestroySpatialReference(@c_pointer)
       @c_pointer = nil
     end
 
@@ -143,7 +184,7 @@ module OGR
     def clone
       new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRClone(@c_pointer)
 
-      self.class.new(new_spatial_ref_ptr)
+      SpatialReference.new(new_spatial_ref_ptr)
     end
 
     # Makes a duplicate of the GEOGCS node of this spatial reference.
@@ -152,7 +193,7 @@ module OGR
     def clone_geog_cs
       new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRCloneGeogCS(@c_pointer)
 
-      self.class.new(new_spatial_ref_ptr)
+      SpatialReference.new(new_spatial_ref_ptr)
     end
 
     # @param other_spatial_ref [OGR::SpatialReference] The SpatialReference to

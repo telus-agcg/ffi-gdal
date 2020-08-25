@@ -698,8 +698,8 @@ RSpec.describe OGR::Geometry do
       before { geom.spatial_reference = OGR::SpatialReference.new_from_epsg(3857) }
 
       it 'transforms to 4326 then figures out the zone' do
-        duped_subject = geom.dup
-        expect(geom).to receive(:dup).and_return(duped_subject)
+        duped_subject = geom.clone
+        expect(geom).to receive(:clone).and_return(duped_subject)
         expect(duped_subject).to receive(:transform_to!).and_call_original
 
         geom.utm_zone

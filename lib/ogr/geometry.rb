@@ -136,6 +136,13 @@ module OGR
       def merge_geometry_types(main, extra)
         FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
       end
+
+      # @param pointer [FFI::Pointer]
+      def release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::OGR::API.OGR_G_DestroyGeometry(pointer)
+      end
     end
 
     extend ClassMethods
@@ -154,9 +161,8 @@ module OGR
     attr_reader :c_pointer
 
     def destroy!
-      return unless @c_pointer
+      self.class.release(@c_pointer)
 
-      FFI::OGR::API.OGR_G_DestroyGeometry(@c_pointer)
       @c_pointer = nil
     end
 
@@ -429,7 +435,9 @@ module OGR
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_ref)
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
+      #  Note that assigning a spatial reference increments the reference count
+      #  on the OGRSpatialReference, but does not copy it.
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
 
       FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref_ptr)
     end
@@ -460,10 +468,17 @@ module OGR
     # assigned spatial reference system _and_ is transformable to the target
     # coordinate system.
     #
+    # Because this function requires internal creation and initialization of an
+    # OGRCoordinateTransformation object it is significantly more expensive to
+    # use this function to transform many geometries than it is to create the
+    # OGRCoordinateTransformation in advance, and call transform() with that
+    # transformation. This function exists primarily for convenience when only
+    # transforming a single geometry.
+    #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     # @return [Boolean]
     def transform_to!(new_spatial_ref)
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
       return if new_spatial_ref_ptr.null?
 
       ogr_err = FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
@@ -665,7 +680,11 @@ module OGR
     def initialize_from_pointer(geometry_ptr)
       raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
 
-      @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
+      pointer = GDAL._pointer(OGR::Geometry, geometry_ptr, autorelease: false)
+
+      raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if pointer.null?
+
+      @c_pointer = pointer
     end
 
     def build_geometry
