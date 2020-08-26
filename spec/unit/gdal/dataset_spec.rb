@@ -112,10 +112,18 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#projection=' do
-    it 'returns the new projection' do
-      proj = subject.projection
-      expect(subject.projection = proj).to eq proj
-      expect(subject.projection).to eq proj
+    context 'good projection' do
+      it 'sets the new projection' do
+        proj = subject.projection
+        expect(subject.projection = proj).to eq proj
+        expect(subject.projection).to eq proj
+      end
+    end
+
+    context 'bad projection' do
+      it 'raise' do
+        expect { subject.projection = 'meow' }.to raise_exception(GDAL::Error)
+      end
     end
   end
 

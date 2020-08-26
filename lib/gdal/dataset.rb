@@ -170,10 +170,14 @@ module GDAL
 
     # @param type [FFI::GDAL::GDAL::DataType]
     # @param options [Hash]
+    # @raise [GDAL::Error]
     # @return [GDAL::RasterBand, nil]
     def add_band(type, **options)
       options_ptr = GDAL::Options.pointer(options)
-      FFI::GDAL::GDAL.GDALAddBand(@c_pointer, type, options_ptr)
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to add band') do
+        FFI::GDAL::GDAL.GDALAddBand(@c_pointer, type, options_ptr)
+      end
 
       raster_band(raster_count)
     end
@@ -181,11 +185,13 @@ module GDAL
     # Adds a mask band to the dataset.
     #
     # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def create_mask_band(*flags)
       flag_value = parse_mask_flag_symbols(flags)
 
-      !!FFI::GDAL::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flag_value)
+      GDAL::CPLErrorHandler.manually_handle('Unable to create Dataset mask band') do
+        FFI::GDAL::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flag_value)
+      end
     end
 
     # @return [String]
@@ -193,27 +199,37 @@ module GDAL
       FFI::GDAL::GDAL.GDALGetProjectionRef(@c_pointer) || ''
     end
 
-    # @param new_projection [String]
-    # @return [Boolean]
+    # @param new_projection [String] Should be in WKT or PROJ.4 format.
+    # @raise [GDAL::Error]
     def projection=(new_projection)
-      FFI::GDAL::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set projection') do
+        FFI::GDAL::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
+      end
     end
 
     # @return [GDAL::GeoTransform]
+    # @raise [GDAL::Error]
     def geo_transform
       return @geo_transform if @geo_transform
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
-      FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to get geo_transform') do
+        FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
+      end
 
       @geo_transform = GeoTransform.new(geo_transform_pointer)
     end
 
     # @param new_transform [GDAL::GeoTransform, FFI::Pointer]
     # @return [GDAL::GeoTransform]
+    # @raise [GDAL::Error]
     def geo_transform=(new_transform)
       new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
-      FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to set geo_transform') do
+        FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
+      end
 
       @geo_transform = new_transform.is_a?(FFI::Pointer) ? GeoTransform.new(new_pointer) : new_transform
     end
@@ -258,6 +274,7 @@ module GDAL
     # @param band_numbers [Array<Integer>] The numbers of the bands to build
     #   overviews from.
     # @see http://www.gdal.org/gdaladdo.html
+    # @raise [GDAL::Error]
     def build_overviews(resampling, overview_levels, band_numbers: nil, &progress)
       resampling_string = case resampling
                           when String
@@ -270,16 +287,18 @@ module GDAL
       overview_levels_ptr.write_array_of_int(overview_levels)
       band_numbers_ptr, band_count = band_numbers_args(band_numbers)
 
-      !!FFI::GDAL::GDAL.GDALBuildOverviews(
-        @c_pointer,
-        resampling_string,
-        overview_levels.size,
-        overview_levels_ptr,
-        band_count,
-        band_numbers_ptr,
-        progress,
-        nil
-      )
+      GDAL::CPLErrorHandler.manually_handle('Unable to build overviews') do
+        FFI::GDAL::GDAL.GDALBuildOverviews(
+          @c_pointer,
+          resampling_string,
+          overview_levels.size,
+          overview_levels_ptr,
+          band_count,
+          band_numbers_ptr,
+          progress,
+          nil
+        )
+      end
     end
 
     # @param access_flag [String] 'r' or 'w'.
@@ -315,6 +334,8 @@ module GDAL
     # @param band_space [Integer] The byte offset from the start of one band's
     #   data to the start of the next. If defaulted (0), the size of
     #   +line_space+ * +buffer_y_size* is used.
+    # @return [FFI::MemoryPointer] The buffer that was passed in.
+    # @raise [GDAL::Error] On failure.
     # rubocop:disable Metrics/ParameterLists
     def raster_io(access_flag, buffer = nil,
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
@@ -339,23 +360,25 @@ module GDAL
         raise GDAL::BufferTooSmall, "Buffer size (#{buffer.size}) too small (#{min_buffer_size})"
       end
 
-      FFI::GDAL::GDAL::GDALDatasetRasterIO(
-        @c_pointer,                     # hDS
-        gdal_access_flag,               # eRWFlag
-        x_offset,                       # nXOff
-        y_offset,                       # nYOff
-        x_size,                         # nXSize
-        y_size,                         # nYSize
-        buffer,                         # pData
-        buffer_x_size,                  # nBufXSize
-        buffer_y_size,                  # nBufYSize
-        buffer_data_type,               # eBufType
-        band_count,                     # nBandCount
-        band_numbers_ptr,               # panBandMap (WTH is this?)
-        pixel_space,                    # nPixelSpace
-        line_space,                     # nLineSpace
-        band_space                      # nBandSpace
-      )
+      GDAL::CPLErrorHandler.manually_handle('Unable to perform raster band IO') do
+        FFI::GDAL::GDAL::GDALDatasetRasterIO(
+          @c_pointer,                     # hDS
+          gdal_access_flag,               # eRWFlag
+          x_offset,                       # nXOff
+          y_offset,                       # nYOff
+          x_size,                         # nXSize
+          y_size,                         # nYSize
+          buffer,                         # pData
+          buffer_x_size,                  # nBufXSize
+          buffer_y_size,                  # nBufYSize
+          buffer_data_type,               # eBufType
+          band_count,                     # nBandCount
+          band_numbers_ptr,               # panBandMap (WTH is this?)
+          pixel_space,                    # nPixelSpace
+          line_space,                     # nLineSpace
+          band_space                      # nBandSpace
+        )
+      end
 
       buffer
     end

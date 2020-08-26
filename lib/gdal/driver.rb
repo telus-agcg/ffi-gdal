@@ -107,9 +107,11 @@ module GDAL
     # @param new_name [String]
     # @param old_name [String]
     # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def copy_dataset_files(old_name, new_name)
-      FFI::GDAL::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to copy dataset files: '#{old_name}' -> '#{new_name}'") do
+        FFI::GDAL::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      end
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -199,18 +201,20 @@ module GDAL
     # this could mean deleting associated files, database objects, etc.
     #
     # @param file_name [String]
-    # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def delete_dataset(file_name)
-      FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to delete dataset: #{file_name}") do
+        FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      end
     end
 
     # @param old_name [String]
     # @param new_name [String]
-    # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def rename_dataset(old_name, new_name)
-      FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to rename dataset: #{file_name}") do
+        FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      end
     end
 
     private

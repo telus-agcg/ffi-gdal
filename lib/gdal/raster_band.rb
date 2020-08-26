@@ -35,9 +35,11 @@ module GDAL
       @dataset = init_dataset
     end
 
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def flush_cache
-      !!FFI::GDAL::GDAL.GDALFlushRasterCache(@c_pointer)
+      GDAL::CPLErrorHandler.manually_handle('Unable to flush cache') do
+        FFI::GDAL::GDAL.GDALFlushRasterCache(@c_pointer)
+      end
     end
 
     # The raster width in pixels.
@@ -75,10 +77,11 @@ module GDAL
     end
 
     # @param new_color_interp [FFI::GDAL::GDAL::ColorInterp]
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def color_interpretation=(new_color_interp)
-      !!FFI::GDAL::GDAL.GDALSetRasterColorInterpretation(@c_pointer,
-                                                         new_color_interp)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set color interpretation') do
+        FFI::GDAL::GDAL.GDALSetRasterColorInterpretation(@c_pointer, new_color_interp)
+      end
     end
 
     # Gets the associated GDAL::ColorTable. Note that it remains owned by the
@@ -95,10 +98,13 @@ module GDAL
     end
 
     # @param new_color_table [GDAL::ColorTable]
+    # @raise [GDAL::Error]
     def color_table=(new_color_table)
       color_table_pointer = GDAL::ColorTable.new_pointer(new_color_table)
 
-      FFI::GDAL::GDAL.GDALSetRasterColorTable(@c_pointer, color_table_pointer)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set color table') do
+        FFI::GDAL::GDAL.GDALSetRasterColorTable(@c_pointer, color_table_pointer)
+      end
     end
 
     # The pixel data type for this band.
@@ -130,11 +136,13 @@ module GDAL
     end
 
     # @param names [Array<String>]
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def category_names=(names)
       names_pointer = GDAL._string_array_to_pointer(names)
 
-      FFI::GDAL::GDAL.GDALSetRasterCategoryNames(@c_pointer, names_pointer)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set category names') do
+        FFI::GDAL::GDAL.GDALSetRasterCategoryNames(@c_pointer, names_pointer)
+      end
     end
 
     # The no data value for a band is generally a special marker value used to
@@ -154,9 +162,11 @@ module GDAL
     # is impossible until GDAL 2.1.
     #
     # @param value [Float, nil]
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def no_data_value=(value)
-      !!FFI::GDAL::GDAL.GDALSetRasterNoDataValue(@c_pointer, value) if value
+      GDAL::CPLErrorHandler.manually_handle('Unable to set NODATA value') do
+        FFI::GDAL::GDAL.GDALSetRasterNoDataValue(@c_pointer, value)
+      end
     end
 
     # @return [Integer]
@@ -227,7 +237,7 @@ module GDAL
     end
 
     # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def create_mask_band(*flags)
       flag_value = 0
 
@@ -241,7 +251,9 @@ module GDAL
                  end
       end
 
-      !!FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flag_value)
+      GDAL::CPLErrorHandler.manually_handle('Unable to create mask band') do
+        FFI::GDAL::GDAL.GDALCreateMaskBand(@c_pointer, flag_value)
+      end
     end
 
     # Fill this band with constant value.  Useful for clearing a band and
@@ -249,8 +261,11 @@ module GDAL
     #
     # @param real_value [Float]
     # @param imaginary_value [Float]
+    # @raise [GDAL::Error]
     def fill(real_value, imaginary_value = 0)
-      !!FFI::GDAL::GDAL.GDALFillRaster(@c_pointer, real_value, imaginary_value)
+      GDAL::CPLErrorHandler.manually_handle('Unable to fill raster') do
+        FFI::GDAL::GDAL.GDALFillRaster(@c_pointer, real_value, imaginary_value)
+      end
     end
 
     # Returns minimum, maximum, mean, and standard deviation of all pixel values
@@ -300,16 +315,18 @@ module GDAL
       mean_ptr = FFI::MemoryPointer.new(:double)
       standard_deviation_ptr = FFI::MemoryPointer.new(:double)
 
-      FFI::GDAL::GDAL::GDALComputeRasterStatistics(
-        @c_pointer,                           # hBand
-        approx_ok,                            # bApproxOK
-        min_ptr,                              # pdfMin
-        max_ptr,                              # pdfMax
-        mean_ptr,                             # pdfMean
-        standard_deviation_ptr,               # pdfStdDev
-        progress_block,                       # pfnProgress
-        nil                                   # pProgressData
-      )
+      GDAL::CPLErrorHandler.manually_handle('Unable to compute raster statistics') do
+        FFI::GDAL::GDAL::GDALComputeRasterStatistics(
+          @c_pointer,                           # hBand
+          approx_ok,                            # bApproxOK
+          min_ptr,                              # pdfMin
+          max_ptr,                              # pdfMax
+          mean_ptr,                             # pdfMean
+          standard_deviation_ptr,               # pdfStdDev
+          progress_block,                       # pfnProgress
+          nil                                   # pProgressData
+        )
+      end
 
       {
         minimum: min_ptr.read_double,
@@ -338,9 +355,11 @@ module GDAL
     end
 
     # @param new_scale [Float]
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def scale=(new_scale)
-      !!FFI::GDAL::GDAL.GDALSetRasterScale(@c_pointer, new_scale.to_f)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set raster scale') do
+        FFI::GDAL::GDAL.GDALSetRasterScale(@c_pointer, new_scale.to_f)
+      end
     end
 
     # This value (in combination with the #scale value) is used to
@@ -366,7 +385,9 @@ module GDAL
     # @param new_offset [Float]
     # @return [Boolean]
     def offset=(new_offset)
-      !!FFI::GDAL::GDAL.GDALSetRasterOffset(@c_pointer, new_offset)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set raster offset') do
+        FFI::GDAL::GDAL.GDALSetRasterOffset(@c_pointer, new_offset)
+      end
     end
 
     # @return [String]
@@ -376,12 +397,15 @@ module GDAL
 
     # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"
     #   is feet; other non-standard values are allowed.
-    # @return [Boolean]
+    # @raise [GDAL::Error]
     def unit_type=(new_unit_type)
-      if defined? FFI::GDAL::GDAL::GDALSetRasterUnitType
-        !!FFI::GDAL::GDAL.GDALSetRasterUnitType(@c_pointer, new_unit_type)
-      else
+      unless defined? FFI::GDAL::GDAL::GDALSetRasterUnitType
         warn "GDALSetRasterUnitType is not defined.  Can't call RasterBand#unit_type="
+        return
+      end
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to set unit type') do
+        FFI::GDAL::GDAL.GDALSetRasterUnitType(@c_pointer, new_unit_type)
       end
     end
 
@@ -393,10 +417,13 @@ module GDAL
       GDAL::RasterAttributeTable.new(rat_pointer)
     end
 
-    # @return [GDAL::RasterAttributeTable]
+    # @raise [GDAL::Error]
     def default_raster_attribute_table=(rat_table)
       rat_table_ptr = GDAL::RasterAttributeTable.new_pointer(rat_table)
-      FFI::GDAL::GDAL.GDALSetDefaultRAT(@c_pointer, rat_table_ptr)
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to set default raster attribute table') do
+        FFI::GDAL::GDAL.GDALSetDefaultRAT(@c_pointer, rat_table_ptr)
+      end
     end
 
     # Gets the default raster histogram.  Results are returned as a Hash so some
@@ -555,11 +582,13 @@ module GDAL
       destination_pointer = GDAL._pointer(GDAL::RasterBand, destination_band)
       options_ptr = GDAL::Options.pointer(options)
 
-      !!FFI::GDAL::GDAL.GDALRasterBandCopyWholeRaster(@c_pointer,
+      GDAL::CPLErrorHandler.manually_handle('Unable to copy whole raster') do
+        FFI::GDAL::GDAL.GDALRasterBandCopyWholeRaster(@c_pointer,
                                                       destination_pointer,
                                                       options_ptr,
                                                       progress,
                                                       nil)
+      end
     end
 
     # IO access for raster data in this band. Default values are set up to
@@ -652,7 +681,9 @@ module GDAL
     def read_block(x_block_number, y_block_number, image_buffer = nil)
       image_buffer ||= FFI::MemoryPointer.new(:buffer_out, block_buffer_size)
 
-      FFI::GDAL::GDAL.GDALReadBlock(@c_pointer, x_block_number, y_block_number, image_buffer)
+      GDAL::CPLErrorHandler.manually_handle('Unable to read block') do
+        FFI::GDAL::GDAL.GDALReadBlock(@c_pointer, x_block_number, y_block_number, image_buffer)
+      end
 
       image_buffer
     end
@@ -666,7 +697,9 @@ module GDAL
     def write_block(x_block_number, y_block_number, data_pointer = nil)
       data_pointer ||= FFI::Buffer.alloc_inout(block_buffer_size)
 
-      FFI::GDAL::GDAL.GDALWriteBlock(@c_pointer, x_block_number, y_block_number, data_pointer)
+      GDAL::CPLErrorHandler.manually_handle('Unable to write block') do
+        FFI::GDAL::GDAL.GDALWriteBlock(@c_pointer, x_block_number, y_block_number, data_pointer)
+      end
 
       data_pointer
     end

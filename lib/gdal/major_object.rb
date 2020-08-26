@@ -49,7 +49,9 @@ module GDAL
     end
 
     def set_metadata_item(name, value, domain = '')
-      FFI::GDAL::GDAL.GDALSetMetadataItem(@c_pointer, name, value.to_s, domain)
+      GDAL::CPLErrorHandler.manually_handle('Unable to set metadata item') do
+        FFI::GDAL::GDAL.GDALSetMetadataItem(@c_pointer, name, value.to_s, domain)
+      end
     end
 
     # @return [Hash{domain => Array<String>}]

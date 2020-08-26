@@ -17,6 +17,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - *BREAKING*: `required_ruby_version` set to `>= 2.6`
 - BREAKING: `OGR::DataSource#copy_data_source` now raises instead of returning
   `nil` on a failure to copy.
+- BREAKING: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow
+  unsetting the NODATA value.
+- BREAKING: Many methods were not communicating errors `CPLErr` back to the
+  caller; these now raise on `CE_Failure` or `CE_Fatal`:
+  - `GDAL::Dataset#add_band`
+  - `GDAL::Dataset#create_mask_band`
+  - `GDAL::Dataset#projection=`
+  - `GDAL::Dataset#geo_transform`
+  - `GDAL::Dataset#geo_transform=`
+  - `GDAL::Dataset#build_overviews`
+  - `GDAL::Dataset#raster_io`
+  - `GDAL::Driver#copy_dataset_files`
+  - `GDAL::Driver#delete_dataset`
+  - `GDAL::Driver#rename_dataset`
+  - `GDAL::MajorObject#set_metadata_item`
+  - `GDAL::RasterAttributeTable.from_color_table`
+  - `GDAL::RasterAttributeTable#create_column`
+  - `GDAL::RasterAttributeTable#set_linear_binning`
+  - `GDAL::RasterBand#category_names=`
+  - `GDAL::RasterBand#color_interpretation=`
+  - `GDAL::RasterBand#color_table=`
+  - `GDAL::RasterBand#compute_statistics=`
+  - `GDAL::RasterBand#copy_whole_raster`
+  - `GDAL::RasterBand#create_mask_band`
+  - `GDAL::RasterBand#default_raster_attribute_table=`
+  - `GDAL::RasterBand#fill`
+  - `GDAL::RasterBand#flush_cache`
+  - `GDAL::RasterBand#no_data_value=`
+  - `GDAL::RasterBand#offset=`
+  - `GDAL::RasterBand#scale=`
+  - `GDAL::RasterBand#unit_type=`
+  - `GDAL::RasterBand#write_block`
+  - `GDAL::RasterBand#write_block`
 
 ### Fixed
 

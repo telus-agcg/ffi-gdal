@@ -37,6 +37,17 @@ module GDAL
       new.handler_lambda
     end
 
+    # @param message [String] Exception message if the block returns something
+    #   that should cause a raise.
+    # @raise [GDAL::Error]
+    def self.manually_handle(message)
+      cpl_err = yield
+
+      case cpl_err
+      when :CE_Fatal, :CE_Failure then raise GDAL::Error, message
+      end
+    end
+
     # @return [Proc]
     attr_accessor :on_none
 
@@ -72,7 +83,10 @@ module GDAL
     # @return [Proc] A lambda that adheres to the CPL Error interface.
     def handler_lambda
       @handler_lambda ||= lambda do |error_class, error_number, message|
-        result(error_class, error_number, message)
+        r = result(error_class, error_number, message)
+        FFI::CPL::Error.CPLErrorReset
+
+        r
       end
     end
 
@@ -92,11 +106,14 @@ module GDAL
     def custom_handle
       FFI::CPL::Error.CPLPushErrorHandler(handler_lambda)
       yield
+
+      r = result(FFI::CPL::Error.CPLGetLastErrorType,
+                 FFI::CPL::Error.CPLGetLastErrorNo,
+                 FFI::CPL::Error.CPLGetLastErrorMsg)
+      FFI::CPL::Error.CPLErrorReset
       FFI::CPL::Error.CPLPopErrorHandler
 
-      result(FFI::CPL::Error.CPLGetLastErrorType,
-             FFI::CPL::Error.CPLGetLastErrorNo,
-             FFI::CPL::Error.CPLGetLastErrorMsg)
+      r
     end
 
     private
