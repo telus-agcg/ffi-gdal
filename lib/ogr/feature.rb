@@ -75,9 +75,9 @@ module OGR
     def set_from!(_other_feature, _be_forgiving: false, with_map: nil)
       raise NotImplementedError, 'with_map: is not yet supported' if with_map
 
-      ogr_err = FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to set from other feature') do
+        FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
+      end
     end
 
     # This will always be the same as the field count for the feature
@@ -247,21 +247,22 @@ module OGR
     #
     # @param new_geometry [OGR::Geometry]
     # @return +true+ if successful, otherwise raises an OGR exception.
-    def set_geometry(new_geometry)
-      ogr_err = FFI::OGR::API.OGR_F_SetGeometry(@c_pointer, new_geometry.c_pointer)
-
-      ogr_err.handle_result
+    def set_geometry(new_geometry) # rubocop:disable Naming/AccessorMethodName
+      OGR::ErrorHandling.handle_ogr_err('Unable to set geometry on feature') do
+        FFI::OGR::API.OGR_F_SetGeometry(@c_pointer, new_geometry.c_pointer)
+      end
     end
 
     # Sets the geometry of the feature by taking ownership of +new_geometry.
     #
     # @param new_geometry [OGR::Geometry]
     # @return +true+ if successful, otherwise raises an OGR exception.
-    def set_geometry_directly(new_geometry)
+    def set_geometry_directly(new_geometry) # rubocop:disable Naming/AccessorMethodName
       new_geometry.c_pointer.autorelease = false
-      ogr_err = FFI::OGR::API.OGR_F_SetGeometryDirectly(@c_pointer, new_geometry.c_pointer)
 
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to set geometry directly on feature') do
+        FFI::OGR::API.OGR_F_SetGeometryDirectly(@c_pointer, new_geometry.c_pointer)
+      end
     end
     alias geometry= set_geometry_directly
 
@@ -283,9 +284,9 @@ module OGR
     # @param new_fid [Integer]
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fid=(new_fid)
-      ogr_err = FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to set FID') do
+        FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
+      end
     end
 
     # The number of Geometries in this feature.
@@ -344,9 +345,9 @@ module OGR
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
       raise OGR::InvalidGeometry if geometry_ptr.nil?
 
-      ogr_err = FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field at index #{index}") do
+        FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
+      end
     end
 
     # Sets the feature geometry of a specified geometry field by taking ownership
@@ -355,14 +356,13 @@ module OGR
     # @param index [Integer]
     # @param geometry [OGR::Geometry]
     def set_geometry_field_directly(index, geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
-      geometry_ptr.autorelease = false
+      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry, autorelease: false)
 
       raise OGR::InvalidGeometry if geometry_ptr.nil?
 
-      ogr_err = FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field directly at index #{index}") do
+        FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)
+      end
     end
 
     # @return [Boolean]
@@ -516,8 +516,7 @@ module OGR
 
     # @param new_style_table [OGR::StyleTable]
     def style_table=(new_style_table)
-      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
-      new_style_table_ptr.autorelease = false
+      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table, autorelease: false)
 
       raise OGR::InvalidStyleTable unless new_style_table_ptr
 

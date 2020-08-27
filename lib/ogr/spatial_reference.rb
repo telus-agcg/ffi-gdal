@@ -201,48 +201,48 @@ module OGR
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
       raise OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
 
-      ogr_err = FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to copy GEOGCS') do
+        FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
+      end
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def validate
-      ogr_err = FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to validate') do
+        FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
+      end
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup_ordering!
-      ogr_err = FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to fixup ordering') do
+        FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
+      end
     end
 
     # @return +true+ if successful, otherwise raises an OGR exception.
     def fixup!
-      ogr_err = FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to fixup') do
+        FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
+      end
     end
 
     # Strips all OGC coordinate transformation parameters.
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def strip_ct_parameters!
-      ogr_err = FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to strip coordinate transformation parameters') do
+        FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
+      end
     end
 
     # Sets the EPSG authority info if possible.
     #
     # @return +true+ if successful, otherwise raises an OGR exception.
     def auto_identify_epsg!
-      ogr_err = FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@c_pointer)
-
-      ogr_err.handle_result 'Unable to determine SRS from EPSG'
+      OGR::ErrorHandling.handle_ogr_err('Unable to determine SRS from EPSG') do
+        FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@c_pointer)
+      end
     end
 
     # @return [Boolean] +true+ if this coordinate system should be treated as

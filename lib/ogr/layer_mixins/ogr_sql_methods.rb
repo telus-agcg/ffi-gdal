@@ -47,7 +47,9 @@ module OGR
 
         ogr_err = yield
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to set geometry directly on feature') do
+          ogr_err
+        end
       end
     end
   end

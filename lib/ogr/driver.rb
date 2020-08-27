@@ -112,9 +112,9 @@ module OGR
         raise OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
       end
 
-      ogr_err = FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err("Unable to delete data source '#{file_name}'") do
+        FFI::OGR::API.OGR_Dr_DeleteDataSource(@c_pointer, file_name)
+      end
     end
 
     # @param source_data_source [OGR::DataSource, FFI::Pointer]

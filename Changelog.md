@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `.release` class method for many `GDAL` types.
+- Added exception messages for `OGR` methods that raised using
+  `OGR::ErrorHandling`.
 
 ### Changed
 

@@ -44,9 +44,9 @@ module OGR
     # TODO: This seems to occasionally lead to: 28352 illegal hardware
     #   instruction, and sometimes full crashes.
     def sync_to_disk
-      ogr_err = FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to sync layer to disk') do
+        FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
+      end
     end
 
     # Tests if this layer supports the given capability.  Must be in the list

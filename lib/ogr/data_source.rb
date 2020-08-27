@@ -177,9 +177,9 @@ module OGR
     def delete_layer(index)
       raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
 
-      ogr_err = FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
-
-      ogr_err.handle_result "Unable to delete layer #{index}"
+      OGR::ErrorHandling.handle_ogr_err("Unable to delete layer at index #{index}") do
+        FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)
+      end
     end
 
     # @param command [String] The SQL to execute.
@@ -234,9 +234,9 @@ module OGR
 
     # @return [Boolean]
     def sync_to_disk
-      ogr_err = FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to syn datasource to disk') do
+        FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
+      end
     end
   end
 end

@@ -10,8 +10,9 @@ module OGR
         datum_name = FFI::MemoryPointer.new(:string)
         units = FFI::MemoryPointer.new(:string)
 
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name, datum_name, units)
-        ogr_err.handle_result 'Required parameters (name, datum name, units) are not defined'
+        OGR::ErrorHandling.handle_ogr_err('Required parameters (name, datum name, units) are not defined') do
+          FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name, datum_name, units)
+        end
 
         {
           projection_name: projection_name.read_string,
@@ -23,8 +24,10 @@ module OGR
       # @return [Array<String>]
       def to_mapinfo
         return_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToMICoordSys(@c_pointer, return_ptr_ptr)
-        ogr_err.handle_result
+
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to MapInfo') do
+          FFI::OGR::SRSAPI.OSRExportToMICoordSys(@c_pointer, return_ptr_ptr)
+        end
 
         return_ptr_ptr.get_array_of_string(0)
       end
@@ -35,8 +38,9 @@ module OGR
         units_ptr = GDAL._pointer_pointer(:string)
         prj_params_ptr = GDAL._pointer_pointer(:double)
 
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToPCI(@c_pointer, proj_ptr, units_ptr, prj_params_ptr)
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to PCI') do
+          FFI::OGR::SRSAPI.OSRExportToPCI(@c_pointer, proj_ptr, units_ptr, prj_params_ptr)
+        end
 
         {
           projection: proj_ptr.read_pointer.read_string,
@@ -49,8 +53,10 @@ module OGR
       # @raise [GDAL::UnsupportedOperation] If empty definition.
       def to_proj4
         proj4_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToProj4(@c_pointer, proj4_ptr)
-        ogr_err.handle_result
+
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to PROJ.4') do
+          FFI::OGR::SRSAPI.OSRExportToProj4(@c_pointer, proj4_ptr)
+        end
 
         GDAL._read_pointer_pointer_safely(proj4_ptr, :string)
       end
@@ -62,8 +68,9 @@ module OGR
         datum = FFI::MemoryPointer.new(:long)
         prj_params_ptr = GDAL._pointer_pointer(:double)
 
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys, zone, prj_params_ptr, datum)
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to USGS GCTP') do
+          FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys, zone, prj_params_ptr, datum)
+        end
 
         {
           projection_system_code: proj_sys.read_long,
@@ -76,13 +83,14 @@ module OGR
       # @return [String]
       def to_wkt
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
 
-        if wkt_ptr_ptr.null?
-          ogr_err.handle_result 'Unable to generate WKT'
-        else
-          GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+          FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
         end
+
+        return '' if wkt_ptr_ptr.null?
+
+        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
       end
 
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
@@ -91,20 +99,23 @@ module OGR
         return String.new if @c_pointer.null?
 
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
 
-        if wkt_ptr_ptr.null?
-          ogr_err.handle_result 'Unable to generate WKT'
-        else
-          GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to pretty WKT') do
+          FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
         end
+
+        return '' if wkt_ptr_ptr.null?
+
+        GDAL._read_pointer_pointer_safely(wkt_ptr_ptr, :string)
       end
 
       # @return [String]
       def to_xml(dialect = nil)
         xml_ptr_ptr = GDAL._pointer_pointer(:string)
-        ogr_err = FFI::OGR::SRSAPI.OSRExportToXML(@c_pointer, xml_ptr_ptr, dialect)
-        ogr_err.handle_result
+
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to XML') do
+          FFI::OGR::SRSAPI.OSRExportToXML(@c_pointer, xml_ptr_ptr, dialect)
+        end
 
         xml_ptr_ptr.get_array_of_string(0).join
       end

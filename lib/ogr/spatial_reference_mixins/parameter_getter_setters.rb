@@ -15,9 +15,9 @@ module OGR
       # @param value [String] The new value for the node/path.  Should be a String,
       #   but if not, will be converted for you.
       def set_attribute_value(path, value)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetAttrValue(@c_pointer, path, value.to_s)
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to set attribute (#{path}) to value #{value}") do
+          FFI::OGR::SRSAPI.OSRSetAttrValue(@c_pointer, path, value.to_s)
+        end
       end
 
       # @return [Hash{unit_name: String, value: Float}]  +unit_name+ is the name
@@ -34,9 +34,11 @@ module OGR
       # @param transform_to_radians [Float] The value to multiply an angle to
       #   transform the value to radians.
       def set_angular_units(unit_label, transform_to_radians)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetAngularUnits(@c_pointer, unit_label, transform_to_radians.to_f)
+        msg = "Unable to set angular units to #{unit_label} (transform to radians? #{transform_to_radians})"
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::SRSAPI.OSRSetAngularUnits(@c_pointer, unit_label, transform_to_radians.to_f)
+        end
       end
 
       # @return [Hash{unit_name: String, value: Float}]  +unit_name+ is the name
@@ -53,9 +55,11 @@ module OGR
       # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
       def set_linear_units(unit_label, transform_to_meters)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnits(@c_pointer, unit_label, transform_to_meters.to_f)
+        msg = "Unable to set linear units to #{unit_label} (transform to meters? #{transform_to_meters})"
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::SRSAPI.OSRSetLinearUnits(@c_pointer, unit_label, transform_to_meters.to_f)
+        end
       end
 
       # Does the same as #set_linear_units, but also converts parameters to use
@@ -65,10 +69,12 @@ module OGR
       # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(@c_pointer, unit_label,
-                                                                        transform_to_meters.to_f)
+        msg = "Unable to set linear units to #{unit_label} (transform to meters? #{transform_to_meters}) and update" \
+          'parameters'
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(@c_pointer, unit_label, transform_to_meters.to_f)
+        end
       end
 
       # The linear units for the projection.
@@ -88,9 +94,12 @@ module OGR
       # @param transform_to_meters [Float] The value to multiple a length to
       #   transform the value to meters.
       def set_target_linear_units(target_key, unit_label, transform_to_meters)
-        ogr_err = FFI::OGR::SRSAPI.OSRSetTargetLinearUnits(@c_pointer, target_key, unit_label, transform_to_meters)
+        msg = "Unable to set target (#{target_key}) linear units to #{unit_label} " \
+          "(transform to meters? #{transform_to_meters})"
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::SRSAPI.OSRSetTargetLinearUnits(@c_pointer, target_key, unit_label, transform_to_meters)
+        end
       end
 
       # @return [Hash]

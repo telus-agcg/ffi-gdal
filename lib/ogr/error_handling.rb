@@ -10,38 +10,36 @@ module OGR
   # Unlike the OGR API, ffi-gdal defines an Enum for the OGRERR types, which
   # in turns causes OGR to return Symbols on errors (the #defines for those can
   # be found here: http://www.gdal.org/ogr__core_8h.html).  This maps those
-  # Symbols to Ruby exceptions (or lack thereof).  The sad part of this
-  # solution is that any function that returns an OGRErr needs to assign that
-  # Symbol to a variable, then call #handle_result to get that
-  # Symbol-to-Exception mapping to take place.
+  # Symbols to Ruby exceptions (or lack thereof).
   module ErrorHandling
-    def handle_result(msg = nil)
-      error_class_map(self).call(msg)
-    end
+    ERROR_CLASS_MAP = {
+      OGRERR_NONE: nil,
+      OGRERR_NOT_ENOUGH_DATA: OGR::NotEnoughData,
+      OGRERR_NOT_ENOUGH_MEMORY: ::NoMemoryError,
+      OGRERR_UNSUPPORTED_GEOMETRY_TYPE: OGR::UnsupportedGeometryType,
+      OGRERR_UNSUPPORTED_OPERATION: OGR::UnsupportedOperation,
+      OGRERR_CORRUPT_DATA: OGR::CorruptData,
+      OGRERR_FAILURE: OGR::Failure,
+      OGRERR_UNSUPPORTED_SRS: OGR::UnsupportedSRS,
+      OGRERR_INVALID_HANDLE: OGR::InvalidHandle
+    }.freeze
 
-    private
+    # Yields, then expects the result to be a Symbol from FFI::OGR::Core::Err.
+    #
+    # @param msg [String]
+    def self.handle_ogr_err(msg)
+      ogr_err_symbol = yield
 
-    # @param [Symbol] error_class
-    # @return [Proc]
-    def error_class_map(error_class)
-      {
-        OGRERR_NONE: ->(_msg) { true },
-        OGRERR_NOT_ENOUGH_DATA: ->(msg) { raise_exception(OGR::NotEnoughData, msg) },
-        OGRERR_NOT_ENOUGH_MEMORY: ->(msg) { raise_exception(::NoMemoryError, msg) },
-        OGRERR_UNSUPPORTED_GEOMETRY_TYPE: ->(msg) { raise_exception(OGR::UnsupportedGeometryType, msg) },
-        OGRERR_UNSUPPORTED_OPERATION: ->(msg) { raise_exception(OGR::UnsupportedOperation, msg) },
-        OGRERR_CORRUPT_DATA: ->(msg) { raise_exception(OGR::CorruptData, msg) },
-        OGRERR_FAILURE: ->(msg) { raise_exception(OGR::Failure, msg) },
-        OGRERR_UNSUPPORTED_SRS: ->(msg) { raise_exception(OGR::UnsupportedSRS, msg) },
-        OGRERR_INVALID_HANDLE: ->(msg) { raise_exception(OGR::InvalidHandle, msg) }
-      }.fetch(error_class) { raise "Unknown OGRERR type: #{self}" }
+      klass = ERROR_CLASS_MAP.fetch(ogr_err_symbol) { raise "Unknown OGRERR type: #{self}" }
+
+      raise_exception(klass, msg) if klass
     end
 
     # Exists solely to strip off the top 4 lines of the backtrace so it doesn't
     # look like the problem is coming from here.
-    def raise_exception(exception, message)
+    def self.raise_exception(exception, message)
       e = exception.new(message)
-      e.set_backtrace(caller(4))
+      e.set_backtrace(caller(2))
       raise(e)
     end
   end

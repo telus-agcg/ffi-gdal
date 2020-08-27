@@ -15,9 +15,10 @@ module OGR
         raise OGR::UnsupportedOperation, 'This layer does not support field creation.' unless can_create_field?
 
         field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
-        ogr_err = FFI::OGR::API.OGR_L_CreateField(@c_pointer, field_definition_ptr, approx_ok)
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to create field') do
+          FFI::OGR::API.OGR_L_CreateField(@c_pointer, field_definition_ptr, approx_ok)
+        end
       end
 
       # Deletes the field definition from the layer.
@@ -26,9 +27,9 @@ module OGR
       def delete_field(field_id)
         raise OGR::UnsupportedOperation, 'This driver does not support field deletion.' unless can_delete_field?
 
-        ogr_err = FFI::OGR::API.OGR_L_DeleteField(@c_pointer, field_id)
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to delete field') do
+          FFI::OGR::API.OGR_L_DeleteField(@c_pointer, field_id)
+        end
       end
 
       # @param new_order [Array<Integer>] An array that orders field indexes by
@@ -37,13 +38,13 @@ module OGR
       def reorder_fields(*new_order)
         raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
-        return false if new_order.empty?
-        return false if new_order.any? { |i| i > feature_definition.field_count }
+        return false if new_order.empty? || new_order.any? { |i| i > feature_definition.field_count }
 
         map_array_ptr = FFI::MemoryPointer.new(:int, new_order.size).write_array_of_int(new_order)
-        ogr_err = FFI::OGR::API.OGR_L_ReorderFields(@c_pointer, map_array_ptr)
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to reorder fields using order: #{new_order}") do
+          FFI::OGR::API.OGR_L_ReorderFields(@c_pointer, map_array_ptr)
+        end
       end
 
       # Puts the field whose index is +old_position+ into index at +new_position+
@@ -54,9 +55,9 @@ module OGR
       def reorder_field(old_position, new_position)
         raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
-        ogr_err = FFI::OGR::API.OGR_L_ReorderField(@c_pointer, old_position, new_position)
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to reorder field: #{old_position} to #{new_position}") do
+          FFI::OGR::API.OGR_L_ReorderField(@c_pointer, old_position, new_position)
+        end
       end
 
       # @param field_index [Integer]
@@ -71,14 +72,14 @@ module OGR
 
         new_field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, new_field_definition)
 
-        ogr_err = FFI::OGR::API.OGR_L_AlterFieldDefn(
-          @c_pointer,
-          field_index,
-          new_field_definition_ptr,
-          flags
-        )
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to alter field definition at field index #{field_index}") do
+          FFI::OGR::API.OGR_L_AlterFieldDefn(
+            @c_pointer,
+            field_index,
+            new_field_definition_ptr,
+            flags
+          )
+        end
       end
 
       # Finds the index of a field in this Layer.
@@ -107,13 +108,13 @@ module OGR
 
         geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)
 
-        ogr_err = FFI::OGR::API.OGR_L_CreateGeomField(
-          @c_pointer,
-          geometry_field_definition_ptr,
-          approx_ok
-        )
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to create geometry field') do
+          FFI::OGR::API.OGR_L_CreateGeomField(
+            @c_pointer,
+            geometry_field_definition_ptr,
+            approx_ok
+          )
+        end
       end
 
       # If the driver supports this functionality, it will not fetch the
@@ -126,9 +127,10 @@ module OGR
         return false if field_names.empty?
 
         fields_ptr = GDAL._string_array_to_pointer(field_names)
-        ogr_err = FFI::OGR::API.OGR_L_SetIgnoredFields(@c_pointer, fields_ptr)
 
-        ogr_err.handle_result "Unable to ignore fields with names: #{field_names}"
+        OGR::ErrorHandling.handle_ogr_err("Unable to ignore fields with names: #{field_names}") do
+          FFI::OGR::API.OGR_L_SetIgnoredFields(@c_pointer, fields_ptr)
+        end
       end
     end
   end

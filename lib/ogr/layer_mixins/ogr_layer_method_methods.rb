@@ -149,14 +149,15 @@ module OGR
         options_ptr = GDAL::Options.pointer(options)
         result_layer_ptr = output_layer.c_pointer
 
-        ogr_err = FFI::OGR::API.send(method_name,
-                                     @c_pointer,
-                                     method_layer_ptr,
-                                     result_layer_ptr,
-                                     options_ptr,
-                                     progress,
-                                     nil)
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to run layer method '#{method_name}'") do
+          FFI::OGR::API.send(method_name,
+                             @c_pointer,
+                             method_layer_ptr,
+                             result_layer_ptr,
+                             options_ptr,
+                             progress,
+                             nil)
+        end
 
         output_layer
       end

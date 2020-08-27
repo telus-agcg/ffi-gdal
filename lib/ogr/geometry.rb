@@ -469,9 +469,9 @@ module OGR
 
       return if coord_trans_ptr.nil? || coord_trans_ptr.null?
 
-      ogr_err = FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+        FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
+      end
     end
 
     # Similar to +#transform+, but this only works if the geometry already has an
@@ -491,9 +491,9 @@ module OGR
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
       return if new_spatial_ref_ptr.null?
 
-      ogr_err = FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+        FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
+      end
     end
 
     # Computes and returns a new, simplified geometry.
@@ -554,9 +554,9 @@ module OGR
     # @param wkb_data [String] Binary WKB data.
     # @return +true+ if successful, otherwise raises an OGR exception.
     def import_from_wkb(wkb_data)
-      ogr_err = FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to import geometry from WKB') do
+        FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
+      end
     end
 
     # The exact number of bytes required to hold the WKB of this object.
@@ -569,8 +569,10 @@ module OGR
     # @return [String]
     def to_wkb(byte_order = :wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
-      ogr_err = FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
-      ogr_err.handle_result 'Unable to export geometry to WKB'
+
+      OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
+        FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
+      end
 
       output.read_bytes(wkb_size)
     end
@@ -580,9 +582,10 @@ module OGR
       wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
-      ogr_err = FFI::OGR::API.OGR_G_ImportFromWkt(@c_pointer, wkt_pointer_pointer)
 
-      ogr_err.handle_result "Unable to import: #{wkt_data}"
+      OGR::ErrorHandling.handle_ogr_err("Unable to import from WKT: #{wkt_data}") do
+        FFI::OGR::API.OGR_G_ImportFromWkt(@c_pointer, wkt_pointer_pointer)
+      end
     end
 
     # @return [String]
@@ -590,8 +593,9 @@ module OGR
       output_ptr = FFI::MemoryPointer.new(:pointer)
       output_ptr.autorelease = false
 
-      ogr_err = FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+        FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
+      end
 
       wkt = output_ptr.read_pointer.read_string
       FFI::CPL::VSI.VSIFree(output_ptr)

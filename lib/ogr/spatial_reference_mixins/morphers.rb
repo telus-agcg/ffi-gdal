@@ -7,20 +7,22 @@ module OGR
       #
       # @return [OGR::SpatialReference, false] If successful, returns self.
       def morph_to_esri!
-        ogr_err = FFI::OGR::SRSAPI.OSRMorphToESRI(@c_pointer)
-        result = ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to morph self to ESRI') do
+          FFI::OGR::SRSAPI.OSRMorphToESRI(@c_pointer)
+        end
 
-        result ? self : result
+        self
       end
 
       # Converts, in place, from ESRI WKT format.
       #
       # @return [OGR::SpatialReference, false] If successful, returns self.
       def morph_from_esri!
-        ogr_err = FFI::OGR::SRSAPI.OSRMorphFromESRI(@c_pointer)
-        result = ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to morph self from ESRI') do
+          FFI::OGR::SRSAPI.OSRMorphFromESRI(@c_pointer)
+        end
 
-        result ? self : result
+        self
       end
     end
   end
