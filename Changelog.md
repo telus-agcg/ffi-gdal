@@ -71,6 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING:
   `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s
   `target_key` is now required.
+- BREAKING: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of
+  `OGR::Failure`. In GDAL 3, the GDAL error handler kicks in when bad data is
+  used to instantiate the `CoordinateTranformation`. In < 3, the Ruby code
+  checks the returned pointer and raises if it's null. Now these raise the same
+  exception.
 
 ### Fixed
 

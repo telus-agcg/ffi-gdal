@@ -41,9 +41,12 @@ module OGR
 
       # Input spatial reference system objects are assigned by copy (calling clone() method)
       # and no ownership transfer occurs.
+      # NOTE: In GDAL 3, this will cause the GDAL error handler to raise a
+      # GDAL::Error; in < 3, this just returns a null pointer, then gets handled
+      # by the null-pointer check below.
       pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
-      raise OGR::Failure, 'Unable to create coordinate transformation' if pointer.null?
+      raise GDAL::Error, 'Unable to create coordinate transformation' if pointer.null?
 
       @c_pointer = pointer
     end
