@@ -25,7 +25,7 @@ module GDAL
 
     FAIL_PROC = lambda do |exception, message|
       ex = exception ? exception.new(message) : GDAL::Error.new(message)
-      ex.set_backtrace(caller(2))
+      ex.set_backtrace(caller(3))
 
       raise(ex)
     end
