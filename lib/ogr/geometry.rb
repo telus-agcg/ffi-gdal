@@ -591,10 +591,12 @@ module OGR
       output_ptr.autorelease = false
 
       ogr_err = FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
-      FFI::CPL::VSI.VSIFree(output_ptr)
       ogr_err.handle_result
 
-      output_ptr.read_pointer.read_string
+      wkt = output_ptr.read_pointer.read_string
+      FFI::CPL::VSI.VSIFree(output_ptr)
+
+      wkt
     end
 
     # This geometry expressed as GML in GML basic data types.
