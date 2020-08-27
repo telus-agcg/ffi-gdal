@@ -17,8 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - *BREAKING*: All methods with default boolean args are now keyword args.
 - *BREAKING*: `required_ruby_version` set to `>= 2.6`
-- BREAKING: `OGR::DataSource#copy_data_source` now raises instead of returning
-  `nil` on a failure to copy.
+
+#### GDAL
+
 - BREAKING: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow
   unsetting the NODATA value.
 - BREAKING: Many methods were not communicating errors `CPLErr` back to the
@@ -52,19 +53,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `GDAL::RasterBand#unit_type=`
   - `GDAL::RasterBand#write_block`
   - `GDAL::RasterBand#write_block`
+- `GDAL` errors that return `CPLE_AppDefined` now raise `GDAL::Error`.
+- `GDAL` errors now truncate less of the backtrace.
+
+#### OGR
+
+- BREAKING: `OGR::DataSource#copy_data_source` now raises instead of returning
+  `nil` on a failure to copy.
 - BREAKING:
   `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
   second param is now a keyword arg, `north:` that defaults to `true` (like
   GDAL's default).
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_towgs84`'s
   `z_distance` requires a value internally, but was defaulted to `nil`; changed
-  the default value to `0.0.`
-- `GDAL` errors that return `CPLE_AppDefined` now raise `GDAL::Error`.
+  the default value to `0.0`.
+- BREAKING:
+  `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s
+  `target_key` is now required.
 
 ### Fixed
 
-- `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
-  float value.
 - [DEV-12827] Fixed lots of double-free crashes resulting from misuse of
   `FFI::Pointer#autorelease`:
   - `GDAL::CPLErrorHandler#custom_handle`
@@ -105,6 +113,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_name`
   - `OGR::StyleTool#param_as_string`
   - `OGR::StyleTool#style_string`
+
+#### GDAL
+
+- `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
+  float value.
+
+#### OGR
+
 - [DEV-12827] Fixed a number of memory leaks where returned strings should be
   released using `FFI::CPL::VSI.VSIFree()`:
   - `OGR::Geometry#to_gml`

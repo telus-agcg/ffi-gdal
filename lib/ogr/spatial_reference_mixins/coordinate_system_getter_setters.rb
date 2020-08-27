@@ -311,7 +311,7 @@ module OGR
       # @param axis_number [Integer] The Axis to query (0, 1, or 2)
       # @param target_key [String] 'GEOGCS' or 'PROJCS'.
       # @return [String, nil]
-      def axis(axis_number, target_key = nil)
+      def axis(axis_number, target_key)
         axis_orientation_ptr = FFI::MemoryPointer.new(:int)
 
         name = FFI::OGR::SRSAPI.OSRGetAxis(@c_pointer, target_key, axis_number, axis_orientation_ptr)
