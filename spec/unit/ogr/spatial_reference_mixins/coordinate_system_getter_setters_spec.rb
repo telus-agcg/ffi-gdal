@@ -3,6 +3,8 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
+  subject(:wgs84) { OGR::SpatialReference.new_from_epsg(4326) }
+
   describe '#set_local_cs' do
     it 'sets the LOCAL_CS' do
       expect do
@@ -66,6 +68,25 @@ RSpec.describe OGR::SpatialReference do
   describe '#authority_name' do
     it 'returns the authority name' do
       expect(subject.authority_name).to eq 'EPSG'
+    end
+  end
+
+  describe '#set_projection' do
+    it "doesn't blow up" do
+      subject.set_projection 'Transverse_Mercator'
+    end
+  end
+
+  describe '#set_utm + #utm_zone' do
+    it 'sets and gets the UTM zone' do
+      subject.set_utm(10)
+      expect(subject.utm_zone).to eq 10
+    end
+  end
+
+  describe '#axis' do
+    it 'returns the axis info' do
+      expect(subject.axis(0, 'GEOGCS')).to eq(name: 'Geodetic latitude', orientation: :OAO_North)
     end
   end
 end
