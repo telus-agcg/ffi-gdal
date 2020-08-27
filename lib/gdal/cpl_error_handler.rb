@@ -11,7 +11,7 @@ module GDAL
 
     CPLE_MAP = [
       { cple: :CPLE_None,           exception: nil },
-      { cple: :CPLE_AppDefined,     exception: nil },
+      { cple: :CPLE_AppDefined,     exception: GDAL::Error },
       { cple: :CPLE_OutOfMemory,    exception: ::NoMemoryError },
       { cple: :CPLE_FileIO,         exception: ::IOError },
       { cple: :CPLE_OpenFailed,     exception: GDAL::OpenFailure },
