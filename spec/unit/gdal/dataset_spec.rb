@@ -102,8 +102,8 @@ RSpec.describe GDAL::Dataset do
 
   describe '#create_mask_band' do
     context 'no flags given' do
-      it 'returns true' do
-        expect(subject.create_mask_band(0)).to eq true
+      it 'returns nil' do
+        expect(subject.create_mask_band(0)).to be_nil
       end
     end
   end
@@ -117,7 +117,7 @@ RSpec.describe GDAL::Dataset do
     end
 
     it 'returns the projection string' do
-      expect(subject.projection).to eq expected_wkt
+      expect(subject.projection).to start_with 'GEOGCS["unknown",DATUM["unnamed"'
     end
   end
 
