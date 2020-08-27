@@ -104,12 +104,11 @@ module OGR
       raise OGR::ReadOnlyObject if @read_only
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference, autorelease: false)
-
-      auto_ptr = FFI::AutoPointer.new(spatial_ref_ptr, OGR::SpatialReference.method(:release))
+      raise if spatial_ref_ptr.null?
 
       FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @c_pointer,
-        auto_ptr
+        spatial_ref_ptr
       )
     end
 
