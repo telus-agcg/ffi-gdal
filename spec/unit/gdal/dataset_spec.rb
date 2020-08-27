@@ -117,7 +117,7 @@ RSpec.describe GDAL::Dataset do
     end
 
     it 'returns the projection string' do
-      expect(subject.projection).to start_with 'GEOGCS["unknown",DATUM["unnamed"'
+      expect(subject.projection).to start_with 'GEOGCS["unknown",DATUM["'
     end
   end
 
