@@ -41,6 +41,36 @@ module GDAL
       end
     end
 
+    # Copy all dataset raster data.
+    #
+    # This function copies the complete raster contents of one dataset to
+    # another similarly configured dataset. The source and destination dataset
+    # must have the same number of bands, and the same width and height. The
+    # bands do not have to have the same data type.
+    #
+    # This function is primarily intended to support implementation of driver
+    # specific CreateCopy() functions. It implements efficient copying, in
+    # particular "chunking" the copy in substantial blocks and, if appropriate,
+    # performing the transfer in a pixel interleaved fashion.
+    #
+    # @param source [GDAL::Dataset, FFI::Pointer]
+    # @param destination [GDAL::Dataset, FFI::Pointer]
+    # @param options [Hash]
+    # @option options interleave: 'pixel'
+    # @option options compressed: true
+    # @option options skip_holes: true
+    # @param progress_function [Proc]
+    # @raise [GDAL::Error]
+    def self.copy_whole_raster(source, destination, options = {}, progress_function = nil)
+      source_ptr = GDAL._pointer(GDAL::Dataset, source, autorelease: false)
+      dest_ptr = GDAL._pointer(GDAL::Dataset, destination, autorelease: false)
+      options_ptr = GDAL::Options.pointer(options)
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to copy whole raster') do
+        FFI::GDAL::GDAL.GDALDatasetCopyWholeRaster(source_ptr, dest_ptr, options_ptr, progress_function, nil)
+      end
+    end
+
     # @param dataset [GDAL::Dataset]
     # @return [FFI::AutoPointer]
     def self.new_pointer(dataset, warn_on_nil: true)

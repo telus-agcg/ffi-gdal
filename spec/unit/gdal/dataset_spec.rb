@@ -35,6 +35,16 @@ RSpec.describe GDAL::Dataset do
     end
   end
 
+  describe '.copy_whole_raster' do
+    it "doesn't blow up" do
+      destination = GDAL::Driver
+                    .by_name('MEM')
+                    .create_dataset('testy', subject.raster_x_size, subject.raster_y_size,
+                                    band_count: subject.raster_count, data_type: subject.raster_band(1).data_type)
+      described_class.copy_whole_raster(subject, destination)
+    end
+  end
+
   describe '#access_flag' do
     it 'returns the flag that was used to open the dataset' do
       expect(subject.access_flag).to eq :GA_ReadOnly
