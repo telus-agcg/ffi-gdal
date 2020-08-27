@@ -166,7 +166,7 @@ RSpec.describe OGR::DataSource do
       context '1 layer' do
         before { data_source.create_layer 'unknown layer' }
         subject { data_source.delete_layer(0) }
-        it { is_expected.to eq true }
+        it { is_expected.to eq nil }
       end
     end
   end
@@ -216,7 +216,7 @@ RSpec.describe OGR::DataSource do
 
   describe '#sync_to_disk' do
     it 'returns true' do
-      expect(subject.sync_to_disk).to eq true
+      expect(subject.sync_to_disk).to eq nil
     end
   end
 end

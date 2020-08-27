@@ -173,7 +173,6 @@ module OGR
     end
 
     # @param index [Integer]
-    # @return +true+ if successful, otherwise raises an OGR exception.
     def delete_layer(index)
       raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
 
