@@ -115,7 +115,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
   internal call was expecting an `int`, but was getting passed a `bool`.
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#towgs84` now
-- properly reads data out of the internal C array.
+  properly reads data out of the internal C array.
+- `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`: the
+  `orientation` value in the returned `Hash` wasn't calling a fully qualified
+  module.
 
 ### Removed
 

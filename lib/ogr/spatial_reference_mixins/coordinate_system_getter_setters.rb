@@ -304,7 +304,7 @@ module OGR
         name = FFI::OGR::SRSAPI.OSRGetAxis(@c_pointer, target_key, axis_number, axis_orientation_ptr)
         ao_value = axis_orientation_ptr.read_int
 
-        { name: name, orientation: AxisOrientation[ao_value] }
+        { name: name, orientation: FFI::OGR::SRSAPI::AxisOrientation[ao_value] }
       end
 
       def set_albers_conic_equal_area
