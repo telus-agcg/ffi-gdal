@@ -144,7 +144,7 @@ module OGR
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
       raise OGR::UnsupportedOperation, 'This data source does not support creating layers.' unless can_create_layer?
 
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference) if spatial_reference
+      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr =

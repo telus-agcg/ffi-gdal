@@ -59,6 +59,9 @@ module OGR
       FFI::OGR::API.OGR_L_TestCapability(@c_pointer, capability.to_s)
     end
 
+    # NOTE: This SpatialReference is owned by the Layer and should thus not be
+    # modified.
+    #
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_pointer = FFI::OGR::API.OGR_L_GetSpatialRef(@c_pointer)

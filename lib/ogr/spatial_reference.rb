@@ -142,27 +142,25 @@ module OGR
       pointer =
         case spatial_reference_or_wkt.class.name
         when 'OGR::SpatialReference'
+          # This is basically getting a reference to the SpatialReference that
+          # was passed in, thus when this SpatialReference gets garbage-collected,
+          # it shouldn't release anything.
           ptr = spatial_reference_or_wkt.c_pointer
           ptr.autorelease = false
-
-          # We don't know when the other SR will get garbage collected, to use
-          # .release here.
-          FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
         when 'String', 'NilClass'
+          # FWIW, the docs say:
+          # Note that newly created objects are given a reference count of one.
+          #
+          # ...which implies that we should use Release here instead of Destroy.
           ptr = FFI::OGR::SRSAPI.OSRNewSpatialReference(spatial_reference_or_wkt)
           ptr.autorelease = false
 
           # We're instantiating a new SR, so we can use .destroy.
-          FFI::AutoPointer.new(ptr, SpatialReference.method(:destroy))
-        when 'FFI::AutoPointer'
-          spatial_reference_or_wkt
-        when 'FFI::Pointer', 'FFI::MemoryPointer'
-          ptr = spatial_reference_or_wkt
-          ptr.autorelease = false
-
-          # We don't know when the other SR will get garbage collected, to use
-          # .release here.
           FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
+        when 'FFI::AutoPointer', 'FFI::Pointer', 'FFI::MemoryPointer'
+          # If we got a pointer, we don't know who owns the data, so don't
+          # touch anything about autorelease/AutoPointer.
+          spatial_reference_or_wkt
         else
           log "Dunno what to do with #{spatial_reference_or_wkt}"
         end

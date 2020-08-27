@@ -429,6 +429,9 @@ module OGR
       FFI::OGR::API.OGR_G_Distance(@c_pointer, geometry.c_pointer)
     end
 
+    # NOTE: The returned object may be shared with many geometries, and should
+    # thus not be modified.
+    #
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)

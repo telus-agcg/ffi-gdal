@@ -90,9 +90,9 @@ module OGR
       if spatial_ref_ptr.nil? || spatial_ref_ptr.null?
         nil
       else
-        spatial_ref_ptr.autorelease = false
+        auto_ptr = FFI::AutoPointer.new(spatial_ref_ptr, OGR::SpatialReference.method(:release))
 
-        OGR::SpatialReference.new(spatial_ref_ptr)
+        OGR::SpatialReference.new(auto_ptr)
       end
     end
 
@@ -105,9 +105,11 @@ module OGR
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference, autorelease: false)
 
+      auto_ptr = FFI::AutoPointer.new(spatial_ref_ptr, OGR::SpatialReference.method(:release))
+
       FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @c_pointer,
-        spatial_ref_ptr
+        auto_ptr
       )
     end
 
