@@ -72,7 +72,7 @@ module OGR
       # @param y_rotation [Float] (In arc seconds.)
       # @param z_rotation [Float] (In arc seconds.)
       # @param scaling_factor [Float] (In parts-per-million.)
-      def set_towgs84(x_distance: nil, y_distance: nil, z_distance: nil,
+      def set_towgs84(x_distance: nil, y_distance: nil, z_distance: 0.0,
         x_rotation: 0.0, y_rotation: 0.0, z_rotation: 0.0, scaling_factor: 0.0)
         ogr_err = FFI::OGR::SRSAPI.OSRSetTOWGS84(
           @c_pointer,
@@ -81,7 +81,7 @@ module OGR
           scaling_factor
         )
 
-        ogr_err.handle_result
+        ogr_err.handle_result 'No existing DATUM node'
       end
 
       # @param name [String]

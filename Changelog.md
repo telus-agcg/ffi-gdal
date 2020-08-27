@@ -54,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
   second param is now a keyword arg, `north:` that defaults to `true` (like
   GDAL's default).
+- `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_towgs84`'s
+  `z_distance` requires a value internally, but was defaulted to `nil`; changed
+  the default value to `0.0.`
 
 ### Fixed
 
