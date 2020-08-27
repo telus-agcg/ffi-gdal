@@ -87,8 +87,8 @@ module FFI
       attach_function :OGR_G_CloseRings, %i[OGRGeometryH], :void
 
       attach_function :OGR_G_CreateFromGML, %i[string], :OGRGeometryH
-      attach_function :OGR_G_ExportToGML, %i[OGRGeometryH], :string
-      attach_function :OGR_G_ExportToGMLEx, %i[OGRGeometryH pointer], :string
+      attach_function :OGR_G_ExportToGML, %i[OGRGeometryH], :strptr
+      attach_function :OGR_G_ExportToGMLEx, %i[OGRGeometryH pointer], :strptr
       attach_function :OGR_G_CreateFromGMLTree,
                       [FFI::CPL::XMLNode.ptr],
                       :OGRGeometryH
@@ -99,9 +99,9 @@ module FFI
                       %i[OGRGeometryH],
                       FFI::CPL::XMLNode.ptr
 
-      attach_function :OGR_G_ExportToKML, %i[OGRGeometryH string], :string
-      attach_function :OGR_G_ExportToJson, %i[OGRGeometryH], :string
-      attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH string], :string
+      attach_function :OGR_G_ExportToKML, %i[OGRGeometryH string], :strptr
+      attach_function :OGR_G_ExportToJson, %i[OGRGeometryH], :strptr
+      attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH string], :strptr
       attach_function :OGR_G_CreateGeometryFromJson, %i[string], :OGRGeometryH
 
       attach_function :OGR_G_AssignSpatialReference,

@@ -584,11 +584,14 @@ module OGR
 
     # @return [String]
     def to_wkt
-      output = FFI::MemoryPointer.new(:string)
-      ogr_err = FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output)
+      output_ptr = FFI::MemoryPointer.new(:pointer)
+      output_ptr.autorelease = false
+
+      ogr_err = FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
+      FFI::CPL::VSI.VSIFree(output_ptr)
       ogr_err.handle_result
 
-      output.read_pointer.read_string
+      output_ptr.read_pointer.read_string
     end
 
     # This geometry expressed as GML in GML basic data types.
@@ -607,19 +610,28 @@ module OGR
     # @return [String]
     def to_gml(**options)
       options_ptr = GDAL::Options.pointer(options)
-      FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
+      gml, ptr = FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      gml
     end
 
     # @param altitude_mode [String] Value to write in the +altitudeMode+
     #   element.
     # @return [String]
     def to_kml(altitude_mode = nil)
-      FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
+      kml, ptr = FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      kml
     end
 
     # @return [String]
     def to_geo_json
-      FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      json, ptr = FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      json
     end
 
     # Converts the current geometry to a LineString geometry.  The returned

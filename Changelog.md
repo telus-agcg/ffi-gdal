@@ -94,6 +94,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_name`
   - `OGR::StyleTool#param_as_string`
   - `OGR::StyleTool#style_string`
+- Fixed a number of memory leaks where returned strings should be released using
+  `FFI::CPL::VSI.VSIFree()`:
+  - `OGR::Geometry#to_gml`
+  - `OGR::Geometry#to_kml`
+  - `OGR::Geometry#to_geo_json`
+  - `OGR::Geometry#to_wkt`
 - `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 - `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid
