@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `.release` class method for many `GDAL` types
+- Added `.release` class method for many `GDAL` types.
 
 ### Changed
 
@@ -50,12 +50,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `GDAL::RasterBand#unit_type=`
   - `GDAL::RasterBand#write_block`
   - `GDAL::RasterBand#write_block`
+- BREAKING:
+  `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
+  second param is now a keyword arg, `north:` that defaults to `true` (like
+  GDAL's default).
 
 ### Fixed
 
 - `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
   float value.
-- Fixed lots of double-free crashes resulting from misuse of
+- [DEV-12827] Fixed lots of double-free crashes resulting from misuse of
   `FFI::Pointer#autorelease`:
   - `GDAL::CPLErrorHandler#custom_handle`
   - `GDAL::ColorInterpretation.name`
@@ -94,8 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_name`
   - `OGR::StyleTool#param_as_string`
   - `OGR::StyleTool#style_string`
-- Fixed a number of memory leaks where returned strings should be released using
-  `FFI::CPL::VSI.VSIFree()`:
+- [DEV-12827] Fixed a number of memory leaks where returned strings should be
+  released using `FFI::CPL::VSI.VSIFree()`:
   - `OGR::Geometry#to_gml`
   - `OGR::Geometry#to_kml`
   - `OGR::Geometry#to_geo_json`
@@ -104,6 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 - `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid
   free-after-use.
+- `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
+  internal call was expecting an `int`, but was getting passed a `bool`.
 
 ### Removed
 

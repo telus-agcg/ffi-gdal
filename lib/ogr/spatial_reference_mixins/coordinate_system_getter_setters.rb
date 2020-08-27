@@ -260,7 +260,7 @@ module OGR
 
       # @param zone [Integer]
       # @param north [Boolean] True for northern hemisphere, false for southern.
-      def set_utm(zone, north)
+      def set_utm(zone, north: true)
         ogr_err = FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, north)
 
         ogr_err.handle_result
