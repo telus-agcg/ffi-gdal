@@ -28,7 +28,9 @@ module OGR
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
       # @return +true+ if successful, otherwise raises an OGR exception.
       def add_geometry_directly(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
+        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry, autorelease: false)
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to add geometry: #{sub_geometry}") do
         ogr_err = FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
 
         ogr_err.handle_result

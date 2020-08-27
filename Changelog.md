@@ -93,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OGR::Geometry#name`
   - `OGR::Geometry#type_to_name`
   - `OGR::Geometry.type_to_name`
+  - `OGR::GeometryTypes#add_geometry_directly`
   - `OGR::GeometryFieldDefinition#name`
   - `OGR::Layer#name`
   - `OGR::LayerMixins::OGRSQLMethods#fid_column`
