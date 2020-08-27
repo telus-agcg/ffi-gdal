@@ -45,6 +45,18 @@ RSpec.describe OGR::SpatialReference do
     end
   end
 
+  describe '#set_towgs84 + #towgs84' do
+    subject do
+      s = OGR::SpatialReference.new_from_epsg(4326)
+      s.set_towgs84(x_distance: 10, y_distance: 10, x_rotation: 1235.4, scaling_factor: 3)
+      s
+    end
+
+    it 'returns an Array of 7 floats' do
+      expect(subject.towgs84).to eq [10.0, 10.0, 0.0, 1235.4, 0.0, 0.0, 3.0]
+    end
+  end
+
   describe '#authority_code' do
     it 'returns the authority code' do
       expect(subject.authority_code).to eq '4326'

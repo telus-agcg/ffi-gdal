@@ -60,9 +60,9 @@ module OGR
       def towgs84
         coefficients = FFI::MemoryPointer.new(:double, 7)
         ogr_err = FFI::OGR::SRSAPI.OSRGetTOWGS84(@c_pointer, coefficients, 7)
-        ogr_err.handle_result
+        ogr_err.handle_result 'No TOWGS84 node available'
 
-        coefficients.read_array_of_double(0)
+        coefficients.get_array_of_double(0, 7)
       end
 
       # @param x_distance [Float] (In meters.)

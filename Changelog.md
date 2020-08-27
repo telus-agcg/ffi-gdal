@@ -113,6 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   free-after-use.
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
   internal call was expecting an `int`, but was getting passed a `bool`.
+- `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#towgs84` now
+- properly reads data out of the internal C array.
 
 ### Removed
 
