@@ -122,7 +122,10 @@ module OGR
       # @param type [FFI::OGR::WKBGeometryType]
       # @return [String]
       def type_to_name(type)
-        FFI::OGR::Core.OGRGeometryTypeToName(type)
+        name, ptr = FFI::OGR::Core.OGRGeometryTypeToName(type)
+        ptr.autorelease = false
+
+        name
       end
 
       # Finds the most specific common geometry type from the two given types.
@@ -227,12 +230,16 @@ module OGR
 
     # @return [String]
     def type_to_name
-      FFI::OGR::Core.OGRGeometryTypeToName(type)
+      self.class.type_to_name(type)
     end
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
+      # The returned pointer is to a static internal string and should not be modified or freed.
+      name, ptr = FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [Integer]

@@ -164,8 +164,9 @@ module GDAL
       end
 
       raster_band_ptr = FFI::GDAL::GDAL.GDALGetRasterBand(@c_pointer, raster_index)
+      raster_band_ptr.autorelease = false
 
-      GDAL::RasterBand.new(raster_band_ptr)
+      GDAL::RasterBand.new(raster_band_ptr, self)
     end
 
     # @param type [FFI::GDAL::GDAL::DataType]
@@ -196,7 +197,12 @@ module GDAL
 
     # @return [String]
     def projection
-      FFI::GDAL::GDAL.GDALGetProjectionRef(@c_pointer) || ''
+      # Returns a pointer to an internal projection reference string. It should
+      # not be altered, freed or expected to last for long.
+      proj, ptr = FFI::GDAL::GDAL.GDALGetProjectionRef(@c_pointer)
+      ptr.autorelease = false
+
+      proj || ''
     end
 
     # @param new_projection [String] Should be in WKT or PROJ.4 format.
@@ -245,7 +251,10 @@ module GDAL
     def gcp_projection
       return '' if null?
 
-      FFI::GDAL::GDAL.GDALGetGCPProjection(@c_pointer)
+      proj, ptr = FFI::GDAL::GDAL.GDALGetGCPProjection(@c_pointer)
+      ptr.autorelease = false
+
+      proj
     end
 
     # @return [FFI::GDAL::GCP]

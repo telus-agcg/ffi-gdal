@@ -58,7 +58,10 @@ module OGR
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_GFld_GetNameRef(@c_pointer)
+      name, ptr = FFI::OGR::API.OGR_GFld_GetNameRef(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @param new_name [String]

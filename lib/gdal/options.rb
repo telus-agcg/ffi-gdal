@@ -16,16 +16,16 @@ module GDAL
       return if hash.empty?
 
       options_ptr = FFI::MemoryPointer.new(:pointer)
+      options_ptr.autorelease = false
 
       hash.each do |key, value|
         # Note, we started off with a MemoryPointer above, but this returns a
         # new FFI::Pointer.
         options_ptr = FFI::CPL::String.CSLAddNameValue(options_ptr, key.to_s.upcase, value.to_s)
+        options_ptr.autorelease = false
       end
 
-      options_ptr.autorelease = false
-
-      FFI::AutoPointer.new(options_ptr, Options.method(:releae))
+      FFI::AutoPointer.new(options_ptr, Options.method(:release))
     end
 
     # Takes a GDAL options pointer and turns it into a Ruby Hash.
@@ -36,11 +36,11 @@ module GDAL
       # Docs say passing a null pointer here is ok; will result in 0.
       count = FFI::CPL::String.CSLCount(pointer)
 
-      return {} if count.zero?
-
       count.times.each_with_object({}) do |i, o|
         # Docs say that the pointer returned from CSLGetField shouldn't be freed.
-        key_and_value = FFI::CPL::String.CSLGetField(pointer, i)
+        key_and_value, ptr = FFI::CPL::String.CSLGetField(pointer, i)
+        ptr.autorelease = false
+
         key, value = key_and_value.split('=')
         o[key.downcase.to_sym] = value
       end

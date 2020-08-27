@@ -25,14 +25,14 @@ module GDAL
     attr_reader :dataset
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
-    def initialize(raster_band)
+    def initialize(raster_band, dataset = nil)
       @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, autorelease: false)
 
       # Init the dataset too--the dataset owns the raster band, so when the dataset
       # gets closed, the raster band gets cleaned up. Storing a reference to the
       # dataset here ensures the underlying raster band doesn't get pulled out
       # from under the Ruby object that represents it.
-      @dataset = init_dataset
+      @dataset = dataset || init_dataset
     end
 
     # @raise [GDAL::Error]
@@ -392,7 +392,11 @@ module GDAL
 
     # @return [String]
     def unit_type
-      FFI::GDAL::GDAL.GDALGetRasterUnitType(@c_pointer)
+      # The returned string should not be modified, nor freed by the calling application.
+      type, ptr = FFI::GDAL::GDAL.GDALGetRasterUnitType(@c_pointer)
+      ptr.autorelease = false
+
+      type
     end
 
     # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"

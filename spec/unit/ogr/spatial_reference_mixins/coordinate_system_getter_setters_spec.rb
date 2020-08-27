@@ -44,4 +44,16 @@ RSpec.describe OGR::SpatialReference do
       end
     end
   end
+
+  describe '#authority_code' do
+    it 'returns the authority code' do
+      expect(subject.authority_code).to eq '4326'
+    end
+  end
+
+  describe '#authority_name' do
+    it 'returns the authority name' do
+      expect(subject.authority_name).to eq 'EPSG'
+    end
+  end
 end

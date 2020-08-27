@@ -60,17 +60,29 @@ module GDAL
 
     # @return [String]
     def short_name
-      FFI::GDAL::GDAL.GDALGetDriverShortName(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      name, ptr = FFI::GDAL::GDAL.GDALGetDriverShortName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [String]
     def long_name
-      FFI::GDAL::GDAL.GDALGetDriverLongName(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      name, ptr = FFI::GDAL::GDAL.GDALGetDriverLongName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [String]
     def help_topic
-      "#{GDAL_DOCS_URL}/#{FFI::GDAL::GDAL.GDALGetDriverHelpTopic(@c_pointer)}"
+      # The returned string should not be freed and is owned by the driver.
+      url, ptr = FFI::GDAL::GDAL.GDALGetDriverHelpTopic(@c_pointer)
+      ptr.autorelease = false
+
+      "#{GDAL_DOCS_URL}/#{url}"
     end
 
     # Lists and describes the options that can be used when calling
@@ -80,8 +92,11 @@ module GDAL
     def creation_option_list
       return [] unless @c_pointer
 
-      creation_option_list_xml = FFI::GDAL::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      creation_option_list_xml, ptr = FFI::GDAL::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
+      ptr.autorelease = false
       root = MultiXml.parse(creation_option_list_xml)
+
       return [] if root.nil? || root.empty?
 
       list = root['CreationOptionList']

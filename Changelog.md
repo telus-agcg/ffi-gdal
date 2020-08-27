@@ -22,19 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BREAKING: Many methods were not communicating errors `CPLErr` back to the
   caller; these now raise on `CE_Failure` or `CE_Fatal`:
   - `GDAL::Dataset#add_band`
-  - `GDAL::Dataset#create_mask_band`
-  - `GDAL::Dataset#projection=`
-  - `GDAL::Dataset#geo_transform`
-  - `GDAL::Dataset#geo_transform=`
   - `GDAL::Dataset#build_overviews`
+  - `GDAL::Dataset#create_mask_band`
+  - `GDAL::Dataset#geo_transform=`
+  - `GDAL::Dataset#geo_transform`
+  - `GDAL::Dataset#projection=`
   - `GDAL::Dataset#raster_io`
   - `GDAL::Driver#copy_dataset_files`
   - `GDAL::Driver#delete_dataset`
   - `GDAL::Driver#rename_dataset`
   - `GDAL::MajorObject#set_metadata_item`
-  - `GDAL::RasterAttributeTable.from_color_table`
   - `GDAL::RasterAttributeTable#create_column`
   - `GDAL::RasterAttributeTable#set_linear_binning`
+  - `GDAL::RasterAttributeTable.from_color_table`
   - `GDAL::RasterBand#category_names=`
   - `GDAL::RasterBand#color_interpretation=`
   - `GDAL::RasterBand#color_table=`
@@ -55,8 +55,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `GDAL::RasterBand#no_data_value` uses `BigDecimal` for checking the returned
   float value.
-- Fixed lots of use-after-free crashes resulting from misuse of
-  `FFI::Pointer#autorelease`.
+- Fixed lots of double-free crashes resulting from misuse of
+  `FFI::Pointer#autorelease`:
+  - `GDAL::CPLErrorHandler#custom_handle`
+  - `GDAL::ColorInterpretation.name`
+  - `GDAL::ColorTable#clone`
+  - `GDAL::ColorTable#initialize`
+  - `GDAL::DataType.name`
+  - `GDAL::Dataset#gcp_projection`
+  - `GDAL::Dataset#projection`
+  - `GDAL::Dataset#raster_band`
+  - `GDAL::Driver#creation_option_list`
+  - `GDAL::Driver#help_topic`
+  - `GDAL::Driver#long_name`
+  - `GDAL::Driver#short_name`
+  - `GDAL::MajorObject#description`
+  - `GDAL::MajorObject#metadata_item`
+  - `GDAL::Options.pointer`
+  - `GDAL::Options.to_hash`
+  - `GDAL::RasterAttributeTable#column_name`
+  - `GDAL::RasterAttributeTable#value_as_string`
+  - `GDAL::RasterBand#initialize`
+  - `GDAL::RasterBand#unit_type`
+  - `OGR::DataSource#new`
+  - `OGR::Driver#name`
+  - `OGR::Feature#field_as_string`
+  - `OGR::Feature#style_string`
+  - `OGR::FeatureDefinition#name`
+  - `OGR::FieldDefinition#name`
+  - `OGR::Geometry#name`
+  - `OGR::Geometry#type_to_name`
+  - `OGR::Geometry.type_to_name`
+  - `OGR::GeometryFieldDefinition#name`
+  - `OGR::Layer#name`
+  - `OGR::LayerMixins::OGRSQLMethods#fid_column`
+  - `OGR::LayerMixins::OGRSQLMethods#geometry_column`
+  - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_code`
+  - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_name`
+  - `OGR::StyleTool#param_as_string`
+  - `OGR::StyleTool#style_string`
 - `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 - `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid

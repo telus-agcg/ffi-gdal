@@ -118,7 +118,7 @@ module FFI
       # ~~~~~~~~~~~~~
       # AxisOrientations
       # ~~~~~~~~~~~~~
-      attach_function :OSRAxisEnumToName, [AxisOrientation], :string
+      attach_function :OSRAxisEnumToName, [AxisOrientation], :strptr
 
       # ~~~~~~~~~~~~~
       # SpatialReference
@@ -189,8 +189,8 @@ module FFI
       attach_function :OSRSetAuthority,
                       %i[OGRSpatialReferenceH string string int],
                       FFI::OGR::Core::Err
-      attach_function :OSRGetAuthorityCode, %i[OGRSpatialReferenceH string], :string
-      attach_function :OSRGetAuthorityName, %i[OGRSpatialReferenceH string], :string
+      attach_function :OSRGetAuthorityCode, %i[OGRSpatialReferenceH string], :strptr
+      attach_function :OSRGetAuthorityName, %i[OGRSpatialReferenceH string], :strptr
       attach_function :OSRSetProjection, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetProjParm, %i[OGRSpatialReferenceH string double], FFI::OGR::Core::Err
       attach_function :OSRGetProjParm,

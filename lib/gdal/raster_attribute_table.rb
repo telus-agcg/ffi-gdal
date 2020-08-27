@@ -75,7 +75,10 @@ module GDAL
     # @param index [Integer] The column number.
     # @return [String]
     def column_name(index)
-      FFI::GDAL::GDAL.GDALRATGetNameOfCol(@c_pointer, index)
+      name, ptr = FFI::GDAL::GDAL.GDALRATGetNameOfCol(@c_pointer, index)
+      ptr.autorelease = false
+
+      name
     end
     alias name_of_col column_name
 
@@ -137,7 +140,10 @@ module GDAL
     # @param field [Integer]
     # @return [String]
     def value_as_string(row, field)
-      FFI::GDAL::GDAL.GDALRATGetValueAsString(@c_pointer, row, field)
+      value_string, ptr = FFI::GDAL::GDAL.GDALRATGetValueAsString(@c_pointer, row, field)
+      ptr.autorelease = false
+
+      value_string
     end
 
     # @param row [Integer]

@@ -412,7 +412,10 @@ module OGR
     # @param index [Integer]
     # @return [String]
     def field_as_string(index)
-      FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index).force_encoding(Encoding::UTF_8)
+      field, ptr = FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, index)
+      ptr.autorelease = false
+
+      field.force_encoding(Encoding::UTF_8)
     end
 
     # @param index [Integer]
@@ -490,7 +493,10 @@ module OGR
 
     # @return [String]
     def style_string
-      FFI::OGR::API.OGR_F_GetStyleString(@c_pointer)
+      style, ptr = FFI::OGR::API.OGR_F_GetStyleString(@c_pointer)
+      ptr.autorelease = false
+
+      style
     end
 
     # @param new_style [String]

@@ -22,7 +22,10 @@ module OGR
       #
       # @return [String]
       def fid_column
-        FFI::OGR::API.OGR_L_GetFIDColumn(@c_pointer)
+        name, ptr = FFI::OGR::API.OGR_L_GetFIDColumn(@c_pointer)
+        ptr.autorelease = false
+
+        name
       end
 
       # The name of the underlying database column being used as the geometry
@@ -30,7 +33,10 @@ module OGR
       #
       # @return [String]
       def geometry_column
-        FFI::OGR::API.OGR_L_GetGeometryColumn(@c_pointer)
+        name, ptr = FFI::OGR::API.OGR_L_GetGeometryColumn(@c_pointer)
+        ptr.autorelease = false
+
+        name
       end
 
       private

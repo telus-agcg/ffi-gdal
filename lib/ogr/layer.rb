@@ -34,7 +34,10 @@ module OGR
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_L_GetName(@c_pointer)
+      name, ptr = FFI::OGR::API.OGR_L_GetName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [Boolean]

@@ -107,9 +107,12 @@ module GDAL
       FFI::CPL::Error.CPLPushErrorHandler(handler_lambda)
       yield
 
+      msg, ptr = FFI::CPL::Error.CPLGetLastErrorMsg
+      ptr.autorelease = false
+
       r = result(FFI::CPL::Error.CPLGetLastErrorType,
                  FFI::CPL::Error.CPLGetLastErrorNo,
-                 FFI::CPL::Error.CPLGetLastErrorMsg)
+                 msg)
       FFI::CPL::Error.CPLErrorReset
       FFI::CPL::Error.CPLPopErrorHandler
 

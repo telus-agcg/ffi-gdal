@@ -62,7 +62,9 @@ module OGR
         end
 
       if @c_pointer.null?
-        error_msg = FFI::CPL::Error.CPLGetLastErrorMsg
+        error_msg, ptr = FFI::CPL::Error.CPLGetLastErrorMsg
+        ptr.autorelease = false
+
         error_type = FFI::CPL::Error.CPLGetLastErrorType
         FFI::CPL::Error.CPLErrorReset
 

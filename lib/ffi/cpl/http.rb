@@ -19,9 +19,9 @@ module FFI
       attach_function :CPLHTTPDestroyResult, [HTTPResult.ptr], :void
       attach_function :CPLHTTPParseMultipartMime, [HTTPResult.ptr], :bool
 
-      attach_function :GOA2GetAuthorizationURL, %i[string], :string
-      attach_function :GOA2GetRefreshToken, %i[string string], :string
-      attach_function :GOA2GetAccessToken, %i[string string], :string
+      attach_function :GOA2GetAuthorizationURL, %i[string], :strptr
+      attach_function :GOA2GetRefreshToken, %i[string string], :strptr
+      attach_function :GOA2GetAccessToken, %i[string string], :strptr
     end
   end
 end

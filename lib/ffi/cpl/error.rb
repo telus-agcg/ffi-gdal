@@ -30,7 +30,7 @@ module FFI
 
       attach_function :CPLGetLastErrorNo, [], :int
       attach_function :CPLGetLastErrorType, [], CPLErr
-      attach_function :CPLGetLastErrorMsg, [], :string
+      attach_function :CPLGetLastErrorMsg, [], :strptr
 
       attach_function :CPLGetErrorHandlerUserData, [], :pointer
       attach_function :CPLCleanupErrorMutex, [], :void

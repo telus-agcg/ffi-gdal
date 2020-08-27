@@ -45,7 +45,10 @@ module GDAL
     # @param domain [String]
     # @return [String]
     def metadata_item(name, domain = '')
-      FFI::GDAL::GDAL.GDALGetMetadataItem(@c_pointer, name, domain)
+      item, ptr = FFI::GDAL::GDAL.GDALGetMetadataItem(@c_pointer, name, domain)
+      ptr.autorelease = false
+
+      item
     end
 
     def set_metadata_item(name, value, domain = '')
@@ -66,7 +69,10 @@ module GDAL
 
     # @return [String]
     def description
-      FFI::GDAL::GDAL.GDALGetDescription(@c_pointer)
+      desc, ptr = FFI::GDAL::GDAL.GDALGetDescription(@c_pointer)
+      ptr.autorelease = false
+
+      desc
     end
 
     def null?

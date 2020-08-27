@@ -28,7 +28,10 @@ module OGR
 
     # @return [String, nil]
     def style_string
-      FFI::OGR::API.OGR_ST_GetStyleString(@c_pointer)
+      style, ptr = FFI::OGR::API.OGR_ST_GetStyleString(@c_pointer)
+      ptr.autorelease = false
+
+      style
     end
 
     # @return [FFI::OGR::Core::STClassId]
@@ -85,7 +88,8 @@ module OGR
     # @return [String, nil]
     def param_as_string(param_number)
       value_is_null_ptr = FFI::MemoryPointer.new(:int)
-      value = FFI::OGR::API.OGR_ST_GetParamStr(@c_pointer, param_number, value_is_null_ptr)
+      value, ptr = FFI::OGR::API.OGR_ST_GetParamStr(@c_pointer, param_number, value_is_null_ptr)
+      ptr.autorelease = false
 
       value_is_null_ptr.read_int.to_bool ? nil : value
     end

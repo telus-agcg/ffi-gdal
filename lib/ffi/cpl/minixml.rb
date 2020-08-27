@@ -25,7 +25,7 @@ module FFI
       attach_function :CPLDestroyXMLNode, [CPL::XMLNode.ptr], :void
       attach_function :CPLGetXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
       attach_function :CPLSearchXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
-      attach_function :CPLGetXMLValue, [CPL::XMLNode.ptr, :string, :string], :string
+      attach_function :CPLGetXMLValue, [CPL::XMLNode.ptr, :string, :string], :strptr
       attach_function :CPLCreateXMLNode, [CPL::XMLNode.ptr, CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
       attach_function :CPLSerializeXMLTree, [CPL::XMLNode.ptr], :string
       attach_function :CPLAddXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void

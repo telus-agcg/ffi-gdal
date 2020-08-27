@@ -201,7 +201,10 @@ module OGR
       #   search at the root element.
       # @return [String, nil]
       def authority_code(target_key = nil)
-        FFI::OGR::SRSAPI.OSRGetAuthorityCode(@c_pointer, target_key)
+        code, ptr = FFI::OGR::SRSAPI.OSRGetAuthorityCode(@c_pointer, target_key)
+        ptr.autorelease = false
+
+        code
       end
 
       # @param target_key [String] The partial or complete path to the node to get
@@ -209,7 +212,10 @@ module OGR
       #   search at the root element.
       # @return [String, nil]
       def authority_name(target_key = nil)
-        FFI::OGR::SRSAPI.OSRGetAuthorityName(@c_pointer, target_key)
+        name, ptr = FFI::OGR::SRSAPI.OSRGetAuthorityName(@c_pointer, target_key)
+        ptr.autorelease = false
+
+        name
       end
 
       # @param projection_name [String]

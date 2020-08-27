@@ -43,8 +43,11 @@ module GDAL
     def initialize(palette_interp_or_pointer)
       pointer =
         if FFI::GDAL::GDAL::PaletteInterp[palette_interp_or_pointer]
-          FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
-        else
+          ptr = FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
+          ptr.autorelease = false
+
+          ptr
+        elsif palette_interp_or_pointer.is_a? FFI::Pointer
           palette_interp_or_pointer
         end
 
@@ -77,6 +80,8 @@ module GDAL
     # @return [GDAL::ColorTable]
     def clone
       ct_ptr = FFI::GDAL::GDAL.GDALCloneColorTable(@c_pointer)
+      ct_ptr.autorelease = false
+
       return nil if ct_ptr.null?
 
       GDAL::ColorTable.new(ct_ptr)
