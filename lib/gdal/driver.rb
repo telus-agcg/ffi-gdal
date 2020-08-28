@@ -227,7 +227,7 @@ module GDAL
     # @param new_name [String]
     # @raise [GDAL::Error] If failures.
     def rename_dataset(old_name, new_name)
-      GDAL::CPLErrorHandler.manually_handle("Unable to rename dataset: #{file_name}") do
+      GDAL::CPLErrorHandler.manually_handle("Unable to rename dataset: #{old_name}") do
         FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
       end
     end

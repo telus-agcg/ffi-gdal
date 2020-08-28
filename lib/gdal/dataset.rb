@@ -364,6 +364,7 @@ module GDAL
     #   to/from your buffer--your buffer size must be +buffer_x_size+ *
     #   +buffer_y_size+.
     # @param band_numbers [Array<Integer>] The numbers of the bands to do IO on.
+    #   Pass +nil+ defaults to choose the first band.
     # @param pixel_space [Integer] The byte offset from the start of one pixel
     #   value in the buffer to the start of the next pixel value within a line.
     #   If defaulted (0), the size of +buffer_data_type+ is used.
@@ -386,6 +387,7 @@ module GDAL
       buffer_x_size ||= x_size
       buffer_y_size ||= y_size
       buffer_data_type ||= raster_band(1).data_type
+
       band_numbers_ptr, band_count = band_numbers_args(band_numbers)
       band_count = raster_count if band_count.zero?
 
