@@ -274,7 +274,7 @@ RSpec.describe 'Dataset Info', type: :integration do
     context 'write to read-only dataset' do
       it 'raises a GDAL::Error when flushing the cache' do
         expect do
-          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1)
+          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1, band_numbers: [1])
           subject.flush_cache
         end.to raise_exception(GDAL::Error)
       end
