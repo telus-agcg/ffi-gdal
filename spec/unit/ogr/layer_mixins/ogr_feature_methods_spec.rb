@@ -24,7 +24,7 @@ RSpec.describe OGR::Layer do
 
     context 'creation is supported' do
       it 'returns true' do
-        expect(subject.create_feature(feature)).to eq true
+        expect(subject.create_feature(feature)).to be_nil
       end
     end
   end
@@ -48,8 +48,8 @@ RSpec.describe OGR::Layer do
       context 'has a feature' do
         before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
 
-        it 'returns true' do
-          expect(subject.delete_feature(0)).to eq true
+        it 'returns nil' do
+          expect(subject.delete_feature(0)).to be_nil
         end
       end
     end

@@ -99,7 +99,7 @@ RSpec.describe OGR::Layer do
         end
 
         it 'can delete the field' do
-          expect(subject.delete_field(0)).to eq true
+          expect(subject.delete_field(0)).to be_nil
         end
       end
 
@@ -143,11 +143,11 @@ RSpec.describe OGR::Layer do
           subject.create_field(fd1)
         end
 
-        it 'returns true and reorders the fields' do
+        it 'returns nil and reorders the fields' do
           expect(subject.find_field_index('field0')).to eq 0
           expect(subject.find_field_index('field1')).to eq 1
 
-          expect(subject.reorder_fields(1, 0)).to eq true
+          expect(subject.reorder_fields(1, 0)).to be_nil
 
           expect(subject.find_field_index('field0')).to eq 1
           expect(subject.find_field_index('field1')).to eq 0
@@ -187,11 +187,11 @@ RSpec.describe OGR::Layer do
           subject.create_field(fd1)
         end
 
-        it 'returns true and reorders the fields' do
+        it 'returns nil and reorders the fields' do
           expect(subject.find_field_index('field0')).to eq 0
           expect(subject.find_field_index('field1')).to eq 1
 
-          expect(subject.reorder_field(1, 0)).to eq true
+          expect(subject.reorder_field(1, 0)).to be_nil
 
           expect(subject.find_field_index('field0')).to eq 1
           expect(subject.find_field_index('field1')).to eq 0
@@ -399,8 +399,8 @@ RSpec.describe OGR::Layer do
     end
 
     context 'creation is supported' do
-      it 'returns true' do
-        expect(subject.create_geometry_field(geometry_field_def)).to eq true
+      it 'returns nil' do
+        expect(subject.create_geometry_field(geometry_field_def)).to be_nil
       end
     end
   end
@@ -425,8 +425,8 @@ RSpec.describe OGR::Layer do
         subject.create_field(OGR::FieldDefinition.new('bobo', :OFTInteger))
       end
 
-      it 'returns true' do
-        expect(subject.set_ignored_fields('meow', 'bobo')).to eq true
+      it 'returns nil' do
+        expect(subject.set_ignored_fields('meow', 'bobo')).to be_nil
       end
     end
   end
