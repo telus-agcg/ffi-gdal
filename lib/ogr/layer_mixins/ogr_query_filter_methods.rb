@@ -82,6 +82,7 @@ module OGR
       #
       # @param query [String]
       # @see http://ogdi.sourceforge.net/prop/6.2.CapabilitiesMetadata.html
+      # @raise [OGR::Failure]
       def set_attribute_filter(query) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set attribute filter: #{query}") do
           FFI::OGR::API.OGR_L_SetAttributeFilter(@c_pointer, query)

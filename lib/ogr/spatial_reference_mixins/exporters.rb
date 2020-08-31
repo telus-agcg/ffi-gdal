@@ -22,6 +22,7 @@ module OGR
       end
 
       # @return [Array<String>]
+      # @raise [OGR::Failure]
       def to_mapinfo
         return_ptr_ptr = GDAL._pointer_pointer(:string)
 
@@ -33,6 +34,7 @@ module OGR
       end
 
       # @return [Hash]
+      # @raise [OGR::Failure]
       def to_pci
         proj_ptr = GDAL._pointer_pointer(:string)
         units_ptr = GDAL._pointer_pointer(:string)
@@ -62,6 +64,7 @@ module OGR
       end
 
       # @return [Hash]
+      # @raise [OGR::Failure]
       def to_usgs
         proj_sys = FFI::MemoryPointer.new(:long)
         zone = FFI::MemoryPointer.new(:long)
@@ -81,6 +84,7 @@ module OGR
       end
 
       # @return [String]
+      # @raise [OGR::Failure]
       def to_wkt
         wkt_ptr_ptr = GDAL._pointer_pointer(:string)
 
@@ -95,6 +99,8 @@ module OGR
 
       # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
       #   +EXTENSION+ nodes.
+      # @raise [OGR::Failure]
+      # @return [String]
       def to_pretty_wkt(simplify: false)
         return String.new if @c_pointer.null?
 
@@ -110,6 +116,7 @@ module OGR
       end
 
       # @return [String]
+      # @raise [OGR::Failure]
       def to_xml(dialect = nil)
         xml_ptr_ptr = GDAL._pointer_pointer(:string)
 

@@ -462,7 +462,7 @@ module OGR
     #
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def transform!(coordinate_transformation)
       coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
                                       coordinate_transformation)
@@ -486,7 +486,7 @@ module OGR
     # transforming a single geometry.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def transform_to!(new_spatial_ref)
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
       return if new_spatial_ref_ptr.null?
@@ -552,7 +552,7 @@ module OGR
     end
 
     # @param wkb_data [String] Binary WKB data.
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def import_from_wkb(wkb_data)
       OGR::ErrorHandling.handle_ogr_err('Unable to import geometry from WKB') do
         FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
@@ -567,6 +567,7 @@ module OGR
     end
 
     # @return [String]
+    # @raise [OGR::Failure]
     def to_wkb(byte_order = :wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
 
@@ -578,6 +579,7 @@ module OGR
     end
 
     # @param wkt_data [String]
+    # @raise [OGR::Failure]
     def import_from_wkt(wkt_data)
       wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
@@ -589,6 +591,7 @@ module OGR
     end
 
     # @return [String]
+    # @raise [OGR::Failure]
     def to_wkt
       output_ptr = FFI::MemoryPointer.new(:pointer)
       output_ptr.autorelease = false

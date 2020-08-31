@@ -17,7 +17,7 @@ module OGR
       # geometries added will be interior rings.
       #
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def add_geometry(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
 
@@ -27,7 +27,7 @@ module OGR
       end
 
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def add_geometry_directly(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry, autorelease: false)
 
@@ -38,7 +38,7 @@ module OGR
 
       # @param geometry_index [Integer]
       # @param delete [Boolean]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def remove_geometry(geometry_index, delete: true)
         msg = "Unable to add remove geometry at index #{geometry_index} (delete? #{delete})"
 
@@ -67,6 +67,7 @@ module OGR
       # @param tolerance [Float]
       # @param auto_close [Boolean]
       # @return [OGR::Geometry]
+      # @raise [OGR::Failure]
       def polygon_from_edges(tolerance, auto_close: false)
         best_effort = false
 

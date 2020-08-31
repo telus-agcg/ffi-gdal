@@ -106,7 +106,7 @@ module OGR
     end
 
     # @param file_name [String]
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def delete_data_source(file_name)
       unless can_delete_data_source?
         raise OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'

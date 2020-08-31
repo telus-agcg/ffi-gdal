@@ -10,7 +10,7 @@ module OGR
       # @param field_definition [OGR::FieldDefinition]
       # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
       #   different form, depending on the limitations of the format driver.
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def create_field(field_definition, approx_ok: false)
         raise OGR::UnsupportedOperation, 'This layer does not support field creation.' unless can_create_field?
 
@@ -23,7 +23,7 @@ module OGR
 
       # Deletes the field definition from the layer.
       #
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def delete_field(field_id)
         raise OGR::UnsupportedOperation, 'This driver does not support field deletion.' unless can_delete_field?
 
@@ -34,7 +34,7 @@ module OGR
 
       # @param new_order [Array<Integer>] An array that orders field indexes by
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def reorder_fields(*new_order)
         raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
@@ -52,6 +52,7 @@ module OGR
       #
       # @param old_position [Integer]
       # @param new_position [Integer]
+      # @raise [OGR::Failure]
       def reorder_field(old_position, new_position)
         raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
 
@@ -65,6 +66,7 @@ module OGR
       #   which to base the Field at +field_index+ off of.
       # @param flags [Integer] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
+      # @raise [OGR::Failure]
       def alter_field_definition(field_index, new_field_definition, flags)
         unless can_alter_field_definition?
           raise OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
@@ -100,7 +102,7 @@ module OGR
       # @param geometry_field_def [OGR::GeometryFieldDefinition] The definition
       #   to use for creating the new field.
       # @param approx_ok [Boolean]
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def create_geometry_field(geometry_field_def, approx_ok: false)
         unless can_create_geometry_field?
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
@@ -122,7 +124,7 @@ module OGR
       # thus save some processing time and/or bandwidth.
       #
       # @param field_names [Array<String>]
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def set_ignored_fields(*field_names) # rubocop:disable Naming/AccessorMethodName
         return false if field_names.empty?
 

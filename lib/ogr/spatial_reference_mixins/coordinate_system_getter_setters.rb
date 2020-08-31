@@ -6,7 +6,7 @@ module OGR
       # Set the user-visible LOCAL_CS name.
       #
       # @param name [String]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def set_local_cs(name) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set LOCAL_CS to #{name}") do
           FFI::OGR::SRSAPI.OSRSetLocalCS(@c_pointer, name)
@@ -17,7 +17,7 @@ module OGR
       # Set the user-visible PROJCS name.
       #
       # @param name [String]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def set_proj_cs(name) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set PROJCS to #{name}") do
           FFI::OGR::SRSAPI.OSRSetProjCS(@c_pointer, name)
@@ -28,7 +28,7 @@ module OGR
       # Set the user-visible PROJCS name.
       #
       # @param name [String]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def set_geoc_cs(name) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set GEOCCS to #{name}") do
           FFI::OGR::SRSAPI.OSRSetGeocCS(@c_pointer, name)
@@ -39,9 +39,7 @@ module OGR
       # Set the GEOGCS based on a well-known name.
       #
       # @param name [String]
-      # @return +true+ if successful, otherwise raises an OGR exception.
-      # @raise [NotImplementedError] If your version of GDAL/OGR doesn't define
-      #   the C function needed for this.
+      # @raise [OGR::Failure]
       def set_well_known_geog_cs(name) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS to #{name}") do
           FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@c_pointer, name)
@@ -50,6 +48,7 @@ module OGR
       alias well_known_geog_cs= set_well_known_geog_cs
 
       # @param definition [String]
+      # @raise [OGR::Failure]
       def set_from_user_input(definition) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err('Invalid projection info given.') do
           FFI::OGR::SRSAPI.OSRSetFromUserInput(@c_pointer, definition)
@@ -57,6 +56,7 @@ module OGR
       end
 
       # @return [Array<Float>]
+      # @raise [OGR::Failure]
       def towgs84
         coefficients = FFI::MemoryPointer.new(:double, 7)
 
@@ -74,6 +74,7 @@ module OGR
       # @param y_rotation [Float] (In arc seconds.)
       # @param z_rotation [Float] (In arc seconds.)
       # @param scaling_factor [Float] (In parts-per-million.)
+      # @raise [OGR::Failure]
       def set_towgs84(x_distance: nil, y_distance: nil, z_distance: 0.0,
         x_rotation: 0.0, y_rotation: 0.0, z_rotation: 0.0, scaling_factor: 0.0)
         OGR::ErrorHandling.handle_ogr_err('No existing DATUM node') do
@@ -89,7 +90,7 @@ module OGR
       # @param name [String]
       # @param horizontal_spatial_ref [OGR::SpatialReference] (a PROJCS or GEOGCS)
       # @param vertical_spatial_ref [OGR::SpatialReference] (a VERT_CS)
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def set_compound_cs(name, horizontal_spatial_ref, vertical_spatial_ref)
         horizontal_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, horizontal_spatial_ref)
         vertical_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, vertical_spatial_ref)
@@ -115,7 +116,7 @@ module OGR
       # @param [Double] offset
       # @param [String] angular_unit_label
       # @param [Float] transform_to_radians
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def set_geog_cs(geog_name, datum_name, spheroid_name, semi_major, spheroid_inverse_flattening,
         prime_meridian, offset, angular_unit_label, transform_to_radians)
         OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS '#{name}'") do
@@ -135,6 +136,7 @@ module OGR
       # @param datum_name [String] User-visible name of the datum.  It's helpful
       #   to have this match the EPSG name.
       # @param datum_type [String] The OGC datum type, usually 2005.
+      # @raise [OGR::Failure]
       def set_vert_cs(name, datum_name, datum_type)
         OGR::ErrorHandling.handle_ogr_err("Unable to set vertical CS '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetVertCS(@c_pointer, name, datum_name, datum_type)
@@ -187,6 +189,7 @@ module OGR
       #   set an authority on ("PROJCS", "GEOGCS|UNIT").
       # @param authority [String] I.e. "EPSG".
       # @param code [Integer] Code value for the authority.
+      # @raise [OGR::Failure]
       def set_authority(target_key, authority, code)
         OGR::ErrorHandling.handle_ogr_err("Unable to set authority: '#{target_key}', '#{authority}', '#{code}'") do
           FFI::OGR::SRSAPI.OSRSetAuthority(
@@ -221,7 +224,7 @@ module OGR
       end
 
       # @param projection_name [String]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def set_projection(projection_name) # rubocop:disable Naming/AccessorMethodName
         OGR::ErrorHandling.handle_ogr_err("Unable to set projection to '#{projection_name}'") do
           FFI::OGR::SRSAPI.OSRSetProjection(@c_pointer, projection_name)
@@ -231,6 +234,7 @@ module OGR
 
       # @param param_name [String]
       # @param value [Float]
+      # @raise [OGR::Failure]
       def set_projection_parameter(param_name, value)
         OGR::ErrorHandling.handle_ogr_err("Unable to set projection parameter '#{param_name}' to #{value}") do
           FFI::OGR::SRSAPI.OSRSetProjParm(@c_pointer, param_name, value)
@@ -240,6 +244,7 @@ module OGR
       # @param name [String]
       # @param default_value [Float] The value to return if the parameter
       #   doesn't exist.
+      # @raise [OGR::Failure]
       def projection_parameter(name, default_value = 0.0)
         value = default_value
 
@@ -255,6 +260,7 @@ module OGR
 
       # @param param_name [String]
       # @param value [Float]
+      # @raise [OGR::Failure]
       def set_normalized_projection_parameter(param_name, value)
         msg = "Unable to set normalized projection parameter '#{param_name}' to '#{value}'"
 
@@ -273,6 +279,7 @@ module OGR
 
       # @param zone [Integer]
       # @param north [Boolean] True for northern hemisphere, false for southern.
+      # @raise [OGR::Failure]
       def set_utm(zone, north: true)
         OGR::ErrorHandling.handle_ogr_err("Unable to set UTM to zome #{zone} (north: #{north})") do
           FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, north)
@@ -296,6 +303,7 @@ module OGR
 
       # @param zone [Integer] State plane zone number (USGS numbering scheme).
       # @param nad83 [Boolean] Use NAD83 zone definition or not.
+      # @raise [OGR::Failure]
       def set_state_plane(zone, override_unit_label = nil, override_unit_transform = 0.0, nad83: true)
         OGR::ErrorHandling.handle_ogr_err("Unable to set state plane to zone #{zone}") do
           FFI::OGR::SRSAPI.OSRSetStatePlaneWithUnits(
@@ -478,6 +486,7 @@ module OGR
       # @param scale [Float]
       # @param false_easting [Float]
       # @param false_northing [Float]
+      # @raise [OGR::Failure]
       def set_transverse_mercator(center_lat, center_long, scale, false_easting, false_northing)
         msg = 'Unable to set transverse mercator: ' \
           "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"

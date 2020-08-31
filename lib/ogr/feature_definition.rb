@@ -76,7 +76,7 @@ module OGR
     end
 
     # @param index [Integer] Index of the field definition to delete.
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def delete_field_definition(index)
       OGR::ErrorHandling.handle_ogr_err("Unable to delete field definition at index #{index}") do
         FFI::OGR::API.OGR_FD_DeleteFieldDefn(
@@ -154,7 +154,7 @@ module OGR
     end
 
     # @param index [Integer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def delete_geometry_field_definition(index)
       OGR::ErrorHandling.handle_ogr_err("Unable to delete geometry field definition at index #{index}") do
         FFI::OGR::API.OGR_FD_DeleteGeomFieldDefn(@c_pointer, index)

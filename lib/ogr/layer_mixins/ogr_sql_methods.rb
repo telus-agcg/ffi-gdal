@@ -3,17 +3,17 @@
 module OGR
   module LayerMixins
     module OGRSQLMethods
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def start_transaction
         transact { FFI::OGR::API.OGR_L_StartTransaction(@c_pointer) }
       end
 
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def commit_transaction
         transact { FFI::OGR::API.OGR_L_CommitTransaction(@c_pointer) }
       end
 
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def rollback_transaction
         transact { FFI::OGR::API.OGR_L_RollbackTransaction(@c_pointer) }
       end
@@ -41,7 +41,7 @@ module OGR
 
       private
 
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def transact
         raise OGR::UnsupportedOperation, 'This layer does not support transactions.' unless supports_transactions?
 

@@ -14,6 +14,7 @@ module OGR
       #   pipe symbol to denote nesting.  i.e. 'GEOCCS|UNIT'.
       # @param value [String] The new value for the node/path.  Should be a String,
       #   but if not, will be converted for you.
+      # @raise [OGR::Failure]
       def set_attribute_value(path, value)
         OGR::ErrorHandling.handle_ogr_err("Unable to set attribute (#{path}) to value #{value}") do
           FFI::OGR::SRSAPI.OSRSetAttrValue(@c_pointer, path, value.to_s)
@@ -33,6 +34,7 @@ module OGR
       # @param unit_label [String]
       # @param transform_to_radians [Float] The value to multiply an angle to
       #   transform the value to radians.
+      # @raise [OGR::Failure]
       def set_angular_units(unit_label, transform_to_radians)
         msg = "Unable to set angular units to #{unit_label} (transform to radians? #{transform_to_radians})"
 
@@ -54,6 +56,7 @@ module OGR
       # @param unit_label [String]
       # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
+      # @raise [OGR::Failure]
       def set_linear_units(unit_label, transform_to_meters)
         msg = "Unable to set linear units to #{unit_label} (transform to meters? #{transform_to_meters})"
 
@@ -68,6 +71,7 @@ module OGR
       # @param unit_label [String]
       # @param transform_to_meters [Float] The value to multiply a length to
       #   transform the value to meters.
+      # @raise [OGR::Failure]
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
         msg = "Unable to set linear units to #{unit_label} (transform to meters? #{transform_to_meters}) and update" \
           'parameters'
@@ -93,6 +97,7 @@ module OGR
       # @param unit_label [String] Name of the units to be used.
       # @param transform_to_meters [Float] The value to multiple a length to
       #   transform the value to meters.
+      # @raise [OGR::Failure]
       def set_target_linear_units(target_key, unit_label, transform_to_meters)
         msg = "Unable to set target (#{target_key}) linear units to #{unit_label} " \
           "(transform to meters? #{transform_to_meters})"

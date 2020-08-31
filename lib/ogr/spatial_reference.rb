@@ -196,7 +196,7 @@ module OGR
 
     # @param other_spatial_ref [OGR::SpatialReference] The SpatialReference to
     #   copy GeocCS info from.
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def copy_geog_cs_from(other_spatial_ref)
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
       raise OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
@@ -206,21 +206,21 @@ module OGR
       end
     end
 
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def validate
       OGR::ErrorHandling.handle_ogr_err('Unable to validate') do
         FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
       end
     end
 
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def fixup_ordering!
       OGR::ErrorHandling.handle_ogr_err('Unable to fixup ordering') do
         FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
       end
     end
 
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def fixup!
       OGR::ErrorHandling.handle_ogr_err('Unable to fixup') do
         FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
@@ -229,7 +229,7 @@ module OGR
 
     # Strips all OGC coordinate transformation parameters.
     #
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def strip_ct_parameters!
       OGR::ErrorHandling.handle_ogr_err('Unable to strip coordinate transformation parameters') do
         FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
@@ -238,7 +238,7 @@ module OGR
 
     # Sets the EPSG authority info if possible.
     #
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def auto_identify_epsg!
       OGR::ErrorHandling.handle_ogr_err('Unable to determine SRS from EPSG') do
         FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@c_pointer)

@@ -71,6 +71,7 @@ module OGR
     # @param _be_forgiving [Boolean] +true+ if the operation should continue
     #   despite lacking output fields matching some of the source fields.
     # @param with_map [Array<Integer>]
+    # @raise [OGR::Failure]
     # TODO: Implement +with_map+
     def set_from!(_other_feature, _be_forgiving: false, with_map: nil)
       raise NotImplementedError, 'with_map: is not yet supported' if with_map
@@ -246,7 +247,7 @@ module OGR
     # Sets the geometry of the feature by making a copy of +new_geometry+.
     #
     # @param new_geometry [OGR::Geometry]
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def set_geometry(new_geometry) # rubocop:disable Naming/AccessorMethodName
       OGR::ErrorHandling.handle_ogr_err('Unable to set geometry on feature') do
         FFI::OGR::API.OGR_F_SetGeometry(@c_pointer, new_geometry.c_pointer)
@@ -256,7 +257,7 @@ module OGR
     # Sets the geometry of the feature by taking ownership of +new_geometry.
     #
     # @param new_geometry [OGR::Geometry]
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def set_geometry_directly(new_geometry) # rubocop:disable Naming/AccessorMethodName
       new_geometry.c_pointer.autorelease = false
 
@@ -282,7 +283,7 @@ module OGR
     end
 
     # @param new_fid [Integer]
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def fid=(new_fid)
       OGR::ErrorHandling.handle_ogr_err('Unable to set FID') do
         FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
@@ -341,6 +342,7 @@ module OGR
     #
     # @param index [Integer]
     # @param geometry [OGR::Geometry]
+    # @raise [OGR::Failure]
     def set_geometry_field(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
       raise OGR::InvalidGeometry if geometry_ptr.nil?
@@ -355,6 +357,7 @@ module OGR
     #
     # @param index [Integer]
     # @param geometry [OGR::Geometry]
+    # @raise [OGR::Failure]
     def set_geometry_field_directly(index, geometry)
       geometry_ptr = GDAL._pointer(OGR::Geometry, geometry, autorelease: false)
 

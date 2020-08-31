@@ -25,7 +25,7 @@ module OGR
       #   layer.create_feature(feature)
       #
       # @param feature [OGR::Feature] [description]
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def create_feature(feature)
         raise OGR::UnsupportedOperation, 'This layer does not support feature creation.' unless can_sequential_write?
 
@@ -37,7 +37,6 @@ module OGR
       # Deletes the feature from the layer.
       #
       # @param feature_id [Integer] ID of the Feature to delete.
-      # @return +true+ if successful, otherwise raises an OGR exception.
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
       def delete_feature(feature_id)
@@ -60,6 +59,7 @@ module OGR
       # Rewrites an existing feature using the ID within the given Feature.
       #
       # @param new_feature [OGR::Feature, FFI::Pointer]
+      # @raise [OGR::Failure]
       def feature=(new_feature)
         raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless can_random_write?
 
@@ -102,7 +102,7 @@ module OGR
       # Sets the index for #next_feature.
       #
       # @param feature_index [Integer]
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def next_feature_index=(feature_index)
         OGR::ErrorHandling.handle_ogr_err("Unable to set next feature index to #{feature_index}") do
           FFI::OGR::API.OGR_L_SetNextByIndex(@c_pointer, feature_index)

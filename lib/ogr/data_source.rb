@@ -173,6 +173,7 @@ module OGR
     end
 
     # @param index [Integer]
+    # @raise [OGR::Failure]
     def delete_layer(index)
       raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
 
@@ -231,7 +232,7 @@ module OGR
       FFI::OGR::API.OGR_DS_TestCapability(@c_pointer, capability)
     end
 
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def sync_to_disk
       OGR::ErrorHandling.handle_ogr_err('Unable to syn datasource to disk') do
         FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
