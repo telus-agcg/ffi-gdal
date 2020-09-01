@@ -23,21 +23,6 @@ Naming/MethodParameterName:
 Style/Documentation:
   Enabled: false
 
-Style/DoubleNegation:
-  Enabled: false
-
-Style/FormatString:
-  EnforcedStyle: percent
-
-Style/PercentLiteralDelimiters:
-  PreferredDelimiters:
-    '%i': '[]'
-    '%w': '[]'
-    '%W': '[]'
-
-Style/SymbolArray:
-  Enabled: true
-
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true

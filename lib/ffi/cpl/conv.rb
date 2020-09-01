@@ -46,7 +46,7 @@ module FFI
       attach_function :CPLStrtof, %i[string pointer], :float
       attach_function :CPLStrtofDelim, %i[string pointer char], :float
       attach_function :CPLAtofM, %i[string], :double
-      # Caller responsible to free this buffer with CPLFree(). 
+      # Caller responsible to free this buffer with CPLFree().
       attach_function :CPLScanString, %i[string int int int], :pointer
       attach_function :CPLScanDouble, %i[string int], :double
       attach_function :CPLScanLong, %i[string int], :long
