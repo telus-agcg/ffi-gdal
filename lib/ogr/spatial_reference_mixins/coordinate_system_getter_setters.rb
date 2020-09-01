@@ -8,7 +8,7 @@ module OGR
       # @param name [String]
       # @raise [OGR::Failure]
       def set_local_cs(name) # rubocop:disable Naming/AccessorMethodName
-        OGR::ErrorHandling.handle_ogr_err("Unable to set LOCAL_CS to #{name}") do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set LOCAL_CS to '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetLocalCS(@c_pointer, name)
         end
       end
@@ -19,7 +19,7 @@ module OGR
       # @param name [String]
       # @raise [OGR::Failure]
       def set_proj_cs(name) # rubocop:disable Naming/AccessorMethodName
-        OGR::ErrorHandling.handle_ogr_err("Unable to set PROJCS to #{name}") do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set PROJCS to '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetProjCS(@c_pointer, name)
         end
       end
@@ -30,7 +30,7 @@ module OGR
       # @param name [String]
       # @raise [OGR::Failure]
       def set_geoc_cs(name) # rubocop:disable Naming/AccessorMethodName
-        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOCCS to #{name}") do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOCCS to '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetGeocCS(@c_pointer, name)
         end
       end
@@ -41,7 +41,7 @@ module OGR
       # @param name [String]
       # @raise [OGR::Failure]
       def set_well_known_geog_cs(name) # rubocop:disable Naming/AccessorMethodName
-        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS to #{name}") do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS to '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetWellKnownGeogCS(@c_pointer, name)
         end
       end
@@ -135,7 +135,7 @@ module OGR
       # @param name [String] User-visible name of the CS.
       # @param datum_name [String] User-visible name of the datum.  It's helpful
       #   to have this match the EPSG name.
-      # @param datum_type [String] The OGC datum type, usually 2005.
+      # @param datum_type [Integer] The OGC datum type, usually 2005.
       # @raise [OGR::Failure]
       def set_vert_cs(name, datum_name, datum_type)
         OGR::ErrorHandling.handle_ogr_err("Unable to set vertical CS '#{name}'") do
