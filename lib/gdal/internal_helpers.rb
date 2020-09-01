@@ -109,6 +109,31 @@ module GDAL
         pointer_ptr.read_pointer.send("read_#{type}".to_sym)
       end
 
+      # Convenience function for allocating a pointer to a string (**char),
+      # yielding the pointer so it can written to (i.e. passed to a GDAL/OGR
+      # function to be written to), then reads the string out of the buffer,
+      # then calls FFI::CPL::VSI.VSIFree (which is an alias for
+      # FFI::CPL::Conv.CPLFree).
+      #
+      # @yields [FFI::MemoryPointer]
+      # @return [String]
+      def _cpl_read_and_free_string
+        result_ptr_ptr = GDAL._pointer_pointer(:string)
+        result_ptr_ptr.autorelease = false
+
+        yield result_ptr_ptr
+
+        result = if result_ptr_ptr.null?
+                   ''
+                 else
+                   GDAL._read_pointer_pointer_safely(result_ptr_ptr, :string)
+                 end
+
+        FFI::CPL::VSI.VSIFree(result_ptr_ptr)
+
+        result
+      end
+
       # Maps GDAL DataTypes to FFI types.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]

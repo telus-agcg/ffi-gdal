@@ -3,6 +3,10 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
+  subject do
+    described_class.new_from_epsg(4327)
+  end
+
   describe '.projection_methods' do
     context 'strip underscores' do
       subject { described_class.projection_methods(strip_underscores: true) }
@@ -35,7 +39,6 @@ RSpec.describe OGR::SpatialReference do
     let(:other_srs) { OGR::SpatialReference.new_from_epsg(4326) }
 
     it 'copies the info over' do
-      expect(subject.to_wkt).to be_empty
       subject.copy_geog_cs_from(other_srs)
       expect(subject.to_wkt).to eq other_srs.to_wkt
     end

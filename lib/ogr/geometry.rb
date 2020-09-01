@@ -593,17 +593,11 @@ module OGR
     # @return [String]
     # @raise [OGR::Failure]
     def to_wkt
-      output_ptr = FFI::MemoryPointer.new(:pointer)
-      output_ptr.autorelease = false
-
-      OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
-        FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
+      GDAL._cpl_read_and_free_string do |output_ptr|
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+          FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
+        end
       end
-
-      wkt = output_ptr.read_pointer.read_string
-      FFI::CPL::VSI.VSIFree(output_ptr)
-
-      wkt
     end
 
     # This geometry expressed as GML in GML basic data types.

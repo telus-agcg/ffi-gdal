@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `GDAL::Dataset.copy_whole_raster`.
 - Added exception messages for `OGR` methods that raised using
   `OGR::ErrorHandling`.
+- Added alias for `OGR::SpatialReferenceMixins::Exporters#to_gml` to `to_xml`.
 
 ### Changed
 
@@ -133,6 +134,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `OGR::Geometry#to_kml`
   - `OGR::Geometry#to_geo_json`
   - `OGR::Geometry#to_wkt`
+  - `OGR::SpatialReference#to_mapinfo`
+  - `OGR::SpatialReference#to_pci`
+  - `OGR::SpatialReference#to_proj4`
+  - `OGR::SpatialReference#to_usgs`
+  - `OGR::SpatialReference#to_wkt`
+  - `OGR::SpatialReference#to_pretty_wkt`
+  - `OGR::SpatialReference#to_xml`
 - `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 - `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid
@@ -144,6 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`: the
   `orientation` value in the returned `Hash` wasn't calling a fully qualified
   module.
+- `OGR::SpatialReferenceMixins::Exporters#to_xml` now actually works.
 
 ### Removed
 
