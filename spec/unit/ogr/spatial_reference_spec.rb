@@ -4,7 +4,7 @@ require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   subject do
-    described_class.new_from_epsg(4327)
+    described_class.new_from_epsg(3819)
   end
 
   describe '.projection_methods' do
