@@ -3,7 +3,7 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
-  subject(:wgs84) { OGR::SpatialReference.new_from_epsg(4326) }
+  subject(:wgs84) { OGR::SpatialReference.new_from_epsg(3857) }
   let(:empty_subject) { OGR::SpatialReference.new }
 
   describe '#set_local_cs' do
@@ -58,7 +58,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#authority_code' do
     it 'returns the authority code' do
-      expect(subject.authority_code).to eq '4326'
+      expect(subject.authority_code).to eq '3857'
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#axis' do
     it 'returns the axis info' do
-      expect(subject.axis(0, 'GEOGCS')).to eq(name: 'Geodetic latitude', orientation: :OAO_North)
+      expect(subject.axis(0, 'PROJCS')).to eq(name: 'Easting', orientation: :OAO_East)
     end
   end
 end
