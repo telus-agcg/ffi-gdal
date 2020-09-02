@@ -23,7 +23,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'creation is supported' do
-      it 'returns true' do
+      it do
         expect(subject.create_feature(feature)).to be_nil
       end
     end

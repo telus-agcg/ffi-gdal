@@ -24,14 +24,14 @@ RSpec.describe OGR::CoordinateTransformation do
 
   describe '#initialize' do
     context 'source_srs is not an OGR::SpatialReference' do
-      it 'raises an OGR::Failure' do
+      it do
         expect { described_class.new(123, dest_srs) }
           .to raise_exception GDAL::Error
       end
     end
 
     context 'dest_srs is not an OGR::SpatialReference' do
-      it 'raises an OGR::Failure' do
+      it do
         expect { described_class.new(source_srs, 123) }
           .to raise_exception GDAL::Error
       end

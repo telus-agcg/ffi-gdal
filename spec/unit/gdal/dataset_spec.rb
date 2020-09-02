@@ -131,7 +131,7 @@ RSpec.describe GDAL::Dataset do
     end
 
     context 'bad projection' do
-      it 'raise' do
+      it do
         expect { subject.projection = 'meow' }.to raise_exception(GDAL::Error)
       end
     end
