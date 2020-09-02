@@ -468,7 +468,7 @@ module GDAL
     # Makes a pointer of +band_numbers+.
     #
     # @param band_numbers [Array<Integer>]
-    # @return [Array<FFI::AutoPointer, Integer>]
+    # @return [Array<FFI::MemoryPointer, Integer>]
     def band_numbers_args(band_numbers)
       band_count = band_numbers&.size || 0
       ptr = FFI::MemoryPointer.new(:int, band_count)

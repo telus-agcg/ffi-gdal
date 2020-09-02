@@ -144,7 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `OGR::SpatialReferenceMixins::Importers::ClassMethods#new_from_epsga` was
   incorrectly calling `import_from_epsg` instead of `import_from_epsga`.
 - `OGR::SpatialReference.release` fixed to use `OSRRelease()` in order to avoid
-  free-after-use.
+  use-after-free.
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s
   internal call was expecting an `int`, but was getting passed a `bool`.
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#towgs84` now
