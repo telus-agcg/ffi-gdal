@@ -71,7 +71,7 @@ module FFI
       attach_function :VSIMalloc, %i[size_t], :pointer
       attach_function :VSIFree, %i[pointer], :void
       attach_function :VSIRealloc, %i[pointer size_t], :pointer
-      attach_function :VSIStrdup, %i[string], :string
+      attach_function :VSIStrdup, %i[string], :strptr
       attach_function :VSIMalloc2, %i[size_t size_t], :pointer
       attach_function :VSIMalloc3, %i[size_t size_t size_t], :pointer
 
@@ -82,7 +82,7 @@ module FFI
       attach_function :VSIUnlink, %i[string], :int
       attach_function :VSIRename, %i[string string], :int
 
-      attach_function :VSIStrerror, %i[int], :string
+      attach_function :VSIStrerror, %i[int], :strptr
 
       attach_function :VSIInstallMemFileHandler, [], :void
       attach_function :VSIInstallLargeFileHandler, [], :void
@@ -108,7 +108,7 @@ module FFI
                       :pointer
 
       attach_function :VSITime, %i[pointer], :ulong
-      attach_function :VSICTime, %i[ulong], :string
+      attach_function :VSICTime, %i[ulong], :strptr
       attach_function :VSIGMTime, %i[pointer pointer], :pointer
       attach_function :VSILocalTime, %i[pointer pointer], :pointer
     end

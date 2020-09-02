@@ -35,6 +35,16 @@ RSpec.describe GDAL::Dataset do
     end
   end
 
+  describe '.copy_whole_raster' do
+    it "doesn't blow up" do
+      destination = GDAL::Driver
+                    .by_name('MEM')
+                    .create_dataset('testy', subject.raster_x_size, subject.raster_y_size,
+                                    band_count: subject.raster_count, data_type: subject.raster_band(1).data_type)
+      described_class.copy_whole_raster(subject, destination)
+    end
+  end
+
   describe '#access_flag' do
     it 'returns the flag that was used to open the dataset' do
       expect(subject.access_flag).to eq :GA_ReadOnly
@@ -92,8 +102,8 @@ RSpec.describe GDAL::Dataset do
 
   describe '#create_mask_band' do
     context 'no flags given' do
-      it 'returns true' do
-        expect(subject.create_mask_band(0)).to eq true
+      it 'returns nil' do
+        expect(subject.create_mask_band(0)).to be_nil
       end
     end
   end
@@ -107,15 +117,23 @@ RSpec.describe GDAL::Dataset do
     end
 
     it 'returns the projection string' do
-      expect(subject.projection).to eq expected_wkt
+      expect(subject.projection).to start_with 'GEOGCS["unknown",DATUM["'
     end
   end
 
   describe '#projection=' do
-    it 'returns the new projection' do
-      proj = subject.projection
-      expect(subject.projection = proj).to eq proj
-      expect(subject.projection).to eq proj
+    context 'good projection' do
+      it 'sets the new projection' do
+        proj = subject.projection
+        expect(subject.projection = proj).to eq proj
+        expect(subject.projection).to eq proj
+      end
+    end
+
+    context 'bad projection' do
+      it do
+        expect { subject.projection = 'meow' }.to raise_exception(GDAL::Error)
+      end
     end
   end
 

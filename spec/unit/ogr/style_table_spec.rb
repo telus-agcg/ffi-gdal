@@ -3,13 +3,6 @@
 require 'ogr/style_table'
 
 RSpec.describe OGR::StyleTable do
-  describe '#destroy!' do
-    it 'cleans up the pointer and sets it to nil' do
-      subject.destroy!
-      expect(subject.instance_variable_get(:@c_pointer)).to be_nil
-    end
-  end
-
   describe '#add_style + #find' do
     it '#add_style returns true' do
       expect(subject.add_style('test style', '#ffffff')).to eq true

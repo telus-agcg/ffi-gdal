@@ -11,17 +11,21 @@ module GDAL
       # @param destination_geo_transform [GDAL::GeoTransform, FFI::Pointer]
       # @return [FFI::Pointer]
       def initialize(source_wkt, source_geo_transform, destination_wkt, destination_geo_transform)
+        super()
+
         source_ptr = GDAL._pointer(GDAL::GeoTransform, source_geo_transform)
         destination_ptr = GDAL._pointer(GDAL::GeoTransform, destination_geo_transform)
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer3(
+        pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer3(
           source_wkt,
           source_ptr,
           destination_wkt,
           destination_ptr
         )
 
-        super()
+        raise if pointer.null?
+
+        init_pointer(pointer)
       end
     end
   end

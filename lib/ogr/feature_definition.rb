@@ -5,6 +5,13 @@ require_relative '../ogr'
 
 module OGR
   class FeatureDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_FD_Release(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer of the C FeatureDefn.
     attr_reader :c_pointer
 
@@ -13,27 +20,32 @@ module OGR
     #   FFI::Pointer, the new object will simply wrap the C FeatureDefinition
     #   at that address.
     def initialize(name_or_pointer)
-      @c_pointer = if name_or_pointer.is_a? String
-                     FFI::OGR::API.OGR_FD_Create(name_or_pointer)
-                   else
-                     name_or_pointer
-                   end
+      pointer = if name_or_pointer.is_a? String
+                  FFI::OGR::API.OGR_FD_Create(name_or_pointer)
+                else
+                  name_or_pointer
+                end
 
-      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
+        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
 
-      raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      @c_pointer = FFI::AutoPointer.new(pointer, FeatureDefinition.method(:release))
+      @c_pointer.autorelease = false
     end
 
     def release!
-      return unless @c_pointer
+      FeatureDefinition.release(@c_pointer)
 
-      FFI::OGR::API.OGR_FD_Release(@c_pointer)
       @c_pointer = nil
     end
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_FD_GetName(@c_pointer)
+      name, ptr = FFI::OGR::API.OGR_FD_GetName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [Integer]
@@ -44,8 +56,9 @@ module OGR
     # @param index [Integer]
     # @return [OGR::FieldDefinition]
     def field_definition(index)
-      field_definition_ptr =
-        FFI::OGR::API.OGR_FD_GetFieldDefn(@c_pointer, index)
+      field_definition_ptr = FFI::OGR::API.OGR_FD_GetFieldDefn(@c_pointer, index)
+      field_definition_ptr.autorelease = false
+
       return nil if field_definition_ptr.null?
 
       OGR::FieldDefinition.new(field_definition_ptr, nil)
@@ -63,14 +76,14 @@ module OGR
     end
 
     # @param index [Integer] Index of the field definition to delete.
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def delete_field_definition(index)
-      ogr_err = FFI::OGR::API.OGR_FD_DeleteFieldDefn(
-        @c_pointer,
-        index
-      )
-
-      ogr_err.handle_result "Unable to delete field definition at index #{index}"
+      OGR::ErrorHandling.handle_ogr_err("Unable to delete field definition at index #{index}") do
+        FFI::OGR::API.OGR_FD_DeleteFieldDefn(
+          @c_pointer,
+          index
+        )
+      end
     end
 
     # @param name [String]
@@ -119,8 +132,8 @@ module OGR
     # @param index [Integer]
     # @return [OGR::GeometryFieldDefinition]
     def geometry_field_definition(index)
-      geometry_field_definition_ptr =
-        FFI::OGR::API.OGR_FD_GetGeomFieldDefn(@c_pointer, index)
+      geometry_field_definition_ptr = FFI::OGR::API.OGR_FD_GetGeomFieldDefn(@c_pointer, index)
+
       return nil if geometry_field_definition_ptr.null?
 
       OGR::GeometryFieldDefinition.new(geometry_field_definition_ptr)
@@ -136,19 +149,16 @@ module OGR
 
     # @param geometry_field_definition [OGR::GeometryFieldDefinition, FFI::Pointer]
     def add_geometry_field_definition(geometry_field_definition)
-      geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition,
-                                                    geometry_field_definition)
-      FFI::OGR::API.OGR_FD_AddGeomFieldDefn(@c_pointer,
-                                            geometry_field_definition_ptr)
+      geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_definition)
+      FFI::OGR::API.OGR_FD_AddGeomFieldDefn(@c_pointer, geometry_field_definition_ptr)
     end
 
     # @param index [Integer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def delete_geometry_field_definition(index)
-      ogr_err = FFI::OGR::API.OGR_FD_DeleteGeomFieldDefn(@c_pointer,
-                                                         index)
-
-      ogr_err.handle_result "Unable to delete geometry field definition at index #{index}"
+      OGR::ErrorHandling.handle_ogr_err("Unable to delete geometry field definition at index #{index}") do
+        FFI::OGR::API.OGR_FD_DeleteGeomFieldDefn(@c_pointer, index)
+      end
     end
 
     # @param other_feature_definition [OGR::Feature, FFI::Pointer]

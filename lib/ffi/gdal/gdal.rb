@@ -103,7 +103,7 @@ module FFI
       typedef :pointer, :GDALAsyncReaderH
 
       # When using, make sure to return +true+ if the operation should continue;
-      #   +false+ if the user has cancelled.
+      #   +false+ if the user has canceled.
       callback :GDALProgressFunc,
                %i[double string pointer], # completion, message, progress_arg
                :bool
@@ -122,7 +122,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~
       # ColorInterpretation
       # ~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGetColorInterpretationName, [ColorInterp], :string
+      attach_function :GDALGetColorInterpretationName, [ColorInterp], :strptr
       attach_function :GDALGetColorInterpretationByName, [:string], ColorInterp
 
       # ~~~~~~~~~~~~~~~~~~~
@@ -145,10 +145,10 @@ module FFI
                       %i[GDALDriverH string GDALDatasetH bool pointer GDALProgressFunc pointer],
                       :GDALDatasetH
       attach_function :GDALValidateCreationOptions, %i[GDALDriverH pointer], :bool
-      attach_function :GDALGetDriverShortName, [:GDALDriverH], :string
-      attach_function :GDALGetDriverLongName, [:GDALDriverH], :string
-      attach_function :GDALGetDriverHelpTopic, [:GDALDriverH], :string
-      attach_function :GDALGetDriverCreationOptionList, [:GDALDriverH], :string
+      attach_function :GDALGetDriverShortName, [:GDALDriverH], :strptr
+      attach_function :GDALGetDriverLongName, [:GDALDriverH], :strptr
+      attach_function :GDALGetDriverHelpTopic, [:GDALDriverH], :strptr
+      attach_function :GDALGetDriverCreationOptionList, [:GDALDriverH], :strptr
 
       attach_function :GDALDestroyDriver, [:GDALDriverH], :void
       attach_function :GDALRegisterDriver, [:GDALDriverH], :int
@@ -254,13 +254,13 @@ module FFI
                       %i[int pointer pointer int],
                       :int
       attach_function :GDALGetGCPCount, [:GDALDatasetH], :int
-      attach_function :GDALGetGCPProjection, [:GDALDatasetH], :string
+      attach_function :GDALGetGCPProjection, [:GDALDatasetH], :strptr
       attach_function :GDALGetGCPs, [:GDALDatasetH], :pointer
       attach_function :GDALSetGCPs,
                       %i[GDALDatasetH int pointer string],
                       FFI::CPL::Error::CPLErr
 
-      attach_function :GDALGetProjectionRef, [:GDALDatasetH], :string
+      attach_function :GDALGetProjectionRef, [:GDALDatasetH], :strptr
       attach_function :GDALSetProjection, %i[GDALDatasetH string], FFI::CPL::Error::CPLErr
       attach_function :GDALGetGeoTransform, %i[GDALDatasetH pointer], FFI::CPL::Error::CPLErr
       attach_function :GDALSetGeoTransform,
@@ -324,11 +324,11 @@ module FFI
       attach_function :GDALSetMetadata, %i[GDALMajorObjectH pointer string], FFI::CPL::Error::CPLErr
       attach_function :GDALGetMetadataItem,
                       %i[GDALMajorObjectH string string],
-                      :string
+                      :strptr
       attach_function :GDALSetMetadataItem,
                       %i[GDALMajorObjectH string string string],
                       FFI::CPL::Error::CPLErr
-      attach_function :GDALGetDescription, [:GDALMajorObjectH], :string
+      attach_function :GDALGetDescription, [:GDALMajorObjectH], :strptr
       attach_function :GDALSetDescription, %i[GDALMajorObjectH string], :void
 
       # ~~~~~~~~~~~~~~~~~~~
@@ -463,7 +463,7 @@ module FFI
       attach_function :GDALSetRasterStatistics,
                       %i[GDALRasterBandH double double double double],
                       FFI::CPL::Error::CPLErr
-      attach_function :GDALGetRasterUnitType, [:GDALRasterBandH], :string
+      attach_function :GDALGetRasterUnitType, [:GDALRasterBandH], :strptr
       attach_function :GDALSetRasterUnitType, %i[GDALRasterBandH string], FFI::CPL::Error::CPLErr
       attach_function :GDALGetRasterOffset, %i[GDALRasterBandH pointer], :double
       attach_function :GDALSetRasterOffset, %i[GDALRasterBandH double], FFI::CPL::Error::CPLErr
@@ -550,7 +550,7 @@ module FFI
                       :int
       attach_function :GDALRATGetNameOfCol,
                       %i[GDALRasterAttributeTableH int],
-                      :string
+                      :strptr
       attach_function :GDALRATGetUsageOfCol,
                       %i[GDALRasterAttributeTableH int],
                       RATFieldUsage
@@ -566,7 +566,7 @@ module FFI
 
       attach_function :GDALRATGetValueAsString,
                       %i[GDALRasterAttributeTableH int int],
-                      :string
+                      :strptr
       attach_function :GDALRATGetValueAsInt,
                       %i[GDALRasterAttributeTableH int int],
                       :int
@@ -642,14 +642,14 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # PaletteInterp functions
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGetPaletteInterpretationName, [PaletteInterp], :string
+      attach_function :GDALGetPaletteInterpretationName, [PaletteInterp], :strptr
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # General stuff
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       attach_function :GDALGetDataTypeSize, [DataType], :int
       attach_function :GDALDataTypeIsComplex, [DataType], :bool
-      attach_function :GDALGetDataTypeName, [DataType], :string
+      attach_function :GDALGetDataTypeName, [DataType], :strptr
       attach_function :GDALGetDataTypeByName, [:string], DataType
       attach_function :GDALDataTypeUnion, [DataType, DataType], DataType
 

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../../ext/error_symbols'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
@@ -30,7 +29,7 @@ module FFI
 
       attach_function :CPLGetLastErrorNo, [], :int
       attach_function :CPLGetLastErrorType, [], CPLErr
-      attach_function :CPLGetLastErrorMsg, [], :string
+      attach_function :CPLGetLastErrorMsg, [], :strptr
 
       attach_function :CPLGetErrorHandlerUserData, [], :pointer
       attach_function :CPLCleanupErrorMutex, [], :void

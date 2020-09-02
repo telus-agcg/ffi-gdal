@@ -122,7 +122,10 @@ module OGR
       # @param type [FFI::OGR::WKBGeometryType]
       # @return [String]
       def type_to_name(type)
-        FFI::OGR::Core.OGRGeometryTypeToName(type)
+        name, ptr = FFI::OGR::Core.OGRGeometryTypeToName(type)
+        ptr.autorelease = false
+
+        name
       end
 
       # Finds the most specific common geometry type from the two given types.
@@ -135,6 +138,13 @@ module OGR
       #   no type in common.
       def merge_geometry_types(main, extra)
         FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
+      end
+
+      # @param pointer [FFI::Pointer]
+      def release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::OGR::API.OGR_G_DestroyGeometry(pointer)
       end
     end
 
@@ -154,9 +164,8 @@ module OGR
     attr_reader :c_pointer
 
     def destroy!
-      return unless @c_pointer
+      self.class.release(@c_pointer)
 
-      FFI::OGR::API.OGR_G_DestroyGeometry(@c_pointer)
       @c_pointer = nil
     end
 
@@ -221,12 +230,16 @@ module OGR
 
     # @return [String]
     def type_to_name
-      FFI::OGR::Core.OGRGeometryTypeToName(type)
+      self.class.type_to_name(type)
     end
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
+      # The returned pointer is to a static internal string and should not be modified or freed.
+      name, ptr = FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [Integer]
@@ -416,6 +429,9 @@ module OGR
       FFI::OGR::API.OGR_G_Distance(@c_pointer, geometry.c_pointer)
     end
 
+    # NOTE: The returned object may be shared with many geometries, and should
+    # thus not be modified.
+    #
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
@@ -429,7 +445,9 @@ module OGR
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
     def spatial_reference=(new_spatial_ref)
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
+      #  Note that assigning a spatial reference increments the reference count
+      #  on the OGRSpatialReference, but does not copy it.
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
 
       FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref_ptr)
     end
@@ -444,31 +462,38 @@ module OGR
     #
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def transform!(coordinate_transformation)
       coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
                                       coordinate_transformation)
 
       return if coord_trans_ptr.nil? || coord_trans_ptr.null?
 
-      ogr_err = FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+        FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
+      end
     end
 
     # Similar to +#transform+, but this only works if the geometry already has an
     # assigned spatial reference system _and_ is transformable to the target
     # coordinate system.
     #
+    # Because this function requires internal creation and initialization of an
+    # OGRCoordinateTransformation object it is significantly more expensive to
+    # use this function to transform many geometries than it is to create the
+    # OGRCoordinateTransformation in advance, and call transform() with that
+    # transformation. This function exists primarily for convenience when only
+    # transforming a single geometry.
+    #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
-    # @return [Boolean]
+    # @raise [OGR::Failure]
     def transform_to!(new_spatial_ref)
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref)
+      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
       return if new_spatial_ref_ptr.null?
 
-      ogr_err = FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+        FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
+      end
     end
 
     # Computes and returns a new, simplified geometry.
@@ -527,11 +552,11 @@ module OGR
     end
 
     # @param wkb_data [String] Binary WKB data.
-    # @return +true+ if successful, otherwise raises an OGR exception.
+    # @raise [OGR::Failure]
     def import_from_wkb(wkb_data)
-      ogr_err = FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to import geometry from WKB') do
+        FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
+      end
     end
 
     # The exact number of bytes required to hold the WKB of this object.
@@ -542,31 +567,37 @@ module OGR
     end
 
     # @return [String]
+    # @raise [OGR::Failure]
     def to_wkb(byte_order = :wkbXDR)
       output = FFI::MemoryPointer.new(:uchar, wkb_size)
-      ogr_err = FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
-      ogr_err.handle_result 'Unable to export geometry to WKB'
+
+      OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
+        FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
+      end
 
       output.read_bytes(wkb_size)
     end
 
     # @param wkt_data [String]
+    # @raise [OGR::Failure]
     def import_from_wkt(wkt_data)
       wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
       wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
       wkt_pointer_pointer.write_pointer(wkt_data_pointer)
-      ogr_err = FFI::OGR::API.OGR_G_ImportFromWkt(@c_pointer, wkt_pointer_pointer)
 
-      ogr_err.handle_result "Unable to import: #{wkt_data}"
+      OGR::ErrorHandling.handle_ogr_err("Unable to import from WKT: #{wkt_data}") do
+        FFI::OGR::API.OGR_G_ImportFromWkt(@c_pointer, wkt_pointer_pointer)
+      end
     end
 
     # @return [String]
+    # @raise [OGR::Failure]
     def to_wkt
-      output = FFI::MemoryPointer.new(:string)
-      ogr_err = FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output)
-      ogr_err.handle_result
-
-      output.read_pointer.read_string
+      GDAL._cpl_read_and_free_string do |output_ptr|
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+          FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
+        end
+      end
     end
 
     # This geometry expressed as GML in GML basic data types.
@@ -585,19 +616,28 @@ module OGR
     # @return [String]
     def to_gml(**options)
       options_ptr = GDAL::Options.pointer(options)
-      FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
+      gml, ptr = FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      gml
     end
 
     # @param altitude_mode [String] Value to write in the +altitudeMode+
     #   element.
     # @return [String]
     def to_kml(altitude_mode = nil)
-      FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
+      kml, ptr = FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      kml
     end
 
     # @return [String]
     def to_geo_json
-      FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      json, ptr = FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      json
     end
 
     # Converts the current geometry to a LineString geometry.  The returned
@@ -665,7 +705,11 @@ module OGR
     def initialize_from_pointer(geometry_ptr)
       raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if geometry_ptr.nil?
 
-      @c_pointer = GDAL._pointer(OGR::Geometry, geometry_ptr)
+      pointer = GDAL._pointer(OGR::Geometry, geometry_ptr, autorelease: false)
+
+      raise OGR::InvalidHandle, "Must initialize with a valid pointer: #{geometry_ptr}" if pointer.null?
+
+      @c_pointer = pointer
     end
 
     def build_geometry

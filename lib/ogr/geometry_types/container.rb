@@ -17,30 +17,34 @@ module OGR
       # geometries added will be interior rings.
       #
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def add_geometry(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
-        ogr_err = FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry_ptr)
 
-        ogr_err.handle_result "Unable to add geometry: #{sub_geometry}"
+        OGR::ErrorHandling.handle_ogr_err("Unable to add geometry: #{sub_geometry}") do
+          FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry_ptr)
+        end
       end
 
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def add_geometry_directly(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
-        ogr_err = FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
+        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry, autorelease: false)
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to add geometry directly: #{sub_geometry}") do
+          FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
+        end
       end
 
       # @param geometry_index [Integer]
       # @param delete [Boolean]
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @raise [OGR::Failure]
       def remove_geometry(geometry_index, delete: true)
-        ogr_err = FFI::OGR::API.OGR_G_RemoveGeometry(@c_pointer, geometry_index, delete)
+        msg = "Unable to add remove geometry at index #{geometry_index} (delete? #{delete})"
 
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::API.OGR_G_RemoveGeometry(@c_pointer, geometry_index, delete)
+        end
       end
 
       # If this geometry is a container, this fetches the geometry at the
@@ -63,8 +67,10 @@ module OGR
       # @param tolerance [Float]
       # @param auto_close [Boolean]
       # @return [OGR::Geometry]
+      # @raise [OGR::Failure]
       def polygon_from_edges(tolerance, auto_close: false)
         best_effort = false
+
         ogrerr_ptr = FFI::MemoryPointer.new(:pointer)
 
         new_geometry_ptr = FFI::OGR::API.OGRBuildPolygonFromEdges(@c_pointer,
@@ -73,9 +79,9 @@ module OGR
                                                                   tolerance,
                                                                   ogrerr_ptr)
 
-        ogrerr_int = ogrerr_ptr.read_int
-        ogrerr = FFI::OGR::Core::Err[ogrerr_int]
-        ogrerr.handle_result "Couldn't create polygon"
+        OGR::ErrorHandling.handle_ogr_err('Unable to create polygon from edges') do
+          FFI::OGR::Core::Err[ogrerr_ptr.read_int]
+        end
 
         OGR::Geometry.factory(new_geometry_ptr)
       end

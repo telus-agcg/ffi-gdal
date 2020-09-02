@@ -4,7 +4,7 @@ require_relative '../gdal'
 
 module GDAL
   class GeoTransform
-    # @return [FFI::Pointer] A pointer that can be used to hold a GeoTransform.
+    # @return [FFI::MemoryPointer] A pointer that can be used to hold a GeoTransform.
     def self.new_pointer
       FFI::MemoryPointer.new(:double, 6)
     end

@@ -38,17 +38,20 @@ module GDAL
       #   up a CENTER_LONG value on the coordinate system to rewrap things around
       #   the center of the image.
       def initialize(source_dataset, destination_dataset: nil, **options)
-        source_ptr = GDAL._pointer(GDAL::Dataset, source_dataset)
-        destination_ptr = GDAL._pointer(GDAL::Dataset, destination_dataset, warn_on_nil: false)
+        super()
+
+        source_ptr = GDAL::Dataset.new_pointer(source_dataset)
+        destination_ptr = GDAL::Dataset.new_pointer(destination_dataset, warn_on_nil: false)
         options_ptr = GDAL::Options.pointer(options)
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer2(
+        pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer2(
           source_ptr,
           destination_ptr,
           options_ptr
         )
+        raise if pointer.null?
 
-        super()
+        init_pointer(pointer)
       end
     end
   end

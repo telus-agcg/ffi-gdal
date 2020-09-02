@@ -8,6 +8,13 @@ module GDAL
         FFI::GDAL::Alg::RPCTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyRPCTransformer(pointer)
+      end
+
       # @return [FFI::Pointer] C pointer to the C RPC transformer.
       attr_reader :c_pointer
 
@@ -31,12 +38,14 @@ module GDAL
       def initialize(rpc_info, pixel_error_threshold, reversed: false, **options)
         options_ptr = GDAL::Options.pointer(options)
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateRPCTransformer(
+        pointer = FFI::GDAL::Alg.GDALCreateRPCTransformer(
           rpc_info,
           reversed,
           pixel_error_threshold,
           options_ptr
         )
+
+        @c_pointer = FFI::AutoPointer.new(pointer, RPCTransformer.method(:release))
       end
 
       def destroy!

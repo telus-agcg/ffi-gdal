@@ -8,6 +8,13 @@ module GDAL
         FFI::GDAL::Alg::TPSTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyTPSTransformer(pointer)
+      end
+
       # @return [FFI::Pointer] C pointer to the C TPS transformer.
       attr_reader :c_pointer
 
@@ -21,13 +28,14 @@ module GDAL
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateTPSTransformer(gcp_list.size, gcp_list_ptr, reversed)
+        pointer = FFI::GDAL::Alg.GDALCreateTPSTransformer(gcp_list.size, gcp_list_ptr, reversed)
+
+        @c_pointer = FFI::AutoPointer.new(pointer, TPSTransformer.method(:release))
       end
 
       def destroy!
-        return unless @c_pointer
+        TPSTransformer.release(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyTPSTransformer(@c_pointer)
         @c_pointer = nil
       end
 

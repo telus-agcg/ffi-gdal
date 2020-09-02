@@ -34,16 +34,19 @@ module OGR
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_L_GetName(@c_pointer)
+      name, ptr = FFI::OGR::API.OGR_L_GetName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [Boolean]
     # TODO: This seems to occasionally lead to: 28352 illegal hardware
     #   instruction, and sometimes full crashes.
     def sync_to_disk
-      ogr_err = FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
-
-      ogr_err.handle_result
+      OGR::ErrorHandling.handle_ogr_err('Unable to sync layer to disk') do
+        FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
+      end
     end
 
     # Tests if this layer supports the given capability.  Must be in the list
@@ -56,6 +59,9 @@ module OGR
       FFI::OGR::API.OGR_L_TestCapability(@c_pointer, capability.to_s)
     end
 
+    # NOTE: This SpatialReference is owned by the Layer and should thus not be
+    # modified.
+    #
     # @return [OGR::SpatialReference]
     def spatial_reference
       spatial_ref_pointer = FFI::OGR::API.OGR_L_GetSpatialRef(@c_pointer)

@@ -8,6 +8,13 @@ module GDAL
         FFI::GDAL::Alg::GCPTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyGCPTransformer(pointer)
+      end
+
       # @return [FFI::Pointer] C pointer to the GCP transformer.
       attr_reader :c_pointer
 
@@ -22,27 +29,28 @@ module GDAL
           gcp_list_ptr[i].put_pointer(0, gcp.to_ptr)
         end
 
-        @c_pointer = if tolerance || minimum_gcps
-                       FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
-                         gcp_list.size,
-                         gcp_list_ptr,
-                         requested_polynomial_order,
-                         reversed
-                       )
-                     else
-                       FFI::GDAL::Alg.GDALCreateGCPTransformer(
-                         gcp_list.size,
-                         gcp_list_ptr,
-                         requested_polynomial_order,
-                         reversed
-                       )
-                     end
+        pointer = if tolerance || minimum_gcps
+                    FFI::GDAL::Alg.GDALCreateGCPRefineTransformer(
+                      gcp_list.size,
+                      gcp_list_ptr,
+                      requested_polynomial_order,
+                      reversed
+                    )
+                  else
+                    FFI::GDAL::Alg.GDALCreateGCPTransformer(
+                      gcp_list.size,
+                      gcp_list_ptr,
+                      requested_polynomial_order,
+                      reversed
+                    )
+                  end
+
+        @c_pointer = FFI::AutoPointer.new(pointer, GCPTransformer.method(:release))
       end
 
       def destroy!
-        return unless @c_pointer
+        GCPTransformer.release(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyGCPTransformer(@c_pointer)
         @c_pointer = nil
       end
 

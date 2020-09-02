@@ -6,14 +6,6 @@ require 'ogr/spatial_reference'
 RSpec.describe OGR::GeometryFieldDefinition do
   subject(:geometry_field_definition) { described_class.new('test gfld') }
 
-  describe '#destroy!' do
-    it 'sets the c_pointer to nil' do
-      subject.destroy!
-      expect(subject.instance_variable_get(:@c_pointer))
-        .to be_nil
-    end
-  end
-
   describe '#name' do
     it 'returns the name' do
       expect(subject.name).to eq 'test gfld'

@@ -7,14 +7,19 @@ module OGR
       def utm_zone
         return unless spatial_reference
 
-        if spatial_reference.authority_code == '4326'
-          self_as4326 = self
-        else
-          self_as4326 = dup
-          self_as4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
-        end
+        self_as4326 =
+          if spatial_reference.authority_code == '4326'
+            self
+          else
+            # Note: #clone here has overriden Ruby's clone and calls OGR_G_Clone;
+            # it's important to do this and
+            as4326 = clone
+            return unless as4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))
 
-        self_as4326 = self_as4326.buffer(0) unless self_as4326.valid?
+            as4326
+          end
+
+        self_as4326.self_as4326.buffer!(0) unless valid?
 
         return unless self_as4326.point_on_surface.x
 
