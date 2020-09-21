@@ -77,6 +77,7 @@ module FFI
 
       attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
       attach_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
+      attach_function :OGR_G_ExportToIsoWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
 
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :strptr
@@ -101,7 +102,7 @@ module FFI
 
       attach_function :OGR_G_ExportToKML, %i[OGRGeometryH string], :strptr
       attach_function :OGR_G_ExportToJson, %i[OGRGeometryH], :strptr
-      attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH string], :strptr
+      attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH pointer], :strptr
       attach_function :OGR_G_CreateGeometryFromJson, %i[string], :OGRGeometryH
 
       attach_function :OGR_G_AssignSpatialReference,

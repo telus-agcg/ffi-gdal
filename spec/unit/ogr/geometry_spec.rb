@@ -706,4 +706,35 @@ RSpec.describe OGR::Geometry do
       end
     end
   end
+
+  describe '#to_geo_json_ex' do
+    subject { OGR::Geometry.create_from_wkt(wkt) }
+
+    let(:wkt) do
+      'LINESTRING(100.01234567890123456789 100.01234567890123456789, ' \
+      '20.01234567890123456789 20.01234567890123456789, ' \
+      '30.01234567890123456789 30.01234567890123456789, ' \
+      '100.01234567890123456789 100.01234567890123456789)'
+    end
+
+    it 'lets you configure precision' do
+      json1 = subject.to_geo_json_ex
+      json2 = subject.to_geo_json_ex(coordinate_precision: '20')
+
+      g1 = OGR::Geometry.create_from_json(json1)
+      g2 = OGR::Geometry.create_from_json(json2)
+
+      # these compare because they both use default precision
+      expect(json1).to eq g1.to_geo_json_ex
+
+      # these DON'T compare because the LHS has more precision than the RHS
+      expect(json2).to_not eq g2.to_geo_json_ex
+
+      # these DON'T compare because the RHS has more precision than the LHS
+      expect(json1).to_not eq g1.to_geo_json_ex(coordinate_precision: '20')
+
+      # these both compare because they both use extra precision
+      expect(json2).to eq g2.to_geo_json_ex(coordinate_precision: '20')
+    end
+  end
 end
