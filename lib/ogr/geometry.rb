@@ -600,6 +600,16 @@ module OGR
       end
     end
 
+    # @return [String]
+    # @raise [OGR::Failure]
+    def to_iso_wkt
+      GDAL._cpl_read_and_free_string do |output_ptr|
+        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+          FFI::OGR::API.OGR_G_ExportToIsoWkt(@c_pointer, output_ptr)
+        end
+      end
+    end
+
     # This geometry expressed as GML in GML basic data types.
     #
     # @param [Hash] options
@@ -635,6 +645,20 @@ module OGR
     # @return [String]
     def to_geo_json
       json, ptr = FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      json
+    end
+
+    # @param [Hash] options
+    # @option options [String] :coordinate_precision Maximum number of figures
+    #   after decimal separate to write in coordinates.
+    # @option options [String] :significant_figures Maximum number of
+    #   significant figures.
+    # @return [String]
+    def to_geo_json_ex(**options)
+      options_ptr = GDAL::Options.pointer(options)
+      json, ptr = FFI::OGR::API.OGR_G_ExportToJsonEx(@c_pointer, options_ptr)
       FFI::CPL::VSI.VSIFree(ptr)
 
       json

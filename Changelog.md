@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added exception messages for `OGR` methods that raised using
   `OGR::ErrorHandling`.
 - Added alias for `OGR::SpatialReferenceMixins::Exporters#to_gml` to `to_xml`.
+- Wrapped `OGR_G_ExportToIsoWkt` and `OGR_G_ExportToJsonEx`.
 
 ### Changed
 
