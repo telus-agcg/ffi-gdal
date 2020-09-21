@@ -4,11 +4,13 @@ require 'gdal/internal_helpers'
 require 'ogr/spatial_reference'
 require 'gdal/dataset'
 
+module Tester
+  include GDAL::InternalHelpers
+end
+
 RSpec.describe GDAL::InternalHelpers do
   subject(:tester) do
-    module Tester
-      include GDAL::InternalHelpers
-    end
+    Tester
   end
 
   describe '._pointer' do

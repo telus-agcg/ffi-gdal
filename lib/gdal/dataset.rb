@@ -106,8 +106,8 @@ module GDAL
           file_path = begin
             uri = URI.parse(path_or_pointer)
             uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-                      rescue URI::InvalidURIError
-                        path_or_pointer
+          rescue URI::InvalidURIError
+            path_or_pointer
           end
 
           if shared_open
