@@ -11,7 +11,7 @@ module OGR
           if spatial_reference.authority_code == '4326'
             self
           else
-            # Note: #clone here has overriden Ruby's clone and calls OGR_G_Clone;
+            # NOTE: #clone here has overriden Ruby's clone and calls OGR_G_Clone;
             # it's important to do this and
             as4326 = clone
             return unless as4326.transform_to!(OGR::SpatialReference.new_from_epsg(4326))

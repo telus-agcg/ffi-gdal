@@ -264,7 +264,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
       if histogram
         expect(histogram[:totals]).to be_an Array
         expect(histogram[:totals].size).to eq(256).or eq(0)
-        expect(histogram[:totals].all? { |t| t.class == Integer }).to eq true
+        expect(histogram[:totals].all? { |t| t.instance_of?(Integer) }).to eq true
       end
     end
   end

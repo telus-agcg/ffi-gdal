@@ -78,7 +78,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'param is an valid projection string' do
       let(:wkt) do
-        <<~WKT.gsub("\n", '').gsub(/,\s+/, ',')
+        <<~WKT.delete("\n").gsub(/,\s+/, ',')
           GEOGCS["WGS 84",
             DATUM["WGS_1984",
               SPHEROID["WGS 84",6378137,298.257223563,
