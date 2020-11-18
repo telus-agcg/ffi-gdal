@@ -117,7 +117,7 @@ module OGR
       # @raise [OGR::Failure]
       # @return [String]
       def to_pretty_wkt(simplify: false)
-        return String.new if @c_pointer.null?
+        return +'' if @c_pointer.null?
 
         GDAL._cpl_read_and_free_string do |wkt_ptr_ptr|
           OGR::ErrorHandling.handle_ogr_err('Unable to export to pretty WKT') do

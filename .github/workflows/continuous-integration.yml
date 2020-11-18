@@ -1,0 +1,39 @@
+name: Continuous Integration
+
+on:
+  push:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libgdal-dev
+          bundle install --jobs 4 --retry 3
+      - name: Run tests
+        run: bundle exec rake spec
+
+  static_analysis:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+      - name: Run test
+        run: bundle exec rubocop --format github --parallel

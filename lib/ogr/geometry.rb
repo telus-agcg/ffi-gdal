@@ -36,7 +36,7 @@ module OGR
         when :wkbPoint then OGR::Point.new(new_pointer)
         when :wkbPoint25D then OGR::Point25D.new(new_pointer)
         when :wkbLineString
-          if geometry.to_wkt =~ /^LINEARRING/
+          if /^LINEARRING/.match?(geometry.to_wkt)
             OGR::LinearRing.new(new_pointer)
           else
             OGR::LineString.new(new_pointer)
