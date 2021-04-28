@@ -3,14 +3,12 @@
 require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
-require_relative 'data_source_mixins/capability_methods'
 require_relative '../gdal/major_object'
 
 module OGR
   class DataSource
     include GDAL::MajorObject
     include GDAL::Logger
-    include DataSourceMixins::CapabilityMethods
 
     # Same as +.new+.
     #
@@ -142,7 +140,10 @@ module OGR
     # @param options [Hash] Driver-specific options.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
-      raise OGR::UnsupportedOperation, 'This data source does not support creating layers.' unless can_create_layer?
+      unless test_capability('CreateLayer')
+        raise OGR::UnsupportedOperation,
+              'This data source does not support creating layers.'
+      end
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
@@ -175,7 +176,10 @@ module OGR
     # @param index [Integer]
     # @raise [OGR::Failure]
     def delete_layer(index)
-      raise OGR::UnsupportedOperation, 'This data source does not support deleting layers.' unless can_delete_layer?
+      unless test_capability('DeleteLayer')
+        raise OGR::UnsupportedOperation,
+              'This data source does not support deleting layers.'
+      end
 
       OGR::ErrorHandling.handle_ogr_err("Unable to delete layer at index #{index}") do
         FFI::OGR::API.OGR_DS_DeleteLayer(@c_pointer, index)

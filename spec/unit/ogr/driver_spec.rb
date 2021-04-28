@@ -92,7 +92,7 @@ RSpec.describe OGR::Driver do
   describe '#create_data_source' do
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_data_source?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateDataSource').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do

@@ -12,7 +12,10 @@ module OGR
       #   different form, depending on the limitations of the format driver.
       # @raise [OGR::Failure]
       def create_field(field_definition, approx_ok: false)
-        raise OGR::UnsupportedOperation, 'This layer does not support field creation.' unless can_create_field?
+        unless test_capability('CreateCreateField')
+          raise OGR::UnsupportedOperation,
+                'This layer does not support field creation.'
+        end
 
         field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
 
@@ -25,7 +28,10 @@ module OGR
       #
       # @raise [OGR::Failure]
       def delete_field(field_id)
-        raise OGR::UnsupportedOperation, 'This driver does not support field deletion.' unless can_delete_field?
+        unless test_capability('DeleteField')
+          raise OGR::UnsupportedOperation,
+                'This driver does not support field deletion.'
+        end
 
         OGR::ErrorHandling.handle_ogr_err('Unable to delete field') do
           FFI::OGR::API.OGR_L_DeleteField(@c_pointer, field_id)
@@ -36,7 +42,10 @@ module OGR
       #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
       # @raise [OGR::Failure]
       def reorder_fields(*new_order)
-        raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
+        unless test_capability('ReorderFields')
+          raise OGR::UnsupportedOperation,
+                'This driver does not support field reordering.'
+        end
 
         return false if new_order.empty? || new_order.any? { |i| i > feature_definition.field_count }
 
@@ -54,7 +63,10 @@ module OGR
       # @param new_position [Integer]
       # @raise [OGR::Failure]
       def reorder_field(old_position, new_position)
-        raise OGR::UnsupportedOperation, 'This driver does not support field reordering.' unless can_reorder_fields?
+        unless test_capability('ReorderFields')
+          raise OGR::UnsupportedOperation,
+                'This driver does not support field reordering.'
+        end
 
         OGR::ErrorHandling.handle_ogr_err("Unable to reorder field: #{old_position} to #{new_position}") do
           FFI::OGR::API.OGR_L_ReorderField(@c_pointer, old_position, new_position)
@@ -68,7 +80,7 @@ module OGR
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
       # @raise [OGR::Failure]
       def alter_field_definition(field_index, new_field_definition, flags)
-        unless can_alter_field_definition?
+        unless test_capability('AlterFieldDefinition')
           raise OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
         end
 
@@ -104,7 +116,7 @@ module OGR
       # @param approx_ok [Boolean]
       # @raise [OGR::Failure]
       def create_geometry_field(geometry_field_def, approx_ok: false)
-        unless can_create_geometry_field?
+        unless test_capability('CreateGeometryField')
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end
 

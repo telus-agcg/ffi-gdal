@@ -27,7 +27,10 @@ module OGR
       # @param feature [OGR::Feature] [description]
       # @raise [OGR::Failure]
       def create_feature(feature)
-        raise OGR::UnsupportedOperation, 'This layer does not support feature creation.' unless can_sequential_write?
+        unless test_capability('SequentialWrite')
+          raise OGR::UnsupportedOperation,
+                'This layer does not support feature creation.'
+        end
 
         OGR::ErrorHandling.handle_ogr_err('Unable to create feature') do
           FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
@@ -40,7 +43,10 @@ module OGR
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
       def delete_feature(feature_id)
-        raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.' unless can_delete_feature?
+        unless test_capability('DeleteFeature')
+          raise OGR::UnsupportedOperation,
+                'This layer does not support feature deletion.'
+        end
 
         OGR::ErrorHandling.handle_ogr_err("Unable to delete feature with ID '#{feature_id}'") do
           FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
@@ -61,7 +67,7 @@ module OGR
       # @param new_feature [OGR::Feature, FFI::Pointer]
       # @raise [OGR::Failure]
       def feature=(new_feature)
-        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless can_random_write?
+        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless test_capability('RandomWrite')
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
@@ -75,7 +81,10 @@ module OGR
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
-        raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer' unless can_random_read?
+        unless test_capability('RandomRead')
+          raise OGR::UnsupportedOperation,
+                '#feature(index) not supported by this Layer'
+        end
 
         # This feature needs to be Destroyed.
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)

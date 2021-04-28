@@ -11,8 +11,8 @@ end
 
 class String
   def to_bool
-    return true if to_i == 1
-    return false if to_i.zero?
+    return true if self == "\x01" || self == '1'
+    return false if self == "\x00" || self == '0'
 
     raise "String '#{self}' can't be converted to Boolean."
   end

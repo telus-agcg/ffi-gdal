@@ -3,8 +3,8 @@
 require 'ogr/coordinate_transformation'
 
 RSpec.describe OGR::CoordinateTransformation do
-  let(:source_srs) { OGR::SpatialReference.new_from_epsg(3857) }
-  let(:dest_srs) { OGR::SpatialReference.new_from_epsg(4326) }
+  let(:source_srs) { OGR::SpatialReference.new.import_from_epsg(3857) }
+  let(:dest_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
 
   # From https://epsg.io/3857
   let(:epsg4326_y_bounds) { [-85.06, 85.06] }

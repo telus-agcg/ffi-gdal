@@ -4,7 +4,7 @@ require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   subject do
-    described_class.new_from_epsg(3819)
+    described_class.new.import_from_epsg(3819)
   end
 
   describe '.projection_methods' do
@@ -36,7 +36,7 @@ RSpec.describe OGR::SpatialReference do
   end
 
   describe '#copy_geog_cs_from' do
-    let(:other_srs) { OGR::SpatialReference.new_from_epsg(4326) }
+    let(:other_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
 
     it 'copies the info over' do
       subject.copy_geog_cs_from(other_srs)

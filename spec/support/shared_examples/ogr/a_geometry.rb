@@ -275,7 +275,7 @@ RSpec.shared_examples 'a geometry' do
 
     context 'has one assigned' do
       it 'returns a spatial reference' do
-        geometry.spatial_reference = OGR::SpatialReference.new_from_epsg 4326
+        geometry.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
         expect(geometry.spatial_reference).to be_a OGR::SpatialReference
       end
     end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../gdal'
-require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
 module GDAL
@@ -17,8 +16,6 @@ module GDAL
   end
 
   class ColorTable
-    include ColorTableMixins::Extensions
-
     # @param color_table [GDAL::ColorTable]
     # @return [FFI::AutoPointer]
     def self.new_pointer(color_table)

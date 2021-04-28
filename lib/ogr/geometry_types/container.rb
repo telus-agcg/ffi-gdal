@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../geometry_mixins/container_mixins'
-
 module OGR
   module GeometryTypes
     module Container
-      include OGR::GeometryMixins::ContainerMixins
-
+      # TODO: Move this
       def collection?
         true
       end

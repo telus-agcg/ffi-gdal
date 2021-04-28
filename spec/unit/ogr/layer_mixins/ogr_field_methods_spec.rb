@@ -8,7 +8,7 @@ RSpec.describe OGR::Layer do
   describe '#create_field + #find_field_index' do
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_field?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -83,7 +83,7 @@ RSpec.describe OGR::Layer do
   describe '#delete_field + #create_field' do
     context 'delete not supported' do
       before do
-        expect(subject).to receive(:can_delete_field?).and_return false
+        expect(subject).to receive(:test_capability).with('DeleteField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -114,7 +114,7 @@ RSpec.describe OGR::Layer do
   describe '#reorder_fields + #create_field' do
     context 'reordering not supported' do
       before do
-        expect(subject).to receive(:can_reorder_fields?).and_return false
+        expect(subject).to receive(:test_capability).with('ReorderFields').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -164,7 +164,7 @@ RSpec.describe OGR::Layer do
   describe '#reorder_field + #create_field' do
     context 'reordering not supported' do
       before do
-        expect(subject).to receive(:can_reorder_fields?).and_return false
+        expect(subject).to receive(:test_capability).with('ReorderFields').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -208,7 +208,7 @@ RSpec.describe OGR::Layer do
   describe '#alter_field_definition + #create_field' do
     context 'altering not supported' do
       before do
-        expect(subject).to receive(:can_alter_field_definition?).and_return false
+        expect(subject).to receive(:test_capability).with('AlterFieldDefinition').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -389,7 +389,7 @@ RSpec.describe OGR::Layer do
 
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_geometry_field?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateGeometryField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
