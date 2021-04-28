@@ -42,7 +42,8 @@ module Examples
         options = make_basic_options(source_dataset, dest_dataset)
 
         geom = OGR::Geometry.create_from_wkt(clip_wkt)
-        spatial_reference = OGR::SpatialReference.new.import_from_epsg(source_dataset.spatial_reference.authority_code.to_i)
+        spatial_reference =
+          OGR::SpatialReference.new.import_from_epsg(source_dataset.spatial_reference.authority_code.to_i)
         geom.spatial_reference = spatial_reference
         options.cutline_geometry = geom
         # options.cutline_blend_distance = 100

@@ -176,7 +176,7 @@ module GDAL
 
     # @return [Boolean]
     def arbitrary_overviews?
-      FFI::GDAL::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero? ? false : true
+      !FFI::GDAL::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero?
     end
 
     # @param index [Integer] Must be between 0 and (#overview_count - 1).

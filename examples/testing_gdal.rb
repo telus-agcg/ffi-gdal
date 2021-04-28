@@ -15,10 +15,12 @@ floyd_wkt = 'MULTIPOLYGON (((-87.5530099868775 31.16710573359053,' \
 '-87.5530099868775 31.165600160261103,-87.55384683609009 31.16710573359053,-87.5530099868775 31.16710573359053)))'
 _floyd_srid = 4326
 
-harper_path = '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Harper/Harper_1058_20140612_NRGB.tif'
+harper_path =
+  '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Harper/Harper_1058_20140612_NRGB.tif'
 _harper = GDAL::Dataset.open(harper_path, 'r')
 
-floyd_path = '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Floyd/Floyd_1058_20140612_NRGB.tif'
+floyd_path =
+  '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Floyd/Floyd_1058_20140612_NRGB.tif'
 floyd = GDAL::Dataset.open(floyd_path, 'r')
 
 spatial_ref = OGR::SpatialReference.new(floyd.projection)
