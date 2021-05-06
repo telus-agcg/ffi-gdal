@@ -18,30 +18,19 @@ module OGR
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::API::WKBGeometryType]
     def initialize(name_or_pointer, type = :wkbUnknown)
-      pointer =
-        case name_or_pointer
-        when String
-          ptr = FFI::OGR::API.OGR_GFld_Create(name_or_pointer, type)
-          ptr.autorelease = false
-
-          FFI::AutoPointer.new(ptr, GeometryFieldDefinition.method(:release))
-        when FFI::AutoPointer
-          name_or_pointer
-        when FFI::Pointer
-          ptr = name_or_pointer
-          ptr.autorelease = false
-
-          FFI::AutoPointer.new(ptr, GeometryFieldDefinition.method(:release))
-        else
-          log "Dunno what to do with #{name_or_pointer}"
-        end
+      pointer = if name_or_pointer.is_a? String
+                  FFI::OGR::API.OGR_GFld_Create(name_or_pointer, type)
+                else
+                  name_or_pointer
+                end
 
       if !pointer.is_a?(FFI::Pointer) || pointer.null?
-        raise OGR::InvalidGeometryFieldDefinition,
-              "Unable to create #{self.class.name} from #{name_or_pointer}"
+        raise OGR::InvalidGeometryFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
       end
 
-      @c_pointer = pointer
+      @c_pointer = FFI::AutoPointer.new(pointer, GeometryFieldDefinition.method(:release))
+      @c_pointer.autorelease = false
+
       @read_only = false
     end
 

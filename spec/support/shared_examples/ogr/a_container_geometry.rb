@@ -3,12 +3,6 @@
 # Requirements:
 #   * :child_geometry - one that the described class can
 RSpec.shared_examples 'a container geometry' do
-  describe '#collection?' do
-    it 'returns true' do
-      expect(subject.collection?).to eq true
-    end
-  end
-
   describe '#add_geometry' do
     it 'adds the geometry to the container' do
       skip
