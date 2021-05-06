@@ -208,7 +208,7 @@ RSpec.describe OGR::Layer do
   describe '#alter_field_definition + #create_field' do
     context 'altering not supported' do
       before do
-        expect(subject).to receive(:test_capability).with('AlterFieldDefinition').and_return false
+        expect(subject).to receive(:test_capability).with('AlterFieldDefn').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -389,7 +389,7 @@ RSpec.describe OGR::Layer do
 
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:test_capability).with('CreateGeometryField').and_return false
+        expect(subject).to receive(:test_capability).with('CreateGeomField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do

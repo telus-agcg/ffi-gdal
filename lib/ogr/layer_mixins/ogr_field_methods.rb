@@ -12,7 +12,7 @@ module OGR
       #   different form, depending on the limitations of the format driver.
       # @raise [OGR::Failure]
       def create_field(field_definition, approx_ok: false)
-        unless test_capability('CreateCreateField')
+        unless test_capability('CreateField')
           raise OGR::UnsupportedOperation,
                 'This layer does not support field creation.'
         end
@@ -80,7 +80,7 @@ module OGR
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
       # @raise [OGR::Failure]
       def alter_field_definition(field_index, new_field_definition, flags)
-        unless test_capability('AlterFieldDefinition')
+        unless test_capability('AlterFieldDefn')
           raise OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
         end
 
@@ -116,7 +116,7 @@ module OGR
       # @param approx_ok [Boolean]
       # @raise [OGR::Failure]
       def create_geometry_field(geometry_field_def, approx_ok: false)
-        unless test_capability('CreateGeometryField')
+        unless test_capability('CreateGeomField')
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end
 
