@@ -3,11 +3,6 @@
 module OGR
   module GeometryTypes
     module Container
-      # TODO: Move this
-      def collection?
-        true
-      end
-
       # If this geometry is a container, this adds +geometry+ to the container.
       # If this is a Polygon, +geometry+ must be a LinearRing.  If the Polygon is
       # empty, the first added +geometry+ will be the exterior ring.  Subsequent
