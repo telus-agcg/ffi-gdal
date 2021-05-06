@@ -162,7 +162,7 @@ module OGR
           # touch anything about autorelease/AutoPointer.
           spatial_reference_or_wkt
         else
-          log "Dunno what to do with #{spatial_reference_or_wkt}"
+          log "Dunno what to do with #{spatial_reference_or_wkt.inspect}"
         end
 
       raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
