@@ -71,6 +71,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it's
   null. Now these raise the same exception.
+- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of
+    returning `nil`.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
 

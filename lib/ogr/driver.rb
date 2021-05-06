@@ -95,7 +95,7 @@ module OGR
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_CreateDataSource(@c_pointer,
                                                               file_name, options_ptr)
-      return nil if data_source_ptr.null?
+      raise OGR::CreateFailure, "Unable to create DataSource '#{file_name}'" if data_source_ptr.null?
 
       ds = OGR::DataSource.new(data_source_ptr, 'w')
       yield ds if block_given?
