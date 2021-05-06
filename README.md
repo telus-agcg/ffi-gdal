@@ -1,15 +1,12 @@
-ffi-gdal
-========
+# ffi-gdal
 
 Ruby wrapper around GDAL, using FFI, along with some helper methods.
 
-Installation
-------------
+## Installation
 
 For Ubuntu you need to install libgdal-dev via:
 
     sudo apt-get install libgdal-dev
-
 
 Add this line to your application's Gemfile:
 
@@ -23,12 +20,11 @@ Or install it yourself as:
 
     $ gem install ffi-gdal
 
-Usage
------
+## Usage
 
 ffi-gdal provides two interfaces, really: the direct FFI wrapper around GDAL's
 C API, and a Ruby-fied interface that uses the FFI wrapper to make use more
-like using an object-oriented library instead of a functional one.  Most likely
+like using an object-oriented library instead of a functional one. Most likely
 you'll just want to use the Ruby-fied library, but if for some reason that
 doesn't get you what you want, direct access to the FFI wrapper (which is
 really just direct access to the C API) is available.
@@ -49,14 +45,12 @@ For classes that are enabled with logging capabilities, you can turn logging on
 and off like `GDAL::RasterBand.logging_enabled = true`. If you're using ffi-gdal
 in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 
-Additional Libraries
---------------------
+## Additional Libraries
 
 [ffi-gdal-extensions](https://github.com/agrian-inc/ffi-gdal-extensions) provides
 additional functionality, not provided in this core, GDAL-wrapper library.
 
-Contributing
-------------
+## Contributing
 
 1. Fork it ( https://github.com/agrian-inc/ffi-gdal/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
