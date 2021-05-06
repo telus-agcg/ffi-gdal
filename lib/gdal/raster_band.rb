@@ -8,7 +8,7 @@ require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'major_object'
 
 module GDAL
-  class RasterBand
+  class RasterBand # rubocop:disable Metrics/ClassLength
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
