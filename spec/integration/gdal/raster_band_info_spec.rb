@@ -178,46 +178,28 @@ RSpec.describe 'Raster Band Info', type: :integration do
   end
 
   describe '#scale' do
-    it 'returns a Hash with populated values' do
-      expect(subject.scale).to be_a Hash
-      expect(%i[value is_meaningful]).to eq subject.scale.keys
-    end
-
-    it 'has a :value that is a Float' do
-      expect(subject.scale[:value]).to be_a Float
-    end
-
-    it 'has a :is_meaningful that is false (since the examples are geotiffs)' do
-      expect(subject.scale[:is_meaningful]).to eq false
+    it 'returns a Float' do
+      expect(subject.scale).to be_a Float
     end
   end
 
   describe '#scale=' do
     it 'does nothing (because the file formats dont support it)' do
       subject.scale = 0.1
-      expect(subject.scale[:value]).to eq 0.1
+      expect(subject.scale).to eq 0.1
     end
   end
 
   describe '#offset' do
-    it 'returns a Hash with populated values' do
-      expect(subject.offset).to be_a Hash
-      expect(%i[value is_meaningful]).to eq subject.offset.keys
-    end
-
-    it 'has a :value that is a Float' do
-      expect(subject.offset[:value]).to be_a Float
-    end
-
-    it 'has a :is_meaningful that is false (since the examples are geotiffs)' do
-      expect(subject.offset[:is_meaningful]).to eq false
+    it 'returns a Float' do
+      expect(subject.offset).to be_a Float
     end
   end
 
   describe '#offset=' do
     it 'does nothing (because the file formats dont support it)' do
       subject.offset = 0.1
-      expect(subject.offset[:value]).to eq 0.1
+      expect(subject.offset).to eq 0.1
     end
   end
 

@@ -56,6 +56,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `GDAL::RasterBand#write_block`
 - `GDAL` errors that return `CPLE_AppDefined` now raise `GDAL::Error`.
 - `GDAL` errors now truncate less of the backtrace.
+- `GDAL::RasterBand#scale` and `#offset` now return the `Float` value and raise
+    on a failed call instead of returning a `Hash` with that info.
 
 #### OGR
 

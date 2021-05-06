@@ -346,12 +346,15 @@ module GDAL
     # For file formats that don't know this intrinsically a value of one is
     # returned.
     #
-    # @return [Hash{value => Float, is_meaningful => Boolean}]
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
     def scale
-      meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, meaningful)
+      success = FFI::MemoryPointer.new(:bool)
+      result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, success)
 
-      { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
+      raise GDAL::Error, 'GDALGetRasterScale failed' unless success.read_bytes(1).to_bool
+
+      result
     end
 
     # @param new_scale [Float]
@@ -372,12 +375,15 @@ module GDAL
     # For file formats that don't know this intrinsically a value of 0.0 is
     # returned.
     #
-    # @return [Hash{value => Float, is_meaningful => Boolean}]
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
     def offset
-      meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, meaningful)
+      success = FFI::MemoryPointer.new(:bool)
+      result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, success)
 
-      { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
+      raise GDAL::Error, 'GDALGetRasterOffset failed' unless success.read_bytes(1).to_bool
+
+      result
     end
 
     # Sets the scaling offset. Very few formats support this method.
