@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../gdal'
-require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
 module GDAL
@@ -17,8 +16,6 @@ module GDAL
   end
 
   class ColorTable
-    include ColorTableMixins::Extensions
-
     # @param color_table [GDAL::ColorTable]
     # @return [FFI::AutoPointer]
     def self.new_pointer(color_table)
@@ -138,6 +135,7 @@ module GDAL
     # @param four [Integer] The `c4` value of the GDAL::ColorEntry
     #   struct to set.
     # @return [GDAL::ColorEntry]
+    # rubocop:disable Metrics/ParameterLists
     def add_color_entry(index, one = nil, two = nil, three = nil, four = nil)
       entry = GDAL::ColorEntry.new
       entry.color1 = one if one
@@ -150,6 +148,7 @@ module GDAL
 
       entry
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # Automatically creates a color ramp from one color entry to another.  It
     # can be called several times to create multiple ramps in the same color

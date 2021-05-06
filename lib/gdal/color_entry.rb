@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'color_entry_mixins/extensions'
-
 module GDAL
   class ColorEntry
-    include ColorEntryMixins::Extensions
-
     # @return [FFI::GDAL::ColorEntry]
     attr_reader :c_struct
 

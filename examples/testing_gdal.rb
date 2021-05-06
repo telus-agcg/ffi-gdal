@@ -15,16 +15,18 @@ floyd_wkt = 'MULTIPOLYGON (((-87.5530099868775 31.16710573359053,' \
 '-87.5530099868775 31.165600160261103,-87.55384683609009 31.16710573359053,-87.5530099868775 31.16710573359053)))'
 _floyd_srid = 4326
 
-harper_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/Harper/Harper_1058_20140612_NRGB.tif'
+harper_path =
+  '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Harper/Harper_1058_20140612_NRGB.tif'
 _harper = GDAL::Dataset.open(harper_path, 'r')
 
-floyd_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/Floyd/Floyd_1058_20140612_NRGB.tif'
+floyd_path =
+  '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/Floyd/Floyd_1058_20140612_NRGB.tif'
 floyd = GDAL::Dataset.open(floyd_path, 'r')
 
 spatial_ref = OGR::SpatialReference.new(floyd.projection)
 _floyd_geometry = OGR::Geometry.create_from_wkt(floyd_wkt, spatial_ref)
 
-usg_path = '/Users/sloveless/Development/projects/ffi-gdal/spec/support/images/osgeo/geotiff/usgs/c41078a1.tif'
+usg_path = '/Users/steve.loveless/Development/projects/ffi-gdal/spec/support/images/osgeo/geotiff/usgs/c41078a1.tif'
 _usg = GDAL::Dataset.open(usg_path, 'r')
 
 world_file_path = "#{__dir__}/spec/support/worldfiles/SR_50M/SR_50M.tif"
@@ -35,7 +37,7 @@ _world_file = GDAL::GeoTransform.from_world_file(world_file_path, 'tfw')
 
 def warp_to_geometry(dataset, wkt_geometry)
   # Create an OGR::Geometry from the WKT and convert to dataset's projection.
-  wkt_spatial_ref = OGR::SpatialReference.new_from_epsg(4326)
+  wkt_spatial_ref = OGR::SpatialReference.new.import_from_epsg(4326)
   geometry = OGR::Geometry.create_from_wkt(wkt_geometry, wkt_spatial_ref)
   geometry.transform_to!(dataset.spatial_reference)
 

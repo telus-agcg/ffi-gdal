@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative '../ogr'
-require_relative 'geometry_mixins/extensions'
 require_relative '../gdal'
 
 module OGR
@@ -152,7 +151,6 @@ module OGR
 
     def self.included(base)
       base.send(:include, GDAL::Logger)
-      base.send(:include, OGR::GeometryMixins::Extensions)
       base.send(:extend, ClassMethods)
     end
 

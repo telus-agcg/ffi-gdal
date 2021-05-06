@@ -2,19 +2,16 @@ name: Continuous Integration
 
 on:
   push:
-  pull_request:
-    branches: [ develop ]
 
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
           bundler-cache: true
       - name: Install dependencies
         run: |
@@ -25,7 +22,7 @@ jobs:
 
   static_analysis:
     name: Rubocop
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby

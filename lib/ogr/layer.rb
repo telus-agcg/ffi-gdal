@@ -2,7 +2,6 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
-require_relative 'layer_mixins/capability_methods'
 require_relative 'layer_mixins/ogr_feature_methods'
 require_relative 'layer_mixins/ogr_field_methods'
 require_relative 'layer_mixins/ogr_layer_method_methods'
@@ -13,7 +12,6 @@ module OGR
   class Layer
     include GDAL::MajorObject
     include GDAL::Logger
-    include LayerMixins::CapabilityMethods
     include LayerMixins::OGRFeatureMethods
     include LayerMixins::OGRFieldMethods
     include LayerMixins::OGRLayerMethodMethods

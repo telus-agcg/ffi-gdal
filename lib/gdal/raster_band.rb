@@ -8,7 +8,7 @@ require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'major_object'
 
 module GDAL
-  class RasterBand
+  class RasterBand # rubocop:disable Metrics/ClassLength
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
@@ -176,7 +176,7 @@ module GDAL
 
     # @return [Boolean]
     def arbitrary_overviews?
-      FFI::GDAL::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero? ? false : true
+      !FFI::GDAL::GDAL.GDALHasArbitraryOverviews(@c_pointer).zero?
     end
 
     # @param index [Integer] Must be between 0 and (#overview_count - 1).
@@ -346,12 +346,15 @@ module GDAL
     # For file formats that don't know this intrinsically a value of one is
     # returned.
     #
-    # @return [Hash{value => Float, is_meaningful => Boolean}]
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
     def scale
-      meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, meaningful)
+      success = FFI::MemoryPointer.new(:bool)
+      result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, success)
 
-      { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
+      raise GDAL::Error, 'GDALGetRasterScale failed' unless success.read_bytes(1).to_bool
+
+      result
     end
 
     # @param new_scale [Float]
@@ -372,12 +375,15 @@ module GDAL
     # For file formats that don't know this intrinsically a value of 0.0 is
     # returned.
     #
-    # @return [Hash{value => Float, is_meaningful => Boolean}]
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
     def offset
-      meaningful = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, meaningful)
+      success = FFI::MemoryPointer.new(:bool)
+      result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, success)
 
-      { value: result, is_meaningful: meaningful.read_bytes(1).to_bool }
+      raise GDAL::Error, 'GDALGetRasterOffset failed' unless success.read_bytes(1).to_bool
+
+      result
     end
 
     # Sets the scaling offset. Very few formats support this method.

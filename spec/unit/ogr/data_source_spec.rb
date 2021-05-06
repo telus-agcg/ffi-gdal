@@ -76,7 +76,7 @@ RSpec.describe OGR::DataSource do
   describe '#create_layer' do
     context 'cannot create layer' do
       before do
-        expect(subject).to receive(:can_create_layer?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateLayer').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -112,7 +112,7 @@ RSpec.describe OGR::DataSource do
       end
 
       context 'spatial reference is passed in' do
-        let(:spatial_reference) { OGR::SpatialReference.new_from_epsg(4326) }
+        let(:spatial_reference) { OGR::SpatialReference.new.import_from_epsg(4326) }
 
         it 'adds a new OGR::Layer to @layers' do
           expect do
@@ -146,7 +146,7 @@ RSpec.describe OGR::DataSource do
   describe '#delete_layer' do
     context 'deleting not supported' do
       before do
-        expect(subject).to receive(:can_delete_layer?).and_return false
+        expect(subject).to receive(:test_capability).with('DeleteLayer').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
