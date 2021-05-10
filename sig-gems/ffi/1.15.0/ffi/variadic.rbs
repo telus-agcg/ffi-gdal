@@ -1,0 +1,11 @@
+module FFI
+  class VariadicInvoker
+    def initialize: (untyped rb_function, untyped rb_parameter_types, untyped rb_return_type, untyped options) -> instance
+
+    def attach: (untyped mod, untyped mname) -> untyped
+
+    def call: (*untyped args) { (*untyped) -> untyped } -> untyped
+
+    def invoke: (untyped paramter_types, untyped paramter_values) -> untyped
+  end
+end

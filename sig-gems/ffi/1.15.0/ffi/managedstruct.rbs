@@ -1,0 +1,5 @@
+module FFI
+  class ManagedStruct < FFI::Struct
+    def initialize: (?untyped? pointer) -> untyped
+  end
+end

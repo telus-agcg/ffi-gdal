@@ -1,0 +1,16 @@
+module FFI
+  class FunctionType
+    def initialize: (
+      FFI::Type | Symbol return_type,
+      Array[FFI::Type | Symbol] param_types,
+      { convention: untyped, enums: untyped, blocking: untyped } options
+    ) -> instance
+
+    def param_types: -> Array[FFI::Type]
+    def result_type: -> FFI::Type
+  end
+
+  # type CallbackInfo = FFI::FunctionType
+  class CallbackInfo < FunctionType
+  end
+end

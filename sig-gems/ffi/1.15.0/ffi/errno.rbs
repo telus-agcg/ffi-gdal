@@ -1,0 +1,4 @@
+module FFI
+  def self.errno: () -> Numeric
+  def self.errno=: (Numeric error) -> void
+end

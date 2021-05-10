@@ -1,0 +1,21 @@
+module FFI
+  class Buffer < FFI::AbstractMemory
+    def self.alloc_in: (*untyped args) -> untyped
+    alias new_in alloc_in
+
+    def self.alloc_inout: (*untyped args) -> untyped
+    alias new_inout alloc_inout
+
+    def self.alloc_out: (*untyped args) -> untyped
+    alias new_out alloc_out
+
+    def initialize: (Integer | Symbol | _Size size, Integer count, bool clear) -> instance
+
+    def inspect: -> String
+
+    def order: () -> (:big | :little)
+      | (:big | :little | :network) -> self
+
+    def slice: (Numeric offset, Numeric length) -> instance
+  end
+end

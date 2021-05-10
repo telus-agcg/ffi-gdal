@@ -1,0 +1,40 @@
+interface _ToPtr
+  def to_ptr: -> (FFI::AbstractMemory | FFI::Pointer)
+end
+
+interface _Call
+  def call: (*untyped args) -> untyped
+end
+
+interface _NativeType
+  def native_type: -> FFI::Type
+end
+
+interface _ToNative
+  def to_native: -> untyped
+end
+
+interface _FromNative
+  def from_native: (*untyped args) -> untyped
+end
+
+interface _Size
+  def size: -> Integer
+end
+
+module FFI
+  def self.add_typedef: (FFI::Type | FFI::DataConverter | Symbol old, Symbol add) -> FFI::Type
+  def self.typedef: (FFI::Type | FFI::DataConverter | Symbol old, Symbol add) -> FFI::Type
+
+  def self.errno: -> Numeric
+  def self.errno=: (Numeric error) -> void
+  def self.find_type: (FFI::Type | FFI::DataConverter | Symbol name, ?untyped? type_map) -> FFI::Type
+  def self.map_library_name: (_ToS lib) -> String
+  def self.type_size: (FFI::Type | FFI::DataConverter | Symbol type) -> Numeric
+
+  class StrPtrConverter
+    extend DataConverter
+
+    def self.from_native: (untyped val, void ctx) -> [String, Pointer]
+  end
+end

@@ -1,0 +1,47 @@
+module FFI
+  class Pointer < FFI::AbstractMemory
+    SIZE: Integer
+    NULL: FFI::Pointer
+
+    def self.size: () -> Numeric
+
+    def initialize: (instance pointer) -> instance
+      | (FFI::Type type_name, Integer address) -> instance
+
+    def +: (Numeric offset) -> instance
+    def ==: (instance other) -> bool
+
+    def address: -> Numeric
+    alias to_i address
+
+    def autorelease=: (bool autorelease) -> bool
+    def autorelease?: -> bool
+    def free: -> self
+    def inspect: -> String
+    def null?: -> bool
+    def order: () -> (:big | :little) | (:little | :big | :network) -> instance
+    def read: (Symbol | FFI::Type type_name) -> untyped
+
+    def read_array_of_type: (FFI::Type type_name, Symbol reader, Numeric length) -> Array
+
+    def read_string: (?Numeric? len) -> String
+
+    def read_string_length: (Numeric len) -> String
+
+    def read_string_to_null: () -> String
+
+    def slice: (Numeric offset, Numeric length) -> instance
+
+    def to_ptr: -> self
+
+    def type_size: -> Numeric
+
+    def write: (Symbol | FFI::Type type_name, untyped value) -> nil
+
+    def write_array_of_type: (FFI::Type type_name, Symbol writer, Array ary) -> self
+
+    def write_string: (String str, Numeric? len) -> self
+
+    def write_string_length: (String str, Numeric len) -> self
+  end
+end

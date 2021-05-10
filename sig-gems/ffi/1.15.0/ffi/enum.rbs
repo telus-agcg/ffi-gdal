@@ -1,0 +1,47 @@
+module FFI
+  class Enums
+    def initialize: () -> instance
+
+    def <<: (FFI::Enum enum) -> void
+
+    def find: (untyped query) -> FFI::Enum
+  end
+
+  class Enum
+    include DataConverter
+
+    attr_reader tag: untyped
+    attr_reader native_type: untyped
+
+    def initialize: (nil | Enumerable info, ?Symbol? tag) -> instance
+      | (FFI::Type native_type, nil | Enumerable info, ?Symbol? tag) -> instance
+
+    def symbols: () -> Array
+
+    def []: (Symbol query) -> Integer | (Integer query) -> Symbol
+    alias find []
+
+    def symbol_map: () -> Hash
+    alias to_h symbol_map
+    alias to_hash symbol_map
+
+    def to_native: (Symbol | Integer | _ToInt val, void ctx) -> Integer
+
+    def from_native: (untyped val, untyped ctx) -> untyped
+  end
+
+  class Bitmask < Enum
+    def initialize: (nil | Enumerable info, ?Symbol? tag) -> instance
+      | (FFI::Type native_type, nil | Enumerable info, ?Symbol? tag) -> instance
+
+    def []: (*Symbol query) -> Integer
+      | (Array[Symbol] query) -> Integer
+      | (*Integer query) -> Array[Symbol]
+      | (Array[Integer] query) -> Array[Symbol]
+
+    def to_native: (Symbol | Integer | _ToInt query, void ctx) -> Integer
+      | (Array[Symbol | Integer | _ToInt], void ctx) -> Integer
+
+    def from_native: (Integer val, void ctx) -> Array[Symbol | Integer]
+  end
+end

@@ -1,0 +1,65 @@
+module FFI
+  class PlatformError < LoadError
+  end
+
+  module Platform
+    OS: String
+
+    OSVERSION: Integer
+
+    CPU: String
+
+    ARCH: String
+
+    private
+
+    # @param [String) os
+    # @return [Boolean]
+    # Test if current OS is +os+.
+    def self.is_os: (untyped os) -> untyped
+
+    IS_GNU: untyped
+
+    IS_LINUX: untyped
+
+    IS_MAC: untyped
+
+    IS_FREEBSD: untyped
+
+    IS_NETBSD: untyped
+
+    IS_OPENBSD: untyped
+
+    IS_DRAGONFLYBSD: untyped
+
+    IS_SOLARIS: untyped
+
+    IS_WINDOWS: untyped
+
+    IS_BSD: untyped
+
+    NAME: ::String
+
+    CONF_DIR: untyped
+
+    public
+
+    LIBPREFIX: String
+
+    LIBSUFFIX: String
+
+    LIBC: String
+
+    LITTLE_ENDIAN: ::Integer
+
+    BIG_ENDIAN: ::Integer
+
+    BYTE_ORDER: ::Integer
+
+    def self.bsd?: () -> bool
+    def self.windows?: () -> bool
+    def self.mac?: () -> bool
+    def self.solaris?: () -> bool
+    def self.unix?: () -> bool
+  end
+end
