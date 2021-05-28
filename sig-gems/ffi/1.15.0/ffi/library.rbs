@@ -1,8 +1,4 @@
 module FFI
-  CURRENT_PROCESS: untyped
-
-  def self.map_library_name: (untyped lib) -> untyped
-
   class NotFoundError < LoadError
     def initialize: (untyped function, *untyped libraries) -> instance
   end
@@ -25,17 +21,10 @@ module FFI
     def ffi_lib_flags: (*Symbol flags) -> Integer
 
     def attach_function: (
-      _ToS func,
+      _ToS c_function_name,
       Array[Symbol | FFI::Enum] args,
-      untyped ?returns,
-      ?{ blocking: bool, convention: Symbol, enums: FFI::Enums, type_map: Hash } ?options
-    ) -> FFI::VariadicInvoker
-    | (
-      _ToS name,
-      _ToS func,
-      Array[Symbol | FFI::Enum] args,
-      untyped ?returns,
-      ?{ blocking: bool, convention: Symbol, enums: FFI::Enums, type_map: Hash } ?options
+      ?Symbol ?returns,
+      **options
     ) -> FFI::VariadicInvoker
 
     def function_names: (_ToS name, Array arg_types) -> Array[String]
@@ -47,19 +36,24 @@ module FFI
     ) -> FFI::DynamicLibrary::Symbol
     | (_ToS cname, FFI::DataConverter | FFI::Struct | Symbol | FFI::Type var_type) -> FFI::DynamicLibrary::Symbol
 
-    def callback: (Symbol name, Array params, ) -> FFI::CallbackInfo
-      | (Array params, FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret) -> FFI::CallbackInfo
+    def callback: (
+      Symbol name,
+      Array params,
+      FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
+    ) -> FFI::CallbackInfo
+    | (
+        Array params,
+        FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
+      ) -> FFI::CallbackInfo
 
-    def typedef: (FFI::DataConverter | Symbol | FFI::Type old, Symbol add, Symbol ?info) -> (FFI::Enum | FFI::Type)
-
-    private
-
-    def generic_enum: (untyped klass, *untyped args) -> untyped
-
-    public
+    def typedef: (
+      FFI::DataConverter | Symbol | FFI::Type old,
+      Symbol add,
+      ?Symbol? ?info
+    ) -> (FFI::Enum | FFI::Type)
 
     def enum: (Symbol name, Array values) -> FFI::Enum
-      | (*Symbol args) -> FFI::Enum
+      | (*(Symbol | Integer) args) -> FFI::Enum
       | (Array[Symbol] values) -> FFI::Enum
       | (FFI::Type native_type, Symbol name, Array values) -> FFI::Enum
       | (FFI::Type native_type, *untyped args) -> FFI::Enum

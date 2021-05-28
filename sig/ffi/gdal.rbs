@@ -1,0 +1,7 @@
+module FFI
+  module GDAL
+    extend ::FFI::Library
+
+    def self.gdal_library_path: -> String
+  end
+end

@@ -1,12 +1,12 @@
 module GDAL
   module EnvironmentMethods
     def cache_max: -> Integer
-    def cache_max=: (Integer bytes) -> nil
+    def cache_max=: (Integer bytes) -> void
     def cache_max64: -> Integer
-    def cache_max64=: (Integer bytes) -> nil
+    def cache_max64=: (Integer bytes) -> void
     def cache_used: -> Integer
     def cache_used64: -> Integer
     def flush_cache_block: -> bool
-    def dump_open_datasets: (String file_path) -> nil
+    def dump_open_datasets: (String file_path) -> void
   end
 end

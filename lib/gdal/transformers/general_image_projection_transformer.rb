@@ -16,7 +16,7 @@ module GDAL
         super()
 
         source_ptr = GDAL::Dataset.new_pointer(source_dataset)
-        dest_ptr = GDAL::Dataset.new_pointer(destination_dataset, warn_on_nil: false)
+        dest_ptr = GDAL::Dataset.new_pointer(destination_dataset)
 
         pointer = FFI::GDAL::Alg.GDALCreateGenImgProjTransformer(
           source_ptr,

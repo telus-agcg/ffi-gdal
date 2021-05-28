@@ -34,7 +34,7 @@ RSpec.describe GDAL::InternalHelpers do
 
     context 'variable is nil' do
       it 'returns nil' do
-        expect(subject._pointer(GDAL::Dataset, nil, warn_on_nil: false)).to be_nil
+        expect(subject._pointer(GDAL::Dataset, nil)).to be_nil
       end
     end
   end

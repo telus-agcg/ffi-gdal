@@ -1,0 +1,16 @@
+module FFI
+  module CPL
+    module Error
+      extend ::FFI::Library
+
+
+      CPLErr: FFI::Enum
+
+      def self.CPLErrorReset: -> void
+      def self.CPLGetLastErrorType: -> CPLErr
+      def self.CPLGetLastErrorMsg: -> String
+      # type error_handler = { (CPLErr, Integer, String) -> void }
+      def self.CPLSetErrorHandler: (CPLErrorHandler handler) -> CPLErrorHandler
+    end
+  end
+end

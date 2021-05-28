@@ -21,7 +21,7 @@ module GDAL
     private
 
     def gdal_require(path)
-      File.expand_path(path, __dir__)
+      File.expand_path(path, __dir__ || '.')
     end
   end
 
@@ -47,7 +47,7 @@ require_relative 'gdal/cpl_error_handler'
 module GDAL
   extend VersionInfo
   extend EnvironmentMethods
-  include InternalHelpers
+  extend InternalHelpers
 
   # Register all drivers!
   ::FFI::GDAL::GDAL.GDALAllRegister

@@ -1,0 +1,50 @@
+module FFI
+  module OGR
+    module SRSAPI
+      extend ::FFI::Library
+
+      AxisOrientation: FFI::Enum
+      DatumType: FFI::Enum
+      SRS_UL: FFI::ConstGenerator
+      SRS_UA: FFI::ConstGenerator
+
+      def self.OSRExportToERM: (
+        FFI::Pointer spatial_ref,
+        FFI::Pointer ppsz_proj,
+        FFI::Pointer psz_datum,
+        FFI::Pointer psz_units
+      ) -> FFI::OGR::Core::Err
+
+      def self.OSRExportToMICoordSys: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_result)
+        -> FFI::OGR::Core::Err
+
+      def self.OSRExportToPCI: (
+        FFI::Pointer spatial_ref,
+        FFI::Pointer ppsz_proj,
+        FFI::Pointer ppsz_units,
+        FFI::Pointer ppadf_prj_params
+      ) -> FFI::OGR::Core::Err
+
+      def self.OSRExportToPrettyWkt: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_result, Integer? n_depth)
+        -> FFI::OGR::Core::Err
+
+      def self.OSRExportToProj4: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_proj4)
+        -> FFI::OGR::Core::Err
+
+      def self.OSRExportToUSGS: (
+        FFI::Pointer spatial_ref,
+        FFI::Pointer pi_proj_sys,
+        FFI::Pointer pi_zone,
+        FFI::Pointer ppad_prj_params,
+        FFI::Pointer pi_datum
+      ) -> FFI::OGR::Core::Err
+
+      def self.OSRExportToWkt: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_result)
+        -> FFI::OGR::Core::Err
+
+      def self.OSRExportToXML: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_raw_xml, FFI::Pointer? psz_dialect)
+        -> FFI::OGR::Core::Err
+
+    end
+  end
+end

@@ -11,7 +11,7 @@ module OGR
   FFI::OGR::API.OGRRegisterAll
 
   def self.ogr_require(path)
-    File.expand_path(path, __dir__)
+    File.expand_path(path, __dir__ || '.')
   end
 
   # Autoload OGR Geometry object types.

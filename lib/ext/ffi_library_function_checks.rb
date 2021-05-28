@@ -9,8 +9,8 @@ module FFI
   module Library
     alias old_attach_function attach_function
 
-    def attach_function(*args)
-      old_attach_function(*args)
+    def attach_function(func, args, returns = nil, **options)
+      old_attach_function(func, args, returns, options)
     rescue FFI::NotFoundError
       @unsupported_gdal_functions ||= []
 

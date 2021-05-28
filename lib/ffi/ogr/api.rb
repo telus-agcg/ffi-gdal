@@ -40,8 +40,6 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Geometry-related
       # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_G_DestroyGeometry, %i[OGRGeometryH], :void
-      attach_function :OGR_G_CreateGeometry, [FFI::OGR::Core::WKBGeometryType], :OGRGeometryH
       attach_function :OGR_G_ApproximateArcAngles,
                       [
                         :double, :double, :double,    # X, Y, Z
@@ -50,6 +48,8 @@ module FFI
                       ],
                       :OGRGeometryH
 
+      attach_function :OGR_G_CreateGeometry, [FFI::OGR::Core::WKBGeometryType], :OGRGeometryH
+      attach_function :OGR_G_DestroyGeometry, %i[OGRGeometryH], :void
       attach_function :OGR_G_ForceToPolygon, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToLineString, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToMultiPolygon, %i[OGRGeometryH], :OGRGeometryH
@@ -122,83 +122,51 @@ module FFI
       attach_function :OGR_G_SimplifyPreserveTopology,
                       %i[OGRGeometryH double],
                       :OGRGeometryH
-      attach_function :OGR_G_Segmentize, %i[OGRGeometryH double], :void
-      attach_function :OGR_G_Intersects, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Equals, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Disjoint, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Touches, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Crosses, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Within, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Contains, %i[OGRGeometryH OGRGeometryH], :bool
-      attach_function :OGR_G_Overlaps, %i[OGRGeometryH OGRGeometryH], :bool
 
+      attach_function :OGR_G_Area, %i[OGRGeometryH], :double
       attach_function :OGR_G_Boundary, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_ConvexHull, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_Buffer, %i[OGRGeometryH double int], :OGRGeometryH
-      attach_function :OGR_G_Intersection,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :OGRGeometryH
-      attach_function :OGR_G_Union,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :OGRGeometryH
-      attach_function :OGR_G_UnionCascaded, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_PointOnSurface, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_Difference,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :OGRGeometryH
-      attach_function :OGR_G_SymDifference,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :OGRGeometryH
-      attach_function :OGR_G_Distance,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :double
-      attach_function :OGR_G_Length,
-                      %i[OGRGeometryH],
-                      :double
-      attach_function :OGR_G_Area,
-                      %i[OGRGeometryH],
-                      :double
-      attach_function :OGR_G_Centroid,
-                      %i[OGRGeometryH OGRGeometryH],
-                      :int
+      attach_function :OGR_G_Centroid, %i[OGRGeometryH OGRGeometryH], :int
+      attach_function :OGR_G_Contains, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_ConvexHull, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Crosses, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_Difference, %i[OGRGeometryH OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Disjoint, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_Distance, %i[OGRGeometryH OGRGeometryH], :double
       attach_function :OGR_G_Empty, %i[OGRGeometryH], :void
+      attach_function :OGR_G_Equals, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_Intersection, %i[OGRGeometryH OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Intersects, %i[OGRGeometryH OGRGeometryH], :bool
       attach_function :OGR_G_IsEmpty, %i[OGRGeometryH], :bool
-      attach_function :OGR_G_IsValid, %i[OGRGeometryH], :bool
-      attach_function :OGR_G_IsSimple, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsRing, %i[OGRGeometryH], :bool
-
+      attach_function :OGR_G_IsSimple, %i[OGRGeometryH], :bool
+      attach_function :OGR_G_IsValid, %i[OGRGeometryH], :bool
+      attach_function :OGR_G_Length, %i[OGRGeometryH], :double
+      attach_function :OGR_G_Overlaps, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_PointOnSurface, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_Polygonize, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Segmentize, %i[OGRGeometryH double], :void
+      attach_function :OGR_G_SymDifference, %i[OGRGeometryH OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Touches, %i[OGRGeometryH OGRGeometryH], :bool
+      attach_function :OGR_G_Union, %i[OGRGeometryH OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_UnionCascaded, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_Within, %i[OGRGeometryH OGRGeometryH], :bool
+
+      attach_function :OGR_G_AddPoint, %i[OGRGeometryH double double double], :void
+      attach_function :OGR_G_AddPoint_2D, %i[OGRGeometryH double double], :void
+      attach_function :OGR_G_GetPoint, %i[OGRGeometryH int pointer pointer pointer], :double
       attach_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int
-      attach_function :OGR_G_GetPoints,
-                      %i[OGRGeometryH buffer_out int buffer_out int buffer_out int],
-                      :int
+      attach_function :OGR_G_GetPoints, %i[OGRGeometryH buffer_out int buffer_out int buffer_out int], :int
       attach_function :OGR_G_GetX, %i[OGRGeometryH int], :double
       attach_function :OGR_G_GetY, %i[OGRGeometryH int], :double
       attach_function :OGR_G_GetZ, %i[OGRGeometryH int], :double
-      attach_function :OGR_G_GetPoint,
-                      %i[OGRGeometryH int pointer pointer pointer],
-                      :double
-      attach_function :OGR_G_SetPointCount,
-                      %i[OGRGeometryH int],
-                      :void
-      attach_function :OGR_G_SetPoint,
-                      %i[OGRGeometryH int double double double],
-                      :void
-      attach_function :OGR_G_SetPoint_2D,
-                      %i[OGRGeometryH int double double],
-                      :void
-      attach_function :OGR_G_AddPoint,
-                      %i[OGRGeometryH double double double],
-                      :void
-      attach_function :OGR_G_AddPoint_2D,
-                      %i[OGRGeometryH double double],
-                      :void
-      attach_function :OGR_G_SetPoints,
-                      %i[OGRGeometryH int pointer int pointer int pointer int],
-                      :void
+      attach_function :OGR_G_SetPoint, %i[OGRGeometryH int double double double], :void
+      attach_function :OGR_G_SetPointCount, %i[OGRGeometryH int], :void
+      attach_function :OGR_G_SetPoint_2D, %i[OGRGeometryH int double double], :void
+      attach_function :OGR_G_SetPoints, %i[OGRGeometryH int pointer int pointer int pointer int], :void
 
       attach_function :OGR_G_GetGeometryCount, %i[OGRGeometryH], :int
-      attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH
+      attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH bool], :OGRGeometryH
 
       attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core::Err
       attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core::Err
@@ -368,124 +336,108 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Layer-related
       # ~~~~~~~~~~~~~~~~
+      attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
+
+      # The resulting pointer is such that the OGR docs say "must not been freed" (which doesn't make sense). For now
+      # let's assume OGR maintains ownership and we should thus not free it.
       attach_function :OGR_L_GetName, %i[OGRLayerH], :strptr
       attach_function :OGR_L_GetGeomType, %i[OGRLayerH], FFI::OGR::Core::WKBGeometryType
-      attach_function :OGR_L_GetSpatialFilter, %i[OGRLayerH], :OGRGeometryH
-      attach_function :OGR_L_SetSpatialFilter, %i[OGRLayerH OGRGeometryH], :void
-      attach_function :OGR_L_SetSpatialFilterRect,
-                      %i[OGRLayerH double double double double],
-                      :void
-      attach_function :OGR_L_SetSpatialFilterEx, %i[OGRLayerH int OGRGeometryH], :void
-      attach_function :OGR_L_SetSpatialFilterRectEx,
-                      %i[OGRLayerH int double double double double],
-                      :void
-      attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], FFI::OGR::Core::Err
-      attach_function :OGR_L_ResetReading, %i[OGRLayerH], :void
-
-      attach_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
-      attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], FFI::OGR::Core::Err
-      attach_function :OGR_L_GetFeature, %i[OGRLayerH long], :OGRFeatureH
-      attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
-      attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
-      attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], FFI::OGR::Core::Err
-      attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
-      attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
-      attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
-      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
-
-      attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
-      attach_function :OGR_L_GetExtentEx,
-                      [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
-      attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], FFI::OGR::Core::Err
-      attach_function :OGR_L_CreateGeomField,
-                      %i[OGRLayerH OGRGeomFieldDefnH bool],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_DeleteField, %i[OGRLayerH int], FFI::OGR::Core::Err
-      attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
-      attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], FFI::OGR::Core::Err
-      attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], FFI::OGR::Core::Err
-
-      attach_function :OGR_L_StartTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
-      attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
-      attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
-
-      attach_function :OGR_L_Reference, %i[OGRLayerH], :int
       attach_function :OGR_L_Dereference, %i[OGRLayerH], :int
       attach_function :OGR_L_GetRefCount, %i[OGRLayerH], :int
+      attach_function :OGR_L_Reference, %i[OGRLayerH], :int
       attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], FFI::OGR::Core::Err
+      attach_function :OGR_L_ResetReading, %i[OGRLayerH], :void
+      attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
 
+      attach_function :OGR_L_GetSpatialFilter, %i[OGRLayerH], :OGRGeometryH
+      attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
+      attach_function :OGR_L_SetSpatialFilter, %i[OGRLayerH OGRGeometryH], :void
+      attach_function :OGR_L_SetSpatialFilterEx, %i[OGRLayerH int OGRGeometryH], :void
+      attach_function :OGR_L_SetSpatialFilterRect, %i[OGRLayerH double double double double], :void
+      attach_function :OGR_L_SetSpatialFilterRectEx, %i[OGRLayerH int double double double double], :void
+
+      attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], FFI::OGR::Core::Err
+
+      attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], FFI::OGR::Core::Err
+
+      attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
+      attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], FFI::OGR::Core::Err
+      attach_function :OGR_L_GetFeature, %i[OGRLayerH long], :OGRFeatureH
+      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
       attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], CPL::Port.find_type(:GIntBig)
-      attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :strptr
-      attach_function :OGR_L_GetGeometryColumn, %i[OGRLayerH], :strptr
-      attach_function :OGR_L_GetStyleTable, %i[OGRLayerH], :OGRStyleTableH
-      attach_function :OGR_L_SetStyleTableDirectly, %i[OGRLayerH OGRStyleTableH], :void
-      attach_function :OGR_L_SetStyleTable, %i[OGRLayerH OGRStyleTableH], :void
+      attach_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
+      attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
+
+      attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
+      attach_function :OGR_L_GetExtentEx, [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
+
+      attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], FFI::OGR::Core::Err
+      attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], FFI::OGR::Core::Err
+      attach_function :OGR_L_CreateGeomField, %i[OGRLayerH OGRGeomFieldDefnH bool], FFI::OGR::Core::Err
+      attach_function :OGR_L_DeleteField, %i[OGRLayerH int], FFI::OGR::Core::Err
+      attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
+      attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], FFI::OGR::Core::Err
+      attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
       attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
 
-      attach_function :OGR_L_Intersection,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_Union,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_SymDifference,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_Identity,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_L_Update,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
+      attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
+      attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
+      attach_function :OGR_L_StartTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
+
+      attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :strptr
+      attach_function :OGR_L_GetGeometryColumn, %i[OGRLayerH], :strptr
+
+      attach_function :OGR_L_GetStyleTable, %i[OGRLayerH], :OGRStyleTableH
+      attach_function :OGR_L_SetStyleTable, %i[OGRLayerH OGRStyleTableH], :void
+      attach_function :OGR_L_SetStyleTableDirectly, %i[OGRLayerH OGRStyleTableH], :void
+
       attach_function :OGR_L_Clip,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
       attach_function :OGR_L_Erase,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
-                       :pointer],
-                      FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_Identity,
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_Intersection,
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_SymDifference,
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_Union,
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_Update,
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
 
       # ~~~~~~~~~~~~~~~~
       # DataSource-related
       # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
-      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :pointer
-      attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
-      attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
-      attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH
-      attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
-      attach_function :OGR_DS_GetDriver, %i[OGRDataSourceH], :OGRSFDriverH
+      # Deprecated in 2.0; use GDALDatasetCopyLayer()
+      attach_function :OGR_DS_CopyLayer, %i[OGRDataSourceH OGRLayerH string pointer], :OGRLayerH
+      # Deprecated in 2.0; use GDALDatasetCreateLayer()
       attach_function :OGR_DS_CreateLayer,
-                      [
-                        :OGRDataSourceH,
-                        :string,
-                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
-                        FFI::OGR::Core::WKBGeometryType, :pointer
-                      ],
-                      :OGRLayerH
-      attach_function :OGR_DS_CopyLayer,
-                      %i[OGRDataSourceH OGRLayerH string pointer],
-                      :OGRLayerH
-      attach_function :OGR_DS_TestCapability, %i[OGRDataSourceH string], :bool
-      attach_function :OGR_DS_ExecuteSQL,
-                      %i[OGRDataSourceH string OGRGeometryH string],
-                      :OGRLayerH
-      attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
-
-      attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core::Err
+                      [:OGRDataSourceH, :string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), FFI::OGR::Core::WKBGeometryType, :pointer], :OGRLayerH
+      # Deprecated in 2.0; use GDALDatasetDeleteLayer()
+      attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
+      # Deprecated in 2.0; use GDALClose()
+      attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
+      # Deprecated in 2.0; use GDALDatasetExecuteSQL()
+      attach_function :OGR_DS_ExecuteSQL, %i[OGRDataSourceH string OGRGeometryH string], :OGRLayerH
+      # Deprecated in 2.0; use GDALGetDatasetDriver()
+      attach_function :OGR_DS_GetDriver, %i[OGRDataSourceH], :OGRSFDriverH
+      # Deprecated in 2.0; use GDALDatasetGetLayer()
+      attach_function :OGR_DS_GetLayer, %i[OGRDataSourceH int], :OGRLayerH
+      # Deprecated in 2.0; use GDALDatasetGetLayerByName()
+      attach_function :OGR_DS_GetLayerByName, %i[OGRDataSourceH string], :OGRLayerH
+      # Deprecated in 2.0; use GDALDatasetGetLayerCount()
+      attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
+      # Deprecated in 2.0; use GDALGetDescription()
+      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :pointer # <- don't free this!
       attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
-      attach_function :OGR_DS_SetStyleTableDirectly,
-                      %i[OGRDataSourceH OGRStyleTableH],
-                      :void
+      # Deprecated in 2.0; use GDALDatasetREleaseResultSet()
+      attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
       attach_function :OGR_DS_SetStyleTable, %i[OGRDataSourceH OGRStyleTableH], :void
+      attach_function :OGR_DS_SetStyleTableDirectly, %i[OGRDataSourceH OGRStyleTableH], :void
+      attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core::Err
+      # Deprecated in 2.0; use GDALDatasetTestCapability()
+      attach_function :OGR_DS_TestCapability, %i[OGRDataSourceH string], :bool
 
       # ~~~~~~~~~~~~~~~~
       # Driver-related
@@ -535,32 +487,31 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Style Table-related
       # ~~~~~~~~~~~~~~~~
+      attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :bool
       attach_function :OGR_STBL_Create, [], :OGRStyleTableH
       attach_function :OGR_STBL_Destroy, %i[OGRStyleTableH], :void
-      attach_function :OGR_STBL_AddStyle, %i[OGRStyleTableH string string], :bool
-      attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :bool
-      attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :bool
       attach_function :OGR_STBL_Find, %i[OGRStyleTableH string], :string
-      attach_function :OGR_STBL_ResetStyleStringReading, %i[OGRStyleTableH], :void
-      attach_function :OGR_STBL_GetNextStyle, %i[OGRStyleTableH], :string
       attach_function :OGR_STBL_GetLastStyleName, %i[OGRStyleTableH], :string
+      attach_function :OGR_STBL_GetNextStyle, %i[OGRStyleTableH], :string
+      attach_function :OGR_STBL_LoadStyleTable, %i[OGRStyleTableH string], :bool
+      attach_function :OGR_STBL_ResetStyleStringReading, %i[OGRStyleTableH], :void
+      attach_function :OGR_STBL_SaveStyleTable, %i[OGRStyleTableH string], :bool
 
       # ~~~~~~~~~~~~~~~~
       # Main functions
       # ~~~~~~~~~~~~~~~~
-      attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
-      attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
+      attach_function :OGRCleanupAll, [], :void
       attach_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
-      attach_function :OGRGetDriverCount, [], :int
       attach_function :OGRGetDriver, %i[int], :OGRSFDriverH
       attach_function :OGRGetDriverByName, %i[string], :OGRSFDriverH
-      attach_function :OGRGetOpenDSCount, [], :int
+      attach_function :OGRGetDriverCount, [], :int
       attach_function :OGRGetOpenDS, %i[int], :OGRDataSourceH
-
+      attach_function :OGRGetOpenDSCount, [], :int
+      # Deprecated in 2.0; use GDALOpenEx()
+      attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
       attach_function :OGRRegisterAll, [], :void
-      attach_function :OGRCleanupAll, [], :void
+      attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
+      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
     end
   end
 end

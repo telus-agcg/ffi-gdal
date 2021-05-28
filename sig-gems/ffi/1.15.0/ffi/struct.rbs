@@ -7,6 +7,7 @@ module FFI
     def self.in: () -> untyped
     def self.layout: -> FFI::StructLayout
       | (*Array[Symbol | Integer] | Array[Hash] args) -> FFI::StructLayout
+      | (*Symbol args) -> FFI::StructLayout
 
     def self.members: () -> untyped
     def self.offset_of: (untyped name) -> Numeric

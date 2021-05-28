@@ -9,7 +9,7 @@ module OGR
 
     def self.approximate_arc_angles(center_x, center_y, z, primary_radius, secondary_radius,
       rotation, start_angle, end_angle, max_angle_step_size_degrees = 0)
-      geometry_ptr = FFI::GDAL::GDAL.OGR_G_ApproximateArcAngles(
+      geometry_ptr = FFI::OGR::API.OGR_G_ApproximateArcAngles(
         center_x,
         center_y,
         z,
@@ -18,7 +18,7 @@ module OGR
         rotation,
         start_angle,
         end_angle,
-        max_angle_step_size_degrees
+        max_angle_step_size_degrees.to_f
       )
       return nil if geometry_ptr.null?
 

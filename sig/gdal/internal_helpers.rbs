@@ -1,0 +1,62 @@
+module GDAL
+  module InternalHelpers
+    def _pointer: (
+      Class klass,
+      Class | FFI::MemoryPointer | FFI::Pointer variable,
+      ?autorelease: boolish
+    ) -> (FFI::Pointer | FFI::MemoryPointer)
+
+    def _maybe_pointer: (
+      Class klass,
+      Class | FFI::MemoryPointer | FFI::Pointer variable,
+      ?autorelease: boolish
+    ) -> (FFI::Pointer | FFI::MemoryPointer | nil)
+
+    # def _pointer_from_data_type: (FFI::GDAL::GDAL::DataType data_type, ?nil size) -> FFI::MemoryPointer
+    def _pointer_from_data_type: (FFI::Enum data_type, ?nil size) -> FFI::MemoryPointer
+
+    # def _buffer_from_data_type: (FFI::GDAL::GDAL::DataType data_type, ?nil size) -> FFI::Buffer
+    def _buffer_from_data_type: (FFI::Enum data_type, ?nil size) -> FFI::Buffer
+
+    # def _narray_from_data_type: (FFI::GDAL::GDAL::DataType data_type, *untyped narray_args) -> NArray
+    def _narray_from_data_type: (FFI::Enum data_type, *untyped narray_args) -> NArray
+
+    def _string_array_to_pointer: (Array[String] strings) -> FFI::MemoryPointer
+
+    def _pointer_pointer: (Symbol type_) -> FFI::MemoryPointer
+
+    def _read_pointer_pointer_safely: (
+      FFI::Pointer pointer_ptr,
+      String | Symbol type_
+    ) -> (
+      Array[Float]
+      | Array[FFI::Pointer]
+      | String
+      | Float
+      | FFI::Pointer
+    )
+
+    def _cpl_read_and_free_string: () { (FFI::MemoryPointer) -> void } -> String
+
+    # def _gdal_data_type_to_ffi: (FFI::GDAL::GDAL::DataType data_type) ->
+    def _gdal_data_type_to_ffi: (FFI::Enum data_type) ->
+      (:double | :float | :int16 | :int32 | :uchar | :uint16 | :uint32)
+
+    # def _gdal_data_type_to_narray: (FFI::GDAL::GDAL::DataType data_type) ->
+    def _gdal_data_type_to_narray: (FFI::Enum data_type) ->
+      (:byte | :complex | :dcomplex | :dfloat | :float | :int | :scomplex | :sint)
+
+    # def _gdal_data_type_to_narray_type_constant: (FFI::GDAL::GDAL::DataType data_type) -> untyped
+    def _gdal_data_type_to_narray_type_constant: (FFI::Enum data_type) -> untyped
+
+    # def _read_pointer: (untyped pointer, FFI::GDAL::GDAL::DataType data_type, ?Integer length) -> untyped
+    def _read_pointer: (untyped pointer, FFI::Enum data_type, ?Integer length) -> untyped
+
+    # def _write_pointer: (untyped pointer, FFI::GDAL::GDAL::DataType data_type, untyped data) -> untyped
+    def _write_pointer: (untyped pointer, FFI::Enum data_type, untyped data) -> untyped
+
+    def _supported?: (untyped function_name) -> untyped
+
+    def _gdal_access_flag: (untyped char) -> (:GF_Read | :GF_Write)
+  end
+end

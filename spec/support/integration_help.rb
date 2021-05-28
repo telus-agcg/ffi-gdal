@@ -19,7 +19,7 @@ module IntegrationHelp
   def make_temp_test_file(original_path)
     file_name = File.basename(original_path)
     relative_tmp_path = File.join(temp_base_dir, file_name)
-    tmp_path = File.expand_path(relative_tmp_path, __dir__)
+    tmp_path = File.expand_path(relative_tmp_path, __dir__ || '.')
 
     return tmp_path if test_files.include?(tmp_path)
 

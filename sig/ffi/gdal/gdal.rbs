@@ -1,0 +1,32 @@
+module FFI
+  module GDAL
+    module GDAL
+      extend ::FFI::Library
+
+      # ----------------------------------------------------------------
+      # Enums
+      # ----------------------------------------------------------------
+      DataType: FFI::Enum
+
+      AsyncStatusType: FFI::Enum
+
+      Access: FFI::Enum
+
+      RWFlag: FFI::Enum
+
+      ColorInterp: FFI::Enum
+
+      PaletteInterp: FFI::Enum
+
+      RATFieldType: FFI::Enum
+
+      RATFieldUsage: FFI::Enum
+
+      TileOrganization: FFI::Enum
+
+      def self.GDALPackedDMSToDec: (Float dms_value) -> Float
+      def self.GDALDecToPackedDMS: (Float decimal_degrees_value) -> Float
+      def self.GDALAllRegister: -> void
+    end
+  end
+end

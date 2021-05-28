@@ -24,13 +24,17 @@ end
 
 module FFI
   def self.add_typedef: (FFI::Type | FFI::DataConverter | Symbol old, Symbol add) -> FFI::Type
-  def self.typedef: (FFI::Type | FFI::DataConverter | Symbol old, Symbol add) -> FFI::Type
+
+  def self.typedef: (
+    FFI::Type | FFI::DataConverter | Symbol old,
+    Symbol add
+  ) -> FFI::Type
 
   def self.errno: -> Numeric
   def self.errno=: (Numeric error) -> void
   def self.find_type: (FFI::Type | FFI::DataConverter | Symbol name, ?untyped? type_map) -> FFI::Type
   def self.map_library_name: (_ToS lib) -> String
-  def self.type_size: (FFI::Type | FFI::DataConverter | Symbol type) -> Numeric
+  def self.type_size: (FFI::Type | FFI::DataConverter | Symbol type_name) -> Numeric
 
   class StrPtrConverter
     extend DataConverter

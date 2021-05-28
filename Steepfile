@@ -7,7 +7,7 @@
    # ignore "lib/templates/*.rb"
 
    # library "pathname", "set"       # Standard libraries
-   library "date"       # Standard libraries
+   library "date", "forwardable"       # Standard libraries
    # library "strong_json"           # Gems
  end
 

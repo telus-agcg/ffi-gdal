@@ -1,0 +1,7 @@
+interface _ToC
+  def to_c: -> Complex
+end
+
+interface _ToF
+  def to_f: -> Float
+end

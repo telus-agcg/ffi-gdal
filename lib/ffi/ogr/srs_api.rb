@@ -154,17 +154,17 @@ module FFI
                       FFI::OGR::Core::Err
       attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
 
-      attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
-      attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH pointer bool], FFI::OGR::Core::Err
-      attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
+      attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core::Err
+      attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH buffer_out uint], FFI::OGR::Core::Err
+      attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core::Err
       attach_function :OSRExportToPCI,
-                      %i[OGRSpatialReferenceH pointer pointer pointer],
+                      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
                       FFI::OGR::Core::Err
       attach_function :OSRExportToUSGS,
-                      %i[OGRSpatialReferenceH pointer pointer pointer pointer],
+                      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out buffer_out],
                       FFI::OGR::Core::Err
-      attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer buffer_out], FFI::OGR::Core::Err
-      attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
+      attach_function :OSRExportToXML, %i[OGRSpatialReferenceH buffer_out pointer], FFI::OGR::Core::Err
+      attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core::Err
       attach_function :OSRExportToERM,
                       %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
                       FFI::OGR::Core::Err

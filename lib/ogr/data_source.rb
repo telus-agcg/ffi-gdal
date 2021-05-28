@@ -193,7 +193,7 @@ module OGR
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
     def execute_sql(command, spatial_filter = nil, dialect = nil)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
+      geometry_ptr = GDAL._pointer(::OGR::Geometry, spatial_filter) if spatial_filter
 
       layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr, dialect)
       layer_ptr.autorelease = false

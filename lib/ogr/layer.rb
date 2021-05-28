@@ -7,6 +7,7 @@ require_relative 'layer_mixins/ogr_field_methods'
 require_relative 'layer_mixins/ogr_layer_method_methods'
 require_relative 'layer_mixins/ogr_query_filter_methods'
 require_relative 'layer_mixins/ogr_sql_methods'
+require_relative 'layer_mixins/test_capability'
 
 module OGR
   class Layer
@@ -17,6 +18,7 @@ module OGR
     include LayerMixins::OGRLayerMethodMethods
     include LayerMixins::OGRQueryFilterMethods
     include LayerMixins::OGRSQLMethods
+    include LayerMixins::TestCapability
 
     FFI::OGR::Core::OGR_ALTER.constants.each do |_name, obj|
       const_set(obj.ruby_name, obj.value.to_i(16))
@@ -45,16 +47,6 @@ module OGR
       OGR::ErrorHandling.handle_ogr_err('Unable to sync layer to disk') do
         FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
       end
-    end
-
-    # Tests if this layer supports the given capability.  Must be in the list
-    # of available capabilities.  See http://www.gdal.org/ogr__api_8h.html#a480adc8b839b04597f49583371d366fd.
-    #
-    # @param capability [String]
-    # @return [Boolean]
-    # @see http://www.gdal.org/ogr__api_8h.html#a480adc8b839b04597f49583371d366fd
-    def test_capability(capability)
-      FFI::OGR::API.OGR_L_TestCapability(@c_pointer, capability.to_s)
     end
 
     # NOTE: This SpatialReference is owned by the Layer and should thus not be

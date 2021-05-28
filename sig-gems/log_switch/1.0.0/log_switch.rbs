@@ -1,0 +1,5 @@
+module LogSwitch
+  def self.logger: -> ::Logger
+  def self.logger=: (::Logger new_logger) -> void
+  def self.reset_config!: -> void
+end

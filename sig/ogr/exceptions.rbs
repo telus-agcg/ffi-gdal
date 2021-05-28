@@ -1,0 +1,70 @@
+module OGR
+  class CorruptData < RuntimeError
+  end
+
+  class CreateFailure < RuntimeError
+  end
+
+  class DriverNotFound < RuntimeError
+    def initialize: (untyped driver, ?untyped? msg) -> untyped
+  end
+
+  class Failure < StandardError
+  end
+
+  class InvalidDataSource < StandardError
+  end
+
+  class InvalidFeature < StandardError
+  end
+
+  class InvalidFeatureDefinition < StandardError
+  end
+
+  class InvalidFieldDefinition < StandardError
+  end
+
+  class InvalidFieldName < StandardError
+  end
+
+  class InvalidGeometry < StandardError
+  end
+
+  class InvalidGeometryFieldDefinition < StandardError
+  end
+
+  class InvalidHandle < RuntimeError
+  end
+
+  class InvalidLayer < StandardError
+  end
+
+  class InvalidStyleTable < StandardError
+  end
+
+  class InvalidSpatialReference < StandardError
+  end
+
+  class NotEnoughData < RuntimeError
+  end
+
+  class OpenFailure < RuntimeError
+    def initialize: (untyped file, ?untyped? msg) -> untyped
+  end
+
+  class ReadOnlyObject < StandardError
+    def initialize: (?untyped? msg) -> untyped
+  end
+
+  class UnsupportedFieldType < StandardError
+  end
+
+  class UnsupportedGeometryType < StandardError
+  end
+
+  class UnsupportedOperation < StandardError
+  end
+
+  class UnsupportedSRS < StandardError
+  end
+end

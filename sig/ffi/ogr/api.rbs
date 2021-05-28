@@ -1,0 +1,92 @@
+module FFI
+  module OGR
+    module API
+      extend ::FFI::Library
+
+      # ~~~~~~~~~~~~~~~~
+      # Main functions
+      # ~~~~~~~~~~~~~~~~
+      def self.OGROpen: (String data_source_name, bool open_with_write_access, FFI::Pointer? driver_list) -> FFI::Pointer
+
+      # ~~~~~~~~~~~~~~~~
+      # DataSource-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGR_DS_CopyLayer: (FFI::Pointer data_source_handle, FFI::Pointer layer_handle, String new_layer_name, FFI::Pointer options) -> FFI::Pointer
+      def self.OGR_DS_CreateLayer: (
+        FFI::Pointer data_source_handle,
+        String new_layer_name,
+        FFI::Pointer | nil spatial_reference_handle,
+        FFI::OGR::Core::WKBGeometryType geometry_type,
+        FFI::Pointer options
+      ) -> FFI::Pointer
+      def self.OGR_DS_DeleteLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::OGR::Core::Err
+      def self.OGR_DS_Destroy: (FFI::Pointer data_source_handle) -> void
+      def self.OGR_DS_ExecuteSQL: (FFI::Pointer data_source_handle, String sql_statement, FFI::Pointer | nil geometry_handle, String ?sql_dialect) -> FFI::Pointer
+      def self.OGR_DS_GetDriver: (FFI::Pointer data_source_handle) -> FFI::Pointer
+      def self.OGR_DS_GetLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::Pointer
+      def self.OGR_DS_GetLayerCount: (FFI::Pointer data_source_handle) -> Integer
+      def self.OGR_DS_GetLayerByName: (FFI::Pointer data_source_handle, String layer_name) -> FFI::Pointer
+      def self.OGR_DS_GetName: (FFI::Pointer data_source_handle) -> String
+      def self.OGR_DS_GetStyleTable: (FFI::Pointer data_source_handle) -> FFI::Pointer
+      def self.OGR_DS_ReleaseResultSet: (FFI::Pointer data_source_handle, FFI::Pointer layer_handle) -> void
+      def self.OGR_DS_SetStyleTable: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::Err
+      def self.OGR_DS_SetStyleTableDirectly: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::Err
+      def self.OGR_DS_SyncToDisk: (FFI::Pointer data_source_handle) -> FFI::OGR::Core::Err
+      def self.OGR_DS_TestCapability: (FFI::Pointer data_source_handle, String capability) -> bool
+
+      # ~~~~~~~~~~~~~~~~
+      # Layer-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGR_L_AlterFieldDefn: (FFI::Pointer ogr_layer_handle, Integer field_index, FFI::Pointer new_field_definition_handle, Integer flags) -> FFI::OGR::Core::Err
+      def self.OGR_L_CreateField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool approx_ok) -> FFI::OGR::Core::Err
+      def self.OGR_L_CreateGeomField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool force) -> FFI::OGR::Core::Err
+      def self.OGR_L_DeleteField: (FFI::Pointer ogr_layer_handle, Integer field_index) -> FFI::OGR::Core::Err
+      def self.OGR_L_FindFieldIndex: (FFI::Pointer ogr_layer_handle, String field_name, bool exact_match) -> Integer
+      def self.OGR_L_GetGeomType: (FFI::Pointer ogr_layer_handle) -> FFI::OGR::Core::WKBGeometryType
+      def self.OGR_L_GetName: (FFI::Pointer ogr_layer_handle) -> FFI::Pointer
+      def self.OGR_L_ReorderField: (FFI::Pointer ogr_layer_handle, Integer old_field_index, Integer new_field_index) -> FFI::OGR::Core::Err
+      def self.OGR_L_ReorderFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer array_mapping_field_indexes) -> FFI::OGR::Core::Err
+      def self.OGR_L_SetIgnoredFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer ?field_names) -> FFI::OGR::Core::WKBGeometryType
+
+      # ~~~~~~~~~~~~~~~~
+      # Geometry-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGR_G_ApproximateArcAngles: (
+        Float center_x, Float center_y, Float center_z,
+        Float primary_radius, Float secondary_axis, Float rotation,
+        Float start_angle, Float end_angle, Float max_angle_step_size_degrees
+      ) -> FFI::Pointer
+
+      def self.OGR_G_AddGeometry: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
+      def self.OGR_G_AddGeometryDirectly: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
+      def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, Float x, Float y, Float m) -> void
+      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, Float x, Float y) -> void
+      def self.OGR_G_Area: (FFI::Pointer geometry_handle) -> Float
+      def self.OGR_G_Clone: (FFI::Pointer geometry_handle) -> FFI::Pointer
+      def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, bool is_sub_geom) -> FFI::Pointer
+      def self.OGR_G_RemoveGeometry: (FFI::Pointer geometry_handle, Integer geom_index, bool delete) -> FFI::OGR::Core::Err
+      def self.OGR_G_UnionCascaded: (FFI::Pointer geometry_handle) -> (FFI::Pointer | nil)
+
+      def self.OGRBuildPolygonFromEdges: (
+        FFI::Pointer lines_as_collection,
+        bool best_effort,
+        bool auto_close,
+        Float tolerance,
+        FFI::Pointer pe_err
+      ) -> FFI::Pointer
+
+      # ~~~~~~~~~~~~~~~~
+      # Style Table-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGR_STBL_AddStyle: (FFI::Pointer style_table_handle, String name, String style_string) -> bool
+      def self.OGR_STBL_Create: -> FFI::Pointer
+      def self.OGR_STBL_Destroy: (FFI::Pointer style_table_handle) -> void
+      def self.OGR_STBL_Find: (FFI::Pointer style_table_handle, String name) -> (String | nil)
+      def self.OGR_STBL_GetLastStyleName: (FFI::Pointer style_table_handle) -> (String | nil)
+      def self.OGR_STBL_GetNextStyle: (FFI::Pointer style_table_handle) -> (String | nil)
+      def self.OGR_STBL_LoadStyleTable: (FFI::Pointer style_table_handle, String filename) -> bool
+      def self.OGR_STBL_ResetStyleStringReading: (FFI::Pointer style_table_handle) -> void
+      def self.OGR_STBL_SaveStyleTable: (FFI::Pointer style_table_handle, String filename) -> bool
+    end
+  end
+end

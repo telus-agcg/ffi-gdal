@@ -1,0 +1,21 @@
+module FFI
+  module GDAL
+    module Warper
+      extend ::FFI::Library
+
+      def self.GDALWarpRegionToBuffer: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+        FFI::Buffer output_buffer,
+        GDAL::DataType output_buffer_type,
+        Integer ?source_x_offset,
+        Integer ?source_y_offset,
+        Integer ?source_x_size,
+        Integer ?source_y_size,
+      ) -> ::FFI::CPL::Error::CPLErr
+    end
+  end
+end

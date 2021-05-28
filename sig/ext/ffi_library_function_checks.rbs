@@ -1,0 +1,7 @@
+module FFI
+  module Library
+    alias old_attach_function attach_function
+
+    def unsupported_gdal_functions: () -> untyped
+  end
+end

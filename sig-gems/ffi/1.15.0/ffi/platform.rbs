@@ -11,39 +11,6 @@ module FFI
 
     ARCH: String
 
-    private
-
-    # @param [String) os
-    # @return [Boolean]
-    # Test if current OS is +os+.
-    def self.is_os: (untyped os) -> untyped
-
-    IS_GNU: untyped
-
-    IS_LINUX: untyped
-
-    IS_MAC: untyped
-
-    IS_FREEBSD: untyped
-
-    IS_NETBSD: untyped
-
-    IS_OPENBSD: untyped
-
-    IS_DRAGONFLYBSD: untyped
-
-    IS_SOLARIS: untyped
-
-    IS_WINDOWS: untyped
-
-    IS_BSD: untyped
-
-    NAME: ::String
-
-    CONF_DIR: untyped
-
-    public
-
     LIBPREFIX: String
 
     LIBSUFFIX: String
