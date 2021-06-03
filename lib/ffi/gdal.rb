@@ -19,7 +19,6 @@ module FFI
              File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__ || '.')
     autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__ || '.')
     autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__ || '.')
-    autoload :Matching, File.expand_path('gdal/matching.rb', __dir__ || '.')
     autoload :RPCInfo, File.expand_path('gdal/rpc_info.rb', __dir__ || '.')
     autoload :TransformerInfo, File.expand_path('gdal/transformer_info.rb', __dir__ || '.')
     autoload :VRT, File.expand_path('gdal/vrt.rb', __dir__ || '.')

@@ -1,7 +1,7 @@
 module GDAL
   module InternalHelpers
     def _pointer: (
-      Class klass,
+      Class | singleton(OGR::Geometry) klass,
       Class | FFI::MemoryPointer | FFI::Pointer variable,
       ?autorelease: boolish
     ) -> (FFI::Pointer | FFI::MemoryPointer)

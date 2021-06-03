@@ -3,5 +3,8 @@ module FFI
     extend ::FFI::Library
 
     def self.gdal_library_path: -> String
+
+    type version_request_string = "VERSION_NUM" | "RELEASE_DATE" | "RELEASE_NAME" | "--version" | "LICENSE" | "BUILD_INFO"
+    def self.GDALVersionInfo: (version_request_string request) -> String
   end
 end

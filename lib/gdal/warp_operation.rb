@@ -34,11 +34,13 @@ module GDAL
     # @param x_size [Integer] X size (width) of the destination image.
     # @param y_size [Integer] Y size (height) of the destination image.
     def chunk_and_warp_image(x_offset, y_offset, x_size, y_size)
-      !!FFI::GDAL::Warper.GDALChunkAndWarpImage(@c_pointer,
+      GDAL::CPLErrorHandler.manually_handle('Unable to chunk and warp image') do
+        FFI::GDAL::Warper.GDALChunkAndWarpImage(@c_pointer,
                                                 x_offset,
                                                 y_offset,
                                                 x_size,
                                                 y_size)
+      end
     end
 
     # @param x_offset [Integer] X offset of the destination image.
@@ -65,7 +67,9 @@ module GDAL
       destination_x_size, destination_y_size,
       source_x_offset, source_y_offset,
       source_x_size, source_y_size)
-      !!FFI::GDAL::Warper.GDALWarpRegion(@c_pointer,
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to warp region') do
+        FFI::GDAL::Warper.GDALWarpRegion(@c_pointer,
                                          destination_x_offset,
                                          destination_y_offset,
                                          destination_x_size,
@@ -74,6 +78,7 @@ module GDAL
                                          source_y_offset,
                                          source_x_size,
                                          source_y_size)
+      end
     end
 
     # @param destination_x_offset [Integer] X offset of the destination image.
@@ -81,7 +86,7 @@ module GDAL
     # @param destination_x_size [Integer] X size (width) of the destination image.
     # @param destination_y_size [Integer] Y size (height) of the destination image.
     # @param buffer [FFI::Pointer]
-    # @param data_type [FFI::GDAL::DataType]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
     # @param source_x_offset [Integer] X offset of the source image.
     # @param source_y_offset [Integer] Y offset of the source image.
     # @param source_x_size [Integer] X size (width) of the source image.
@@ -92,7 +97,9 @@ module GDAL
       buffer, data_type,
       source_x_offset, source_y_offset,
       source_x_size, source_y_size)
-      !!FFI::GDAL::Warper.GDALWarpRegionToBuffer(@c_pointer,
+
+      GDAL::CPLErrorHandler.manually_handle('Unable to warp to buffer') do
+        FFI::GDAL::Warper.GDALWarpRegionToBuffer(@c_pointer,
                                                  destination_x_offset,
                                                  destination_y_offset,
                                                  destination_x_size,
@@ -103,6 +110,7 @@ module GDAL
                                                  source_y_offset,
                                                  source_x_size,
                                                  source_y_size)
+      end
     end
     # rubocop:enable Metrics/ParameterLists
   end

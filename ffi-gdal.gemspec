@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
+lib = File.expand_path('lib', __dir__ || '.')
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ffi/gdal/version'
 
@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'http://github.com/agrian-inc/ffi-gdal'
   spec.license       = 'MIT'
 
-  spec.files         = Dir.chdir(File.expand_path(__dir__)) do
+  spec.files         = Dir.chdir(File.expand_path(__dir__ || '.')) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
 

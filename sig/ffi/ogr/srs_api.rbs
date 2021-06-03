@@ -45,6 +45,18 @@ module FFI
       def self.OSRExportToXML: (FFI::Pointer spatial_ref, FFI::Pointer ppsz_raw_xml, FFI::Pointer? psz_dialect)
         -> FFI::OGR::Core::Err
 
+      #~~~~~~~~~~~~~~~~
+      # Is* methods
+      #~~~~~~~~~~~~~~~~
+      def self.OSRIsCompound: (FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsGeocentric: (FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsGeographic: (FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsLocal: (FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsProjected: (FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsSame: (FFI::Pointer spatial_reference_handle, FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsSameGeogCS: (FFI::Pointer spatial_reference_handle, FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsSameVertCS: (FFI::Pointer spatial_reference_handle, FFI::Pointer spatial_reference_handle) -> bool
+      def self.OSRIsVertical: (FFI::Pointer spatial_reference_handle) -> bool
     end
   end
 end

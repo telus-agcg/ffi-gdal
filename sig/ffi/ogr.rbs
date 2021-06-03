@@ -1,0 +1,4 @@
+module FFI
+  module OGR
+  end
+end

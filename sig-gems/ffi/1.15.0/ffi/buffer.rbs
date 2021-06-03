@@ -1,13 +1,13 @@
 module FFI
   class Buffer < FFI::AbstractMemory
     def self.alloc_in: (*untyped args) -> untyped
-    alias new_in alloc_in
+    alias self.new_in self.alloc_in
 
     def self.alloc_inout: (*untyped args) -> untyped
-    alias new_inout alloc_inout
+    alias self.new_inout self.alloc_inout
 
     def self.alloc_out: (*untyped args) -> untyped
-    alias new_out alloc_out
+    alias self.new_out self.alloc_out
 
     def initialize: (Integer | Symbol | _Size size, Integer count, bool clear) -> instance
 

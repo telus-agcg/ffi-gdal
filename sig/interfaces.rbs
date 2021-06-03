@@ -1,3 +1,7 @@
+interface _HasSpatialReference
+  def spatial_reference: -> OGR::SpatialReference
+end
+
 interface _ToC
   def to_c: -> Complex
 end

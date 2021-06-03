@@ -3,6 +3,51 @@ module FFI
     module Warper
       extend ::FFI::Library
 
+      ResampleAlg: FFI::Enum
+
+      def self.GDALCreateWarpOperation: (FFI::Pointer new_options) -> FFI::Pointer
+      def self.GDALDestroyWarpOperation: (FFI::Pointer warp_operation_handle) -> void
+
+      def self.GDALCreateAndReprojectImage: (
+        FFI::Pointer source_dataset_handle,
+        String? source_wkt,
+        String destination_filename,
+        String? destination_wkt,
+        FFI::Pointer destination_driver_handle,
+        FFI::Pointer create_options,
+        ResampleAlg resample_algorithm,
+        Float warp_memory_limit,
+        Float max_error,
+        FFI::CallbackInfo progress,
+        FFI::Pointer? progress_arg,
+        FFI::Pointer? warp_options
+      ) -> ::FFI::CPL::Error::CPLErr
+
+      def self.GDALReprojectImage: (
+        FFI::Pointer source_dataset_handle,
+        String? source_wkt,
+        FFI::Pointer destination_dataset_handle,
+        String? destination_wkt,
+        ResampleAlg resample_algorithm,
+        Float warp_memory_limit,
+        Float max_error,
+        FFI::CallbackInfo progress,
+        FFI::Pointer? progress_arg,
+        FFI::Pointer? warp_options
+      ) -> ::FFI::CPL::Error::CPLErr
+
+      def self.GDALWarpRegion: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+        Integer ?source_x_offset,
+        Integer ?source_y_offset,
+        Integer ?source_x_size,
+        Integer ?source_y_size,
+      ) -> ::FFI::CPL::Error::CPLErr
+
       def self.GDALWarpRegionToBuffer: (
         FFI::Pointer warp_operation_handle,
         Integer destination_x_offset,
@@ -15,6 +60,22 @@ module FFI
         Integer ?source_y_offset,
         Integer ?source_x_size,
         Integer ?source_y_size,
+      ) -> ::FFI::CPL::Error::CPLErr
+
+      def self.GDALChunkAndWarpImage: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+      ) -> ::FFI::CPL::Error::CPLErr
+
+      def self.GDALChunkAndWarpMulti: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
       ) -> ::FFI::CPL::Error::CPLErr
     end
   end

@@ -6,8 +6,9 @@ module FFI
     def self.by_value: () -> untyped
     def self.in: () -> untyped
     def self.layout: -> FFI::StructLayout
-      | (*Array[Symbol | Integer] | Array[Hash] args) -> FFI::StructLayout
-      | (*Symbol args) -> FFI::StructLayout
+      | (*Array[Symbol | Integer | FFI::Enum | FFI::Struct | FFI::Type] | Array[Hash] args) -> FFI::StructLayout
+      | (*Symbol | FFI::Enum | FFI::Struct | FFI::Type | FFI::CallbackInfo args) -> FFI::StructLayout
+      | (Hash[Symbol, FFI::Enum | FFI::Struct | FFI::Type | FFI::CallbackInfo]) -> FFI::StructLayout
 
     def self.members: () -> untyped
     def self.offset_of: (untyped name) -> Numeric

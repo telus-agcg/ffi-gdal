@@ -1,4 +1,6 @@
 class NArray
+  type typecode_int = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
   BYTE: 1
   SINT: 2
   INT: 3
@@ -12,7 +14,8 @@ class NArray
   ROBJ: 8
   NTYPES: 9
 
-  def initialize: (Integer typecode, Integer size, *(String | Integer | Float | Object) values) -> NArray
+  def initialize: (typecode_int typecode, Integer size, *(String | Integer | Float | Object) values) -> NArray
 
-
+  def typecode: -> typecode_int
+  def to_a: -> Array
 end

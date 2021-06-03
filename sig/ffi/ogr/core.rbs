@@ -1,0 +1,38 @@
+module FFI
+  module OGR
+    module Core
+      extend ::FFI::Library
+
+      # Err: FFI::Enum
+      class Err < FFI::Enum
+      end
+
+      type wkb_geometry_type_symbol = :wkbUnknown
+                             | :wkbPoint
+                             | :wkbLineString
+                             | :wkbPolygon
+                             | :wkbMultiPoint
+                             | :wkbMultiLineString
+                             | :wkbMultiPolygon
+                             | :wkbGeometryCollection
+                             | :wkbNone
+      WKBGeometryType: FFI::Enum
+
+      WKBVariant: FFI::Enum
+
+      WKBByteOrder: FFI::Enum
+
+      FieldType: FFI::Enum
+      FieldTypeSub: FFI::Enum
+      Justification: FFI::Enum
+      STClassId: FFI::Enum
+      STUnitId: FFI::Enum
+      STPenParam: FFI::Enum
+      STBrushParam: FFI::Enum
+      STSymbolParam: FFI::Enum
+      STLabelParam: FFI::Enum
+
+      OGR_ALTER: FFI::ConstGenerator
+    end
+  end
+end

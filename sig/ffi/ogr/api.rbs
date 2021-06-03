@@ -16,7 +16,7 @@ module FFI
         FFI::Pointer data_source_handle,
         String new_layer_name,
         FFI::Pointer | nil spatial_reference_handle,
-        FFI::OGR::Core::WKBGeometryType geometry_type,
+        FFI::OGR::Core::WKBGeometryType | FFI::OGR::Core::wkb_geometry_type_symbol geometry_type,
         FFI::Pointer options
       ) -> FFI::Pointer
       def self.OGR_DS_DeleteLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::OGR::Core::Err
@@ -26,6 +26,7 @@ module FFI
       def self.OGR_DS_GetLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::Pointer
       def self.OGR_DS_GetLayerCount: (FFI::Pointer data_source_handle) -> Integer
       def self.OGR_DS_GetLayerByName: (FFI::Pointer data_source_handle, String layer_name) -> FFI::Pointer
+      # Don't release the result string.
       def self.OGR_DS_GetName: (FFI::Pointer data_source_handle) -> String
       def self.OGR_DS_GetStyleTable: (FFI::Pointer data_source_handle) -> FFI::Pointer
       def self.OGR_DS_ReleaseResultSet: (FFI::Pointer data_source_handle, FFI::Pointer layer_handle) -> void
@@ -57,16 +58,7 @@ module FFI
         Float start_angle, Float end_angle, Float max_angle_step_size_degrees
       ) -> FFI::Pointer
 
-      def self.OGR_G_AddGeometry: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
-      def self.OGR_G_AddGeometryDirectly: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
-      def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, Float x, Float y, Float m) -> void
-      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, Float x, Float y) -> void
-      def self.OGR_G_Area: (FFI::Pointer geometry_handle) -> Float
-      def self.OGR_G_Clone: (FFI::Pointer geometry_handle) -> FFI::Pointer
-      def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, bool is_sub_geom) -> FFI::Pointer
-      def self.OGR_G_RemoveGeometry: (FFI::Pointer geometry_handle, Integer geom_index, bool delete) -> FFI::OGR::Core::Err
-      def self.OGR_G_UnionCascaded: (FFI::Pointer geometry_handle) -> (FFI::Pointer | nil)
-
+      # Geometry constructors
       def self.OGRBuildPolygonFromEdges: (
         FFI::Pointer lines_as_collection,
         bool best_effort,
@@ -74,6 +66,98 @@ module FFI
         Float tolerance,
         FFI::Pointer pe_err
       ) -> FFI::Pointer
+
+      def self.OGR_G_Clone: (FFI::Pointer geometry_handle) -> FFI::Pointer
+
+      # Geometry exporters
+
+      # Geometry attribute getter methods
+      def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, bool is_sub_geom) -> FFI::Pointer
+      def self.OGR_G_GetPoints: (
+        FFI::Pointer geometry_handle,
+        FFI::Buffer? x_buffer,
+        Integer x_stride,
+        FFI::Buffer? y_buffer,
+        Integer y_stride,
+        FFI::Buffer? z_buffer,
+        Integer z_stride
+      ) -> Integer
+      def self.OGR_G_Length: (FFI::Pointer geometry_handle) -> Float
+
+      # Geometry mutating methods
+      def self.OGR_G_AddGeometry: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
+      def self.OGR_G_AddGeometryDirectly: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
+      def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, Float x, Float y, Float m) -> void
+      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, Float x, Float y) -> void
+      def self.OGR_G_RemoveGeometry: (FFI::Pointer geometry_handle, Integer geom_index, bool delete) -> FFI::OGR::Core::Err
+      def self.OGR_G_SetPointCount: (FFI::Pointer geometry_handle, Integer new_point_count) -> void
+      def self.OGR_G_SetPoint: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y, ?Float z) -> void
+      def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y) -> void
+
+      # Geometry boolean-op methods
+      def self.OGR_G_Area: (FFI::Pointer geometry_handle) -> Float
+      def self.OGR_G_UnionCascaded: (FFI::Pointer geometry_handle) -> (FFI::Pointer | nil)
+
+      # ~~~~~~~~~~~~~~~~
+      # Style Tool-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGR_ST_Create: (FFI::OGR::Core::STClassId class_id) -> FFI::Pointer
+      def self.OGR_ST_Destroy: (FFI::Pointer style_tool_handle) -> void
+
+      def self.OGR_ST_GetRGBFromString: (
+        FFI::Pointer style_tool_handle,
+        String color_to_parse,
+        FFI::Pointer red_output,
+        FFI::Pointer green_output,
+        FFI::Pointer blue_output,
+        FFI::Pointer alpha_output
+      ) -> bool
+
+      def self.OGR_ST_GetParamDbl: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::Pointer value_is_null_output
+      ) -> Float
+
+      def self.OGR_ST_GetParamNum: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::Pointer value_is_null_output
+      ) -> Integer
+
+      def self.OGR_ST_GetParamStr: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::Pointer value_is_null_output
+      ) -> String
+
+      def self.OGR_ST_GetStyleString: (FFI::Pointer style_tool_handle) -> [String, FFI::Pointer]
+      def self.OGR_ST_GetType: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::STClassId
+      def self.OGR_ST_GetUnit: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::STUnitId
+
+      def self.OGR_ST_SetParamDbl: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        Float value
+      ) -> void
+
+      def self.OGR_ST_SetParamNum: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        Integer value
+      ) -> void
+
+      def self.OGR_ST_SetParamStr: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::Pointer value_is_null_output
+      ) -> Float
+
+      def self.OGR_ST_SetUnit: (
+        FFI::Pointer style_tool_handle,
+        FFI::OGR::Core::STUnitId unit,
+        Float ground_to_paper_scale_factor
+      ) -> void
 
       # ~~~~~~~~~~~~~~~~
       # Style Table-related

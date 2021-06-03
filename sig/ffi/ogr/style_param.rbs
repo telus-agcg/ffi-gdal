@@ -1,0 +1,6 @@
+module FFI
+  module OGR
+    class StyleParam < FFI::Struct
+    end
+  end
+end

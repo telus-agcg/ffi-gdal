@@ -3,13 +3,38 @@ module FFI
     module Error
       extend ::FFI::Library
 
+      type cpl_err_number_symbol = :CPLE_None
+        | :CPLE_AppDefined
+        | :CPLE_OutOfMemory
+        | :CPLE_FileIO
+        | :CPLE_OpenFailed
+        | :CPLE_IllegalArg
+        | :CPLE_NotSupported
+        | :CPLE_AssertionFailed
+        | :CPLE_NoWriteAccess
+        | :CPLE_UserInterrupt
+        | :CPLE_ObjectNull
+
+      CPLErrorNum: FFI::Enum
+
+      type cpl_err_class_symbol = :CE_None
+        | :CE_Debug
+        | :CE_Warning
+        | :CE_Failure
+        | :CE_Fatal
 
       CPLErr: FFI::Enum
 
       def self.CPLErrorReset: -> void
-      def self.CPLGetLastErrorType: -> CPLErr
       def self.CPLGetLastErrorMsg: -> String
-      # type error_handler = { (CPLErr, Integer, String) -> void }
+      def self.CPLGetLastErrorNo: -> cpl_err_number_symbol
+      def self.CPLGetLastErrorType: -> cpl_err_class_symbol
+      def self.CPLPopErrorHandler: -> void
+      def self.CPLPushErrorHandler: (
+        ::GDAL::CPLErrorHandler::HandlerLambda handler,
+        ?FFI::Pointer user_data
+      ) -> CPLPushErrorHandler
+
       def self.CPLSetErrorHandler: (CPLErrorHandler handler) -> CPLErrorHandler
     end
   end

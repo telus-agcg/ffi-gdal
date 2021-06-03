@@ -343,15 +343,15 @@ module FFI
                       %i[OGRSpatialReferenceH int double double],
                       FFI::OGR::Core::Err
 
+      attach_function :OSRIsCompound, %i[OGRSpatialReferenceH], :bool
+      attach_function :OSRIsGeocentric, %i[OGRSpatialReferenceH], :bool
       attach_function :OSRIsGeographic, %i[OGRSpatialReferenceH], :bool
       attach_function :OSRIsLocal, %i[OGRSpatialReferenceH], :bool
       attach_function :OSRIsProjected, %i[OGRSpatialReferenceH], :bool
-      attach_function :OSRIsCompound, %i[OGRSpatialReferenceH], :bool
-      attach_function :OSRIsGeocentric, %i[OGRSpatialReferenceH], :bool
-      attach_function :OSRIsVertical, %i[OGRSpatialReferenceH], :bool
+      attach_function :OSRIsSame, %i[OGRSpatialReferenceH OGRSpatialReferenceH], :bool
       attach_function :OSRIsSameGeogCS, %i[OGRSpatialReferenceH OGRSpatialReferenceH], :bool
       attach_function :OSRIsSameVertCS, %i[OGRSpatialReferenceH OGRSpatialReferenceH], :bool
-      attach_function :OSRIsSame, %i[OGRSpatialReferenceH OGRSpatialReferenceH], :bool
+      attach_function :OSRIsVertical, %i[OGRSpatialReferenceH], :bool
 
       attach_function :OSRSetLocalCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetProjCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err

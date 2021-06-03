@@ -13,7 +13,7 @@ module OGR
 
       # Returns the units used by the associated OGR::SpatialReference.
       #
-      # @return [Hash]
+      # @return [{ unit_name: String, value: Float }, nil]
       def area_units
         spatial_reference ? spatial_reference.linear_units : nil
       end

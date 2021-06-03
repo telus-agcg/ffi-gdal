@@ -2,9 +2,7 @@
    signature "sig", 'sig-gems'
 
    check "lib"                       # Directory name
-   check "Gemfile"                   # File name
    # check "app/models/**/*.rb"        # Glob
-   # ignore "lib/templates/*.rb"
 
    # library "pathname", "set"       # Standard libraries
    library "date", "forwardable"       # Standard libraries

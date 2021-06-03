@@ -60,9 +60,7 @@ module OGR
         end
 
       if @c_pointer.null?
-        error_msg, ptr = FFI::CPL::Error.CPLGetLastErrorMsg
-        ptr.autorelease = false
-
+        error_msg = FFI::CPL::Error.CPLGetLastErrorMsg
         error_type = FFI::CPL::Error.CPLGetLastErrorType
         FFI::CPL::Error.CPLErrorReset
 
@@ -85,10 +83,7 @@ module OGR
     # @return [String]
     def name
       # This is an internal string and should not be modified or freed.
-      name_ptr = FFI::OGR::API.OGR_DS_GetName(@c_pointer)
-      name_ptr.autorelease = false
-
-      name_ptr.read_string_to_null
+      FFI::OGR::API.OGR_DS_GetName(@c_pointer)
     end
 
     # @return [OGR::Driver]

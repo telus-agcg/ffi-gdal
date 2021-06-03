@@ -40,7 +40,7 @@ module OGR
       # @param x [Float]
       # @param y [Float]
       # @param z [Float]
-      def add_point(x, y, z = 0)
+      def add_point(x, y, z = 0.0)
         if coordinate_dimension == 3
           FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
         else
@@ -67,9 +67,9 @@ module OGR
         z_stride = coordinate_dimension == 3 ? FFI::Type::DOUBLE.size : 0
 
         buffer_size = point_count
-        x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-        y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-        z_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size) if coordinate_dimension == 3
+        x_buffer = FFI::Buffer.alloc_out(buffer_size)
+        y_buffer = FFI::Buffer.alloc_out(buffer_size)
+        z_buffer = FFI::Buffer.alloc_out(buffer_size) if coordinate_dimension == 3
 
         num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
                                                    x_buffer, x_stride, y_buffer,

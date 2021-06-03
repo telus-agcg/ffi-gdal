@@ -11,6 +11,7 @@ module FFI
     def self.extended: (Module mod) -> void
 
     def ffi_lib: (*(String | Symbol) names) -> Array[FFI::DynamicLibrary]
+      | (Array[String | Symbol] names) -> Array[FFI::DynamicLibrary]
 
     def ffi_convention: ((:default | :stdcall) ?convention) -> Symbol
 
@@ -22,9 +23,9 @@ module FFI
 
     def attach_function: (
       _ToS c_function_name,
-      Array[Symbol | FFI::Enum] args,
-      ?Symbol ?returns,
-      **options
+      Array[Symbol | FFI::Enum | FFI::Type] args,
+      ?Symbol | FFI::Enum ?returns,
+      Hash ?options
     ) -> FFI::VariadicInvoker
 
     def function_names: (_ToS name, Array arg_types) -> Array[String]
