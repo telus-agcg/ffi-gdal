@@ -314,7 +314,7 @@ module GDAL
       # @param options [Hash] None supported in GDAL as of this writing.
       def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
+        mask_band_ptr = GDAL._maybe_pointer(GDAL::RasterBand, mask_band)
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
 
         if destination_band.nil? || destination_band.null?

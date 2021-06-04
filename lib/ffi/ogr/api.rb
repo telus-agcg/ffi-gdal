@@ -125,7 +125,6 @@ module FFI
                       FFI::OGR::Core::Err
 
       # Geometry boolean-op methods
-      attach_function :OGR_G_Boundary, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_Buffer, %i[OGRGeometryH double int], :OGRGeometryH
       attach_function :OGR_G_Centroid, %i[OGRGeometryH OGRGeometryH], :int
       attach_function :OGR_G_Contains, %i[OGRGeometryH OGRGeometryH], :bool
@@ -401,7 +400,7 @@ module FFI
       # Deprecated in 2.0; use GDALDatasetGetLayerCount()
       attach_function :OGR_DS_GetLayerCount, %i[OGRDataSourceH], :int
       # Deprecated in 2.0; use GDALGetDescription()
-      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :pointer # <- don't free this!
+      attach_function :OGR_DS_GetName, %i[OGRDataSourceH], :string # <- don't free this!
       attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
       # Deprecated in 2.0; use GDALDatasetREleaseResultSet()
       attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void

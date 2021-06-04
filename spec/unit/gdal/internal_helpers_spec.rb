@@ -5,7 +5,7 @@ require 'ogr/spatial_reference'
 require 'gdal/dataset'
 
 module Tester
-  include GDAL::InternalHelpers
+  extend GDAL::InternalHelpers
 end
 
 RSpec.describe GDAL::InternalHelpers do
@@ -33,8 +33,8 @@ RSpec.describe GDAL::InternalHelpers do
     end
 
     context 'variable is nil' do
-      it 'returns nil' do
-        expect(subject._pointer(GDAL::Dataset, nil)).to be_nil
+      it 'raises' do
+        expect { subject._pointer(GDAL::Dataset, nil) }.to raise_error FFI::GDAL::InvalidPointer
       end
     end
   end

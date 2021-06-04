@@ -45,7 +45,7 @@ RSpec.describe GDAL::EnvironmentMethods do
 
   describe '#flush_cache_block' do
     it 'returns nil' do
-      expect(subject.flush_cache_block).to be_nil
+      expect(subject.flush_cache_block).to be(true).or(be(false))
     end
   end
 
