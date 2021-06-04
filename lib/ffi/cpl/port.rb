@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 require 'ffi'
+require_relative '../gdal'
 
 module FFI
   module CPL
     module Port
       extend ::FFI::Library
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #------------------------------------------------------------------------
       # Typedefs

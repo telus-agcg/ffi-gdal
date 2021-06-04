@@ -3,12 +3,13 @@
 require 'ffi'
 require_relative 'rect_obj'
 require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module CPL
     module QuadTree
       extend ::FFI::Library
-      ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #-------------------------------------------------------------------------
       # Typedefs
@@ -24,7 +25,7 @@ module FFI
       # Functions
       #-------------------------------------------------------------------------
       attach_function :CPLQuadTreeCreate,
-                      [RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
+                      [FFI::CPL::RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
                       :CPLQuadTreeH
       attach_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
       attach_function :CPLQuadTreeSetBucketCapacity,
@@ -34,10 +35,10 @@ module FFI
       attach_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
       attach_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
       attach_function :CPLQuadTreeInsertWithBounds,
-                      [:CPLQuadTreeH, :pointer, RectObj.ptr],
+                      [:CPLQuadTreeH, :pointer, FFI::CPL::RectObj.ptr],
                       :void
       attach_function :CPLQuadTreeSearch,
-                      [:CPLQuadTreeH, RectObj.ptr, :pointer],
+                      [:CPLQuadTreeH, FFI::CPL::RectObj.ptr, :pointer],
                       :void
       attach_function :CPLQuadTreeForeach,
                       %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],

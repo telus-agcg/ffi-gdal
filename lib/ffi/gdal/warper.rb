@@ -8,7 +8,7 @@ module FFI
   module GDAL
     module Warper
       extend ::FFI::Library
-      ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #------------------------------------------------------------------------
       # Typedefs

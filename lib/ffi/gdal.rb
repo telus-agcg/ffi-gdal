@@ -94,6 +94,11 @@ module FFI
 
     ffi_lib(gdal_library_path)
 
+    # @return [Array<FFI::DynamicLibrary>]
+    def self.loaded_ffi_libs
+      @ffi_libs
+    end
+
     attach_function :GDALVersionInfo, %i[string], :string
     attach_function :GDALCheckVersion, %i[int int string], :bool
   end
