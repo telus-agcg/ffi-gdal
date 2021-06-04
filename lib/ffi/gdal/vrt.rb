@@ -35,7 +35,7 @@ module FFI
 
       callback :VRTImageReadFunc,
                %i[pointer int int int int pointer],
-               CPL::Error::CPLErr
+               FFI::CPL::Error.enum_type(:CPLErr)
 
       #-------------------------------------------------------------------------
       # Functions
@@ -46,16 +46,16 @@ module FFI
       attach_function :VRTSerializeToXML, %i[VRTDatasetH string], CPL::XMLNode.ptr
 
       attach_function :VRTAddBand,
-                      [:VRTDatasetH, GDAL::DataType, :pointer],
+                      [:VRTDatasetH, FFI::GDAL::GDAL.enum_type(:GDALDataType), :pointer],
                       :int
 
       attach_function :VRTAddSource,
                       %i[VRTSourcedRasterBandH VRTSourceH],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :VRTAddSimpleSource,
                       [
-                        :VRTSourcedRasterBandH,             # hVRTBand
-                        GDAL.find_type(:GDALRasterBandH),   # hSrcBand
+                        :VRTSourcedRasterBandH, # hVRTBand
+                        FFI::GDAL::GDAL.find_type(:GDALRasterBandH), # hSrcBand
                         :int,                               # nSrcXOff
                         :int,                               # nSrcYOff
                         :int,                               # nSrcXSize
@@ -67,11 +67,11 @@ module FFI
                         :string,                            # pszResampling
                         :double                             # dfNoDataValue
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :VRTAddComplexSource,
                       [
                         :VRTSourcedRasterBandH,             # hVRTBand
-                        GDAL.find_type(:GDALRasterBandH),   # hSrcBand
+                        FFI::GDAL::GDAL.find_type(:GDALRasterBandH), # hSrcBand
                         :int,                               # nSrcXOff
                         :int,                               # nSrcYOff
                         :int,                               # nSrcXSize
@@ -84,10 +84,10 @@ module FFI
                         :double,                            # dfScaleRation
                         :double                             # dfNoDataValue
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :VRTAddFuncSource,
                       %i[VRTSourcedRasterBandH VRTImageReadFunc pointer double],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
     end
   end
 end

@@ -12,15 +12,15 @@ module FFI
       # -----------------------------------------------------------------------
       # Enums
       # -----------------------------------------------------------------------
-      GridAlgorithm = enum :GGA_InverseDistanceToAPower, 1,
-                           :GGA_MovingAverage, 2,
-                           :GGA_NearestNeighbor, 3,
-                           :GGA_MetricMinimum, 4,
-                           :GGA_MetricMaximum, 5,
-                           :GGA_MetricRange, 6,
-                           :GGA_MetricCount, 7,
-                           :GGA_MetricAverageDistance, 8,
-                           :GGA_MetricAverageDistancePts, 9
+      GridAlgorithm = enum :GDALGridAlgorithm, [:GGA_InverseDistanceToAPower, 1,
+                                                :GGA_MovingAverage, 2,
+                                                :GGA_NearestNeighbor, 3,
+                                                :GGA_MetricMinimum, 4,
+                                                :GGA_MetricMaximum, 5,
+                                                :GGA_MetricRange, 6,
+                                                :GGA_MetricCount, 7,
+                                                :GGA_MetricAverageDistance, 8,
+                                                :GGA_MetricAverageDistancePts, 9]
 
       # -----------------------------------------------------------------------
       # Typedefs
@@ -30,7 +30,7 @@ module FFI
                :int
       callback :GDALContourWriter,
                %i[double int pointer pointer pointer],
-               CPL::Error::CPLErr
+               FFI::CPL::Error.enum_type(:CPLErr)
       typedef :pointer, :GDALContourGeneratorH
 
       # -----------------------------------------------------------------------
@@ -61,7 +61,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       # ~~~~~~~~~~~~~~~~~~~~~
       # Contour functions
@@ -80,11 +80,11 @@ module FFI
                       :GDALContourGeneratorH
       attach_function :GDAL_CG_FeedLine,
                       %i[GDALContourGeneratorH pointer],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDAL_CG_Destroy, %i[pointer], :void
       attach_function :OGRContourWriter,
                       %i[double int pointer pointer pointer],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALContourGenerate,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -100,7 +100,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       # ~~~~~~~~~~~~~~~~~~~~~
       # Transformer functions
@@ -114,7 +114,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALSuggestedWarpOutput2,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -126,13 +126,13 @@ module FFI
                         :pointer,
                         :int
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALSerializeTransformer,
                       %i[GDALTransformerFunc pointer],
                       CPL::XMLNode.ptr
       attach_function :GDALDeserializeTransformer,
                       [CPL::XMLNode.ptr, :GDALTransformerFunc, :pointer],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALTransformGeolocations,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -144,7 +144,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       # ~~~
       # Approx
@@ -256,7 +256,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALFillNodata,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -268,29 +268,29 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALPolygonize,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
-                        OGR::API.find_type(:OGRLayerH),
+                        FFI::OGR::API.find_type(:OGRLayerH),
                         :int,
                         :pointer,
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALFPolygonize,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
-                        OGR::API.find_type(:OGRLayerH),
+                        FFI::OGR::API.find_type(:OGRLayerH),
                         :int,
                         :pointer,
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALSieveFilter,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -302,7 +302,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Dataset-related
@@ -311,7 +311,7 @@ module FFI
                       [
                         GridAlgorithm,
                         :pointer,
-                        CPL::Port.find_type(:GUInt32),
+                        FFI::CPL::Port.find_type(:GUInt32),
                         :pointer,
                         :pointer,
                         :pointer,
@@ -319,14 +319,14 @@ module FFI
                         :double,
                         :double,
                         :double,
-                        CPL::Port.find_type(:GUInt32),
-                        CPL::Port.find_type(:GUInt32),
-                        GDAL::DataType,
+                        FFI::CPL::Port.find_type(:GUInt32),
+                        FFI::CPL::Port.find_type(:GUInt32),
+                        FFI::GDAL::GDAL.enum_type(:GDALDataType),
                         :pointer,
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALRasterizeGeometries,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -341,7 +341,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALRasterizeLayers,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -356,13 +356,13 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
       attach_function :GDALRasterizeLayersBuf,
                       [
                         :pointer,
                         :int,
                         :int,
-                        GDAL::DataType,
+                        FFI::GDAL::GDAL.enum_type(:GDALDataType),
                         :int,
                         :int,
                         :int,
@@ -376,7 +376,7 @@ module FFI
                         FFI::GDAL::GDAL.find_type(:GDALProgressFunc),
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALSimpleImageWarp,
                       [

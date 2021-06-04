@@ -16,7 +16,7 @@ module FFI
       callback :GDALGridFunction,
                [
                  :pointer,
-                 CPL::Port.find_type(:GUInt32),
+                 FFI::CPL::Port.find_type(:GUInt32),
                  :pointer,
                  :pointer,
                  :pointer,
@@ -25,7 +25,7 @@ module FFI
                  :pointer,
                  :pointer
                ],
-               CPL::Error::CPLErr
+               FFI::CPL::Error.enum_type(:CPLErr)
 
       #------------------------------------------------------------------------
       # Functions
@@ -33,7 +33,7 @@ module FFI
       attach_function :GDALGridInverseDistanceToAPower,
                       [
                         :pointer,
-                        CPL::Port.find_type(:GUInt32),
+                        FFI::CPL::Port.find_type(:GUInt32),
                         :pointer,
                         :pointer,
                         :pointer,
@@ -42,12 +42,12 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridInverseDistanceToAPointerNoSearch,
                       [
                         :pointer,
-                        CPL::Port.find_type(:GUInt32),
+                        FFI::CPL::Port.find_type(:GUInt32),
                         :pointer,
                         :pointer,
                         :pointer,
@@ -56,7 +56,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridMovingAverage,
                       [
@@ -70,7 +70,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridNearestNeighbor,
                       [
@@ -84,7 +84,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricMinimum,
                       [
@@ -98,7 +98,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricMaximum,
                       [
@@ -112,7 +112,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricRange,
                       [
@@ -126,7 +126,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricCount,
                       [
@@ -140,7 +140,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricAverageDistance,
                       [
@@ -154,7 +154,7 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :GDALGridDataMetricAverageDistancePts,
                       [
@@ -168,11 +168,11 @@ module FFI
                         :pointer,
                         :pointer
                       ],
-                      CPL::Error::CPLErr
+                      FFI::CPL::Error.enum_type(:CPLErr)
 
       attach_function :ParseAlgorithmAndOptions,
-                      [:string, Alg::GridAlgorithm, :pointer],
-                      CPL::Error::CPLErr
+                      [:string, FFI::GDAL::Alg.enum_type(:GridAlgorithm), :pointer],
+                      FFI::CPL::Error.enum_type(:CPLErr)
     end
   end
 end

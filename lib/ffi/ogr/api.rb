@@ -48,30 +48,30 @@ module FFI
                         :pointer,
                         :int,
                         :pointer
-                      ], FFI::OGR::Core::Err
+                      ], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_CreateFromGML, %i[string], :OGRGeometryH
       attach_function :OGR_G_CreateFromGMLTree, [FFI::CPL::XMLNode.ptr], :OGRGeometryH
       attach_function :OGR_G_CreateFromWkb,
-                      [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int], FFI::OGR::Core::Err
+        [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_CreateFromWkt, [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
-                      FFI::OGR::Core::Err
+        FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_CreateGeometry, [FFI::OGR::Core::WKBGeometryType], :OGRGeometryH
       attach_function :OGR_G_CreateGeometryFromJson, %i[string], :OGRGeometryH
-      attach_function :OGR_G_ImportFromWkb, %i[OGRGeometryH string int], FFI::OGR::Core::Err
-      attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
+      attach_function :OGR_G_ImportFromWkb, %i[OGRGeometryH string int], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], FFI::OGR::Core.enum_type(:OGRErr)
 
       # Geometry exporters
       attach_function :OGR_G_ExportEnvelopeToGMLTree, %i[OGRGeometryH], FFI::CPL::XMLNode.ptr
       attach_function :OGR_G_ExportToGML, %i[OGRGeometryH], :strptr
       attach_function :OGR_G_ExportToGMLEx, %i[OGRGeometryH pointer], :strptr
       attach_function :OGR_G_ExportToGMLTree, %i[OGRGeometryH], FFI::CPL::XMLNode.ptr
-      attach_function :OGR_G_ExportToIsoWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
+      attach_function :OGR_G_ExportToIsoWkt, %i[OGRGeometryH pointer], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_ExportToJson, %i[OGRGeometryH], :strptr
       attach_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH pointer], :strptr
       attach_function :OGR_G_ExportToKML, %i[OGRGeometryH string], :strptr
       attach_function :OGR_G_ExportToWkb, [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
+        FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_function :OGR_G_DestroyGeometry, %i[OGRGeometryH], :void
       attach_function :OGR_G_Clone, %i[OGRGeometryH], :OGRGeometryH
@@ -103,13 +103,13 @@ module FFI
       attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
       # Geometry mutating methods
-      attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core::Err
-      attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core::Err
+      attach_function :OGR_G_AddGeometry, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_G_AddGeometryDirectly, %i[OGRGeometryH OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_AddPoint, %i[OGRGeometryH double double double], :void
       attach_function :OGR_G_AddPoint_2D, %i[OGRGeometryH double double], :void
       attach_function :OGR_G_AssignSpatialReference,
                       [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)], :void
-      attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int bool], FFI::OGR::Core::Err
+      attach_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int bool], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
       attach_function :OGR_G_SetPoint, %i[OGRGeometryH int double double double], :void
       attach_function :OGR_G_SetPointCount, %i[OGRGeometryH int], :void
@@ -126,9 +126,9 @@ module FFI
       attach_function :OGR_G_Simplify, %i[OGRGeometryH double], :OGRGeometryH
       attach_function :OGR_G_SimplifyPreserveTopology, %i[OGRGeometryH double], :OGRGeometryH
       attach_function :OGR_G_Transform, [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRCoordinateTransformationH)],
-                      FFI::OGR::Core::Err
+        FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_G_TransformTo, [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)],
-                      FFI::OGR::Core::Err
+        FFI::OGR::Core.enum_type(:OGRErr)
 
       # Geometry boolean-op methods
       attach_function :OGR_G_Buffer, %i[OGRGeometryH double int], :OGRGeometryH
@@ -214,7 +214,7 @@ module FFI
                       :void
       attach_function :OGR_FD_DeleteFieldDefn,
                       %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_FD_SetGeomType,
                       [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],
@@ -238,7 +238,7 @@ module FFI
                       :void
       attach_function :OGR_FD_DeleteGeomFieldDefn,
                       %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_function :OGR_FD_IsSame,
                       %i[OGRFeatureDefnH OGRFeatureDefnH],
@@ -252,10 +252,10 @@ module FFI
       attach_function :OGR_F_GetDefnRef, %i[OGRFeatureH], :OGRFeatureDefnH
       attach_function :OGR_F_SetGeometryDirectly,
                       %i[OGRFeatureH OGRGeometryH],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_F_SetGeometry,
                       %i[OGRFeatureH OGRGeometryH],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_F_GetGeometryRef, %i[OGRFeatureH], :OGRGeometryH
       attach_function :OGR_F_StealGeometry, %i[OGRFeatureH], :OGRGeometryH
 
@@ -294,14 +294,14 @@ module FFI
       attach_function :OGR_F_GetGeomFieldDefnRef, %i[OGRFeatureH int], :OGRGeomFieldDefnH
       attach_function :OGR_F_GetGeomFieldIndex, %i[OGRFeatureH string], :int
       attach_function :OGR_F_GetGeomFieldRef, %i[OGRFeatureH int], :OGRGeometryH
-      attach_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core::Err
-      attach_function :OGR_F_SetGeomField, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core::Err
+      attach_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_F_SetGeomField, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_function :OGR_F_GetFID, %i[OGRFeatureH], :long
-      attach_function :OGR_F_SetFID, %i[OGRFeatureH long], FFI::OGR::Core::Err
+      attach_function :OGR_F_SetFID, %i[OGRFeatureH long], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_F_DumpReadable, %i[OGRFeatureH pointer], :void
-      attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], FFI::OGR::Core::Err
-      attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], FFI::OGR::Core::Err
+      attach_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_function :OGR_F_GetStyleString, %i[OGRFeatureH], :strptr
       attach_function :OGR_F_SetStyleString, %i[OGRFeatureH string], :void
@@ -322,7 +322,7 @@ module FFI
       attach_function :OGR_L_Dereference, %i[OGRLayerH], :int
       attach_function :OGR_L_GetRefCount, %i[OGRLayerH], :int
       attach_function :OGR_L_Reference, %i[OGRLayerH], :int
-      attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], FFI::OGR::Core::Err
+      attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_ResetReading, %i[OGRLayerH], :void
       attach_function :OGR_L_TestCapability, %i[OGRLayerH string], :bool
 
@@ -333,33 +333,33 @@ module FFI
       attach_function :OGR_L_SetSpatialFilterRect, %i[OGRLayerH double double double double], :void
       attach_function :OGR_L_SetSpatialFilterRectEx, %i[OGRLayerH int double double double double], :void
 
-      attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], FFI::OGR::Core::Err
+      attach_function :OGR_L_SetAttributeFilter, %i[OGRLayerH string], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], FFI::OGR::Core::Err
+      attach_function :OGR_L_SetNextByIndex, %i[OGRLayerH long], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
-      attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], FFI::OGR::Core::Err
+      attach_function :OGR_L_CreateFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_DeleteFeature, %i[OGRLayerH long], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_GetFeature, %i[OGRLayerH long], :OGRFeatureH
       attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
       attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], CPL::Port.find_type(:GIntBig)
       attach_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
-      attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core::Err
+      attach_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
-      attach_function :OGR_L_GetExtentEx, [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
+      attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_GetExtentEx, [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], FFI::OGR::Core::Err
-      attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], FFI::OGR::Core::Err
-      attach_function :OGR_L_CreateGeomField, %i[OGRLayerH OGRGeomFieldDefnH bool], FFI::OGR::Core::Err
-      attach_function :OGR_L_DeleteField, %i[OGRLayerH int], FFI::OGR::Core::Err
+      attach_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_CreateGeomField, %i[OGRLayerH OGRGeomFieldDefnH bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_DeleteField, %i[OGRLayerH int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
-      attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], FFI::OGR::Core::Err
-      attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
-      attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
+      attach_function :OGR_L_ReorderField, %i[OGRLayerH int int], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_ReorderFields, %i[OGRLayerH pointer], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
-      attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
-      attach_function :OGR_L_StartTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
+      attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_function :OGR_L_StartTransaction, %i[OGRLayerH], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :strptr
       attach_function :OGR_L_GetGeometryColumn, %i[OGRLayerH], :strptr
@@ -371,25 +371,25 @@ module FFI
       # rubocop:disable Layout/LineLength
       attach_function :OGR_L_Clip,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_Erase,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_Identity,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_Intersection,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_SymDifference,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_Union,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       attach_function :OGR_L_Update,
                       [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core::Err
+                      FFI::OGR::Core.enum_type(:OGRErr)
       # rubocop:enable Layout/LineLength
 
       # ~~~~~~~~~~~~~~~~
@@ -407,7 +407,7 @@ module FFI
                         :pointer
                       ], :OGRLayerH
       # Deprecated in 2.0; use GDALDatasetDeleteLayer()
-      attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
+                      attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core.enum_type(:OGRErr)
       # Deprecated in 2.0; use GDALClose()
       attach_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
       # Deprecated in 2.0; use GDALDatasetExecuteSQL()
@@ -427,7 +427,7 @@ module FFI
       attach_function :OGR_DS_ReleaseResultSet, %i[OGRDataSourceH OGRLayerH], :void
       attach_function :OGR_DS_SetStyleTable, %i[OGRDataSourceH OGRStyleTableH], :void
       attach_function :OGR_DS_SetStyleTableDirectly, %i[OGRDataSourceH OGRStyleTableH], :void
-      attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core::Err
+      attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core.enum_type(:OGRErr)
       # Deprecated in 2.0; use GDALDatasetTestCapability()
       attach_function :OGR_DS_TestCapability, %i[OGRDataSourceH string], :bool
 
@@ -441,7 +441,7 @@ module FFI
       attach_function :OGR_Dr_CopyDataSource,
                       %i[OGRSFDriverH OGRDataSourceH string pointer],
                       :OGRDataSourceH
-      attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
+      attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core.enum_type(:OGRErr)
 
       # ~~~~~~~~~~~~~~~~
       # Style Manager-related
@@ -501,7 +501,7 @@ module FFI
       attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
       attach_function :OGRRegisterAll, [], :void
       attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
-      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
+      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core.enum_type(:OGRErr)
     end
   end
 end

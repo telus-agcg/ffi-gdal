@@ -14,19 +14,19 @@ module FFI
       # ----------------------------------------------------------------
       # Enums
       # ----------------------------------------------------------------
-      DataType = enum :GDT_Unknown, 0,
-                      :GDT_Byte,        1,
-                      :GDT_UInt16,      2,
-                      :GDT_Int16,       3,
-                      :GDT_UInt32,      4,
-                      :GDT_Int32,       5,
-                      :GDT_Float32,     6,
-                      :GDT_Float64,     7,
-                      :GDT_CInt16,      8,
-                      :GDT_CInt32,      9,
-                      :GDT_CFloat32,    10,
-                      :GDT_CFloat64,    11,
-                      :GDT_TypeCount,   12
+      DataType = enum :GDALDataType, [:GDT_Unknown, 0,
+                                      :GDT_Byte,        1,
+                                      :GDT_UInt16,      2,
+                                      :GDT_Int16,       3,
+                                      :GDT_UInt32,      4,
+                                      :GDT_Int32,       5,
+                                      :GDT_Float32,     6,
+                                      :GDT_Float64,     7,
+                                      :GDT_CInt16,      8,
+                                      :GDT_CInt32,      9,
+                                      :GDT_CFloat32,    10,
+                                      :GDT_CFloat64,    11,
+                                      :GDT_TypeCount,   12]
 
       AsyncStatusType = enum :GARIO_PENDING, 0,
                              :GARIO_UPDATE,     1,
@@ -110,7 +110,7 @@ module FFI
                :bool
 
       callback :GDALDerivedPixelFunc,
-               [:pointer, :int, :pointer, :int, :int, DataType, DataType, :int, :int],
+               [:pointer, :int, :pointer, :int, :int, enum_type(:GDALDataType), enum_type(:GDALDataType), :int, :int],
                :int
 
       # ----------------------------------------------------------------
@@ -140,7 +140,7 @@ module FFI
 
       # Instance-level functions
       attach_function :GDALCreate,
-                      [:GDALDriverH, :string, :int, :int, :int, DataType, :pointer],
+                      [:GDALDriverH, :string, :int, :int, :int, enum_type(:GDALDataType), :pointer],
                       :GDALDatasetH
       attach_function :GDALCreateCopy,
                       %i[GDALDriverH string GDALDatasetH bool pointer GDALProgressFunc pointer],
@@ -189,7 +189,7 @@ module FFI
       attach_function :GDALGetRasterCount, [:GDALDatasetH], :int
       attach_function :GDALGetRasterBand, %i[GDALDatasetH int], :GDALRasterBandH
       attach_function :GDALAddBand,
-                      [:GDALDatasetH, DataType, :pointer],
+                      [:GDALDatasetH, enum_type(:GDALDataType), :pointer],
                       FFI::CPL::Error::CPLErr
       attach_function :GDALBeginAsyncReader,
                       [
@@ -202,7 +202,7 @@ module FFI
                         :pointer,
                         :int,
                         :int,
-                        DataType,
+                        enum_type(:GDALDataType),
                         :int,
                         :pointer,
                         :int,
@@ -225,7 +225,7 @@ module FFI
                         :pointer,
                         :int,
                         :int,
-                        DataType,
+                        enum_type(:GDALDataType),
                         :int,
                         :pointer,
                         :int,
@@ -242,7 +242,7 @@ module FFI
                         :int,
                         :int,
                         :int,
-                        DataType,
+                        enum_type(:GDALDataType),
                         :int,
                         :pointer,
                         :pointer
@@ -369,10 +369,10 @@ module FFI
                       %i[GDALRasterBandH int],
                       FFI::CPL::Error::CPLErr
 
-      attach_function :GDALGetRasterDataType, [:GDALRasterBandH], DataType
+      attach_function :GDALGetRasterDataType, [:GDALRasterBandH], enum_type(:GDALDataType)
       attach_function :GDALGetBlockSize,
                       %i[GDALRasterBandH pointer pointer],
-                      DataType
+                      enum_type(:GDALDataType)
 
       attach_function :GDALRasterAdviseRead,
                       [
@@ -383,7 +383,7 @@ module FFI
                         :int,
                         :int,
                         :int,
-                        DataType,
+                        enum_type(:GDALDataType),
                         :pointer
                       ], FFI::CPL::Error::CPLErr
 
@@ -398,7 +398,7 @@ module FFI
                         :pointer,
                         :int,
                         :int,
-                        DataType,
+                        enum_type(:GDALDataType),
                         :int,
                         :int
                       ], FFI::CPL::Error::CPLErr
@@ -648,11 +648,11 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # General stuff
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGetDataTypeSize, [DataType], :int
-      attach_function :GDALDataTypeIsComplex, [DataType], :bool
-      attach_function :GDALGetDataTypeName, [DataType], :strptr
-      attach_function :GDALGetDataTypeByName, [:string], DataType
-      attach_function :GDALDataTypeUnion, [DataType, DataType], DataType
+      attach_function :GDALGetDataTypeSize, [enum_type(:GDALDataType)], :int
+      attach_function :GDALDataTypeIsComplex, [enum_type(:GDALDataType)], :bool
+      attach_function :GDALGetDataTypeName, [enum_type(:GDALDataType)], :strptr
+      attach_function :GDALGetDataTypeByName, [:string], enum_type(:GDALDataType)
+      attach_function :GDALDataTypeUnion, [enum_type(:GDALDataType), enum_type(:GDALDataType)], enum_type(:GDALDataType)
 
       attach_function :GDALSetCacheMax, %i[int], :void
       attach_function :GDALSetCacheMax64, [CPL::Port.find_type(:GIntBig)], :void

@@ -17,16 +17,16 @@ module FFI
       # The C API defines :OGRErr as a int typedef.  I'm taking the liberty to
       # turn this into an enum.
       # https://trac.osgeo.org/gdal/ticket/3153
-      Err = enum :OGRERR_NONE,
-                 :OGRERR_NOT_ENOUGH_DATA,
-                 :OGRERR_NOT_ENOUGH_MEMORY,
-                 :OGRERR_UNSUPPORTED_GEOMETRY_TYPE,
-                 :OGRERR_UNSUPPORTED_OPERATION,
-                 :OGRERR_CORRUPT_DATA,
-                 :OGRERR_FAILURE,
-                 :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE,
-                 :OGRERR_NON_EXISTING_FEATURE
+      Err = enum :OGRErr, %i[OGRERR_NONE
+                             OGRERR_NOT_ENOUGH_DATA
+                             OGRERR_NOT_ENOUGH_MEMORY
+                             OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+                             OGRERR_UNSUPPORTED_OPERATION
+                             OGRERR_CORRUPT_DATA
+                             OGRERR_FAILURE
+                             OGRERR_UNSUPPORTED_SRS
+                             OGRERR_INVALID_HANDLE
+                             OGRERR_NON_EXISTING_FEATURE]
 
       WKBGeometryType = enum FFI::Type::UINT,
                              :wkbUnknown,                0,
@@ -83,12 +83,12 @@ module FFI
                        :OGRSTCLabel,   4,
                        :OGRSTCVector,  5
 
-      STUnitId = enum :OGRSTUGround, 0,
-                      :OGRSTUPixel,   1,
-                      :OGRSTUPoints,  2,
-                      :OGRSTUMM,      3,
-                      :OGRSTUCM,      4,
-                      :OGRSTUInches,  5
+      STUnitId = enum :STUnitId, [:OGRSTUGround, 0,
+                                  :OGRSTUPixel,   1,
+                                  :OGRSTUPoints,  2,
+                                  :OGRSTUMM,      3,
+                                  :OGRSTUCM,      4,
+                                  :OGRSTUInches,  5]
 
       STPenParam = enum :OGRSTPenColor, 0,
                         :OGRSTPenWidth,       1,

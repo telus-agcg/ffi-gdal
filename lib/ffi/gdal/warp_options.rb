@@ -8,8 +8,8 @@ module FFI
     class WarpOptions < FFI::Struct
       layout warp_operation_options: :pointer,
              warp_memory_limit: :double,
-             resample_alg: FFI::GDAL::Warper::ResampleAlg,
-             working_data_type: FFI::GDAL::GDAL::DataType,
+             resample_alg: FFI::GDAL::Warper.enum_type(:GDALResampleAlg),
+             working_data_type: FFI::GDAL::GDAL.enum_type(:GDALDataType),
              source_dataset: FFI::GDAL::GDAL.find_type(:GDALDatasetH),
              destination_dataset: FFI::GDAL::GDAL.find_type(:GDALDatasetH),
              band_count: :int,
@@ -35,9 +35,9 @@ module FFI
              destination_density_mask_function_arg: :pointer,
              destination_validity_mask_function: FFI::GDAL::Warper.find_type(:GDALMaskFunc),
              destination_validity_mask_function_arg: :pointer,
-             pre_warp_chunk_processor: callback(%i[pointer pointer], FFI::CPL::Error::CPLErr),
+             pre_warp_chunk_processor: callback(%i[pointer pointer], FFI::CPL::Error.enum_type(:CPLErr)),
              pre_warp_processor_arg: :pointer,
-             post_warp_chunk_processor: callback(%i[pointer pointer], FFI::CPL::Error::CPLErr),
+             post_warp_chunk_processor: callback(%i[pointer pointer], FFI::CPL::Error.enum_type(:CPLErr)),
              post_warp_processor_arg: :pointer,
              cutline: :pointer,
              cutline_blend_distance: :double
