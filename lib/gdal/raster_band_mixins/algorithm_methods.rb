@@ -227,7 +227,7 @@ module GDAL
       # @return [OGR::Layer]
       def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
+        mask_band_ptr = GDAL._maybe_pointer(GDAL::RasterBand, mask_band)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
         raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
 

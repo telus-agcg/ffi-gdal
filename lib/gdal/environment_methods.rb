@@ -33,7 +33,6 @@ module GDAL
       FFI::GDAL::GDAL.GDALGetCacheUsed64
     end
 
-    # @return [Boolean]
     def flush_cache_block
       FFI::GDAL::GDAL.GDALFlushCacheBlock
     end

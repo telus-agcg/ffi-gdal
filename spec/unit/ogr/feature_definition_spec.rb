@@ -53,7 +53,7 @@ RSpec.describe OGR::FeatureDefinition do
       it 'raises' do
         expect do
           subject.add_field_definition('not a pointer')
-        end.to raise_exception OGR::InvalidFieldDefinition
+        end.to raise_exception FFI::GDAL::InvalidPointer
       end
     end
 

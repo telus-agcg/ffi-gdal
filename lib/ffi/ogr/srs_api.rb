@@ -155,7 +155,7 @@ module FFI
       attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
 
       attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core::Err
-      attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH buffer_out uint], FFI::OGR::Core::Err
+      attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH buffer_out bool], FFI::OGR::Core::Err
       attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core::Err
       attach_function :OSRExportToPCI,
                       %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],

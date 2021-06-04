@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module OGR
@@ -79,7 +80,7 @@ module FFI
       attach_function :OGR_G_GetEnvelope3D, [:OGRGeometryH, FFI::OGR::Envelope3D.ptr], :void
       attach_function :OGR_G_GetGeometryCount, %i[OGRGeometryH], :int
       attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :strptr
-      attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH bool], :OGRGeometryH
+      attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
       attach_function :OGR_G_GetPoint, %i[OGRGeometryH int pointer pointer pointer], :double
       attach_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int

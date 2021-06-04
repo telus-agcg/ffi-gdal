@@ -133,7 +133,7 @@ RSpec.describe OGR::Driver do
       it 'raises an OGR::InvalidDataSource' do
         expect do
           subject.copy_data_source('not a pointer', 'bobo')
-        end.to raise_exception OGR::InvalidDataSource
+        end.to raise_exception FFI::GDAL::InvalidPointer
       end
     end
 

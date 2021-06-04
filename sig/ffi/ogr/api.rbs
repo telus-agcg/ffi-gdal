@@ -72,7 +72,7 @@ module FFI
       # Geometry exporters
 
       # Geometry attribute getter methods
-      def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, bool is_sub_geom) -> FFI::Pointer
+      def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, Integer sub_geom_index) -> FFI::Pointer
       def self.OGR_G_GetPoints: (
         FFI::Pointer geometry_handle,
         FFI::Buffer? x_buffer,

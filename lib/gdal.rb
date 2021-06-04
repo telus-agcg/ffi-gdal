@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'ffi-gdal'
+require_relative 'ffi/gdal'
 
 module GDAL
   class << self

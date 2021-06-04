@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 require 'ffi'
+require_relative '../gdal'
 
 module FFI
   module GDAL
     class WarpOptions < FFI::Struct
-      extend ::FFI::Library
-
       layout warp_operation_options: :pointer,
              warp_memory_limit: :double,
              resample_alg: FFI::GDAL::Warper::ResampleAlg,
