@@ -82,6 +82,9 @@ module FFI
         FFI::Buffer? z_buffer,
         Integer z_stride
       ) -> Integer
+      def self.OGR_G_GetX: (FFI::Pointer geometry_handle, Integer index) -> Float
+      def self.OGR_G_GetY: (FFI::Pointer geometry_handle, Integer index) -> Float
+      def self.OGR_G_GetZ: (FFI::Pointer geometry_handle, Integer index) -> Float
       def self.OGR_G_Length: (FFI::Pointer geometry_handle) -> Float
 
       # Geometry mutating methods

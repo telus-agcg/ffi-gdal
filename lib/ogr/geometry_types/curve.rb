@@ -3,23 +3,30 @@
 module OGR
   module GeometryTypes
     module Curve
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def x(point_number)
         FFI::OGR::API.OGR_G_GetX(@c_pointer, point_number)
       end
 
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def y(point_number)
         FFI::OGR::API.OGR_G_GetY(@c_pointer, point_number)
       end
 
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def z(point_number)
         FFI::OGR::API.OGR_G_GetZ(@c_pointer, point_number)
       end
 
       # @param number [Integer] Index of the point to get.
       # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def point(number)
         x_ptr = FFI::MemoryPointer.new(:double)
         y_ptr = FFI::MemoryPointer.new(:double)
@@ -60,7 +67,8 @@ module OGR
         end
       end
 
-      # @return [Array<Array<Float>>] An array of (x, y) or (x, y, z) points.
+      # @return [Array<[Float, Float, Float]>, Array<[Float, Float]>] An array
+      #   of (x, y) or (x, y, z) points.
       def points
         x_stride = FFI::Type::DOUBLE.size
         y_stride = FFI::Type::DOUBLE.size

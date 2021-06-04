@@ -103,6 +103,8 @@ module GDAL
     #     end
     #
     # After this code gets called, error handling will return to normal.
+    #
+    # @return Whatever the `on_` Proc returns for the related error class.
     def custom_handle
       FFI::CPL::Error.CPLPushErrorHandler(handler_lambda)
       yield
@@ -126,6 +128,7 @@ module GDAL
       error_class_map(error_class).call(CPLE_MAP[error_number][:exception], message)
     end
 
+    # @return [Proc]
     def error_class_map(error_class)
       {
         CE_None: @on_none,

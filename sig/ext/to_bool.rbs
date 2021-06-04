@@ -1,0 +1,7 @@
+class Integer
+  def to_bool: () -> (::TrueClass | ::FalseClass | untyped)
+end
+
+class String
+  def to_bool: () -> (::TrueClass | ::FalseClass | untyped)
+end

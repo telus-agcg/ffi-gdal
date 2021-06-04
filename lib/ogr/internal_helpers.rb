@@ -10,11 +10,11 @@ module OGR
     # @param flag [String] 'w' for writing, 'r' for reading.
     def _boolean_access_flag(flag)
       case flag
-      when 'w' then true
-      when 'r' then false
-      else
-        raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
+      when 'w' then return true
+      when 'r' then return false
       end
+
+      raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
     end
 
     # OGR's time zone rules:

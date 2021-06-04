@@ -13,8 +13,8 @@ module FFI
       #------------------------------------------------------------------------
       # Enums
       #------------------------------------------------------------------------
-      # The C API defines :OGRErr as a function that returns constants.  I'm
-      # taking the liberty to turn this into an enum.
+      # The C API defines :OGRErr as a int typedef.  I'm taking the liberty to
+      # turn this into an enum.
       # https://trac.osgeo.org/gdal/ticket/3153
       Err = enum :OGRERR_NONE,
                  :OGRERR_NOT_ENOUGH_DATA,
@@ -24,7 +24,8 @@ module FFI
                  :OGRERR_CORRUPT_DATA,
                  :OGRERR_FAILURE,
                  :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE
+                 :OGRERR_INVALID_HANDLE,
+                 :OGRERR_NON_EXISTING_FEATURE
 
       WKBGeometryType = enum FFI::Type::UINT,
                              :wkbUnknown,                0,
