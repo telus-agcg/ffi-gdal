@@ -29,23 +29,24 @@ module FFI
                              OGRERR_NON_EXISTING_FEATURE]
 
       WKBGeometryType = enum FFI::Type::UINT,
-                             :wkbUnknown,                0,
-                             :wkbPoint,                  1,
-                             :wkbLineString,             2,
-                             :wkbPolygon,                3,
-                             :wkbMultiPoint,             4,
-                             :wkbMultiLineString,        5,
-                             :wkbMultiPolygon,           6,
-                             :wkbGeometryCollection,     7,
-                             :wkbNone,                   100,    # non-standard, for pure attribute records
-                             :wkbLinearRing,             101,    # non-standard, just for createGeometry
-                             :wkbPoint25D,               0x8000_0001,
-                             :wkbLineString25D,          0x8000_0002,
-                             :wkbPolygon25D,             0x8000_0003,
-                             :wkbMultiPoint25D,          0x8000_0004,
-                             :wkbMultiLineString25D,     0x8000_0005,
-                             :wkbMultiPolygon25D,        0x8000_0006,
-                             :wkbGeometryCollection25D,  0x8000_0007
+                             :OGRwkbGeometryType,
+                             [:wkbUnknown, 0,
+                              :wkbPoint,                  1,
+                              :wkbLineString,             2,
+                              :wkbPolygon,                3,
+                              :wkbMultiPoint,             4,
+                              :wkbMultiLineString,        5,
+                              :wkbMultiPolygon,           6,
+                              :wkbGeometryCollection,     7,
+                              :wkbNone,                   100,    # non-standard, for pure attribute records
+                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
+                              :wkbPoint25D,               0x8000_0001,
+                              :wkbLineString25D,          0x8000_0002,
+                              :wkbPolygon25D,             0x8000_0003,
+                              :wkbMultiPoint25D,          0x8000_0004,
+                              :wkbMultiLineString25D,     0x8000_0005,
+                              :wkbMultiPolygon25D,        0x8000_0006,
+                              :wkbGeometryCollection25D,  0x8000_0007]
 
       WKBVariant = enum :wkbVariantOgc, :wkbVariantIso
       WKBByteOrder = enum :wkbXDR, 0,
@@ -167,16 +168,11 @@ module FFI
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :OGRMalloc, [:size_t], :pointer
-      attach_function :OGRCalloc, %i[size_t size_t], :pointer
-      attach_function :OGRRealloc, %i[pointer size_t], :pointer
-      attach_function :OGRFree, [:pointer], :void
-
-      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :strptr
-      attach_function :OGRMergeGeometryTypes,
-                      [WKBGeometryType, WKBGeometryType],
-                      WKBGeometryType
-      attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
+      attach_gdal_function :OGRGeometryTypeToName, [enum_type(:OGRwkbGeometryType)], :strptr
+      attach_gdal_function :OGRMergeGeometryTypes,
+                           [enum_type(:OGRwkbGeometryType), enum_type(:OGRwkbGeometryType)],
+                           enum_type(:OGRwkbGeometryType)
+      attach_gdal_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
     end
   end
 end

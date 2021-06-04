@@ -1,5 +1,7 @@
 module FFI
   class Type
+    include _Inspect
+
     BOOL: FFI::Type::Builtin
     BUFFER_IN: FFI::Type::Builtin
     BUFFER_INOUT: FFI::Type::Builtin
@@ -38,7 +40,6 @@ module FFI
 
     def initialize: (Integer | FFI::Type value) -> instance
     def alignment: -> Integer
-    def inspect: -> String
     def size: -> Integer
 
     class Builtin < ::FFI::Type

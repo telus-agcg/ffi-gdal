@@ -22,21 +22,21 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :CPLHashSetNew,
+      attach_gdal_function :CPLHashSetNew,
                       %i[CPLHashSetHashFunc CPLHashSetEqualFunc CPLHashSetFreeEltFunc],
                       :CPLHashSetH
-      attach_function :CPLHashSetDestroy, %i[CPLHashSetH], :void
-      attach_function :CPLHashSetSize, %i[CPLHashSetH], :int
-      attach_function :CPLHashSetForeach,
+      attach_gdal_function :CPLHashSetDestroy, %i[CPLHashSetH], :void
+      attach_gdal_function :CPLHashSetSize, %i[CPLHashSetH], :int
+      attach_gdal_function :CPLHashSetForeach,
                       %i[CPLHashSetH CPLHashSetIterEltFunc pointer],
                       :void
-      attach_function :CPLHashSetInsert, %i[CPLHashSetH pointer], :bool
-      attach_function :CPLHashSetLookup, %i[CPLHashSetH pointer], :pointer
-      attach_function :CPLHashSetRemove, %i[CPLHashSetH pointer], :bool
-      attach_function :CPLHashSetHashPointer, %i[pointer], :ulong
-      attach_function :CPLHashSetEqualPointer, %i[pointer pointer], :bool
-      attach_function :CPLHashSetHashStr, %i[string], :ulong
-      attach_function :CPLHashSetEqualStr, %i[string string], :bool
+      attach_gdal_function :CPLHashSetInsert, %i[CPLHashSetH pointer], :bool
+      attach_gdal_function :CPLHashSetLookup, %i[CPLHashSetH pointer], :pointer
+      attach_gdal_function :CPLHashSetRemove, %i[CPLHashSetH pointer], :bool
+      attach_gdal_function :CPLHashSetHashPointer, %i[pointer], :ulong
+      attach_gdal_function :CPLHashSetEqualPointer, %i[pointer pointer], :bool
+      attach_gdal_function :CPLHashSetHashStr, %i[string], :ulong
+      attach_gdal_function :CPLHashSetEqualStr, %i[string string], :bool
     end
   end
 end

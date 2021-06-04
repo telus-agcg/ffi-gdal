@@ -24,29 +24,29 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :CPLQuadTreeCreate,
+      attach_gdal_function :CPLQuadTreeCreate,
                       [FFI::CPL::RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
                       :CPLQuadTreeH
-      attach_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
-      attach_function :CPLQuadTreeSetBucketCapacity,
+      attach_gdal_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
+      attach_gdal_function :CPLQuadTreeSetBucketCapacity,
                       %i[CPLQuadTreeH int],
                       :void
-      attach_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
-      attach_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
-      attach_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
-      attach_function :CPLQuadTreeInsertWithBounds,
+      attach_gdal_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
+      attach_gdal_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
+      attach_gdal_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
+      attach_gdal_function :CPLQuadTreeInsertWithBounds,
                       [:CPLQuadTreeH, :pointer, FFI::CPL::RectObj.ptr],
                       :void
-      attach_function :CPLQuadTreeSearch,
+      attach_gdal_function :CPLQuadTreeSearch,
                       [:CPLQuadTreeH, FFI::CPL::RectObj.ptr, :pointer],
                       :void
-      attach_function :CPLQuadTreeForeach,
+      attach_gdal_function :CPLQuadTreeForeach,
                       %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
                       :void
-      attach_function :CPLQuadTreeDump,
+      attach_gdal_function :CPLQuadTreeDump,
                       %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
                       :void
-      attach_function :CPLQuadTreeGetStats,
+      attach_gdal_function :CPLQuadTreeGetStats,
                       %i[CPLQuadTreeH pointer pointer pointer pointer],
                       :void
     end

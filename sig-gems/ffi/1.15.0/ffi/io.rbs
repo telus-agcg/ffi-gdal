@@ -2,6 +2,6 @@ module FFI
   module IO
     def self.for_fd: (Integer fd, ?::String mode) -> ::IO
 
-    def self.native_read: (_Read io, FFI::AbstractMemory buf, ?Numeric len) -> Numeric
+    def self.native_read: (_Reader io, FFI::AbstractMemory buf, ?Numeric len) -> Numeric
   end
 end

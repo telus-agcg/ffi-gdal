@@ -1,0 +1,4 @@
+module FFI
+  class StructLayout < FFI::Type
+  end
+end

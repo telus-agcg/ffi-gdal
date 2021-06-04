@@ -2,6 +2,6 @@ module FFI
   class MemoryPointer < Pointer
     def self.from_string: (String s) -> FFI::MemoryPointer
 
-    def initialize: (Fixnum | Bignum | Symbol | FFI::Type size, ?Numeric count, ?bool clear) -> instance
+    def initialize: (Integer | Symbol | FFI::Type size, ?Numeric count, ?bool clear) -> void
   end
 end

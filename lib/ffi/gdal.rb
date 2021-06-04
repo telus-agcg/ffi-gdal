@@ -99,8 +99,8 @@ module FFI
       @ffi_libs
     end
 
-    attach_function :GDALVersionInfo, %i[string], :string
-    attach_function :GDALCheckVersion, %i[int int string], :bool
+    attach_gdal_function :GDALVersionInfo, %i[string], :string
+    attach_gdal_function :GDALCheckVersion, %i[int int string], :bool
   end
 end
 

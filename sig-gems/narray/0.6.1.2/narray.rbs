@@ -17,5 +17,5 @@ class NArray
   def initialize: (typecode_int typecode, Integer size, *(String | Integer | Float | Object) values) -> NArray
 
   def typecode: -> typecode_int
-  def to_a: -> Array
+  def to_a: -> Array[untyped]
 end

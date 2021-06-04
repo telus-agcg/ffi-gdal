@@ -13,16 +13,16 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :GDALCreateScaledProgress,
+      attach_gdal_function :GDALCreateScaledProgress,
                       [:double, :double, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
                       :pointer
-      attach_function :GDALDestroyScaledProgress,
+      attach_gdal_function :GDALDestroyScaledProgress,
                       %i[pointer],
                       :void
-      ScaledProgress = attach_function :GDALScaledProgress,
+      ScaledProgress = attach_gdal_function :GDALScaledProgress,
                                        %i[double string pointer],
                                        :int
-      TermProgress = attach_function :GDALTermProgress,
+      TermProgress = attach_gdal_function :GDALTermProgress,
                                      %i[double string pointer],
                                      :int
     end

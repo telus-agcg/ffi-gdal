@@ -22,25 +22,25 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :CPLParseXMLString, %i[string], CPL::XMLNode.ptr
-      attach_function :CPLDestroyXMLNode, [CPL::XMLNode.ptr], :void
-      attach_function :CPLGetXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
-      attach_function :CPLSearchXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
-      attach_function :CPLGetXMLValue, [CPL::XMLNode.ptr, :string, :string], :strptr
-      attach_function :CPLCreateXMLNode, [CPL::XMLNode.ptr, CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
-      attach_function :CPLSerializeXMLTree, [CPL::XMLNode.ptr], :string
-      attach_function :CPLAddXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
-      attach_function :CPLRemoveXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :bool
-      attach_function :CPLAddXMLSibling, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
-      attach_function :CPLCreateXMLElementAndValue,
+      attach_gdal_function :CPLParseXMLString, %i[string], CPL::XMLNode.ptr
+      attach_gdal_function :CPLDestroyXMLNode, [CPL::XMLNode.ptr], :void
+      attach_gdal_function :CPLGetXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
+      attach_gdal_function :CPLSearchXMLNode, [CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
+      attach_gdal_function :CPLGetXMLValue, [CPL::XMLNode.ptr, :string, :string], :strptr
+      attach_gdal_function :CPLCreateXMLNode, [CPL::XMLNode.ptr, CPL::XMLNode.ptr, :string], CPL::XMLNode.ptr
+      attach_gdal_function :CPLSerializeXMLTree, [CPL::XMLNode.ptr], :string
+      attach_gdal_function :CPLAddXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
+      attach_gdal_function :CPLRemoveXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :bool
+      attach_gdal_function :CPLAddXMLSibling, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
+      attach_gdal_function :CPLCreateXMLElementAndValue,
                       [CPL::XMLNode.ptr, :string, :string],
                       CPL::XMLNode.ptr
-      attach_function :CPLCloneXMLTree, [CPL::XMLNode.ptr], CPL::XMLNode.ptr
-      attach_function :CPLSetXMLValue, [CPL::XMLNode.ptr, :string, :string], :bool
-      attach_function :CPLStripXMLNamespace, [CPL::XMLNode.ptr, :string, :bool], :void
-      attach_function :CPLCleanXMLElementName, %i[string], :void
-      attach_function :CPLParseXMLFile, %i[string], CPL::XMLNode.ptr
-      attach_function :CPLSerializeXMLTreeToFile, [CPL::XMLNode.ptr, :string], :bool
+      attach_gdal_function :CPLCloneXMLTree, [CPL::XMLNode.ptr], CPL::XMLNode.ptr
+      attach_gdal_function :CPLSetXMLValue, [CPL::XMLNode.ptr, :string, :string], :bool
+      attach_gdal_function :CPLStripXMLNamespace, [CPL::XMLNode.ptr, :string, :bool], :void
+      attach_gdal_function :CPLCleanXMLElementName, %i[string], :void
+      attach_gdal_function :CPLParseXMLFile, %i[string], CPL::XMLNode.ptr
+      attach_gdal_function :CPLSerializeXMLTreeToFile, [CPL::XMLNode.ptr, :string], :bool
     end
   end
 end

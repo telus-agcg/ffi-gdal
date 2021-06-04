@@ -16,10 +16,10 @@ module FFI
         FFI::Pointer data_source_handle,
         String new_layer_name,
         FFI::Pointer | nil spatial_reference_handle,
-        FFI::OGR::Core::WKBGeometryType | FFI::OGR::Core::wkb_geometry_type_symbol geometry_type,
+        FFI::OGR::Core::wkb_geometry_type_symbol | FFI::OGR::Core::wkb_geometry_type_symbol geometry_type,
         FFI::Pointer options
       ) -> FFI::Pointer
-      def self.OGR_DS_DeleteLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::OGR::Core::Err
+      def self.OGR_DS_DeleteLayer: (FFI::Pointer data_source_handle, Integer layer_index) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_DS_Destroy: (FFI::Pointer data_source_handle) -> void
       def self.OGR_DS_ExecuteSQL: (FFI::Pointer data_source_handle, String sql_statement, FFI::Pointer | nil geometry_handle, String ?sql_dialect) -> FFI::Pointer
       def self.OGR_DS_GetDriver: (FFI::Pointer data_source_handle) -> FFI::Pointer
@@ -30,24 +30,24 @@ module FFI
       def self.OGR_DS_GetName: (FFI::Pointer data_source_handle) -> String
       def self.OGR_DS_GetStyleTable: (FFI::Pointer data_source_handle) -> FFI::Pointer
       def self.OGR_DS_ReleaseResultSet: (FFI::Pointer data_source_handle, FFI::Pointer layer_handle) -> void
-      def self.OGR_DS_SetStyleTable: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::Err
-      def self.OGR_DS_SetStyleTableDirectly: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::Err
-      def self.OGR_DS_SyncToDisk: (FFI::Pointer data_source_handle) -> FFI::OGR::Core::Err
+      def self.OGR_DS_SetStyleTable: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_DS_SetStyleTableDirectly: (FFI::Pointer data_source_handle, FFI::Pointer style_table_handle) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_DS_SyncToDisk: (FFI::Pointer data_source_handle) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_DS_TestCapability: (FFI::Pointer data_source_handle, String capability) -> bool
 
       # ~~~~~~~~~~~~~~~~
       # Layer-related
       # ~~~~~~~~~~~~~~~~
-      def self.OGR_L_AlterFieldDefn: (FFI::Pointer ogr_layer_handle, Integer field_index, FFI::Pointer new_field_definition_handle, Integer flags) -> FFI::OGR::Core::Err
-      def self.OGR_L_CreateField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool approx_ok) -> FFI::OGR::Core::Err
-      def self.OGR_L_CreateGeomField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool force) -> FFI::OGR::Core::Err
-      def self.OGR_L_DeleteField: (FFI::Pointer ogr_layer_handle, Integer field_index) -> FFI::OGR::Core::Err
+      def self.OGR_L_AlterFieldDefn: (FFI::Pointer ogr_layer_handle, Integer field_index, FFI::Pointer new_field_definition_handle, Integer flags) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_L_CreateField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool approx_ok) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_L_CreateGeomField: (FFI::Pointer ogr_layer_handle, FFI::Pointer field_definition_handle, bool force) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_L_DeleteField: (FFI::Pointer ogr_layer_handle, Integer field_index) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_L_FindFieldIndex: (FFI::Pointer ogr_layer_handle, String field_name, bool exact_match) -> Integer
-      def self.OGR_L_GetGeomType: (FFI::Pointer ogr_layer_handle) -> FFI::OGR::Core::WKBGeometryType
+      def self.OGR_L_GetGeomType: (FFI::Pointer ogr_layer_handle) -> FFI::OGR::Core::wkb_geometry_type_symbol
       def self.OGR_L_GetName: (FFI::Pointer ogr_layer_handle) -> FFI::Pointer
-      def self.OGR_L_ReorderField: (FFI::Pointer ogr_layer_handle, Integer old_field_index, Integer new_field_index) -> FFI::OGR::Core::Err
-      def self.OGR_L_ReorderFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer array_mapping_field_indexes) -> FFI::OGR::Core::Err
-      def self.OGR_L_SetIgnoredFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer ?field_names) -> FFI::OGR::Core::WKBGeometryType
+      def self.OGR_L_ReorderField: (FFI::Pointer ogr_layer_handle, Integer old_field_index, Integer new_field_index) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_L_ReorderFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer array_mapping_field_indexes) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_L_SetIgnoredFields: (FFI::Pointer ogr_layer_handle, FFI::Pointer ?field_names) -> FFI::OGR::Core::wkb_geometry_type_symbol
 
       # ~~~~~~~~~~~~~~~~
       # Geometry-related
@@ -88,11 +88,11 @@ module FFI
       def self.OGR_G_Length: (FFI::Pointer geometry_handle) -> Float
 
       # Geometry mutating methods
-      def self.OGR_G_AddGeometry: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
-      def self.OGR_G_AddGeometryDirectly: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::Err
+      def self.OGR_G_AddGeometry: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_G_AddGeometryDirectly: (FFI::Pointer geometry_handle, FFI::Pointer new_sub_geom) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, Float x, Float y, Float m) -> void
       def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, Float x, Float y) -> void
-      def self.OGR_G_RemoveGeometry: (FFI::Pointer geometry_handle, Integer geom_index, bool delete) -> FFI::OGR::Core::Err
+      def self.OGR_G_RemoveGeometry: (FFI::Pointer geometry_handle, Integer geom_index, bool delete) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_G_SetPointCount: (FFI::Pointer geometry_handle, Integer new_point_count) -> void
       def self.OGR_G_SetPoint: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y, ?Float z) -> void
       def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y) -> void
@@ -104,7 +104,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Style Tool-related
       # ~~~~~~~~~~~~~~~~
-      def self.OGR_ST_Create: (FFI::OGR::Core::STClassId class_id) -> FFI::Pointer
+      def self.OGR_ST_Create: (FFI::OGR::Core::st_class_id_symbol class_id) -> FFI::Pointer
       def self.OGR_ST_Destroy: (FFI::Pointer style_tool_handle) -> void
 
       def self.OGR_ST_GetRGBFromString: (
@@ -118,47 +118,47 @@ module FFI
 
       def self.OGR_ST_GetParamDbl: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         FFI::Pointer value_is_null_output
       ) -> Float
 
       def self.OGR_ST_GetParamNum: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         FFI::Pointer value_is_null_output
       ) -> Integer
 
       def self.OGR_ST_GetParamStr: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         FFI::Pointer value_is_null_output
       ) -> String
 
       def self.OGR_ST_GetStyleString: (FFI::Pointer style_tool_handle) -> [String, FFI::Pointer]
-      def self.OGR_ST_GetType: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::STClassId
-      def self.OGR_ST_GetUnit: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::STUnitId
+      def self.OGR_ST_GetType: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::st_class_id_symbol
+      def self.OGR_ST_GetUnit: (FFI::Pointer style_tool_handle) -> FFI::OGR::Core::st_unit_id_symbol
 
       def self.OGR_ST_SetParamDbl: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         Float value
       ) -> void
 
       def self.OGR_ST_SetParamNum: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         Integer value
       ) -> void
 
       def self.OGR_ST_SetParamStr: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STPenParam | FFI::OGR::Core::STBrushParam | FFI::OGR::Core::STSymbolParam | FFI::OGR::Core::STLabelParam param,
+        FFI::OGR::Core::st_pen_param_symbol | FFI::OGR::Core::st_brush_param_symbol | FFI::OGR::Core::st_symbol_param_symbol | FFI::OGR::Core::st_label_param_symbol param,
         FFI::Pointer value_is_null_output
       ) -> Float
 
       def self.OGR_ST_SetUnit: (
         FFI::Pointer style_tool_handle,
-        FFI::OGR::Core::STUnitId unit,
+        FFI::OGR::Core::st_unit_id_symbol unit,
         Float ground_to_paper_scale_factor
       ) -> void
 

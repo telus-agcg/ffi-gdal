@@ -10,29 +10,29 @@ module FFI
   class Enum
     include DataConverter
 
-    attr_reader tag: untyped
-    attr_reader native_type: untyped
+    attr_reader tag: Symbol
+    attr_reader native_type: FFI::Type::Builtin
 
-    def initialize: (nil | Enumerable info, ?Symbol? tag) -> instance
-      | (FFI::Type native_type, nil | Enumerable info, ?Symbol? tag) -> instance
+    def initialize: (nil | Enumerable[Symbol | Integer] info, ?Symbol? tag) -> instance
+      | (FFI::Type native_type, nil | Enumerable[Symbol | Integer] info, ?Symbol? tag) -> instance
 
-    def symbols: () -> Array
+    def symbols: () -> Array[Symbol]
 
     def []: (Symbol query) -> Integer | (Integer query) -> Symbol
     alias find []
 
-    def symbol_map: () -> Hash
+    def symbol_map: () -> Hash[Symbol, Integer]
     alias to_h symbol_map
     alias to_hash symbol_map
 
     def to_native: (Symbol | Integer | _ToInt val, void ctx) -> Integer
 
-    def from_native: (untyped val, untyped ctx) -> untyped
+    def from_native: (Integer val, void ctx) -> Symbol
   end
 
   class Bitmask < Enum
-    def initialize: (nil | Enumerable info, ?Symbol? tag) -> instance
-      | (FFI::Type native_type, nil | Enumerable info, ?Symbol? tag) -> instance
+    def initialize: (nil | Enumerable[Symbol | Integer] info, ?Symbol? tag) -> instance
+      | (FFI::Type native_type, nil | Enumerable[Symbol | Integer] info, ?Symbol? tag) -> instance
 
     def []: (*Symbol query) -> Integer
       | (Array[Symbol] query) -> Integer

@@ -22,17 +22,17 @@ module FFI
           #-------------------------------------------------------------------
           # Functions
           #-------------------------------------------------------------------
-          attach_function :CPLListAppend, [List.ptr, :pointer], List.ptr
-          attach_function :CPLListInsert, [List.ptr, :pointer, :int], List.ptr
-          attach_function :CPLListGetLast, [List.ptr], List.ptr
-          attach_function :CPLListGet, [List.ptr, :int], List.ptr
-          attach_function :CPLListCount, [List.ptr], :int
+          attach_gdal_function :CPLListAppend, [List.ptr, :pointer], List.ptr
+          attach_gdal_function :CPLListInsert, [List.ptr, :pointer, :int], List.ptr
+          attach_gdal_function :CPLListGetLast, [List.ptr], List.ptr
+          attach_gdal_function :CPLListGet, [List.ptr, :int], List.ptr
+          attach_gdal_function :CPLListCount, [List.ptr], :int
 
-          attach_function :CPLListRemove, [List.ptr, :int], List.ptr
-          attach_function :CPLListDestroy, [List.ptr], :void
+          attach_gdal_function :CPLListRemove, [List.ptr, :int], List.ptr
+          attach_gdal_function :CPLListDestroy, [List.ptr], :void
 
-          attach_function :CPLListGetNext, [List.ptr], List.ptr
-          attach_function :CPLListGetData, [List.ptr], :pointer
+          attach_gdal_function :CPLListGetNext, [List.ptr], List.ptr
+          attach_gdal_function :CPLListGetData, [List.ptr], :pointer
         end
       end
 

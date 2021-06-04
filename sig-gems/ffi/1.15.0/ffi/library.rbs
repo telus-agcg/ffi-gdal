@@ -24,11 +24,34 @@ module FFI
     def attach_function: (
       _ToS c_function_name,
       Array[Symbol | FFI::Enum | FFI::Type] args,
-      ?Symbol | FFI::Enum ?returns,
-      Hash ?options
+      ?Symbol | FFI::Enum | FFI::Type ?returns,
+      ?blocking: boolish,
+      ?convention: :default | :stdcall,
+      ?enums: FFI::Enums?,
+      ?type_map: Hash[String, Symbol]
     ) -> FFI::VariadicInvoker
 
-    def function_names: (_ToS name, Array arg_types) -> Array[String]
+    # def attach_function: (
+      # _ToS c_function_name,
+      # Array[Symbol | FFI::Enum] args,
+      # ?Symbol ?returns,
+      # ?blocking: boolish,
+      # ?convention: Symbol,
+      # ?enums: FFI::Enums | nil,
+      # ?type_map: Hash
+    # ) -> FFI::VariadicInvoker
+    # | (
+      # _ToS ruby_method_name,
+      # _ToS c_function_name,
+      # Array[Symbol | FFI::Enum] args,
+      # ?Symbol returns,
+      # ?blocking: bool,
+      # ?convention: Symbol,
+      # ?enums: FFI::Enums,
+      # ?type_map: Hash
+    # ) -> FFI::VariadicInvoker
+
+    def function_names: (_ToS name, Array[_Size] arg_types) -> Array[String]
 
     def attach_variable: (
       _ToS mname,
@@ -39,11 +62,11 @@ module FFI
 
     def callback: (
       Symbol name,
-      Array params,
+      Array[Symbol | FFI::Enum | FFI::Type] params,
       FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
     ) -> FFI::CallbackInfo
     | (
-        Array params,
+        Array[Symbol | FFI::Enum | FFI::Type] params,
         FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
       ) -> FFI::CallbackInfo
 
@@ -53,12 +76,12 @@ module FFI
       ?Symbol? ?info
     ) -> (FFI::Enum | FFI::Type)
 
-    def enum: (Symbol name, Array values) -> FFI::Enum
+    def enum: (Symbol name, Array[Symbol | Integer] values) -> FFI::Enum
       | (*(Symbol | Integer) args) -> FFI::Enum
-      | (Array[Symbol] values) -> FFI::Enum
-      | (FFI::Type native_type, Symbol name, Array values) -> FFI::Enum
+      | (Array[Symbol | Integer] values) -> FFI::Enum
+      | (FFI::Type native_type, Symbol name, Array[Symbol | Integer] values) -> FFI::Enum
       | (FFI::Type native_type, *untyped args) -> FFI::Enum
-      | (FFI::Type native_type, Array values) -> FFI::Enum
+      | (FFI::Type native_type, Array [Symbol | Integer] values) -> FFI::Enum
 
     def bitmask: (Symbol name, Array[Symbol | Integer]values) -> FFI::Bitmask
       | (*(Symbol | Integer) args) -> FFI::Bitmask

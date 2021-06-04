@@ -1,5 +1,7 @@
 module FFI
   class Pointer < FFI::AbstractMemory
+    include _Inspect
+
     SIZE: Integer
     NULL: FFI::Pointer
 
@@ -17,12 +19,11 @@ module FFI
     def autorelease=: (bool autorelease) -> bool
     def autorelease?: -> bool
     def free: -> self
-    def inspect: -> String
     def null?: -> bool
     def order: () -> (:big | :little) | (:little | :big | :network) -> instance
     def read: (Symbol | FFI::Type type_name) -> untyped
 
-    def read_array_of_type: (FFI::Type type_name, Symbol reader, Numeric length) -> Array
+    def read_array_of_type: (FFI::Type type_name, Symbol reader, Numeric length) -> ::Array[FFI::AbstractMemory | Numeric | String]
 
     def read_string: (?Numeric? len) -> String
 
@@ -38,7 +39,7 @@ module FFI
 
     def write: (Symbol | FFI::Type type_name, untyped value) -> nil
 
-    def write_array_of_type: (FFI::Type type_name, Symbol writer, Array ary) -> self
+    def write_array_of_type: (FFI::Type type_name, Symbol writer, Array[FFI::AbstractMemory | Numeric | String] ary) -> self
 
     def write_string: (String str, Numeric? len) -> self
 

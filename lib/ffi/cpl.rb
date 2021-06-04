@@ -6,8 +6,6 @@ module FFI
   module CPL
     extend ::FFI::Library
 
-    ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
-
     autoload :Conv, File.expand_path('cpl/conv.rb', __dir__ || '.')
     autoload :Error, File.expand_path('cpl/error.rb', __dir__ || '.')
     autoload :HashSet, File.expand_path('cpl/hash_set.rb', __dir__ || '.')

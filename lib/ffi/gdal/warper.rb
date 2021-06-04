@@ -50,43 +50,43 @@ module FFI
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :GDALCreateWarpOptions, [], FFI::GDAL::WarpOptions.ptr
-      attach_function :GDALDestroyWarpOptions, [FFI::GDAL::WarpOptions.ptr], :void
-      attach_function :GDALCloneWarpOptions, [FFI::GDAL::WarpOptions.ptr], FFI::GDAL::WarpOptions.ptr
-      attach_function :GDALSerializeWarpOptions,
+      attach_gdal_function :GDALCreateWarpOptions, [], FFI::GDAL::WarpOptions.ptr
+      attach_gdal_function :GDALDestroyWarpOptions, [FFI::GDAL::WarpOptions.ptr], :void
+      attach_gdal_function :GDALCloneWarpOptions, [FFI::GDAL::WarpOptions.ptr], FFI::GDAL::WarpOptions.ptr
+      attach_gdal_function :GDALSerializeWarpOptions,
                       [FFI::GDAL::WarpOptions.ptr],
                       FFI::CPL::XMLNode.ptr
-      attach_function :GDALDeserializeWarpOptions,
+      attach_gdal_function :GDALDeserializeWarpOptions,
                       [FFI::CPL::XMLNode.ptr],
                       FFI::GDAL::WarpOptions.ptr
 
-      attach_function :GDALCreateWarpOperation,
+      attach_gdal_function :GDALCreateWarpOperation,
                       [FFI::GDAL::WarpOptions.ptr],
                       :GDALWarpOperationH
-      attach_function :GDALDestroyWarpOperation, %i[GDALWarpOperationH], :void
+      attach_gdal_function :GDALDestroyWarpOperation, %i[GDALWarpOperationH], :void
 
-      attach_function :GDALWarpNoDataMasker,
+      attach_gdal_function :GDALWarpNoDataMasker,
                       [:pointer, :int, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int, :int, :int, :pointer,
                        :int, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpDstAlphaMasker,
+      attach_gdal_function :GDALWarpDstAlphaMasker,
                       [:pointer, :int, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int, :int, :int, :pointer,
                        :int, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpSrcAlphaMasker,
+      attach_gdal_function :GDALWarpSrcAlphaMasker,
                       [:pointer, :int, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int, :int, :int, :pointer,
                        :int, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpSrcMaskMasker,
+      attach_gdal_function :GDALWarpSrcMaskMasker,
                       [:pointer, :int, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int, :int, :int, :pointer,
                        :int, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpCutlineMasker,
+      attach_gdal_function :GDALWarpCutlineMasker,
                       [:pointer, :int, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int, :int, :int, :pointer,
                        :int, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
 
-      attach_function :GDALReprojectImage,
+      attach_gdal_function :GDALReprojectImage,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :string,
@@ -100,7 +100,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALCreateAndReprojectImage,
+      attach_gdal_function :GDALCreateAndReprojectImage,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :string,
@@ -116,7 +116,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALAutoCreateWarpedVRT,
+      attach_gdal_function :GDALAutoCreateWarpedVRT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :string,
@@ -126,7 +126,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::GDAL::GDAL.find_type(:GDALDatasetH)
-      attach_function :GDALCreateWarpedVRT,
+      attach_gdal_function :GDALCreateWarpedVRT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :int,
@@ -135,20 +135,20 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::GDAL::GDAL.find_type(:GDALDatasetH)
-      attach_function :GDALInitializeWarpedVRT,
+      attach_gdal_function :GDALInitializeWarpedVRT,
                       [FFI::GDAL::GDAL.find_type(:GDALDatasetH), FFI::GDAL::WarpOptions.ptr],
                       FFI::CPL::Error.enum_type(:CPLErr)
 
-      attach_function :GDALChunkAndWarpImage,
+      attach_gdal_function :GDALChunkAndWarpImage,
                       %i[GDALWarpOperationH int int int int],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALChunkAndWarpMulti,
+      attach_gdal_function :GDALChunkAndWarpMulti,
                       %i[GDALWarpOperationH int int int int],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpRegion,
+      attach_gdal_function :GDALWarpRegion,
                       %i[GDALWarpOperationH int int int int int int int int],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALWarpRegionToBuffer,
+      attach_gdal_function :GDALWarpRegionToBuffer,
                       [:GDALWarpOperationH, :int, :int, :int, :int, :pointer, FFI::GDAL::GDAL.enum_type(:GDALDataType), :int, :int,
                        :int, :int],
                       FFI::CPL::Error.enum_type(:CPLErr)

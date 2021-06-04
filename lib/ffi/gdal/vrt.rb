@@ -40,19 +40,19 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :GDALRegister_VRT, [], :void
-      attach_function :VRTCreate, %i[int int], :VRTDatasetH
-      attach_function :VRTFlushCache, %i[VRTDatasetH], :void
-      attach_function :VRTSerializeToXML, %i[VRTDatasetH string], CPL::XMLNode.ptr
+      attach_gdal_function :GDALRegister_VRT, [], :void
+      attach_gdal_function :VRTCreate, %i[int int], :VRTDatasetH
+      attach_gdal_function :VRTFlushCache, %i[VRTDatasetH], :void
+      attach_gdal_function :VRTSerializeToXML, %i[VRTDatasetH string], CPL::XMLNode.ptr
 
-      attach_function :VRTAddBand,
+      attach_gdal_function :VRTAddBand,
                       [:VRTDatasetH, FFI::GDAL::GDAL.enum_type(:GDALDataType), :pointer],
                       :int
 
-      attach_function :VRTAddSource,
+      attach_gdal_function :VRTAddSource,
                       %i[VRTSourcedRasterBandH VRTSourceH],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :VRTAddSimpleSource,
+      attach_gdal_function :VRTAddSimpleSource,
                       [
                         :VRTSourcedRasterBandH, # hVRTBand
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH), # hSrcBand
@@ -68,7 +68,7 @@ module FFI
                         :double                             # dfNoDataValue
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :VRTAddComplexSource,
+      attach_gdal_function :VRTAddComplexSource,
                       [
                         :VRTSourcedRasterBandH,             # hVRTBand
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH), # hSrcBand
@@ -85,7 +85,7 @@ module FFI
                         :double                             # dfNoDataValue
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :VRTAddFuncSource,
+      attach_gdal_function :VRTAddFuncSource,
                       %i[VRTSourcedRasterBandH VRTImageReadFunc pointer double],
                       FFI::CPL::Error.enum_type(:CPLErr)
     end

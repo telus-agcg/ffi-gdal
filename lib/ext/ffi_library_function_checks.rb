@@ -7,10 +7,16 @@ module FFI
   # Redefining #attach_function so we can avoid bombing out if a called method
   # is not defined.
   module Library
-    alias old_attach_function attach_function
+    def attach_gdal_function(func, args, returns, **options)
+      raise "Must specify return type for function '#{func}'" if returns.nil?
 
-    def attach_function(func, args, returns = nil, options = {})
-      old_attach_function(func, args, returns, options)
+      attach_function(func, args, returns, options)
+    rescue TypeError
+      puts "func: #{func}"
+      puts "args: #{args}"
+      puts "arg count: #{args.length}"
+      puts "returns: #{returns}"
+      raise
     rescue FFI::NotFoundError
       @unsupported_gdal_functions ||= []
 

@@ -4,11 +4,25 @@ target :lib do
   signature 'sig', 'sig-gems'
 
   check 'lib' # Directory name
-  # check "app/models/**/*.rb"        # Glob
 
-  # library "pathname", "set"       # Standard libraries
-  library 'date', 'forwardable' # Standard libraries
-  # library "strong_json"           # Gems
+  # Standard libraries
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
+end
+
+target :lib_ffi do
+  signature 'sig', 'sig-gems'
+
+  check 'lib/ffi/' # Directory name
+
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
 end
 
 # target :spec do

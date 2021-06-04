@@ -36,12 +36,12 @@ module FFI
       # -----------------------------------------------------------------------
       # Functions
       # -----------------------------------------------------------------------
-      attach_function :GDALDestroyTransformer, %i[pointer], :void
+      attach_gdal_function :GDALDestroyTransformer, %i[pointer], :void
 
-      attach_function :GDALChecksumImage,
+      attach_gdal_function :GDALChecksumImage,
                       [FFI::GDAL::GDAL.find_type(:GDALRasterBandH), :int, :int, :int, :int],
                       :int
-      attach_function :GDALComputeMedianCutPCT,
+      attach_gdal_function :GDALComputeMedianCutPCT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -53,7 +53,7 @@ module FFI
                         :pointer
                       ],
                       :int
-      attach_function :GDALComputeProximity,
+      attach_gdal_function :GDALComputeProximity,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -66,7 +66,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~
       # Contour functions
       # ~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDAL_CG_Create,
+      attach_gdal_function :GDAL_CG_Create,
                       %i[
                         int
                         int
@@ -78,14 +78,14 @@ module FFI
                         pointer
                       ],
                       :GDALContourGeneratorH
-      attach_function :GDAL_CG_FeedLine,
+      attach_gdal_function :GDAL_CG_FeedLine,
                       %i[GDALContourGeneratorH pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDAL_CG_Destroy, %i[pointer], :void
-      attach_function :OGRContourWriter,
+      attach_gdal_function :GDAL_CG_Destroy, %i[pointer], :void
+      attach_gdal_function :OGRContourWriter,
                       %i[double int pointer pointer pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALContourGenerate,
+      attach_gdal_function :GDALContourGenerate,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         :double,
@@ -105,7 +105,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~
       # Transformer functions
       # ~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALSuggestedWarpOutput,
+      attach_gdal_function :GDALSuggestedWarpOutput,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :GDALTransformerFunc,
@@ -115,7 +115,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALSuggestedWarpOutput2,
+      attach_gdal_function :GDALSuggestedWarpOutput2,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :GDALTransformerFunc,
@@ -127,13 +127,13 @@ module FFI
                         :int
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALSerializeTransformer,
+      attach_gdal_function :GDALSerializeTransformer,
                       %i[GDALTransformerFunc pointer],
                       CPL::XMLNode.ptr
-      attach_function :GDALDeserializeTransformer,
+      attach_gdal_function :GDALDeserializeTransformer,
                       [CPL::XMLNode.ptr, :GDALTransformerFunc, :pointer],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALTransformGeolocations,
+      attach_gdal_function :GDALTransformGeolocations,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -149,44 +149,44 @@ module FFI
       # ~~~
       # Approx
       # ~~~
-      attach_function :GDALCreateApproxTransformer,
+      attach_gdal_function :GDALCreateApproxTransformer,
                       %i[GDALTransformerFunc pointer double],
                       :pointer
-      attach_function :GDALDestroyApproxTransformer, %i[pointer], :void
-      attach_function :GDALApproxTransformerOwnsSubtransformer,
+      attach_gdal_function :GDALDestroyApproxTransformer, %i[pointer], :void
+      attach_gdal_function :GDALApproxTransformerOwnsSubtransformer,
                       %i[pointer bool],
                       :void
-      ApproxTransform = attach_function :GDALApproxTransform,
+      ApproxTransform = attach_gdal_function :GDALApproxTransform,
                                         %i[pointer bool int pointer pointer pointer pointer],
                                         :int
 
       # ~~~
       # GCP Transform
       # ~~~
-      attach_function :GDALCreateGCPTransformer, %i[int pointer int int], :pointer
-      attach_function :GDALCreateGCPRefineTransformer,
+      attach_gdal_function :GDALCreateGCPTransformer, %i[int pointer int int], :pointer
+      attach_gdal_function :GDALCreateGCPRefineTransformer,
                       %i[int pointer int int double int],
                       :pointer
-      attach_function :GDALDestroyGCPTransformer, %i[pointer], :void
-      GCPTransform = attach_function :GDALGCPTransform,
+      attach_gdal_function :GDALDestroyGCPTransformer, %i[pointer], :void
+      GCPTransform = attach_gdal_function :GDALGCPTransform,
                                      %i[pointer bool int pointer pointer pointer pointer],
                                      :bool
 
       # ~~~
       # GeoLoc Transform
       # ~~~
-      attach_function :GDALCreateGeoLocTransformer,
+      attach_gdal_function :GDALCreateGeoLocTransformer,
                       [FFI::GDAL::GDAL.find_type(:GDALDatasetH), :pointer, :bool],
                       :pointer
-      attach_function :GDALDestroyGeoLocTransformer, %i[pointer], :void
-      GeoLocTransform = attach_function :GDALGeoLocTransform,
+      attach_gdal_function :GDALDestroyGeoLocTransformer, %i[pointer], :void
+      GeoLocTransform = attach_gdal_function :GDALGeoLocTransform,
                                         %i[pointer bool int pointer pointer pointer pointer],
                                         :bool
 
       # ~~~
       # GenImgProj Transform
       # ~~~
-      attach_function :GDALCreateGenImgProjTransformer,
+      attach_gdal_function :GDALCreateGenImgProjTransformer,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :string,
@@ -197,56 +197,56 @@ module FFI
                         :int
                       ],
                       :pointer
-      attach_function :GDALCreateGenImgProjTransformer2,
+      attach_gdal_function :GDALCreateGenImgProjTransformer2,
                       [FFI::GDAL::GDAL.find_type(:GDALDatasetH), FFI::GDAL::GDAL.find_type(:GDALDatasetH), :pointer],
                       :pointer
-      attach_function :GDALCreateGenImgProjTransformer3,
+      attach_gdal_function :GDALCreateGenImgProjTransformer3,
                       %i[string pointer string pointer],
                       :pointer
-      attach_function :GDALDestroyGenImgProjTransformer, %i[pointer], :void
-      attach_function :GDALSetGenImgProjTransformerDstGeoTransform,
+      attach_gdal_function :GDALDestroyGenImgProjTransformer, %i[pointer], :void
+      attach_gdal_function :GDALSetGenImgProjTransformerDstGeoTransform,
                       %i[pointer pointer],
                       :void
-      GenImgProjTransform = attach_function :GDALGenImgProjTransform,
+      GenImgProjTransform = attach_gdal_function :GDALGenImgProjTransform,
                                             %i[pointer bool int pointer pointer pointer pointer],
                                             :bool
 
       # ~~~
       # Reprojection Transform
       # ~~~
-      attach_function :GDALCreateReprojectionTransformer,
+      attach_gdal_function :GDALCreateReprojectionTransformer,
                       %i[string string],
                       :pointer
-      attach_function :GDALDestroyReprojectionTransformer, %i[pointer], :void
-      ReprojectionTransform = attach_function :GDALReprojectionTransform,
+      attach_gdal_function :GDALDestroyReprojectionTransformer, %i[pointer], :void
+      ReprojectionTransform = attach_gdal_function :GDALReprojectionTransform,
                                               %i[pointer bool int pointer pointer pointer pointer],
                                               :int
 
       # ~~~
       # RPC Transform
       # ~~~
-      attach_function :GDALCreateRPCTransformer,
+      attach_gdal_function :GDALCreateRPCTransformer,
                       [RPCInfo.ptr, :int, :double, :pointer],
                       :pointer
-      attach_function :RPCInfoToMD, [RPCInfo.ptr], :pointer
-      attach_function :GDALDestroyRPCTransformer, %i[pointer], :void
-      RPCTransform = attach_function :GDALRPCTransform,
+      attach_gdal_function :RPCInfoToMD, [RPCInfo.ptr], :pointer
+      attach_gdal_function :GDALDestroyRPCTransformer, %i[pointer], :void
+      RPCTransform = attach_gdal_function :GDALRPCTransform,
                                      %i[pointer bool int pointer pointer pointer pointer],
                                      :int
 
       # ~~~
       # TPS Transform
       # ~~~
-      attach_function :GDALCreateTPSTransformer, %i[int pointer int], :pointer
-      attach_function :GDALDestroyTPSTransformer, %i[pointer], :void
-      TPSTransform = attach_function :GDALTPSTransform,
+      attach_gdal_function :GDALCreateTPSTransformer, %i[int pointer int], :pointer
+      attach_gdal_function :GDALDestroyTPSTransformer, %i[pointer], :void
+      TPSTransform = attach_gdal_function :GDALTPSTransform,
                                      %i[pointer bool int pointer pointer pointer pointer],
                                      :int
 
       # ~~~
       # RasterBand related functions
       # ~~~
-      attach_function :GDALDitherRGB2PCT,
+      attach_gdal_function :GDALDitherRGB2PCT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -257,7 +257,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALFillNodata,
+      attach_gdal_function :GDALFillNodata,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -269,7 +269,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALPolygonize,
+      attach_gdal_function :GDALPolygonize,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -280,7 +280,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALFPolygonize,
+      attach_gdal_function :GDALFPolygonize,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -291,7 +291,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALSieveFilter,
+      attach_gdal_function :GDALSieveFilter,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),
@@ -307,7 +307,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # Dataset-related
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGridCreate,
+      attach_gdal_function :GDALGridCreate,
                       [
                         GridAlgorithm,
                         :pointer,
@@ -327,7 +327,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALRasterizeGeometries,
+      attach_gdal_function :GDALRasterizeGeometries,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :int,
@@ -342,7 +342,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALRasterizeLayers,
+      attach_gdal_function :GDALRasterizeLayers,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         :int,
@@ -357,7 +357,7 @@ module FFI
                         :pointer
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
-      attach_function :GDALRasterizeLayersBuf,
+      attach_gdal_function :GDALRasterizeLayersBuf,
                       [
                         :pointer,
                         :int,
@@ -378,7 +378,7 @@ module FFI
                       ],
                       FFI::CPL::Error.enum_type(:CPLErr)
 
-      attach_function :GDALSimpleImageWarp,
+      attach_gdal_function :GDALSimpleImageWarp,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -392,7 +392,7 @@ module FFI
                       ],
                       :bool
 
-      attach_function :GDALComputeMatchingPoints,
+      attach_gdal_function :GDALComputeMatchingPoints,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),

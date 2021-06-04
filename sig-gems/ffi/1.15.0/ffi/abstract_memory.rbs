@@ -1,9 +1,10 @@
 module FFI
   class AbstractMemory
+    include _Size
+
     def []: (Numeric idx) -> untyped
     def clear: -> self
     def size_limit?: -> bool
-    def size: -> Numeric
     alias total size
 
     def type_size: -> Numeric
