@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
+require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
   module CPL
     module Error
       extend ::FFI::Library
-      ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
 
       #------------------------------------------------------------------------
       # Enums
