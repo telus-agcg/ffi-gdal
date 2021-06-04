@@ -42,7 +42,13 @@ module FFI
       # Geometry constructors
       attach_function :OGRBuildPolygonFromEdges, %i[OGRGeometryH bool bool double pointer], :OGRGeometryH
       attach_function :OGR_G_CreateFromFgf,
-                      [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int, :pointer], FFI::OGR::Core::Err
+                      [
+                        :string,
+                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                        :pointer,
+                        :int,
+                        :pointer
+                      ], FFI::OGR::Core::Err
       attach_function :OGR_G_CreateFromGML, %i[string], :OGRGeometryH
       attach_function :OGR_G_CreateFromGMLTree, [FFI::CPL::XMLNode.ptr], :OGRGeometryH
       attach_function :OGR_G_CreateFromWkb,
@@ -362,20 +368,29 @@ module FFI
       attach_function :OGR_L_SetStyleTable, %i[OGRLayerH OGRStyleTableH], :void
       attach_function :OGR_L_SetStyleTableDirectly, %i[OGRLayerH OGRStyleTableH], :void
 
+      # rubocop:disable Layout/LineLength
       attach_function :OGR_L_Clip,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_Erase,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_Identity,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_Intersection,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_SymDifference,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_Union,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
       attach_function :OGR_L_Update,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer], FFI::OGR::Core::Err
+                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                      FFI::OGR::Core::Err
+      # rubocop:enable Layout/LineLength
 
       # ~~~~~~~~~~~~~~~~
       # DataSource-related
@@ -384,7 +399,13 @@ module FFI
       attach_function :OGR_DS_CopyLayer, %i[OGRDataSourceH OGRLayerH string pointer], :OGRLayerH
       # Deprecated in 2.0; use GDALDatasetCreateLayer()
       attach_function :OGR_DS_CreateLayer,
-                      [:OGRDataSourceH, :string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), FFI::OGR::Core::WKBGeometryType, :pointer], :OGRLayerH
+                      [
+                        :OGRDataSourceH,
+                        :string,
+                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                        FFI::OGR::Core::WKBGeometryType,
+                        :pointer
+                      ], :OGRLayerH
       # Deprecated in 2.0; use GDALDatasetDeleteLayer()
       attach_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core::Err
       # Deprecated in 2.0; use GDALClose()

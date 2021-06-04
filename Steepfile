@@ -1,19 +1,21 @@
- target :lib do
-   signature "sig", 'sig-gems'
+# frozen_string_literal: true
 
-   check "lib"                       # Directory name
-   # check "app/models/**/*.rb"        # Glob
+target :lib do
+  signature 'sig', 'sig-gems'
 
-   # library "pathname", "set"       # Standard libraries
-   library "date", "forwardable"       # Standard libraries
-   # library "strong_json"           # Gems
- end
+  check 'lib' # Directory name
+  # check "app/models/**/*.rb"        # Glob
 
- # target :spec do
- #   signature "sig", "sig-private"
+  # library "pathname", "set"       # Standard libraries
+  library 'date', 'forwardable' # Standard libraries
+  # library "strong_json"           # Gems
+end
 
- #   check "spec"
+# target :spec do
+#   signature "sig", "sig-private"
 
- #   # library "pathname", "set"       # Standard libraries
- #   library "rspec"
- # end
+#   check "spec"
+
+#   # library "pathname", "set"       # Standard libraries
+#   library "rspec"
+# end

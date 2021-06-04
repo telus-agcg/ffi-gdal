@@ -14,7 +14,10 @@ module GDAL
     def _pointer(klass, variable, autorelease: true)
       pointer = _maybe_pointer(klass, variable, autorelease: autorelease)
 
-      raise FFI::GDAL::InvalidPointer, "Unable to create pointer from '#{klass}' and #{variable.inspect}" if pointer.nil?
+      if pointer.nil?
+        raise FFI::GDAL::InvalidPointer,
+              "Unable to create pointer from '#{klass}' and #{variable.inspect}"
+      end
 
       pointer
     end

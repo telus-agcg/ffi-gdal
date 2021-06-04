@@ -485,7 +485,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         min = min_pointer.read_double
         max = max_pointer.read_double
@@ -546,7 +546,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         totals = if buckets.zero?
                    []

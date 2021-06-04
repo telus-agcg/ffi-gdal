@@ -9,8 +9,9 @@ module OGR
     #
     # @param flag [String] 'w' for writing, 'r' for reading.
     def _boolean_access_flag(flag)
-      if flag == 'w' then true
-      elsif flag == 'r' then false
+      case flag
+      when 'w' then true
+      when 'r' then false
       else
         raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
       end
