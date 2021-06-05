@@ -15,7 +15,7 @@ module FFI
     def calculate: ({ cppflags: String }? options) -> void
 
     def const:
-      (_ToS name, String? format, String? cast, _ToS? ruby_name, ?_Call ?converter) -> void
+      (_ToS name, String? format, String? cast, _ToS? ruby_name, ?_Call | ^(FFI::ConstGenerator) -> void ?converter) -> void
     | (_ToS name, String? format, String? cast, _ToS? ruby_name) ?{ (FFI::ConstGenerator::Constant) -> void } -> void
 
     def dump_constants: (_Puts io) -> void

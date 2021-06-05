@@ -15,7 +15,8 @@ module OGR
       def add_point: (Float x, Float y, ?::Float z) -> void
       def set_point: (Integer index, Float x, Float y, ?Float? z) -> void
 
-      def points: -> point_array
+      # def points: -> point_array
+      def points: -> (Array[[Float, Float, Float]] | Array[[Float, Float]])
       alias get_points points
       alias point_values points
 
