@@ -25,13 +25,13 @@ module FFI
     def []: (String name) -> untyped
     def calculate: ({ cppflags: String }? options) -> void
 
-    def const: (
-      _ToS name,
+    def const: ( _ToS name, String? format, String? cast, _ToS? ruby_name,) -> void
+    | (_ToS name,
       String? format,
       String? cast,
       _ToS? ruby_name,
-      _Call? converter
-    ) -> untyped
+      _Call? ?converter
+    ) -> void
     | (
       _ToS name,
       String? format,

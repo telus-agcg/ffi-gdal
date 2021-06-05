@@ -1,54 +1,65 @@
 # frozen_string_literal: true
 
-target :lib do
-  signature 'sig', 'sig-gems'
-
-  check 'lib' # Directory name
-
-  # Standard libraries
-  library 'date',
-          'logger',
-          'forwardable',
-          'logger',
-          'monitor'
-end
-
-# target :lib_ffi do
-#   signature 'sig', 'sig-gems'
-
-#   check 'lib/ffi/' # Directory name
-
-#   library 'date',
-#     'logger',
-#     'forwardable',
-#     'logger',
-#     'monitor'
-# end
-
-# target :lib_gdal do
+# target :lib do
 #   signature 'sig', 'sig-gems'
 
 #   check 'lib' # Directory name
-#   ignore 'lib/ffi', 'lib/ogr'
 
+#   # Standard libraries
 #   library 'date',
-#     'logger',
-#     'forwardable',
-#     'logger',
-#     'monitor'
+#           'logger',
+#           'forwardable',
+#           'logger',
+#           'monitor'
 # end
 
-# target :lib_ogr do
-#   signature 'sig', 'sig-gems'
+target :ffi do
+  signature 'sig', 'sig-gems'
 
-#   check 'lib/ogr/**/*.rb' # Directory name
+  check 'lib/ffi/' # Directory name
 
-#   library 'date',
-#     'logger',
-#     'forwardable',
-#     'logger',
-#     'monitor'
-# end
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
+end
+
+target :gdal do
+  signature 'sig', 'sig-gems'
+
+  check 'lib/gdal' # Directory name
+
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
+end
+
+target :ogr do
+  signature 'sig', 'sig-gems'
+
+  check 'lib/ogr' # Directory name
+
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
+end
+
+target :ext do
+  signature 'sig', 'sig-gems'
+
+  check 'lib/ext' # Directory name
+
+  library 'date',
+    'logger',
+    'forwardable',
+    'logger',
+    'monitor'
+end
 
 # target :spec do
 #   signature "sig", "sig-private"
