@@ -19,10 +19,10 @@ target :ffi do
   check 'lib/ffi/' # Directory name
 
   library 'date',
-    'logger',
-    'forwardable',
-    'logger',
-    'monitor'
+          'logger',
+          'forwardable',
+          'logger',
+          'monitor'
 end
 
 target :gdal do
@@ -31,10 +31,10 @@ target :gdal do
   check 'lib/gdal' # Directory name
 
   library 'date',
-    'logger',
-    'forwardable',
-    'logger',
-    'monitor'
+          'logger',
+          'forwardable',
+          'logger',
+          'monitor'
 end
 
 target :ogr do
@@ -43,10 +43,10 @@ target :ogr do
   check 'lib/ogr' # Directory name
 
   library 'date',
-    'logger',
-    'forwardable',
-    'logger',
-    'monitor'
+          'logger',
+          'forwardable',
+          'logger',
+          'monitor'
 end
 
 target :ext do
@@ -55,10 +55,10 @@ target :ext do
   check 'lib/ext' # Directory name
 
   library 'date',
-    'logger',
-    'forwardable',
-    'logger',
-    'monitor'
+          'logger',
+          'forwardable',
+          'logger',
+          'monitor'
 end
 
 # target :spec do

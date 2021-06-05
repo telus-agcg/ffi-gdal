@@ -43,9 +43,9 @@ module FFI
       # -----------------------------------------------------------------------
       SRS_UL = FFI::ConstGenerator.new('SRS_UL')
 
-      if path = FFI::GDAL._file_with_constants('ogr_srs_api.h')
+      if (path = FFI::GDAL._file_with_constants('ogr_srs_api.h'))
         SRS_UL.include(path)
-        floater = method(:to_f)
+        floater = ->(thing) { thing.to_f }
         SRS_UL.const :SRS_UL_METER,              '%s', nil, :METER_LABEL
         SRS_UL.const :SRS_UL_FOOT,               '%s', nil, :FOOT_LABEL
         SRS_UL.const :SRS_UL_FOOT_CONV,          '%s', nil, :METER_TO_FOOT, floater
@@ -105,10 +105,10 @@ module FFI
       # they're needed.
       SRS_UA = ::FFI::ConstGenerator.new('SRS_UL')
 
-      if path = FFI::GDAL._file_with_constants('ogr_srs_api.h')
+      if (path = FFI::GDAL._file_with_constants('ogr_srs_api.h'))
         SRS_UA.include(path)
         SRS_UA.const :SRS_UA_DEGREE,       '%s', nil, :DEGREE_LABEL
-        SRS_UA.const :SRS_UA_DEGREE_CONV,  '%s', nil, :RADIAN_TO_DEGREE, method(:to_f)
+        SRS_UA.const :SRS_UA_DEGREE_CONV,  '%s', nil, :RADIAN_TO_DEGREE, ->(thing) { thing.to_f }
         SRS_UA.const :SRS_UA_RADIAN,       '%s', nil, :RADIAN_LABEL
       end
 
