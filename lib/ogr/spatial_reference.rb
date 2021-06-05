@@ -28,15 +28,15 @@ module OGR
         found&.converted_value
       end
 
-      puts "GOT NAME: #{name}"
-      found = finder.call(FFI::OGR::SRSAPI::SRS_UL.constants)
+      FFI::OGR::SRSAPI::SRS_UA.calculate
+      found = finder.call(FFI::OGR::SRSAPI::SRS_UA.constants)
       return found if found
 
-      finder.call(FFI::OGR::SRSAPI::SRS_UA.constants)
+      FFI::OGR::SRSAPI::SRS_UL.calculate
+      finder.call(FFI::OGR::SRSAPI::SRS_UL.constants)
     end
 
     METER_TO_METER = 1.0
-
     RADIAN_TO_RADIAN = 1.0
 
     # @deprecated This was removed in GDAL 3.0.
