@@ -22,16 +22,14 @@ module OGR
     include SpatialReferenceMixins::ParameterGetterSetters
     include SpatialReferenceMixins::TypeChecks
 
-    # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
-    FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
-      const_set(obj.ruby_name, obj.value)
+    def self.const_missing(name)
+      found = FFI::OGR::SRSAPI::SRS_UL[name.to_s]
+      return found if found
+
+      FFI::OGR::SRSAPI::SRS_UA[name.to_s]
     end
 
     METER_TO_METER = 1.0
-
-    FFI::OGR::SRSAPI::SRS_UA.constants.each do |_name, obj|
-      const_set(obj.ruby_name, obj.value)
-    end
 
     RADIAN_TO_RADIAN = 1.0
 

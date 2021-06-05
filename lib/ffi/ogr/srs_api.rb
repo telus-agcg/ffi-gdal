@@ -98,15 +98,14 @@ module FFI
         gen.const :SRS_UL_INDIAN_CHAIN_CONV,  '%s', nil, :METER_TO_INDIAN_CHAIN, &:to_f
       end
 
-      SRS_UL.calculate
-
+      # TODO: Switch to non-block form so as to not force loading all of these
+      # at require time.
       SRS_UA = FFI::ConstGenerator.new('SRS_UL') do |gen|
         gen.include FFI::GDAL._file_with_constants('ogr_srs_api.h')
-        gen.const :SRS_UA_DEGREE,       '%s', nil, :DEGREE_LABEL, &:inspect
+        gen.const :SRS_UA_DEGREE,       '%s', nil, :DEGREE_LABEL, &:to_s
         gen.const :SRS_UA_DEGREE_CONV,  '%s', nil, :RADIAN_TO_DEGREE, &:to_f
-        gen.const :SRS_UA_RADIAN,       '%s', nil, :RADIAN_LABEL, &:inspect
+        gen.const :SRS_UA_RADIAN,       '%s', nil, :RADIAN_LABEL, &:to_s
       end
-      SRS_UA.calculate
 
       # -----------------------------------------------------------------------
       # Typedefs
@@ -144,207 +143,212 @@ module FFI
       attach_gdal_function :OSRImportFromProj4, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromESRI, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromPCI,
-                      %i[OGRSpatialReferenceH string string pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string string pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromUSGS,
-                      %i[OGRSpatialReferenceH long long pointer long],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH long long pointer long],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromXML, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromMICoordSys, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromERM,
-                      %i[OGRSpatialReferenceH string string string],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string string string],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OSRExportToWkt, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH buffer_out bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH buffer_out bool],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRExportToProj4, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRExportToPCI,
-                      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRExportToUSGS,
-                      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out buffer_out],
-                      FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OSRExportToXML, %i[OGRSpatialReferenceH buffer_out pointer], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH buffer_out], FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out buffer_out],
+                           FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OSRExportToXML, %i[OGRSpatialReferenceH buffer_out pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH buffer_out],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRExportToERM,
-                      %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRMorphToESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRMorphFromESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OSRSetAttrValue, %i[OGRSpatialReferenceH string string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetAttrValue, %i[OGRSpatialReferenceH string int], :string
-      attach_gdal_function :OSRSetAngularUnits, %i[OGRSpatialReferenceH string double], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OSRSetAngularUnits, %i[OGRSpatialReferenceH string double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetAngularUnits, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRSetLinearUnits, %i[OGRSpatialReferenceH string double], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetLinearUnits, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRSetTargetLinearUnits, %i[OGRSpatialReferenceH string string double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetTargetLinearUnits, %i[OGRSpatialReferenceH string pointer], :double
       attach_gdal_function :OSRGetPrimeMeridian, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRSetLinearUnitsAndUpdateParameters,
-                      %i[OGRSpatialReferenceH string double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetSemiMajor, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRGetSemiMinor, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRGetInvFlattening, %i[OGRSpatialReferenceH pointer], :double
       attach_gdal_function :OSRSetAuthority,
-                      %i[OGRSpatialReferenceH string string int],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string string int],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetAuthorityCode, %i[OGRSpatialReferenceH string], :strptr
       attach_gdal_function :OSRGetAuthorityName, %i[OGRSpatialReferenceH string], :strptr
       attach_gdal_function :OSRSetProjection, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetProjParm, %i[OGRSpatialReferenceH string double], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetProjParm,
-                      %i[OGRSpatialReferenceH string double pointer],
-                      :double
-      attach_gdal_function :OSRSetNormProjParm, %i[OGRSpatialReferenceH string double], FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string double pointer],
+                           :double
+      attach_gdal_function :OSRSetNormProjParm, %i[OGRSpatialReferenceH string double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetNormProjParm,
-                      %i[OGRSpatialReferenceH string double pointer],
-                      :double
+                           %i[OGRSpatialReferenceH string double pointer],
+                           :double
       attach_gdal_function :OSRSetUTM, %i[OGRSpatialReferenceH int bool], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetUTMZone, %i[OGRSpatialReferenceH pointer], :int
       attach_gdal_function :OSRSetStatePlane, %i[OGRSpatialReferenceH int bool], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetStatePlaneWithUnits,
-                      %i[OGRSpatialReferenceH int int string double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH int int string double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRAutoIdentifyEPSG, %i[OGRSpatialReferenceH], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSREPSGTreatsAsLatLong, %i[OGRSpatialReferenceH], :bool
       attach_gdal_function :OSREPSGTreatsAsNorthingEasting, %i[OGRSpatialReferenceH], :bool
       attach_gdal_function :OSRGetAxis,
-                      %i[OGRSpatialReferenceH string int pointer],
-                      :string
+                           %i[OGRSpatialReferenceH string int pointer],
+                           :string
 
       attach_gdal_function :OSRSetACEA,
-                      %i[OGRSpatialReferenceH double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetAE,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetBonne,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetCEA,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetCS,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEC,
-                      %i[OGRSpatialReferenceH double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEckert,
-                      %i[OGRSpatialReferenceH int double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH int double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEckertIV,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEckertVI,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEquirectangular,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetEquirectangular2,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGS,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGH,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetIGH,
-                      %i[OGRSpatialReferenceH],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGEOS,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGaussSchreiberTMercator,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGnomonic,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetHOM,
-                      %i[OGRSpatialReferenceH double double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetHOM2PNO,
-                      %i[OGRSpatialReferenceH double double double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetIWMPolyconic,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetKrovak,
-                      %i[OGRSpatialReferenceH double double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetLAEA,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetLCC,
-                      %i[OGRSpatialReferenceH double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetLCC1SP,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetLCCB,
-                      %i[OGRSpatialReferenceH double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetMC,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetMercator,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetMollweide,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetNZMG,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetOS,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetOrthographic,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetPolyconic,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetPS,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetRobinson,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetSinusoidal,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetStereographic,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetSOC,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetTM,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetTMVariant,
-                      %i[OGRSpatialReferenceH string double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetTMG,
-                      %i[OGRSpatialReferenceH double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetTMSO,
-                      %i[OGRSpatialReferenceH double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetVDG,
-                      %i[OGRSpatialReferenceH double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetWagner,
-                      %i[OGRSpatialReferenceH int double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH int double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OSRIsCompound, %i[OGRSpatialReferenceH], :bool
       attach_gdal_function :OSRIsGeocentric, %i[OGRSpatialReferenceH], :bool
@@ -360,25 +364,25 @@ module FFI
       attach_gdal_function :OSRSetProjCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGeocCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetGeogCS,
-                      %i[OGRSpatialReferenceH
-                         string string string
-                         double double string
-                         double string double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH
+                              string string string
+                              double double string
+                              double string double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetWellKnownGeogCS, %i[OGRSpatialReferenceH string],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetFromUserInput, %i[OGRSpatialReferenceH string],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRCopyGeogCSFrom, %i[OGRSpatialReferenceH OGRSpatialReferenceH],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetTOWGS84,
-                      %i[OGRSpatialReferenceH double double double double double double double],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH double double double double double double double],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRGetTOWGS84, %i[OGRSpatialReferenceH pointer int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetVertCS, %i[OGRSpatialReferenceH string string int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OSRSetCompoundCS,
-                      %i[OGRSpatialReferenceH string OGRSpatialReferenceH OGRSpatialReferenceH],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRSpatialReferenceH string OGRSpatialReferenceH OGRSpatialReferenceH],
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OSRCleanup, [], :void
 
@@ -386,17 +390,17 @@ module FFI
       # CoordinateTransformations
       # ~~~~~~~~~~~~~
       attach_gdal_function :OCTDestroyCoordinateTransformation,
-                      %i[OGRCoordinateTransformationH],
-                      :void
+                           %i[OGRCoordinateTransformationH],
+                           :void
       attach_gdal_function :OCTNewCoordinateTransformation,
-                      %i[OGRSpatialReferenceH OGRSpatialReferenceH],
-                      :OGRCoordinateTransformationH
+                           %i[OGRSpatialReferenceH OGRSpatialReferenceH],
+                           :OGRCoordinateTransformationH
       attach_gdal_function :OCTTransform,
-                      %i[OGRCoordinateTransformationH int pointer pointer pointer],
-                      :bool
+                           %i[OGRCoordinateTransformationH int pointer pointer pointer],
+                           :bool
       attach_gdal_function :OCTTransformEx,
-                      %i[OGRCoordinateTransformationH int pointer pointer pointer pointer],
-                      :bool
+                           %i[OGRCoordinateTransformationH int pointer pointer pointer pointer],
+                           :bool
 
       # ~~~~~~~~~~~~~
       # Parameters
@@ -404,8 +408,8 @@ module FFI
       attach_gdal_function :OPTGetProjectionMethods, %i[], :pointer
       attach_gdal_function :OPTGetParameterList, %i[string pointer], :pointer
       attach_gdal_function :OPTGetParameterInfo,
-                      %i[string string pointer pointer pointer],
-                      :int
+                           %i[string string pointer pointer pointer],
+                           :int
     end
   end
 end
