@@ -7,10 +7,10 @@ target :lib do
 
   # Standard libraries
   library 'date',
-    'logger',
-    'forwardable',
-    'logger',
-    'monitor'
+          'logger',
+          'forwardable',
+          'logger',
+          'monitor'
 end
 
 # target :lib_ffi do

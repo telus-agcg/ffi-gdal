@@ -33,8 +33,8 @@ module FFI
       attach_gdal_function :CPLRemoveXMLChild, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :bool
       attach_gdal_function :CPLAddXMLSibling, [CPL::XMLNode.ptr, CPL::XMLNode.ptr], :void
       attach_gdal_function :CPLCreateXMLElementAndValue,
-                      [CPL::XMLNode.ptr, :string, :string],
-                      CPL::XMLNode.ptr
+                           [CPL::XMLNode.ptr, :string, :string],
+                           CPL::XMLNode.ptr
       attach_gdal_function :CPLCloneXMLTree, [CPL::XMLNode.ptr], CPL::XMLNode.ptr
       attach_gdal_function :CPLSetXMLValue, [CPL::XMLNode.ptr, :string, :string], :bool
       attach_gdal_function :CPLStripXMLNamespace, [CPL::XMLNode.ptr, :string, :bool], :void

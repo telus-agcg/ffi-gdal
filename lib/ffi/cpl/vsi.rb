@@ -51,8 +51,8 @@ module FFI
       attach_gdal_function :VSIRewindL, %i[pointer], :void
       attach_gdal_function :VSIFReadL, %i[pointer size_t size_t pointer], :size_t
       attach_gdal_function :VSIFReadMultiRangeL,
-                      %i[int pointer pointer pointer pointer],
-                      :int
+                           %i[int pointer pointer pointer pointer],
+                           :int
       attach_gdal_function :VSIFWriteL, %i[pointer size_t size_t pointer], :size_t
       attach_gdal_function :VSIFEofL, %i[pointer], :int
       attach_gdal_function :VSIFTruncateL, %i[pointer vsi_l_offset], :int
@@ -60,8 +60,8 @@ module FFI
       attach_gdal_function :VSIFPrintfL, %i[pointer string varargs], :int
       attach_gdal_function :VSIFPutcL, %i[int pointer], :int
       attach_gdal_function :VSIIngestFile,
-                      [:pointer, :string, :pointer, :pointer, Port.find_type(:GIntBig)],
-                      :int
+                           [:pointer, :string, :pointer, :pointer, Port.find_type(:GIntBig)],
+                           :int
       attach_gdal_function :VSIStatL, %i[string pointer], :int
       attach_gdal_function :VSIStatExL, %i[string pointer int], :int
 
@@ -99,14 +99,14 @@ module FFI
       attach_gdal_function :VSICleanupFileManager, [], :void
 
       attach_gdal_function :VSIFileFromMemBuffer,
-                      %i[string pointer vsi_l_offset int],
-                      :pointer
+                           %i[string pointer vsi_l_offset int],
+                           :pointer
       attach_gdal_function :VSIGetMemFileBuffer,
-                      %i[string pointer int],
-                      :pointer
+                           %i[string pointer int],
+                           :pointer
       attach_gdal_function :VSIStdoutSetRedirection,
-                      %i[VSIWriteFunction pointer],
-                      :pointer
+                           %i[VSIWriteFunction pointer],
+                           :pointer
 
       attach_gdal_function :VSITime, %i[pointer], :ulong
       attach_gdal_function :VSICTime, %i[ulong], :strptr

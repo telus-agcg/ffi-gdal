@@ -120,11 +120,11 @@ module FFI
       attach_gdal_function :CPLCloseFileInZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_gdal_function :CPLCloseZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_gdal_function :CPLZLibDeflate,
-                      %i[pointer size_t int pointer size_t pointer],
-                      :pointer
+                           %i[pointer size_t int pointer size_t pointer],
+                           :pointer
       attach_gdal_function :CPLZLibInflate,
-                      %i[pointer size_t pointer size_t pointer],
-                      :pointer
+                           %i[pointer size_t pointer size_t pointer],
+                           :pointer
 
       attach_gdal_function :CPLValidateXML, %i[string string pointer], :int
       attach_gdal_function :CPLsetlocale, %i[int string], :strptr

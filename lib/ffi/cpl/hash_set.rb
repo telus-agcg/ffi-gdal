@@ -23,13 +23,13 @@ module FFI
       # Functions
       #-------------------------------------------------------------------------
       attach_gdal_function :CPLHashSetNew,
-                      %i[CPLHashSetHashFunc CPLHashSetEqualFunc CPLHashSetFreeEltFunc],
-                      :CPLHashSetH
+                           %i[CPLHashSetHashFunc CPLHashSetEqualFunc CPLHashSetFreeEltFunc],
+                           :CPLHashSetH
       attach_gdal_function :CPLHashSetDestroy, %i[CPLHashSetH], :void
       attach_gdal_function :CPLHashSetSize, %i[CPLHashSetH], :int
       attach_gdal_function :CPLHashSetForeach,
-                      %i[CPLHashSetH CPLHashSetIterEltFunc pointer],
-                      :void
+                           %i[CPLHashSetH CPLHashSetIterEltFunc pointer],
+                           :void
       attach_gdal_function :CPLHashSetInsert, %i[CPLHashSetH pointer], :bool
       attach_gdal_function :CPLHashSetLookup, %i[CPLHashSetH pointer], :pointer
       attach_gdal_function :CPLHashSetRemove, %i[CPLHashSetH pointer], :bool

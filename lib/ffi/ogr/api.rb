@@ -32,29 +32,31 @@ module FFI
       # Geometry-related
       # ~~~~~~~~~~~~~~~~
       attach_gdal_function :OGR_G_ApproximateArcAngles,
-                      [
-                        :double, :double, :double,    # X, Y, Z
-                        :double, :double, :double,    # primary radius, 2nd Axis, rotation
-                        :double, :double, :double     # start angle, end angle, max angle step size
-                      ],
-                      :OGRGeometryH
+                           [
+                             :double, :double, :double,    # X, Y, Z
+                             :double, :double, :double,    # primary radius, 2nd Axis, rotation
+                             :double, :double, :double     # start angle, end angle, max angle step size
+                           ],
+                           :OGRGeometryH
 
       # Geometry constructors
       attach_gdal_function :OGRBuildPolygonFromEdges, %i[OGRGeometryH bool bool double pointer], :OGRGeometryH
       attach_gdal_function :OGR_G_CreateFromFgf,
-                      [
-                        :string,
-                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
-                        :pointer,
-                        :int,
-                        :pointer
-                      ], FFI::OGR::Core.enum_type(:OGRErr)
+                           [
+                             :string,
+                             FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                             :pointer,
+                             :int,
+                             :pointer
+                           ], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_G_CreateFromGML, %i[string], :OGRGeometryH
       attach_gdal_function :OGR_G_CreateFromGMLTree, [FFI::CPL::XMLNode.ptr], :OGRGeometryH
       attach_gdal_function :OGR_G_CreateFromWkb,
-        [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OGR_G_CreateFromWkt, [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
-        FFI::OGR::Core.enum_type(:OGRErr)
+                           [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int],
+                           FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_G_CreateFromWkt,
+                           [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_G_CreateGeometry, [FFI::OGR::Core::WKBGeometryType], :OGRGeometryH
       attach_gdal_function :OGR_G_CreateGeometryFromJson, %i[string], :OGRGeometryH
       attach_gdal_function :OGR_G_ImportFromWkb, %i[OGRGeometryH string int], FFI::OGR::Core.enum_type(:OGRErr)
@@ -70,7 +72,7 @@ module FFI
       attach_gdal_function :OGR_G_ExportToJsonEx, %i[OGRGeometryH pointer], :strptr
       attach_gdal_function :OGR_G_ExportToKML, %i[OGRGeometryH string], :strptr
       attach_gdal_function :OGR_G_ExportToWkb, [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
-        FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_G_ExportToWkt, %i[OGRGeometryH pointer], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OGR_G_DestroyGeometry, %i[OGRGeometryH], :void
@@ -91,7 +93,8 @@ module FFI
       attach_gdal_function :OGR_G_GetPoint, %i[OGRGeometryH int pointer pointer pointer], :double
       attach_gdal_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int
       attach_gdal_function :OGR_G_GetPoints, %i[OGRGeometryH buffer_out int buffer_out int buffer_out int], :int
-      attach_gdal_function :OGR_G_GetSpatialReference, %i[OGRGeometryH], FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
+      attach_gdal_function :OGR_G_GetSpatialReference, %i[OGRGeometryH],
+                           FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
       attach_gdal_function :OGR_G_GetX, %i[OGRGeometryH int], :double
       attach_gdal_function :OGR_G_GetY, %i[OGRGeometryH int], :double
       attach_gdal_function :OGR_G_GetZ, %i[OGRGeometryH int], :double
@@ -108,7 +111,7 @@ module FFI
       attach_gdal_function :OGR_G_AddPoint, %i[OGRGeometryH double double double], :void
       attach_gdal_function :OGR_G_AddPoint_2D, %i[OGRGeometryH double double], :void
       attach_gdal_function :OGR_G_AssignSpatialReference,
-                      [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)], :void
+                           [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)], :void
       attach_gdal_function :OGR_G_RemoveGeometry, %i[OGRGeometryH int bool], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
       attach_gdal_function :OGR_G_SetPoint, %i[OGRGeometryH int double double double], :void
@@ -126,9 +129,9 @@ module FFI
       attach_gdal_function :OGR_G_Simplify, %i[OGRGeometryH double], :OGRGeometryH
       attach_gdal_function :OGR_G_SimplifyPreserveTopology, %i[OGRGeometryH double], :OGRGeometryH
       attach_gdal_function :OGR_G_Transform, [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRCoordinateTransformationH)],
-        FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_G_TransformTo, [:OGRGeometryH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)],
-        FFI::OGR::Core.enum_type(:OGRErr)
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       # Geometry boolean-op methods
       attach_gdal_function :OGR_G_Buffer, %i[OGRGeometryH double int], :OGRGeometryH
@@ -170,8 +173,9 @@ module FFI
       attach_gdal_function :OGR_Fld_SetPrecision, %i[OGRFieldDefnH int], :void
 
       attach_gdal_function :OGR_Fld_Set,
-                      [:OGRFieldDefnH, :string, FFI::OGR::Core::FieldType, :int, :int, FFI::OGR::Core::Justification],
-                      :void
+                           [:OGRFieldDefnH, :string, FFI::OGR::Core::FieldType, :int, :int,
+                            FFI::OGR::Core::Justification],
+                           :void
       attach_gdal_function :OGR_Fld_IsIgnored, %i[OGRFieldDefnH], :bool
       attach_gdal_function :OGR_Fld_SetIgnored, %i[OGRFieldDefnH bool], :void
 
@@ -181,21 +185,21 @@ module FFI
       # Geometry Field-related
       # ~~~~~~~~~~~~~~~~
       attach_gdal_function :OGR_GFld_Create,
-                      [:string, FFI::OGR::Core::WKBGeometryType],
-                      :OGRGeomFieldDefnH
+                           [:string, FFI::OGR::Core::WKBGeometryType],
+                           :OGRGeomFieldDefnH
       attach_gdal_function :OGR_GFld_Destroy, %i[OGRGeomFieldDefnH], :void
       attach_gdal_function :OGR_GFld_SetName, %i[OGRGeomFieldDefnH string], :void
       attach_gdal_function :OGR_GFld_GetNameRef, %i[OGRGeomFieldDefnH], :strptr
       attach_gdal_function :OGR_GFld_GetType, %i[OGRGeomFieldDefnH], FFI::OGR::Core::WKBGeometryType
       attach_gdal_function :OGR_GFld_SetType,
-                      [:OGRGeomFieldDefnH, FFI::OGR::Core::WKBGeometryType],
-                      :void
+                           [:OGRGeomFieldDefnH, FFI::OGR::Core::WKBGeometryType],
+                           :void
       attach_gdal_function :OGR_GFld_GetSpatialRef,
-                      %i[OGRGeomFieldDefnH],
-                      FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
+                           %i[OGRGeomFieldDefnH],
+                           FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
       attach_gdal_function :OGR_GFld_SetSpatialRef,
-                      [:OGRGeomFieldDefnH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)],
-                      :void
+                           [:OGRGeomFieldDefnH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)],
+                           :void
       attach_gdal_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
       attach_gdal_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
 
@@ -210,15 +214,15 @@ module FFI
       attach_gdal_function :OGR_FD_GetFieldDefn, %i[OGRFeatureDefnH int], :OGRFieldDefnH
       attach_gdal_function :OGR_FD_GetFieldIndex, %i[OGRFeatureDefnH string], :int
       attach_gdal_function :OGR_FD_AddFieldDefn,
-                      %i[OGRFeatureDefnH OGRFieldDefnH],
-                      :void
+                           %i[OGRFeatureDefnH OGRFieldDefnH],
+                           :void
       attach_gdal_function :OGR_FD_DeleteFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRFeatureDefnH int],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], FFI::OGR::Core::WKBGeometryType
       attach_gdal_function :OGR_FD_SetGeomType,
-                      [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],
-                      :void
+                           [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],
+                           :void
       attach_gdal_function :OGR_FD_IsGeometryIgnored, %i[OGRFeatureDefnH], :bool
       attach_gdal_function :OGR_FD_SetGeometryIgnored, %i[OGRFeatureDefnH bool], :void
       attach_gdal_function :OGR_FD_IsStyleIgnored, %i[OGRFeatureDefnH], :bool
@@ -228,21 +232,21 @@ module FFI
       attach_gdal_function :OGR_FD_GetReferenceCount, %i[OGRFeatureDefnH], :int
       attach_gdal_function :OGR_FD_GetGeomFieldCount, %i[OGRFeatureDefnH], :int
       attach_gdal_function :OGR_FD_GetGeomFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      :OGRGeomFieldDefnH
+                           %i[OGRFeatureDefnH int],
+                           :OGRGeomFieldDefnH
       attach_gdal_function :OGR_FD_GetGeomFieldIndex,
-                      %i[OGRFeatureDefnH string],
-                      :int
+                           %i[OGRFeatureDefnH string],
+                           :int
       attach_gdal_function :OGR_FD_AddGeomFieldDefn,
-                      %i[OGRFeatureDefnH OGRGeomFieldDefnH],
-                      :void
+                           %i[OGRFeatureDefnH OGRGeomFieldDefnH],
+                           :void
       attach_gdal_function :OGR_FD_DeleteGeomFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRFeatureDefnH int],
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OGR_FD_IsSame,
-                      %i[OGRFeatureDefnH OGRFeatureDefnH],
-                      :bool
+                           %i[OGRFeatureDefnH OGRFeatureDefnH],
+                           :bool
 
       # ~~~~~~~~~~~~~~~~
       # Feature-related
@@ -251,11 +255,11 @@ module FFI
       attach_gdal_function :OGR_F_Destroy, %i[OGRFeatureH], :void
       attach_gdal_function :OGR_F_GetDefnRef, %i[OGRFeatureH], :OGRFeatureDefnH
       attach_gdal_function :OGR_F_SetGeometryDirectly,
-                      %i[OGRFeatureH OGRGeometryH],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRFeatureH OGRGeometryH],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_F_SetGeometry,
-                      %i[OGRFeatureH OGRGeometryH],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           %i[OGRFeatureH OGRGeometryH],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_F_GetGeometryRef, %i[OGRFeatureH], :OGRGeometryH
       attach_gdal_function :OGR_F_StealGeometry, %i[OGRFeatureH], :OGRGeometryH
 
@@ -276,8 +280,8 @@ module FFI
       attach_gdal_function :OGR_F_GetFieldAsStringList, %i[OGRFeatureH int], :pointer
       attach_gdal_function :OGR_F_GetFieldAsBinary, %i[OGRFeatureH int pointer], :pointer
       attach_gdal_function :OGR_F_GetFieldAsDateTime,
-                      %i[OGRFeatureH int pointer pointer pointer pointer pointer pointer pointer],
-                      :int
+                           %i[OGRFeatureH int pointer pointer pointer pointer pointer pointer pointer],
+                           :int
       attach_gdal_function :OGR_F_SetFieldInteger, %i[OGRFeatureH int int], :void
       attach_gdal_function :OGR_F_SetFieldDouble, %i[OGRFeatureH int double], :void
       attach_gdal_function :OGR_F_SetFieldString, %i[OGRFeatureH int string], :void
@@ -287,21 +291,23 @@ module FFI
       attach_gdal_function :OGR_F_SetFieldRaw, [:OGRFeatureH, :int, FFI::OGR::Field.ptr], :void
       attach_gdal_function :OGR_F_SetFieldBinary, %i[OGRFeatureH int int pointer], :void
       attach_gdal_function :OGR_F_SetFieldDateTime,
-                      %i[OGRFeatureH int int int int int int int int],
-                      :void
+                           %i[OGRFeatureH int int int int int int int int],
+                           :void
 
       attach_gdal_function :OGR_F_GetGeomFieldCount, %i[OGRFeatureH], :int
       attach_gdal_function :OGR_F_GetGeomFieldDefnRef, %i[OGRFeatureH int], :OGRGeomFieldDefnH
       attach_gdal_function :OGR_F_GetGeomFieldIndex, %i[OGRFeatureH string], :int
       attach_gdal_function :OGR_F_GetGeomFieldRef, %i[OGRFeatureH int], :OGRGeometryH
-      attach_gdal_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_F_SetGeomFieldDirectly, %i[OGRFeatureH int OGRGeometryH],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_F_SetGeomField, %i[OGRFeatureH int OGRGeometryH], FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OGR_F_GetFID, %i[OGRFeatureH], :long
       attach_gdal_function :OGR_F_SetFID, %i[OGRFeatureH long], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_F_DumpReadable, %i[OGRFeatureH pointer], :void
       attach_gdal_function :OGR_F_SetFrom, %i[OGRFeatureH OGRFeatureH int], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_F_SetFromWithMap, %i[OGRFeatureH OGRFeatureH int pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OGR_F_GetStyleString, %i[OGRFeatureH], :strptr
       attach_gdal_function :OGR_F_SetStyleString, %i[OGRFeatureH string], :void
@@ -345,12 +351,15 @@ module FFI
       attach_gdal_function :OGR_L_GetNextFeature, %i[OGRLayerH], :OGRFeatureH
       attach_gdal_function :OGR_L_SetFeature, %i[OGRLayerH OGRFeatureH], FFI::OGR::Core.enum_type(:OGRErr)
 
-      attach_gdal_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OGR_L_GetExtentEx, [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool],
+                           FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_L_GetExtentEx, [:OGRLayerH, :int, FFI::OGR::Envelope.ptr, :bool],
+                           FFI::OGR::Core.enum_type(:OGRErr)
 
       attach_gdal_function :OGR_L_AlterFieldDefn, %i[OGRLayerH int OGRFieldDefnH int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_CreateField, %i[OGRLayerH OGRFieldDefnH bool], FFI::OGR::Core.enum_type(:OGRErr)
-      attach_gdal_function :OGR_L_CreateGeomField, %i[OGRLayerH OGRGeomFieldDefnH bool], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_L_CreateGeomField, %i[OGRLayerH OGRGeomFieldDefnH bool],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_DeleteField, %i[OGRLayerH int], FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
       attach_gdal_function :OGR_L_ReorderField, %i[OGRLayerH int int], FFI::OGR::Core.enum_type(:OGRErr)
@@ -370,26 +379,26 @@ module FFI
 
       # rubocop:disable Layout/LineLength
       attach_gdal_function :OGR_L_Clip,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_Erase,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_Identity,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_Intersection,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_SymDifference,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_Union,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       attach_gdal_function :OGR_L_Update,
-                      [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
-                      FFI::OGR::Core.enum_type(:OGRErr)
+                           [:OGRLayerH, :OGRLayerH, :OGRLayerH, :pointer, FFI::GDAL::GDAL.find_type(:GDALProgressFunc), :pointer],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       # rubocop:enable Layout/LineLength
 
       # ~~~~~~~~~~~~~~~~
@@ -399,15 +408,16 @@ module FFI
       attach_gdal_function :OGR_DS_CopyLayer, %i[OGRDataSourceH OGRLayerH string pointer], :OGRLayerH
       # Deprecated in 2.0; use GDALDatasetCreateLayer()
       attach_gdal_function :OGR_DS_CreateLayer,
-                      [
-                        :OGRDataSourceH,
-                        :string,
-                        FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
-                        FFI::OGR::Core::WKBGeometryType,
-                        :pointer
-                      ], :OGRLayerH
+                           [
+                             :OGRDataSourceH,
+                             :string,
+                             FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH),
+                             FFI::OGR::Core::WKBGeometryType,
+                             :pointer
+                           ], :OGRLayerH
       # Deprecated in 2.0; use GDALDatasetDeleteLayer()
-                      attach_gdal_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_DS_DeleteLayer, %i[OGRDataSourceH int],
+                           FFI::OGR::Core.enum_type(:OGRErr)
       # Deprecated in 2.0; use GDALClose()
       attach_gdal_function :OGR_DS_Destroy, %i[OGRDataSourceH], :void
       # Deprecated in 2.0; use GDALDatasetExecuteSQL()
@@ -439,8 +449,8 @@ module FFI
       attach_gdal_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :bool
       attach_gdal_function :OGR_Dr_CreateDataSource, %i[OGRSFDriverH string pointer], :OGRDataSourceH
       attach_gdal_function :OGR_Dr_CopyDataSource,
-                      %i[OGRSFDriverH OGRDataSourceH string pointer],
-                      :OGRDataSourceH
+                           %i[OGRSFDriverH OGRDataSourceH string pointer],
+                           :OGRDataSourceH
       attach_gdal_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core.enum_type(:OGRErr)
 
       # ~~~~~~~~~~~~~~~~
@@ -452,8 +462,8 @@ module FFI
       attach_gdal_function :OGR_SM_InitStyleString, %i[OGRStyleTableH string], :int
       attach_gdal_function :OGR_SM_GetPartCount, %i[OGRStyleTableH string], :int
       attach_gdal_function :OGR_SM_GetPart,
-                      %i[OGRStyleTableH int string],
-                      :OGRStyleToolH
+                           %i[OGRStyleTableH int string],
+                           :OGRStyleToolH
       attach_gdal_function :OGR_SM_AddPart, %i[OGRStyleTableH OGRStyleToolH], :int
       attach_gdal_function :OGR_SM_AddStyle, %i[OGRStyleTableH string string], :int
 

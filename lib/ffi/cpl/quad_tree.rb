@@ -25,30 +25,30 @@ module FFI
       # Functions
       #-------------------------------------------------------------------------
       attach_gdal_function :CPLQuadTreeCreate,
-                      [FFI::CPL::RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
-                      :CPLQuadTreeH
+                           [FFI::CPL::RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
+                           :CPLQuadTreeH
       attach_gdal_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
       attach_gdal_function :CPLQuadTreeSetBucketCapacity,
-                      %i[CPLQuadTreeH int],
-                      :void
+                           %i[CPLQuadTreeH int],
+                           :void
       attach_gdal_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
       attach_gdal_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
       attach_gdal_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
       attach_gdal_function :CPLQuadTreeInsertWithBounds,
-                      [:CPLQuadTreeH, :pointer, FFI::CPL::RectObj.ptr],
-                      :void
+                           [:CPLQuadTreeH, :pointer, FFI::CPL::RectObj.ptr],
+                           :void
       attach_gdal_function :CPLQuadTreeSearch,
-                      [:CPLQuadTreeH, FFI::CPL::RectObj.ptr, :pointer],
-                      :void
+                           [:CPLQuadTreeH, FFI::CPL::RectObj.ptr, :pointer],
+                           :void
       attach_gdal_function :CPLQuadTreeForeach,
-                      %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
-                      :void
+                           %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
+                           :void
       attach_gdal_function :CPLQuadTreeDump,
-                      %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
-                      :void
+                           %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
+                           :void
       attach_gdal_function :CPLQuadTreeGetStats,
-                      %i[CPLQuadTreeH pointer pointer pointer pointer],
-                      :void
+                           %i[CPLQuadTreeH pointer pointer pointer pointer],
+                           :void
     end
   end
 end

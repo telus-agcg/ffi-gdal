@@ -33,8 +33,8 @@ module FFI
       attach_gdal_function :CSLMerge, %i[pointer pointer], :pointer
       attach_gdal_function :CSLTokenizeString, %i[string], :pointer
       attach_gdal_function :CSLTokenizeStringComplex,
-                      %i[string string int int],
-                      :pointer
+                           %i[string string int int],
+                           :pointer
       attach_gdal_function :CSLTokenizeString2, %i[string string int], :pointer
       attach_gdal_function :CSLPrint, %i[pointer pointer], :int
       attach_gdal_function :CSLLoad, %i[string], :pointer
