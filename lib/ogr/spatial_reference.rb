@@ -23,10 +23,16 @@ module OGR
     include SpatialReferenceMixins::TypeChecks
 
     def self.const_missing(name)
-      found = FFI::OGR::SRSAPI::SRS_UL[name.to_s]
+      finder = lambda do |constants|
+        found = constants.values.find { |c| c.ruby_name == name.to_sym }
+        found&.converted_value
+      end
+
+      puts "GOT NAME: #{name}"
+      found = finder.call(FFI::OGR::SRSAPI::SRS_UL.constants)
       return found if found
 
-      FFI::OGR::SRSAPI::SRS_UA[name.to_s]
+      finder.call(FFI::OGR::SRSAPI::SRS_UA.constants)
     end
 
     METER_TO_METER = 1.0

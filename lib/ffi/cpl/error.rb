@@ -10,8 +10,6 @@ module FFI
       extend ::FFI::Library
       @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
-      callback :CPLErrorHandler, [enum_type(:CPLErr), :int, :string], :void
-
       #------------------------------------------------------------------------
       # Enums
       #------------------------------------------------------------------------
@@ -30,6 +28,8 @@ module FFI
                          :CPLE_NoWriteAccess,
                          :CPLE_UserInterrupt,
                          :CPLE_ObjectNull
+
+      callback :CPLErrorHandler, [enum_type(:CPLErr), :int, :string], :void
 
       #------------------------------------------------------------------------
       # Functions
