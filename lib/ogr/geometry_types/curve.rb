@@ -46,9 +46,9 @@ module OGR
       #
       # @param x [Float]
       # @param y [Float]
-      # @param z [Float]
-      def add_point(x, y, z = 0.0)
-        if coordinate_dimension == 3
+      # @param z [Float, nil]
+      def add_point(x, y, z = nil)
+        if z
           FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
         else
           FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
@@ -58,9 +58,9 @@ module OGR
       # @param index [Integer] The index of the vertex to assign.
       # @param x [Number]
       # @param y [Number]
-      # @param z [Number]
+      # @param z [Number, nil]
       def set_point(index, x, y, z = nil)
-        if is_3d?
+        if z
           FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
         else
           FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)

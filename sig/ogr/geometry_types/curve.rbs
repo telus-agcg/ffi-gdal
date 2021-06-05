@@ -2,6 +2,7 @@ module OGR
   module GeometryTypes
     module Curve
       include GDAL::Logger
+      include OGR::Geometry
 
       type point_array = Array[[Float, Float, Float]] | Array[[Float, Float]]
 
