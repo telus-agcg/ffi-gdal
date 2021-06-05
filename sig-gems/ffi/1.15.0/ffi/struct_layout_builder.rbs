@@ -1,0 +1,8 @@
+module FFI
+  class StructLayoutBuilder
+    attr_reader alignment: untyped
+    attr_reader size: untyped
+
+    def initialize: -> void
+  end
+end

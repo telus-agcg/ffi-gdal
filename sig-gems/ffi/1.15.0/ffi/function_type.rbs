@@ -4,7 +4,7 @@ module FFI
       FFI::Type | Symbol return_type,
       Array[FFI::Type | Symbol] param_types,
       { convention: untyped, enums: untyped, blocking: untyped } options
-    ) -> instance
+    ) -> void
 
     def param_types: -> Array[FFI::Type]
     def result_type: -> FFI::Type

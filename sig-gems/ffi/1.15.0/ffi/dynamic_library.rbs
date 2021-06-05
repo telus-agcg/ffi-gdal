@@ -12,7 +12,7 @@ module FFI
     def last_error: -> String
 
     class Symbol < FFI::Pointer
-      def inspect: -> String
+      include _Inspect
     end
   end
 end

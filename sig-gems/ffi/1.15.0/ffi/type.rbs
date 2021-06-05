@@ -38,16 +38,16 @@ module FFI
     VARARGS: FFI::Type::Builtin
     VOID: FFI::Type::Builtin
 
-    def initialize: (Integer | FFI::Type value) -> instance
+    def initialize: (Integer | FFI::Type value) -> void
     def alignment: -> Integer
     def size: -> Integer
 
     class Builtin < ::FFI::Type
-      def inspect: -> String
+      include _Inspect
     end
 
     class Mapped < ::FFI::Type
-      def initialize: (_NativeType & _ToNative & _FromNative converter) -> instance
+      def initialize: (_NativeType & _ToNative & _FromNative converter) -> void
       def from_native: (*untyped args) -> untyped
       def native_type: -> FFI::Type
       def to_native: -> untyped

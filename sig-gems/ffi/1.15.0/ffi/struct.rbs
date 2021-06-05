@@ -8,10 +8,6 @@ module FFI
     def self.by_ref: (?::Symbol flags) -> FFI::Type::Mapped
     def self.by_value: () -> FFI::StructByValue
     def self.in: () -> FFI::Type::Mapped
-    # def self.layout: -> FFI::StructLayout
-      # | (*Array[Symbol | Integer | FFI::Enum | FFI::Struct | FFI::Type] | Array[Hash] args) -> FFI::StructLayout
-      # | (*Symbol | FFI::Enum | FFI::Struct | FFI::Type | FFI::CallbackInfo args) -> FFI::StructLayout
-      # | (Hash[Symbol, FFI::Enum | FFI::Struct | FFI::Type | FFI::CallbackInfo]) -> FFI::StructLayout
     def self.layout:
       (*Symbol | Integer args) -> FFI::StructLayout
 

@@ -4,23 +4,14 @@ module FFI
 
   module Platform
     OS: String
-
     OSVERSION: Integer
-
     CPU: String
-
     ARCH: String
-
     LIBPREFIX: String
-
     LIBSUFFIX: String
-
     LIBC: String
-
     LITTLE_ENDIAN: ::Integer
-
     BIG_ENDIAN: ::Integer
-
     BYTE_ORDER: ::Integer
 
     def self.bsd?: () -> bool

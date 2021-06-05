@@ -1,5 +1,5 @@
 module FFI
   class Union < FFI::Struct
-    def self.builder: () -> untyped
+    def self.builder: () -> FFI::StructLayoutBuilder
   end
 end

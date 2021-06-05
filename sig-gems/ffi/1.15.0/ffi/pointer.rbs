@@ -7,8 +7,9 @@ module FFI
 
     def self.size: () -> Numeric
 
-    def initialize: (instance pointer) -> instance
-      | (FFI::Type type_name, Integer address) -> instance
+    def initialize:
+      (instance pointer)                     -> void
+    | (FFI::Type type_name, Integer address) -> void
 
     def +: (Numeric offset) -> instance
     def ==: (instance other) -> bool
@@ -23,23 +24,21 @@ module FFI
     def order: () -> (:big | :little) | (:little | :big | :network) -> instance
     def read: (Symbol | FFI::Type type_name) -> untyped
 
-    def read_array_of_type: (FFI::Type type_name, Symbol reader, Numeric length) -> ::Array[FFI::AbstractMemory | Numeric | String]
+    def read_array_of_type:
+      (FFI::Type type_name, Symbol reader, Numeric length) -> ::Array[FFI::AbstractMemory | Numeric | String]
 
     def read_string: (?Numeric? len) -> String
-
     def read_string_length: (Numeric len) -> String
-
     def read_string_to_null: () -> String
 
     def slice: (Numeric offset, Numeric length) -> instance
-
     def to_ptr: -> self
-
     def type_size: -> Numeric
 
     def write: (Symbol | FFI::Type type_name, untyped value) -> nil
 
-    def write_array_of_type: (FFI::Type type_name, Symbol writer, Array[FFI::AbstractMemory | Numeric | String] ary) -> self
+    def write_array_of_type:
+      (FFI::Type type_name, Symbol writer, Array[FFI::AbstractMemory | Numeric | String] ary) -> self
 
     def write_string: (String str, Numeric? len) -> self
 

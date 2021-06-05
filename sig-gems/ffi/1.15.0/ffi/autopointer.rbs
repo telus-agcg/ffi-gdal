@@ -7,24 +7,21 @@ module FFI
     # def self.native_type: () -> FFI::Type::POINTER
     def self.native_type: () -> FFI::Type::Builtin
 
-    def initialize: (FFI::Pointer pointer, Method method) -> instance
-      | (FFI::Pointer pointer, Proc proc) -> instance
-      | (FFI::Pointer pointer) { (FFI::Pointer) -> untyped } -> instance
-      | (FFI::Pointer pointer)-> instance
+    def initialize:
+      (FFI::Pointer pointer, Method method) -> instance
+    | (FFI::Pointer pointer, Proc proc) -> instance
+    | (FFI::Pointer pointer) { (FFI::Pointer) -> untyped } -> instance
+    | (FFI::Pointer pointer)-> instance
 
     def free: () -> nil
-
     def autorelease=: (bool autorelease) -> bool
-
     def autorelease?: () -> bool
 
     class Releaser
       attr_accessor autorelease: untyped
 
       def initialize: (FFI::Pointer ptr, _Call proc) -> instance
-
       def free: () -> nil
-
       def call: (*untyped args) -> untyped
     end
 
