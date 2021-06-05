@@ -24,13 +24,14 @@ RSpec.describe GDAL::Dataset do
 
     context 'block given' do
       let(:dataset) { instance_double 'GDAL::Dataset' }
+      let(:pointer) { instance_double 'FFI::Pointer' }
 
       it 'yields then closes the opened DataSource' do
-        allow(described_class).to receive(:new).and_return dataset
-
+        expect(FFI::GDAL::GDAL).to receive(:GDALOpenShared).and_return(pointer)
+        allow(described_class).to receive(:new).with(pointer).and_return dataset
         expect(dataset).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }
-          .to yield_with_args(dataset)
+
+        expect { |b| described_class.open('blarg', 'r', &b) }.to yield_with_args(dataset)
       end
     end
   end

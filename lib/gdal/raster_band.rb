@@ -8,7 +8,7 @@ require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'major_object'
 
 module GDAL
-  class RasterBand # rubocop:disable Metrics/ClassLength
+  class RasterBand
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
@@ -21,18 +21,15 @@ module GDAL
     # @return [FFI::Pointer] C pointer to the C raster band.
     attr_reader :c_pointer
 
-    # @return [GDAL::Dataset] The dataset that owns this RasterBand.
-    attr_reader :dataset
-
-    # @param raster_band [GDAL::RasterBand, FFI::Pointer]
-    def initialize(raster_band, dataset = nil)
-      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, autorelease: false)
+    # @param raster_band [FFI::Pointer]
+    def initialize(raster_band_pointer, dataset = nil)
+      @c_pointer = raster_band_pointer
 
       # Init the dataset too--the dataset owns the raster band, so when the dataset
       # gets closed, the raster band gets cleaned up. Storing a reference to the
       # dataset here ensures the underlying raster band doesn't get pulled out
       # from under the Ruby object that represents it.
-      @dataset = dataset || init_dataset
+      @dataset = dataset || self.dataset
     end
 
     # @raise [GDAL::Error]
@@ -211,7 +208,7 @@ module GDAL
       band_pointer = FFI::GDAL::GDAL.GDALGetMaskBand(@c_pointer)
       return nil if band_pointer.null?
 
-      self.class.new(band_pointer)
+      RasterBand.new(band_pointer, @dataset)
     end
 
     # @return [Array<Symbol>]
@@ -750,14 +747,13 @@ module GDAL
       { value: value, is_tight: is_tight.read_bytes(1).to_bool }
     end
 
-    private
+    # @return [GDAL::Dataset]
+    def dataset
+      return @dataset if @dataset
 
-    # @return [GDAL::Dataset, nil]
-    def init_dataset
       dataset_ptr = FFI::GDAL::GDAL.GDALGetBandDataset(@c_pointer)
-      return nil if dataset_ptr.null?
 
-      GDAL::Dataset.new(dataset_ptr, access_flag, shared_open: true)
+      @dataset = GDAL::Dataset.new(dataset_ptr)
     end
   end
 end

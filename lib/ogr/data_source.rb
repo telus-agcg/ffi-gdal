@@ -233,7 +233,7 @@ module OGR
 
     # @raise [OGR::Failure]
     def sync_to_disk
-      OGR::ErrorHandling.handle_ogr_err('Unable to syn datasource to disk') do
+      OGR::ErrorHandling.handle_ogr_err('Unable to sync datasource to disk') do
         FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
       end
     end
