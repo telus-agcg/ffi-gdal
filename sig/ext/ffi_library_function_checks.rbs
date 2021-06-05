@@ -1,5 +1,5 @@
 module FFI
-  module Library
+  module FFILibraryFunctionChecks
     def attach_gdal_function: (
       _ToS c_function_name,
       Array[Symbol | FFI::Enum | FFI::Type] args,
@@ -12,5 +12,9 @@ module FFI
 
 
     def unsupported_gdal_functions: () -> untyped
+  end
+
+  module Library
+    include FFILibraryFunctionChecks
   end
 end

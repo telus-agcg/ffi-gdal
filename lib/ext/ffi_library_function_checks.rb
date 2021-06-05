@@ -4,9 +4,9 @@ require 'ffi'
 require 'ffi/library'
 
 module FFI
-  # Redefining #attach_function so we can avoid bombing out if a called method
+  # Wrapping #attach_function so we can avoid bombing out if a called method
   # is not defined.
-  module Library
+  module FFILibraryFunctionChecks
     def attach_gdal_function(func, args, returns, **options)
       raise "Must specify return type for function '#{func}'" if returns.nil?
 
@@ -33,3 +33,5 @@ module FFI
     end
   end
 end
+
+FFI::Library.include(FFI::FFILibraryFunctionChecks)
