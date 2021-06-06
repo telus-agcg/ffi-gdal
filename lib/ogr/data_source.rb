@@ -56,7 +56,7 @@ module OGR
         error_type = FFI::CPL::Error.CPLGetLastErrorType
         FFI::CPL::Error.CPLErrorReset
 
-        raise OGR::OpenFailure, "#{error_type}: #{error_msg} (#{file_path})"
+        raise OGR::OpenFailure, "#{error_type}: #{error_msg}"
       end
 
       @c_pointer = pointer
