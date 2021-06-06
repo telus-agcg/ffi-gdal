@@ -9,6 +9,41 @@ module FFI
       def self.OGROpen: (String data_source_name, bool open_with_write_access, FFI::Pointer? driver_list) -> FFI::Pointer
 
       # ~~~~~~~~~~~~~~~~
+      # Driver-related
+      # ~~~~~~~~~~~~~~~~
+      def self.OGRGetDriver: (Integer driver_index) -> FFI::Pointer
+      def self.OGRGetDriverByName: (String driver_name) -> FFI::Pointer
+      def self.OGRGetDriverCount: -> Integer
+
+      def self.OGR_Dr_CopyDataSource: (
+        FFI::Pointer driver_handle,
+        FFI::Pointer data_source_handle,
+        String new_data_source_name,
+        ?FFI::Pointer? options
+      ) -> FFI::Pointer
+
+      def self.OGR_Dr_CreateDataSource: (
+        FFI::Pointer driver_handle,
+        String new_data_source_name,
+        ?FFI::Pointer? options
+      ) -> FFI::Pointer
+
+      def self.OGR_Dr_DeleteDataSource: (
+        FFI::Pointer driver_handle,
+        String data_source_name
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OGR_Dr_GetName: (FFI::Pointer driver_handle) -> String
+
+      def self.OGR_Dr_Open: (
+        FFI::Pointer driver_handle,
+        String data_source_name,
+        bool write_enabled
+      ) -> FFI::Pointer
+
+      def self.OGR_Dr_TestCapability: (FFI::Pointer driver_handle, String capability) -> bool
+
+      # ~~~~~~~~~~~~~~~~
       # DataSource-related
       # ~~~~~~~~~~~~~~~~
       def self.OGR_DS_CopyLayer: (FFI::Pointer data_source_handle, FFI::Pointer layer_handle, String new_layer_name, FFI::Pointer options) -> FFI::Pointer
@@ -73,6 +108,13 @@ module FFI
 
       # Geometry attribute getter methods
       def self.OGR_G_GetGeometryRef: (FFI::Pointer geometry_handle, Integer sub_geom_index) -> FFI::Pointer
+      def self.OGR_G_GetPoint: (
+        FFI::Pointer geometry_handle,
+        Integer index,
+        FFI::Buffer x_buffer,
+        FFI::Buffer y_buffer,
+        FFI::Buffer z_buffer
+      ) -> void
       def self.OGR_G_GetPoints: (
         FFI::Pointer geometry_handle,
         FFI::Buffer? x_buffer,

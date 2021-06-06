@@ -2,6 +2,7 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
+require_relative '../gdal/wraps_pointer'
 require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
 require_relative 'spatial_reference_mixins/exporters'
 require_relative 'spatial_reference_mixins/importers'
@@ -15,6 +16,7 @@ module OGR
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
     include GDAL::Logger
+    include GDAL::WrapsPointer
     include SpatialReferenceMixins::CoordinateSystemGetterSetters
     include SpatialReferenceMixins::Exporters
     include SpatialReferenceMixins::Importers
@@ -123,9 +125,7 @@ module OGR
     # Decrements the reference count by one, and destroy if zero.
     #
     # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
-
+    def self.impl_release(pointer)
       FFI::OGR::SRSAPI.OSRRelease(pointer)
     end
 
