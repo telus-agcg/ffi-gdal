@@ -84,7 +84,7 @@ RSpec.describe OGR::Layer do
 
     describe '#supports_curve_geometries?' do
       subject { layer.supports_curve_geometries? }
-      it { is_expected.to eq false }
+      it { is_expected.to eq true }
     end
   end
 end

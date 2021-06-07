@@ -26,7 +26,7 @@ RSpec.describe OGR::DataSource do
 
     describe '#supports_curve_geometries?' do
       subject { data_source.supports_curve_geometries? }
-      it { is_expected.to eq false }
+      it { is_expected.to eq true }
     end
   end
 end

@@ -99,6 +99,9 @@ module GDAL
         new_band_pixels[data_pixels & band_pixels.le(r[:range].max) & band_pixels.ge(r[:range].min)] = r[:map_to]
       end
 
+      in_range = @ranges.map { |r| band_pixels.le(r[:range].max) & band_pixels.ge(r[:range].min) }.reduce(:|)
+      new_band_pixels[data_pixels & ~in_range] = 0 if in_range
+
       mask_nan(new_band_pixels, data_pixels) if nodata_is_nan?
       @raster_band.write_xy_narray(new_band_pixels)
     end

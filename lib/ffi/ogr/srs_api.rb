@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ffi'
+require_relative '../gdal'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI
@@ -166,7 +168,7 @@ module FFI
       attach_function :OSRExportToXML, %i[OGRSpatialReferenceH pointer buffer_out], FFI::OGR::Core::Err
       attach_function :OSRExportToMICoordSys, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
       attach_function :OSRExportToERM,
-        %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
+        %i[OGRSpatialReferenceH pointer pointer pointer],
         FFI::OGR::Core::Err
       attach_function :OSRMorphToESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
       attach_function :OSRMorphFromESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err

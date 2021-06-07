@@ -67,11 +67,6 @@ module GDAL
       FFI::GDAL::GDAL.GDALGetDescription(@c_pointer)
     end
 
-    # @param new_description [String]
-    def description=(new_description)
-      FFI::GDAL::GDAL.GDALSetDescription(@c_pointer, new_description.to_s)
-    end
-
     def null?
       @c_pointer.null?
     end
