@@ -49,15 +49,6 @@ RSpec.shared_examples 'a major object' do
     end
   end
 
-  describe '#description=' do
-    context 'new description is a string' do
-      it 'sets the items description' do
-        subject.description = 'a test description'
-        expect(subject.description).to eq 'a test description'
-      end
-    end
-  end
-
   describe '#null?' do
     it { is_expected.to_not be_null }
   end

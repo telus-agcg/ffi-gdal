@@ -36,7 +36,7 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe '#short_name' do
     it 'is GTiff' do
-      expect(subject.short_name).to eq 'GTiff'
+      expect(subject.short_name).to eq('GTiff')
     end
   end
 

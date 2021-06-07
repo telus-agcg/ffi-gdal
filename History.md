@@ -2,6 +2,17 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta12 / 2021-06-07
+
+### Removed
+
+* Removed `GDAL::MajorObject#description=`, as this shouldn't be called and
+  causes problems.
+
+### Bug Fixes
+
+* [DEV-15804] Remove data that is outside all ranges when classifying.
+
 ## 1.0.0.beta11 / 2020-06-02
 
 ### Bug Fixes

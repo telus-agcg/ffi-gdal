@@ -281,7 +281,7 @@ module GDAL
           pixel_value_field = layer.feature_definition.field_index(field_name)
           options = { pixel_value_field: pixel_value_field }
           options[:mask_band] = band.mask_band if use_band_masks
-          band.polygonize(layer, options)
+          band.polygonize(layer, **options)
         end
 
         if block_given?

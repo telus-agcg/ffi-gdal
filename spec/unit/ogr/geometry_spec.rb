@@ -673,7 +673,8 @@ RSpec.describe OGR::Geometry do
 
     context 'wkbLinearRing' do
       subject { described_class.type_to_name(:wkbLinearRing) }
-      it { is_expected.to eq 'Unrecognised: 101' }
+      # Per GDAL docs, LinearRing is only used for geometry creation.
+      it { is_expected.to eq 'Unrecognized: 101' }
     end
   end
 

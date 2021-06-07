@@ -237,7 +237,7 @@ RSpec.describe OGR::Point do
     let(:wkt) { 'POINT EMPTY' }
 
     describe '#coordinate_dimension' do
-      specify { expect(subject.coordinate_dimension).to eq 0 }
+      specify { expect(subject.coordinate_dimension).to eq 2 }
     end
 
     describe '#geometry_count' do
@@ -299,8 +299,8 @@ RSpec.describe OGR::Point do
     end
 
     describe '#envelope' do
-      it 'returns nil' do
-        expect(subject.envelope).to be_nil
+      it 'returns an OGR::Envelope' do
+        expect(subject.envelope).to be_a OGR::Envelope
       end
     end
   end
