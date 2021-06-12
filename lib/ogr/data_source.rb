@@ -16,7 +16,7 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      ds = new(path, access_flag)
+      ds = OGR::DataSource.new(path, access_flag)
 
       if block_given?
         result = yield ds

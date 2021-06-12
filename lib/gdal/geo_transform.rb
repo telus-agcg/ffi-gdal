@@ -27,7 +27,7 @@ module GDAL
 
       return nil unless result
 
-      new(gt_ptr)
+      GDAL::GeoTransform.new(gt_ptr)
     end
 
     # @param geo_transform [FFI::Pointer]
@@ -184,7 +184,7 @@ module GDAL
       success = FFI::GDAL::GDAL.GDALInvGeoTransform(@c_pointer, new_geo_transform_ptr)
       return nil unless success
 
-      self.class.new(new_geo_transform_ptr)
+      GDAL::GeoTransform.new(new_geo_transform_ptr)
     end
 
     # @param raster_filename [String] The target raster file.

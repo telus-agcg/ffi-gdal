@@ -2,14 +2,14 @@
 
 module GDAL
   class ColorInterpretation
+    # Normally this method would be called "name", but that would conflict with
+    # `Class#name`.
+    #
     # @param gdal_color_interp [FFI::GDAL::GDAL::ColorInterp]
     # @return [String]
-    def self.name(gdal_color_interp)
+    def self.color_interpretation_name(gdal_color_interp)
       # The returned strings are static strings and should not be modified or freed by the application.
-      name, ptr = FFI::GDAL::GDAL.GDALGetColorInterpretationName(gdal_color_interp)
-      ptr.autorelease = false
-
-      name
+      FFI::GDAL::GDAL.GDALGetColorInterpretationName(gdal_color_interp)
     end
 
     # @param name [String]

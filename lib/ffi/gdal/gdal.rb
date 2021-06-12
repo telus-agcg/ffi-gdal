@@ -122,7 +122,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~
       # ColorInterpretation
       # ~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGetColorInterpretationName, [ColorInterp], :strptr
+      attach_function :GDALGetColorInterpretationName, [ColorInterp], :string # <- don't free this.
       attach_function :GDALGetColorInterpretationByName, [:string], ColorInterp
 
       # ~~~~~~~~~~~~~~~~~~~

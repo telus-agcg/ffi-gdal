@@ -22,7 +22,7 @@ module OGR
       )
       return nil if geometry_ptr.null?
 
-      new(geometry_ptr)
+      LineString.new(geometry_ptr)
     end
 
     def initialize(geometry_ptr = nil, spatial_reference: nil)

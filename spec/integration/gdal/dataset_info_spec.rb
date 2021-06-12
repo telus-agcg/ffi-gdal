@@ -8,7 +8,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
   let(:original_tiff) do
     path = '../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif'
-    File.expand_path(path, __dir__)
+    File.expand_path(path, __dir__ || '.')
   end
 
   subject { GDAL::Dataset.open(tmp_tiff, 'r') }

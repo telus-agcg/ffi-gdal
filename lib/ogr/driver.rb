@@ -26,7 +26,7 @@ module OGR
       driver_ptr = FFI::OGR::API.OGRGetDriverByName(name)
       raise OGR::DriverNotFound, name if driver_ptr.null?
 
-      new(driver_ptr)
+      OGR::Driver.new(driver_ptr)
     end
 
     # @param index [Integer] Index of the registered driver.  Must be less than
@@ -39,7 +39,7 @@ module OGR
       driver_ptr = FFI::OGR::API.OGRGetDriver(index)
       raise OGR::DriverNotFound, index if driver_ptr.null?
 
-      new(driver_ptr)
+      OGR::Driver.new(driver_ptr)
     end
 
     # @return [Array<String>]

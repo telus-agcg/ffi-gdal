@@ -17,25 +17,21 @@ module GDAL
         true
       end
     end
-
-    private
-
-    def gdal_require(path)
-      File.expand_path(path, __dir__)
-    end
   end
 
+  extend FFI::InternalHelpers
+
   # Autoload just the core GDAL object types.
-  autoload :ColorTable,           gdal_require('gdal/color_table')
-  autoload :Dataset,              gdal_require('gdal/dataset')
-  autoload :DataType,             gdal_require('gdal/data_type')
-  autoload :Driver,               gdal_require('gdal/driver')
-  autoload :GeoTransform,         gdal_require('gdal/geo_transform')
-  autoload :Logger,               gdal_require('gdal/logger')
-  autoload :MajorObject,          gdal_require('gdal/major_object')
-  autoload :Options,              gdal_require('gdal/options')
-  autoload :RasterAttributeTable, gdal_require('gdal/raster_attribute_table')
-  autoload :RasterBand,           gdal_require('gdal/raster_band')
+  autoload :ColorTable,           autoload_path('gdal/color_table')
+  autoload :Dataset,              autoload_path('gdal/dataset')
+  autoload :DataType,             autoload_path('gdal/data_type')
+  autoload :Driver,               autoload_path('gdal/driver')
+  autoload :GeoTransform,         autoload_path('gdal/geo_transform')
+  autoload :Logger,               autoload_path('gdal/logger')
+  autoload :MajorObject,          autoload_path('gdal/major_object')
+  autoload :Options,              autoload_path('gdal/options')
+  autoload :RasterAttributeTable, autoload_path('gdal/raster_attribute_table')
+  autoload :RasterBand,           autoload_path('gdal/raster_band')
 end
 
 require_relative 'gdal/exceptions'
@@ -43,6 +39,7 @@ require_relative 'gdal/version_info'
 require_relative 'gdal/environment_methods'
 require_relative 'gdal/internal_helpers'
 require_relative 'gdal/cpl_error_handler'
+require 'ffi/gdal'
 
 module GDAL
   extend VersionInfo

@@ -24,7 +24,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def clip(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Clip, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Clip, method_layer, output_layer, options, &progress)
       end
 
       # Remove areas in this layer that are covered by the method layer.
@@ -45,7 +45,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def erase(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Erase, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Erase, method_layer, output_layer, options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -64,7 +64,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def identity(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Identity, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Identity, method_layer, output_layer, options, &progress)
       end
 
       # Intersection of this layer and +method_layer+.
@@ -81,7 +81,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def intersection(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Intersection, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Intersection, method_layer, output_layer, options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -103,7 +103,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def symmetrical_difference(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_SymDifference, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_SymDifference, method_layer, output_layer, options, &progress)
       end
 
       # The result layer contains features whose geometries represent areas that
@@ -124,7 +124,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def union(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Union, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Union, method_layer, output_layer, options, &progress)
       end
 
       # Update this layer with features from the update layer. The result layer
@@ -146,7 +146,7 @@ module OGR
       #   that will be created from the fields of the method Layer.
       # @raise [OGR::Failure]
       def update(method_layer, output_layer, **options, &progress)
-        run_layer_method(:OGR_L_Update, method_layer, output_layer, **options, &progress)
+        run_layer_method(:OGR_L_Update, method_layer, output_layer, options, &progress)
       end
 
       private

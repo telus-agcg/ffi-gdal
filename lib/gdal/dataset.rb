@@ -30,7 +30,7 @@ module GDAL
     # @param shared [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
     def self.open(path, access_flag, shared: true)
-      ds = new(path, access_flag, shared_open: shared)
+      ds = GDAL::Dataset.new(path, access_flag, shared_open: shared)
 
       if block_given?
         result = yield ds

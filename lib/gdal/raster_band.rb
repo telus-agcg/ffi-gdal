@@ -187,7 +187,7 @@ module GDAL
       overview_pointer = FFI::GDAL::GDAL.GDALGetOverview(@c_pointer, index)
       return nil if overview_pointer.null?
 
-      self.class.new(overview_pointer)
+      RasterBand.new(overview_pointer)
     end
 
     # Returns the most reduced overview of this RasterBand that still satisfies
@@ -203,7 +203,7 @@ module GDAL
       band_pointer = FFI::GDAL::GDAL.GDALGetRasterSampleOverview(@c_pointer, desired_samples)
       return nil if band_pointer.null?
 
-      self.class.new(band_pointer)
+      RasterBand.new(band_pointer)
     end
 
     # @return [GDAL::RasterBand]
@@ -211,7 +211,7 @@ module GDAL
       band_pointer = FFI::GDAL::GDAL.GDALGetMaskBand(@c_pointer)
       return nil if band_pointer.null?
 
-      self.class.new(band_pointer)
+      RasterBand.new(band_pointer)
     end
 
     # @return [Array<Symbol>]
@@ -485,7 +485,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         min = min_pointer.read_double
         max = max_pointer.read_double
@@ -546,7 +546,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         totals = if buckets.zero?
                    []

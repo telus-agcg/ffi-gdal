@@ -4,7 +4,7 @@ require 'gdal'
 
 RSpec.describe GDAL::Dataset do
   let(:source_file_path) do
-    File.expand_path('../../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__)
+    File.expand_path('../../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__ || '.')
   end
 
   let(:output_dir) { Dir.mktmpdir(File.basename(__FILE__, '.rb')) }

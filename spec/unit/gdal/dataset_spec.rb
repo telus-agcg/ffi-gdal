@@ -4,7 +4,7 @@ require 'gdal/dataset'
 
 RSpec.describe GDAL::Dataset do
   let(:file_path) do
-    File.expand_path('../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__)
+    File.expand_path('../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif', __dir__ || '.')
   end
 
   subject do

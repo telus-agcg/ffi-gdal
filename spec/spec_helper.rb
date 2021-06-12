@@ -9,9 +9,9 @@ SimpleCov.start do
   add_group 'ext', 'lib/ext'
 end
 
-$LOAD_PATH.unshift File.expand_path('lib', __dir__)
+$LOAD_PATH.unshift File.expand_path('lib', __dir__ || '..')
 require 'ffi-gdal'
-require 'byebug'
+require 'irb'
 
 Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 

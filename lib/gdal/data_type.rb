@@ -19,7 +19,7 @@ module GDAL
 
     # @param gdal_data_type [FFI::GDAL::GDAL::DataType]
     # @return [String]
-    def self.name(gdal_data_type)
+    def self.data_type_name(gdal_data_type)
       # The returned strings are static strings and should not be modified or
       # freed by the application.
       name, ptr = FFI::GDAL::GDAL.GDALGetDataTypeName(gdal_data_type)

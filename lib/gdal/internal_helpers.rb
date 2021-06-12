@@ -69,7 +69,7 @@ module GDAL
         init_meth = _gdal_data_type_to_narray(data_type)
         narray_args = 0 if narray_args.empty?
 
-        NArray.send(init_meth, *narray_args)
+        NArray.send(init_meth, narray_args)
       end
 
       # Takes an array of strings (or things that should be converted to

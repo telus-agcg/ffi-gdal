@@ -27,7 +27,7 @@ module GDAL
 
       raise InvalidDriverName, "'#{name}' is not a valid driver name." if driver_ptr.null?
 
-      new(driver_ptr)
+      GDAL::Driver.new(driver_ptr)
     end
 
     # @param index [Integer] Index of the registered driver.  Must be less than
@@ -39,7 +39,7 @@ module GDAL
 
       driver_ptr = FFI::GDAL::GDAL.GDALGetDriver(index)
 
-      new(driver_ptr)
+      GDAL::Driver.new(driver_ptr)
     end
 
     # @param file_path [String] File to get the driver for.
@@ -48,7 +48,7 @@ module GDAL
       driver_ptr = FFI::GDAL::GDAL.GDALIdentifyDriver(::File.expand_path(file_path), nil)
       return nil if driver_ptr.null?
 
-      new(driver_ptr)
+      GDAL::Driver.new(driver_ptr)
     end
 
     attr_reader :c_pointer

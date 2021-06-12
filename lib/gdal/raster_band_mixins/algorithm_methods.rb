@@ -273,10 +273,9 @@ module GDAL
       # @param options [Hash] None supported in GDAL as of this writing.
       def sieve_filter!(size_threshold, connectedness, mask_band: nil, progress_function: nil, progress_arg: nil,
         **options)
-        _sieve_filter(size_threshold, connectedness, self, mask_band: mask_band,
-                                                           progress_function: progress_function,
-                                                           progress_arg: progress_arg,
-                                                           **options)
+        _sieve_filter(size_threshold, connectedness, self, options, mask_band: mask_band,
+                                                                    progress_function: progress_function,
+                                                                    progress_arg: progress_arg)
       end
 
       # The same as +sieve_filter!+, but returns a new GDAL::RasterBand as the
@@ -286,10 +285,9 @@ module GDAL
       # @param destination_band [GDAL::RasterBand]
       def sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        _sieve_filter(size_threshold, connectedness, destination_band, mask_band: mask_band,
-                                                                       progress_function: progress_function,
-                                                                       progress_arg: progress_arg,
-                                                                       **options)
+        _sieve_filter(size_threshold, connectedness, destination_band, options, mask_band: mask_band,
+                                                                                progress_function: progress_function,
+                                                                                progress_arg: progress_arg)
 
         if destination_band.is_a? GDAL::RasterBand
           destination_band

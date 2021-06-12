@@ -1,0 +1,14 @@
+---
+- file: lib/gdal/dataset.rb
+  diagnostics:
+  - range:
+      start:
+        line: 32
+        character: 17
+      end:
+        line: 32
+        character: 50
+    severity: ERROR
+    message: Method parameters are incompatible with declaration `[T(1)] (::String,
+      ?::String) ?{ (::IO) -> T(1) } -> (::IO | nil | T(1))`
+    code: Ruby::MethodArityMismatch

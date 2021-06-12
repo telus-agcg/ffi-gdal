@@ -17,7 +17,7 @@ module GDAL
         FFI::GDAL::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
       end
 
-      new(rat_ptr)
+      RasterAttributeTable.new(rat_ptr)
     end
 
     # @param raster_attribute_table [GDAL::RasterAttributeTable]
@@ -56,7 +56,7 @@ module GDAL
       rat_ptr = FFI::GDAL::GDAL.GDALRATClone(@c_pointer)
       return nil if rat_ptr.nil? || rat_ptr.null?
 
-      self.class.new(rat_ptr)
+      RasterAttributeTable.new(rat_ptr)
     end
 
     # +true+ if the changes made to this RAT have been written to the associated

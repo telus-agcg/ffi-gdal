@@ -16,7 +16,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
   context 'file with color table' do
     let(:original_tiff) do
       path = '../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif'
-      File.expand_path(path, __dir__)
+      File.expand_path(path, __dir__ || '.')
     end
 
     describe '#palette_interpretation' do
@@ -71,7 +71,7 @@ RSpec.describe 'GDAL Color Table access', type: :integration do
   context 'file without color table' do
     let(:original_tiff) do
       path = '../../../spec/support/images/osgeo/geotiff/gdal_eg/cea.tif'
-      File.expand_path(path, __dir__)
+      File.expand_path(path, __dir__ || '.')
     end
 
     it { is_expected.to be_nil }

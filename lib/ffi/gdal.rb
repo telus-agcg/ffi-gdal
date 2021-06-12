@@ -2,29 +2,14 @@
 
 require 'ffi'
 require 'ffi/tools/const_generator'
+require_relative '../ffi-gdal'
 require_relative 'gdal/exceptions'
 require_relative '../ext/ffi_library_function_checks'
 
 module FFI
   module GDAL
     extend ::FFI::Library
-
-    autoload :Alg, File.expand_path('gdal/alg.rb', __dir__)
-    autoload :ColorEntry, File.expand_path('gdal/color_entry.rb', __dir__)
-    autoload :GDAL, File.expand_path('gdal/gdal.rb', __dir__)
-    autoload :GCP, File.expand_path('gdal/gcp.rb', __dir__)
-    autoload :Grid, File.expand_path('gdal/grid.rb', __dir__)
-    autoload :GridDataMetricsOptions, File.expand_path('gdal/grid_data_metrics_options.rb', __dir__)
-    autoload :GridInverseDistanceToAPowerOptions,
-             File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
-    autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__)
-    autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__)
-    autoload :Matching, File.expand_path('gdal/matching.rb', __dir__)
-    autoload :RPCInfo, File.expand_path('gdal/rpc_info.rb', __dir__)
-    autoload :TransformerInfo, File.expand_path('gdal/transformer_info.rb', __dir__)
-    autoload :VRT, File.expand_path('gdal/vrt.rb', __dir__)
-    autoload :Warper, File.expand_path('gdal/warper.rb', __dir__)
-    autoload :WarpOptions, File.expand_path('gdal/warp_options.rb', __dir__)
+    extend FFI::InternalHelpers
 
     # @return [String]
     def self.gdal_library_path
@@ -84,6 +69,22 @@ module FFI
     def self._file_with_constants(file_name)
       _files_with_constants.find { |f| f.end_with?(file_name) }
     end
+
+    autoload :Alg,                                autoload_path('gdal/alg.rb')
+    autoload :ColorEntry,                         autoload_path('gdal/color_entry.rb')
+    autoload :GDAL,                               autoload_path('ffi/gdal/gdal.rb')
+    autoload :GCP,                                autoload_path('gdal/gcp.rb')
+    autoload :Grid,                               autoload_path('gdal/grid.rb')
+    autoload :GridDataMetricsOptions,             autoload_path('gdal/grid_data_metrics_options.rb')
+    autoload :GridInverseDistanceToAPowerOptions, autoload_path('gdal/grid_inverse_distance_to_a_power_options.rb')
+    autoload :GridMovingAverageOptions,           autoload_path('gdal/grid_moving_average_options.rb')
+    autoload :GridNearestNeighborOptions,         autoload_path('gdal/grid_nearest_neighbor_options.rb')
+    autoload :Matching,                           autoload_path('gdal/matching.rb')
+    autoload :RPCInfo,                            autoload_path('gdal/rpc_info.rb')
+    autoload :TransformerInfo,                    autoload_path('gdal/transformer_info.rb')
+    autoload :VRT,                                autoload_path('gdal/vrt.rb')
+    autoload :Warper,                             autoload_path('gdal/warper.rb')
+    autoload :WarpOptions,                        autoload_path('gdal/warp_options.rb')
 
     if gdal_library_path.nil? || gdal_library_path.empty?
       raise FFI::GDAL::LibraryNotFound, "Can't find required gdal library using path: '#{gdal_library_path}'"
