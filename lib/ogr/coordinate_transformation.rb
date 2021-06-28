@@ -6,29 +6,12 @@ require_relative '../gdal'
 
 module OGR
   class CoordinateTransformation
-    # @param proj4_source [String]
-    # @return [String]
-    def self.proj4_normalize(proj4_source)
-      if GDAL._supported?(:OCTProj4Normalize)
-        FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
-      else
-        raise OGR::UnsupportedOperation,
-              'Your version of GDAL/OGR does not support OCTProj4Normalize'
-      end
-    end
-
     # @param pointer [FFI::Pointer]
     def self.release(pointer)
       return unless pointer && !pointer.null?
 
       FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(pointer)
     end
-
-    # @return [OGR::SpatialReference]
-    attr_reader :source_coordinate_system
-
-    # @return [OGR::SpatialReference]
-    attr_reader :destination_coordinate_system
 
     # @return [FFI::Pointer] C pointer that represents the CoordinateTransformation.
     attr_reader :c_pointer
@@ -126,17 +109,17 @@ module OGR
     # @param x_vertices [Array<Float>]
     # @param y_vertices [Array<Float>]
     # @param z_vertices [Array<Float>]
-    # @return [Array<FFI::Pointer>]
+    # @return [[FFI::Buffer, FFI::Buffer, FFI::Buffer], [FFI::Buffer, FFI::Buffer, nil]]
     def init_transform_pointers(x_vertices, y_vertices, z_vertices)
-      x_ptr = FFI::MemoryPointer.new(:pointer, x_vertices.size)
+      x_ptr = FFI::Buffer.alloc_out(:pointer, x_vertices.size)
       x_ptr.write_array_of_double(x_vertices)
-      y_ptr = FFI::MemoryPointer.new(:pointer, y_vertices.size)
+      y_ptr = FFI::Buffer.alloc_out)
       y_ptr.write_array_of_double(y_vertices)
 
       if z_vertices.empty?
         z_ptr = nil
       else
-        z_ptr = FFI::MemoryPointer.new(:pointer, z_vertices.size)
+        z_ptr = FFI::Buffer.alloc_out(:pointer, z_vertices.size)
         z_ptr.write_array_of_double(z_vertices)
       end
 

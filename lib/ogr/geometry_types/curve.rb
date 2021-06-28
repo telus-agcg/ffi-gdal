@@ -28,9 +28,9 @@ module OGR
       # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
       # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def point(number)
-        x_ptr = FFI::MemoryPointer.new(:double)
-        y_ptr = FFI::MemoryPointer.new(:double)
-        z_ptr = FFI::MemoryPointer.new(:double)
+        x_ptr = FFI::Buffer.new_out(:double)
+        y_ptr = FFI::Buffer.new_out(:double)
+        z_ptr = FFI::Buffer.new_out(:double)
 
         FFI::OGR::API.OGR_G_GetPoint(@c_pointer, number, x_ptr, y_ptr, z_ptr)
 

@@ -28,7 +28,44 @@ module FFI
       ?type_map: Hash[String, Symbol]
     ) -> FFI::VariadicInvoker
 
-    def function_names: (_ToS name, Array[_Size] arg_types) -> Array[String]
+    # def attach_function: (
+      # _ToS c_function_name,
+      # Array[Symbol | FFI::Enum] args,
+      # ?Symbol ?returns,
+      # ?blocking: boolish,
+      # ?convention: Symbol,
+      # ?enums: FFI::Enums | nil,
+      # ?type_map: Hash
+    # ) -> FFI::VariadicInvoker
+    # | (
+      # _ToS ruby_method_name,
+      # _ToS c_function_name,
+      # Array[Symbol | FFI::Enum] args,
+      # ?Symbol returns,
+      # ?blocking: bool,
+      # ?convention: Symbol,
+      # ?enums: FFI::Enums,
+      # ?type_map: Hash
+    # ) -> FFI::VariadicInvoker
+
+    def function_names: (_ToS name, Array arg_types) -> Array[String]
+
+    def attach_variable: (
+      _ToS mname,
+      _ToS cname,
+      FFI::DataConverter | FFI::Struct | Symbol | FFI::Type var_type
+    ) -> FFI::DynamicLibrary::Symbol
+    | (_ToS cname, FFI::DataConverter | FFI::Struct | Symbol | FFI::Type var_type) -> FFI::DynamicLibrary::Symbol
+
+    def callback: (
+      Symbol name,
+      Array params,
+      FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
+    ) -> FFI::CallbackInfo
+    | (
+        Array params,
+        FFI::DataConverter | FFI::Struct | Symbol | FFI::Type ret
+      ) -> FFI::CallbackInfo
 
     def attach_variable:
       (_ToS mname, _ToS cname, FFI::DataConverter | FFI::Struct | Symbol | FFI::Type var_type) -> FFI::DynamicLibrary::Symbol

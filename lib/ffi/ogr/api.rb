@@ -90,7 +90,7 @@ module FFI
       attach_gdal_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :strptr
       attach_gdal_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH
       attach_gdal_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
-      attach_gdal_function :OGR_G_GetPoint, %i[OGRGeometryH int pointer pointer pointer], :double
+      attach_gdal_function :OGR_G_GetPoint, %i[OGRGeometryH int buffer_out buffer_out buffer_out], :void
       attach_gdal_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int
       attach_gdal_function :OGR_G_GetPoints, %i[OGRGeometryH buffer_out int buffer_out int buffer_out int], :int
       attach_gdal_function :OGR_G_GetSpatialReference, %i[OGRGeometryH],
@@ -444,14 +444,17 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Driver-related
       # ~~~~~~~~~~~~~~~~
-      attach_gdal_function :OGR_Dr_GetName, %i[OGRSFDriverH], :strptr
-      attach_gdal_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
-      attach_gdal_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :bool
+      # Deprecated in 2.0. Use GDALCreateCopy().
+      attach_gdal_function :OGR_Dr_CopyDataSource, %i[OGRSFDriverH OGRDataSourceH string pointer], :OGRDataSourceH
+      # Deprecated in 2.0. Use GDALCreate().
       attach_gdal_function :OGR_Dr_CreateDataSource, %i[OGRSFDriverH string pointer], :OGRDataSourceH
-      attach_gdal_function :OGR_Dr_CopyDataSource,
-                           %i[OGRSFDriverH OGRDataSourceH string pointer],
-                           :OGRDataSourceH
+      # Deprecated in 2.0. Use GDALDeleteDataset().
       attach_gdal_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core.enum_type(:OGRErr)
+      attach_gdal_function :OGR_Dr_GetName, %i[OGRSFDriverH], :strptr
+      # Deprecated in 2.0. Use GDALOpenEx().
+      attach_gdal_function :OGR_Dr_Open, %i[OGRSFDriverH string bool], :OGRDataSourceH
+      # Deprecated in 2.0. Use GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE).
+      attach_gdal_function :OGR_Dr_TestCapability, %i[OGRSFDriverH string], :bool
 
       # ~~~~~~~~~~~~~~~~
       # Style Manager-related
@@ -500,17 +503,22 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Main functions
       # ~~~~~~~~~~~~~~~~
+      # Deprecated in 2.0; use GDALAllRegister()
       attach_gdal_function :OGRCleanupAll, [], :void
       attach_gdal_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
+      # Deprecated in 2.0. Use GDALGetDriver().
       attach_gdal_function :OGRGetDriver, %i[int], :OGRSFDriverH
+      # Deprecated in 2.0. Use GDALGetDriverByName().
       attach_gdal_function :OGRGetDriverByName, %i[string], :OGRSFDriverH
+      # Deprecated in 2.0. Use GDALGetDriverCount().
       attach_gdal_function :OGRGetDriverCount, [], :int
       attach_gdal_function :OGRGetOpenDS, %i[int], :OGRDataSourceH
       attach_gdal_function :OGRGetOpenDSCount, [], :int
       # Deprecated in 2.0; use GDALOpenEx()
       attach_gdal_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
+      # Deprecated in 2.0; use GDALRegisterAll()
       attach_gdal_function :OGRRegisterAll, [], :void
-      attach_gdal_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
+      # Deprecated in 2.0; use GDALClose()
       attach_gdal_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core.enum_type(:OGRErr)
     end
   end
