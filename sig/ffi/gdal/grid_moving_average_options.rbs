@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class GridMovingAverageOptions < FFI::Struct
+    end
+  end
+end

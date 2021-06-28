@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class ColorEntry < FFI::Struct
+    end
+  end
+end

@@ -1,0 +1,7 @@
+module FFI
+  module CPL
+    module HashSet
+      extend ::FFI::Library
+    end
+  end
+end

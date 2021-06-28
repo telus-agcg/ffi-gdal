@@ -1,0 +1,60 @@
+module OGR
+  class FieldDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] C pointer to the C FieldDefn.
+    attr_reader c_pointer: untyped
+
+    # @param name_or_pointer [String, FFI::Pointer]
+    # @param type [FFI::OGR::FieldType]
+    def initialize: (untyped name_or_pointer, untyped `type`) -> untyped
+
+    def destroy!: () -> untyped
+
+    # Set all defining attributes in one call.
+    #
+    # @param name [String]
+    # @param type [FFI::OGR::FieldType]
+    # @param width [Integer]
+    # @param precision [Integer]
+    # @param justification [FFI::OGR::Justification]
+    def set: (untyped name, untyped `type`, untyped width, untyped precision, untyped justification) -> untyped
+
+    # @return [String]
+    def name: () -> untyped
+
+    # @param new_value [String]
+    def name=: (untyped new_value) -> untyped
+
+    # @return [FFI::OGR::Justification]
+    def justification: () -> untyped
+
+    # @param new_value [FFI::OGR::Justification]
+    def justification=: (untyped new_value) -> untyped
+
+    # @return [Integer]
+    def precision: () -> untyped
+
+    # @param new_value [Integer]
+    def precision=: (untyped new_value) -> untyped
+
+    # @return [FFI::OGR::FieldType]
+    def type: () -> untyped
+
+    # @param new_value [FFI::OGR::FieldType]
+    def type=: (untyped new_value) -> untyped
+
+    # @return [Integer]
+    def width: () -> untyped
+
+    # @param new_value [Integer]
+    def width=: (untyped new_value) -> untyped
+
+    # @return [Boolean]
+    def ignored?: () -> untyped
+
+    # @param new_value [Boolean]
+    def ignore=: (untyped new_value) -> untyped
+  end
+end

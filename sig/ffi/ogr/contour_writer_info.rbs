@@ -1,0 +1,6 @@
+module FFI
+  module OGR
+    class ContourWriterInfo < FFI::Struct
+    end
+  end
+end

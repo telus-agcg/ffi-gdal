@@ -1,0 +1,26 @@
+module OGR
+  # NOTE: {{#type}} will return :wkbPoint (read: 2D instead of 2.5D) until a Z
+  # value is set.
+  class Point25D < Point
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+
+    # @return [Float]
+    def z: () -> (nil | untyped)
+
+    # @return [Array<Float, Float, Float>] [x, y, z].
+    def point: () -> ::Array[untyped]
+
+    # @param x [Number]
+    # @param y [Number]
+    # @param z [Number]
+    def set_point: (untyped x, untyped y, untyped z) -> untyped
+
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    # @param z [Float]
+    def add_point: (untyped x, untyped y, untyped z) -> untyped
+  end
+end

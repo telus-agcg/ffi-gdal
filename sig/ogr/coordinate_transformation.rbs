@@ -1,0 +1,37 @@
+module OGR
+  class CoordinateTransformation
+    def self.release: (FFI::Pointer pointer) -> void
+
+    attr_reader c_pointer: FFI::Pointer
+
+    # @param source_srs [OGR::SpatialReference]
+    # @param destination_srs [OGR::SpatialReference]
+    def initialize: (untyped source_srs, untyped destination_srs) -> untyped
+
+    def destroy!: () -> void
+
+    def transform: (
+      Array[Float] x_vertices,
+      Array[Float] y_vertices,
+      ?Array[Float] z_vertices
+    ) -> (Array[Array[Float], Array[Float]] | Array[Array[Float], Array[Float], Array[Float]])
+
+    # @param x_vertices [Array<Float>]
+    # @param y_vertices [Array<Float>]
+    # @param z_vertices [Array<Float>]
+    # @return [Hash{points => Array<Array<Float>,Array<Float>,Array<Float>>, success_at => Array}]
+    #   [[x1, y1], [x2, y2], etc]
+    def transform_ex: (untyped x_vertices, untyped y_vertices, ?untyped z_vertices) -> { points: untyped, successes: untyped }
+
+    private
+
+    def _transform:
+      (Array[Float] x_vertices, Array[Float] y_vertices, ?Array[Float] z_vertices) {
+        (Integer, FFI::MemoryPointer, FFI::MemoryPointer, FFI::MemoryPointer) -> FFI::Pointer
+      } -> (Array[Array[Float], Array[Float]] | Array[Array[Float], Array[Float], Array[Float]])
+
+    def init_transform_pointers:
+      (Array[Float] x_vertices, Array[Float] y_vertices, Array[Float] z_vertices) ->
+        ([FFI::Buffer, FFI::Buffer, FFI::Buffer] | [FFI::Buffer, FFI::Buffer, nil])
+  end
+end

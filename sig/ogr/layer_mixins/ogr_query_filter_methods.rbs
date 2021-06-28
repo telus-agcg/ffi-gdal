@@ -1,0 +1,48 @@
+module OGR
+  module LayerMixins
+    module OGRQueryFilterMethods
+      # TODO: per the GDAL docs: "The returned pointer is to an internally owned
+      # object, and should not be altered or deleted by the caller."
+      #
+      # @return [OGR::Geometry]
+      def spatial_filter: () -> (nil | untyped)
+
+      # @param new_spatial_filter [OGR::Geometry, FFI::Pointer]
+      def spatial_filter=: (untyped new_spatial_filter) -> untyped
+
+      # Only feature which intersect the filter geometry will be returned.
+      #
+      # @param geometry_field_index [Integer] The spatial filter operates on this
+      #   geometry field.
+      # @param geometry [OGR::Geometry] Use this geometry as the filtering
+      #   region.
+      def set_spatial_filter_ex: (untyped geometry_field_index, untyped geometry) -> untyped
+
+      # Only features that geometrically intersect the given rectangle will be
+      # returned.  X/Y values should be in the same coordinate system as the
+      # layer as a whole (different from #set_spatial_filter_rectangle_ex).  To
+      # clear the filter, set #spatial_filter = nil.
+      #
+      # @param min_x [Float]
+      # @param min_y [Float]
+      # @param max_x [Float]
+      # @param max_y [Float]
+      def set_spatial_filter_rectangle: (untyped min_x, untyped min_y, untyped max_x, untyped max_y) -> untyped
+
+      # Only features that geometrically intersect the given rectangle will be
+      # returned.  X/Y values should be in the same coordinate system as the
+      # layer as the given  GeometryFieldDefinition at the given index (different
+      # from #set_spatial_filter_rectangle).  To clear the filter, set
+      # #spatial_filter = nil.
+      #
+      # @param geometry_field_index [Integer]
+      # @param min_x [Float]
+      # @param min_y [Float]
+      # @param max_x [Float]
+      # @param max_y [Float]
+      def set_spatial_filter_rectangle_ex: (untyped geometry_field_index, untyped min_x, untyped min_y, untyped max_x, untyped max_y) -> untyped
+
+      def set_attribute_filter: (untyped query) -> untyped
+    end
+  end
+end

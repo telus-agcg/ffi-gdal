@@ -1,0 +1,15 @@
+module OGR
+  class MultiPolygon
+    include OGR::Geometry
+
+    include GeometryTypes::Container
+
+    include GeometryTypes::Surface
+
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+
+    # @return [OGR::Geometry]
+    def union_cascaded: () -> untyped
+  end
+end

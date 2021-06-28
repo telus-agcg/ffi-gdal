@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class TransformerInfo < FFI::Struct
+    end
+  end
+end

@@ -1,0 +1,68 @@
+module GDAL
+  module DatasetMixins
+    # Wrappers for Warp algorithm methods defined in gdal_alg.h.
+    module AlgorithmMethods
+      # Rasterizes the geometric objects +geometries+ into this raster dataset.
+      # +transformer+ can be nil as long as the +geometries+ are within the
+      # georeferenced coordinates of this raster's dataset.
+      #
+      # @param band_numbers [Array<Integer>, Integer]
+      # @param geometries [Array<OGR::Geometry>, OGR::Geometry]
+      # @param burn_values [Array<Float>, Float]
+      # @param transformer [Proc]
+      # @param options [Hash]
+      # @option options all_touched [Boolean]  If +true+, sets all pixels touched
+      #   by the line or polygons, not just those whose center is within the
+      #   polygon or that are selected by Brezenham's line algorithm.  Defaults to
+      #   +false+.
+      # @option options burn_value_from ["Z"] Use the Z values of the geometries.
+      # @option options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
+      #   in overwriting of value, while ADD adds the new value to the existing
+      #   raster, suitable for heatmaps for instance.
+      def rasterize_geometries!: (untyped band_numbers, untyped geometries, untyped burn_values, ?transformer: untyped? transformer, ?transform_arg: untyped? transform_arg, **untyped options) { () -> untyped } -> untyped
+
+      # @param band_numbers [Array<Integer>, Integer]
+      # @param layers [Array<OGR::Layer>, OGR::Layer]
+      # @param burn_values [Array<Float>, Float]
+      # @param transformer [Proc]
+      # @param options [Hash]
+      # @option options attribute [String] An attribute field on features to be
+      #   used for a burn-in value, which will be burned into all output bands.
+      # @option options chunkysize [Integer] The height in lines of the chunk to
+      #   operate on.
+      # @option options all_touched [Boolean]  If +true+, sets all pixels touched
+      #   by the line or polygons, not just those whose center is within the
+      #   polygon or that are selected by Brezenham's line algorithm.  Defaults to
+      #   +false+.
+      # @option options burn_value_from ["Z"] Use the Z values of the geometries.
+      # @option @options merge_alg [String] "REPLACE" or "ADD".  REPLACE results
+      #   in overwriting of value, while ADD adds the new value to the existing
+      #   raster, suitable for heatmaps for instance.
+      def rasterize_layers!: (untyped band_numbers, untyped layers, untyped burn_values, ?transformer: untyped? transformer, ?transform_arg: untyped? transform_arg, **untyped options) { () -> untyped } -> untyped
+
+      # @param destination_dataset [String]
+      # @param transformer [Proc, FFI::Function]
+      # @param transformer_arg_ptr [FFI::Pointer] The pointer created from one
+      #   of the GDAL::Transformers.
+      # @param warp_options [Hash]
+      # @option warp_options [String] init Indicates that the output dataset should be
+      #   initialized to the given value in any area where valid data isn't
+      #   written.  In form: "v[,v...]"
+      # @param band_numbers [Integer, Array<Integer>] Raster bands to include in the
+      #   warping.  0 indicates all bands.
+      # @param progress [Proc]
+      # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
+      def simple_image_warp: (untyped destination_dataset, untyped transformer, untyped transformer_arg_ptr, untyped warp_options, ?::Integer band_numbers, ?untyped? progress) -> untyped
+
+      # @param transformer [GDAL::Transformers]
+      # @return [Hash{geo_transform: GDAL::GeoTransform, lines: Integer, pixels: Integer}]
+      def suggested_warp_output: (untyped transformer) -> { geo_transform: untyped, lines: untyped, pixels: untyped }
+
+      # @param transformer [GDAL::Transformers]
+      # @return [Hash{extents: Hash{ min_x: Integer, min_y: Integer, max_x: Integer,
+      #   max_y: Integer }, geo_transform: GDAL::GeoTransform, lines: Integer,
+      #   pixels: Integer}]
+      def suggested_warp_output2: (untyped transformer) -> { extents: untyped, geo_transform: untyped, lines: untyped, pixels: untyped }
+    end
+  end
+end

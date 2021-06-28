@@ -1,0 +1,23 @@
+module GDAL
+  module Transformers
+    class TPSTransformer
+      # @return [FFI::Function]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer] C pointer to the C TPS transformer.
+      attr_reader c_pointer: untyped
+
+      # @param gcp_list [Array<FFI::GDAL::GCP>]
+      # @param reversed [Boolean]
+      def initialize: (untyped gcp_list, ?reversed: bool reversed) -> untyped
+
+      def destroy!: () -> untyped
+
+      # @return [FFI::Function]
+      def function: () -> untyped
+    end
+  end
+end

@@ -1,0 +1,33 @@
+module GDAL
+  module Transformers
+    class BaseGeneralImageProjectionTransformer
+      # @return [FFI::Function]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer]
+      attr_reader c_pointer: untyped
+
+      def destroy!: () -> untyped
+
+      # @return [FFI::Function]
+      def function: () -> untyped
+
+      # Normally the destination geotransform is extracted from the destination
+      # file by the transformer and stored in internal private info. However,
+      # sometimes it is inconvenient to have an output file handle with
+      # appropriate geotransform information when creating the transformation.
+      # For these cases, this function can be used to apply the destination
+      # geotransform.
+      #
+      # @param [FFI::Pointer, GDAL::GeoTransform] geo_transform
+      def destination_geo_transform=: (untyped geo_transform) -> untyped
+
+      private
+
+      def init_pointer: (untyped pointer) -> untyped
+    end
+  end
+end

@@ -1,0 +1,7 @@
+module FFI
+  module GDAL
+    class WarpOptions < FFI::Struct
+      extend ::FFI::Library
+    end
+  end
+end

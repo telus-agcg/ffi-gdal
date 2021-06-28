@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class RPCInfo < FFI::Struct
+    end
+  end
+end

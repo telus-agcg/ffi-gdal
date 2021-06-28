@@ -1,0 +1,6 @@
+module FFI
+  module OGR
+    class Envelope3D < FFI::Struct
+    end
+  end
+end

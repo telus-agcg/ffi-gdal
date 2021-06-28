@@ -1,0 +1,22 @@
+module GDAL
+  # A wrapper for the way GDAL does key/value pair options for methods.
+  class Options
+    # Shortcut for if you just want to build the options and get the pointer to
+    # them.
+    #
+    # @param hash [Hash]
+    # @param nil_on_empty [Boolean] When +true+, if +hash+ is empty, return
+    #   +nil+.  If +false+, creates a 0-size pointer.
+    # @return [FFI::MemoryPointer, nil]
+    def self.pointer: (untyped hash) -> (nil | untyped)
+
+    # Takes a GDAL options pointer and turns it into a Ruby Hash.
+    #
+    # @param pointer [FFI::Pointer]
+    # @return [Hash]
+    def self.to_hash: (untyped pointer) -> untyped
+
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+  end
+end

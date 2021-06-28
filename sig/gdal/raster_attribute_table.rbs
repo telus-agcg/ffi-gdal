@@ -1,0 +1,133 @@
+module GDAL
+  class RasterAttributeTable
+    # Create an object from a ColorTable.
+    #
+    # @param color_table [GDAL::ColorTable, FFI::Pointer]
+    # @return [GDAL::RasterAttributeTable]
+    # @raise [GDAL::Error]
+    def self.from_color_table: (untyped color_table) -> untyped
+
+    # @param raster_attribute_table [GDAL::RasterAttributeTable]
+    # @return [FFI::AutoPointer]
+    def self.new_pointer: (untyped raster_attribute_table) -> untyped
+
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] The C pointer that represents the C RAT.
+    attr_reader c_pointer: untyped
+
+    # @param pointer [FFI::Pointer]
+    def initialize: (?untyped? pointer) -> untyped
+
+    def destroy!: () -> untyped
+
+    # Clone using the C API.
+    #
+    # @return [GDAL::RasterAttributeTable]
+    def clone: () -> (nil | untyped)
+
+    # +true+ if the changes made to this RAT have been written to the associated
+    # dataset.
+    #
+    # @return [Boolean]
+    def changes_written_to_file?: () -> untyped
+
+    # @return [Integer]
+    def column_count: () -> untyped
+
+    # @param index [Integer] The column number.
+    # @return [String]
+    def column_name: (untyped index) -> untyped
+
+    alias name_of_col column_name
+
+    # @param index [Integer] The column number.
+    # @return [GDALRATFieldUsage]
+    def column_usage: (untyped index) -> untyped
+
+    alias usage_of_col column_usage
+
+    # @param index [Integer] The column number.
+    # @return [GDALRATFieldType]
+    def column_type: (untyped index) -> untyped
+
+    alias type_of_col column_type
+
+    # @param field_usage [GDALRATFieldUsage]
+    # @return [Integer] The column number or nil.
+    def column_of_usage: (untyped field_usage) -> (nil | untyped)
+
+    # @param name [String]
+    # @param type [FFI::GDAL::GDALRATFieldType]
+    # @param usage [FFI::GDAL::GDALRATFieldUsage]
+    # @raise [GDAL::Error]
+    def create_column: (untyped name, untyped `type`, untyped usage) -> untyped
+
+    # @return [Integer] The number of rows.
+    def row_count: () -> untyped
+
+    # @return [Integer] The number of rows.
+    def row_count=: (untyped count) -> untyped
+
+    # Get the row for a pixel value.
+    #
+    # @param pixel_value [Float]
+    # @return [Integer] Index of the row or nil.
+    def row_of_value: (untyped pixel_value) -> (nil | untyped)
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @return [String]
+    def value_as_string: (untyped row, untyped field) -> untyped
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @return [Integer]
+    def value_as_integer: (untyped row, untyped field) -> untyped
+
+    alias value_as_int value_as_integer
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @return [Float]
+    def value_as_double: (untyped row, untyped field) -> untyped
+
+    alias value_as_float value_as_double
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @param value [String]
+    def set_value_as_string: (untyped row, untyped field, untyped value) -> untyped
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @param value [Float]
+    def set_value_as_double: (untyped row, untyped field, untyped value) -> untyped
+
+    alias set_value_as_float set_value_as_double
+
+    # @param row [Integer]
+    # @param field [Integer]
+    # @param value [Integer]
+    def set_value_as_integer: (untyped row, untyped field, untyped value) -> untyped
+
+    alias set_value_as_int set_value_as_integer
+
+    # @return [Hash{row_0_minimum => Float, bin_size => Float}]
+    def linear_binning: () -> (nil | { :row_0_minimum => untyped, bin_size: untyped })
+
+    # @param row_0_minimum [Float]
+    # @param bin_size [Float]
+    # @raise [GDAL::Error]
+    def set_linear_binning: (untyped row_0_minimum, untyped bin_size) -> untyped
+
+    # @param entry_count [Integer] The number of entries to produce.  The default
+    #   will try to auto-determine the number.
+    # @return [GDAL::ColorTable, nil]
+    def to_color_table: (?::Integer entry_count) -> (nil | untyped)
+
+    # @param file_path [String] Without giving a +file_path+, dumps to STDOUT.
+    def dump_readable: (?untyped? file_path) -> untyped
+  end
+end

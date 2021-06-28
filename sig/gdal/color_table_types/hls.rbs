@@ -1,0 +1,13 @@
+module GDAL
+  module ColorTableTypes
+    module HLS
+      def hues: () -> untyped
+
+      def lightnesses: () -> untyped
+
+      def saturations: () -> untyped
+
+      def to_a: () -> untyped
+    end
+  end
+end

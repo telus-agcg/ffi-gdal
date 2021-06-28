@@ -1,0 +1,111 @@
+module GDAL
+  class GeoTransform
+    # @return [FFI::MemoryPointer] A pointer that can be used to hold a GeoTransform.
+    def self.new_pointer: () -> untyped
+
+    # @return [FFI::Pointer] C pointer to the C geo-transform.
+    attr_reader c_pointer: untyped
+
+    # @param [String] filename
+    # @param [String] extension The file extension to use.  When nil, GDAL will
+    #   try to derive it from the +filename+.
+    # @return [GDAL::GeoTransform]
+    def self.from_world_file: (untyped filename, ?untyped? `extension`) -> (nil | untyped)
+
+    # @param geo_transform [FFI::Pointer]
+    def initialize: (?untyped? geo_transform) -> untyped
+
+    def null?: () -> untyped
+
+    # X-coordinate of the center of the upper left pixel.
+    # In wikipedia's World Map definition, this is "C".
+    #
+    # @return [Float]
+    def x_origin: () -> (nil | untyped)
+
+    # @param new_x_origin [Float]
+    def x_origin=: (untyped new_x_origin) -> untyped
+
+    # AKA X-pixel size.
+    # In wikipedia's World Map definition, this is "A".
+    #
+    # @return [Float]
+    def pixel_width: () -> (nil | untyped)
+
+    # @param new_pixel_width [Float]
+    def pixel_width=: (untyped new_pixel_width) -> untyped
+
+    # Rotation about the x-axis.
+    # In wikipedia's World File definition, this is "B".
+    #
+    # @return [Float]
+    def x_rotation: () -> (nil | untyped)
+
+    # @param new_x_rotation [Float]
+    def x_rotation=: (untyped new_x_rotation) -> untyped
+
+    # Y-coordinate of the center of the upper left pixel.
+    # In wikipedia's World Map definition, this is "F".
+    #
+    # @return [Float]
+    def y_origin: () -> (nil | untyped)
+
+    # @param new_y_origin [Float]
+    def y_origin=: (untyped new_y_origin) -> untyped
+
+    # Rotation about the y-axis.
+    # In wikipedia's World Map definition, this is "D".
+    #
+    # @return [Float]
+    def y_rotation: () -> (nil | untyped)
+
+    # @param new_y_rotation [Float]
+    def y_rotation=: (untyped new_y_rotation) -> untyped
+
+    # AKA Y-pixel size.
+    # In wikipedia's World Map definition, this is "E".
+    #
+    # @return [Float]
+    def pixel_height: () -> (nil | untyped)
+
+    # @param new_pixel_height [Float]
+    def pixel_height=: (untyped new_pixel_height) -> untyped
+
+    # Converts a (pixel, line) coordinate to a georeferenced (geo_x, geo_y)
+    # location.  Uses the following algorithm:
+    #
+    #   geo_x = x_origin + (pixel * pixel_width) + (line * pixel_rotation)
+    #   geo_y = y_origin + (pixel * y_rotation) + (line * pixel_height)
+    #
+    # This is also the same as doing:
+    #
+    #   geo_transform.invert.world_to_pixel(pixel, line)
+    #
+    # @param pixel [Float] Input pixel position.
+    # @param line [Float] Input line position.
+    # @return [Hash{x_geo => Float, y_geo => Float}]  +:x_geo+ is the
+    # #   easting/longitude; +:y_geo+ is the northing/latitude.
+    def apply_geo_transform: (untyped pixel, untyped line) -> { x_geo: untyped, y_geo: untyped }
+
+    alias pixel_to_world apply_geo_transform
+
+    # Composes this and the given geo_transform.  The resulting GeoTransform is
+    # equivalent to applying both GeoTransforms to a point.
+    #
+    # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
+    # @return [GDAL::GeoTransform]
+    def compose: (untyped other_geo_transform) -> (nil | untyped)
+
+    # Inverts the current 3x2 set of coefficients and returns a new GeoTransform.
+    # Useful for converting from the GeoTransform equation from pixel to geo to
+    # being geo to pixel.
+    #
+    # @return [GDAL::GeoTransform]
+    def invert: () -> (nil | untyped)
+
+    # @param raster_filename [String] The target raster file.
+    # @param world_extension [String]
+    # @return [Boolean]
+    def to_world_file: (untyped raster_filename, untyped world_extension) -> untyped
+  end
+end

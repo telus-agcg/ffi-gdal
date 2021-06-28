@@ -1,0 +1,24 @@
+module OGR
+  class LineString
+    include OGR::Geometry
+
+    include GeometryTypes::Curve
+
+    def self.approximate_arc_angles: (untyped center_x, untyped center_y, untyped z, untyped primary_radius, untyped secondary_radius, untyped rotation, untyped start_angle, untyped end_angle, ?::Integer max_angle_step_size_degrees) -> (nil | untyped)
+
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    # @param z [Float]
+    def add_point: (untyped x, untyped y, ?untyped? z) -> untyped
+
+    # Wrapper for {#add_point} to allow passing in an {OGR::Point} instead of
+    # individual coordinates.
+    #
+    # @param point [OGR::Point]
+    def add_geometry: (untyped point) -> untyped
+  end
+end

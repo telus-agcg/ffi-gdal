@@ -1,0 +1,113 @@
+module GDAL
+  # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working
+  # with GDAL datasets.
+  class Driver
+    include MajorObject
+
+    include GDAL::Logger
+
+    GDAL_DOCS_URL: ::String
+
+    # @return [Integer]
+    def self.count: () -> untyped
+
+    # @param name [String] Short name of the registered GDALDriver.
+    # @return [GDAL::Driver]
+    # @raise [GDAL::InvalidDriverName] If +name+ does not represent a valid
+    #   driver name.
+    def self.by_name: (untyped name) -> untyped
+
+    # @param index [Integer] Index of the registered driver.  Must be less than
+    #   GDAL::Driver.count.
+    # @return [GDAL::Driver]
+    # @raise [GDAL::InvalidDriverIndex] If driver at +index+ does not exist.
+    def self.at_index: (untyped index) -> untyped
+
+    # @param file_path [String] File to get the driver for.
+    # @return [GDAL::Driver] Returns nil if the file is unsupported.
+    def self.identify_driver: (untyped file_path) -> (nil | untyped)
+
+    attr_reader c_pointer: untyped
+
+    # @param driver [GDAL::Driver, FFI::Pointer]
+    def initialize: (untyped driver) -> untyped
+
+    # @return [String]
+    def short_name: () -> untyped
+
+    # @return [String]
+    def long_name: () -> untyped
+
+    # @return [String]
+    def help_topic: () -> ::String
+
+    # Lists and describes the options that can be used when calling
+    # GDAL::Dataset.create or GDAL::Dataset.create_copy.
+    #
+    # @return [Array]
+    def creation_option_list: () -> (::Array[untyped] | untyped)
+
+    # @param options [Hash]
+    # @return [Boolean]
+    def validate_creation_options: (untyped options) -> untyped
+
+    # Copy all of the associated files of a dataset from one file to another.
+    #
+    # @param new_name [String]
+    # @param old_name [String]
+    # @return true on success, false on warning.
+    # @raise [GDAL::Error] If failures.
+    def copy_dataset_files: (untyped old_name, untyped new_name) -> untyped
+
+    # Create a new Dataset with this driver.  Legal arguments depend on the
+    # driver and can't be retrieved programmatically.  NOTE: In order to write
+    # out all data to the destination, you must call #close on the dataset!
+    #
+    # @param filename [String]
+    # @param x_size [Integer] Width of created raster in pixels.
+    # @param y_size [Integer] Height of created raster in pixels.
+    # @param band_count [Integer]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
+    # @return [GDAL::Dataset] If no block is given, returns the *open*
+    #   (writable) dataset; you'll need to close it. If a block is given,
+    #   returns the result of the block.
+    def create_dataset: (untyped filename, untyped x_size, untyped y_size, ?band_count: ::Integer band_count, ?data_type: ::Symbol data_type, **untyped options) { (untyped) -> untyped } -> untyped
+
+    # Copies +source_dataset+ to +destination_path+. Will yield a writable
+    # {{GDAL::Dataset}} of the destination dataset then close it if a block is
+    # given.
+    #
+    # @param source_dataset [GDAL::Dataset, FFI::Pointer] The dataset to copy.
+    # @param destination_path [String] The name for the new dataset file.
+    # @param strict [Boolean] +false+ indicates the copy may adapt as needed for
+    #   the output format.
+    # @param options [Hash]
+    # @param progress_block [Proc, FFI::GDAL::GDAL.GDALProgressFunc] For
+    #   outputting copy progress.  Conforms to the
+    #   FFI::GDAL::GDAL.GDALProgressFunc signature.
+    # @param progress_arg [Proc]
+    # @return [true]
+    # @raise [GDAL::CreateFail] if it couldn't copy the dataset.
+    # @yieldparam destination_dataset [GDAL::Dataset]
+    def copy_dataset: (untyped source_dataset, untyped destination_path, ?untyped? progress_block, ?untyped? progress_arg, ?strict: bool strict, **untyped options) { (untyped) -> untyped } -> ::TrueClass
+
+    # Delete the dataset represented by +file_name+.  Depending on the driver,
+    # this could mean deleting associated files, database objects, etc.
+    #
+    # @param file_name [String]
+    # @raise [GDAL::Error] If failures.
+    def delete_dataset: (untyped file_name) -> untyped
+
+    # @param old_name [String]
+    # @param new_name [String]
+    # @raise [GDAL::Error] If failures.
+    def rename_dataset: (untyped old_name, untyped new_name) -> untyped
+
+    private
+
+    # @param [GDAL::Dataset, FFI::Pointer, String] dataset Can be another
+    #   dataset, the pointer to another dataset, or the path to a dataset.
+    # @return [GDAL::Dataset]
+    def make_dataset_pointer: (untyped dataset) -> untyped
+  end
+end

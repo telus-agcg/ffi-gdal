@@ -1,0 +1,91 @@
+module OGR
+  class Field
+    # @return [FFI::OGR::Point]
+    attr_reader c_struct: untyped
+
+    # @param ogr_field_struct [FFI::OGR::Point, FFI::Pointer]
+    def initialize: (?untyped? ogr_field_struct) -> untyped
+
+    # @return [FFI::Pointer]
+    def c_pointer: () -> untyped
+
+    # @return [Integer]
+    def integer: () -> untyped
+
+    alias to_i integer
+
+    # @param new_int [Integer]
+    def integer=: (untyped new_int) -> untyped
+
+    # @return [Integer]
+    def integer64: () -> untyped
+
+    # @param new_int64 [Integer]
+    def integer64=: (untyped new_int64) -> untyped
+
+    # @return [Float]
+    def real: () -> untyped
+
+    alias to_f real
+
+    # @param new_real [Float]
+    def real=: (untyped new_real) -> untyped
+
+    # TODO: This blows up when another value type has been set.
+    def string: () -> (::String | untyped)
+
+    def string=: (untyped new_string) -> untyped
+
+    # @return [Array<Integer>]
+    def integer_list: () -> (::Array[untyped] | untyped)
+
+    # @param new_integer_list [Array<Integer>]
+    def integer_list=: (untyped new_integer_list) -> untyped
+
+    # @return [Array<Integer>]
+    def integer64_list: () -> (::Array[untyped] | untyped)
+
+    alias to_bignum integer64_list
+
+    # @param new_integer64_list [Array<Integer>]
+    def integer64_list=: (untyped new_integer64_list) -> untyped
+
+    alias bignum_list= integer64_list=
+
+    # @return [Array<Float>]
+    def real_list: () -> (::Array[untyped] | untyped)
+
+    alias float_list real_list
+
+    # @param new_real_list [Array<Float>]
+    def real_list=: (untyped new_real_list) -> untyped
+
+    alias float_list= real_list=
+
+    # @return [Array<String>]
+    def string_list: () -> (::Array[untyped] | untyped)
+
+    # @param new_string_list [Array<String>]
+    def string_list=: (untyped new_string_list) -> untyped
+
+    # @return [String] 8-bit, unsigned data (uchar). Unpack with
+    #   String#unpack('C*').
+    def binary: () -> untyped
+
+    # @param new_binary [String] Binary string of 8-bit, unsigned data (uchar).
+    #   Pack with Array#pack('C*').
+    def binary=: (untyped new_binary) -> untyped
+
+    # @return [Hash]
+    def set: () -> { :marker1 => untyped, :marker2 => untyped }
+
+    # @param new_set [Hash{marker1 => Integer, marker2 => Integer}]
+    def set=: (untyped new_set) -> untyped
+
+    # @return [DateTime]
+    def date: () -> (nil | untyped)
+
+    # @param new_date [Date, Time, DateTime]
+    def date=: (untyped new_date) -> untyped
+  end
+end

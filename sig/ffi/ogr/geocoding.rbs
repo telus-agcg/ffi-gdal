@@ -1,0 +1,7 @@
+module FFI
+  module OGR
+    module Geocoding
+      extend ::FFI::Library
+    end
+  end
+end

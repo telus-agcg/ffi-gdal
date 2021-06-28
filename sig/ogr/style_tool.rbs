@@ -1,0 +1,64 @@
+module OGR
+  class StyleTool
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] C pointer to the C style tool.
+    attr_reader c_pointer: untyped
+
+    # @param style_tool_class [FFI::OGR::Core::STClassId] Must be one of :OGRSTCPen,
+    #   :OGRSTCBrush, :OGRSTCSymbol, :OGRSTCLabel.
+    def initialize: (untyped style_tool_class) -> untyped
+
+    # @return [String, nil]
+    def style_string: () -> untyped
+
+    # @return [FFI::OGR::Core::STClassId]
+    def type: () -> untyped
+
+    # @return [FFI::OGR::Core::STUnitId]
+    def unit: () -> untyped
+
+    # @param new_unit [FFI::OGR::Core::STUnitId]
+    # @param ground_to_paper_scale [Float]
+    def set_unit: (untyped new_unit, untyped ground_to_paper_scale) -> untyped
+
+    # @param param_number [Integer]
+    # @return [Float, nil]
+    def param_as_double: (untyped param_number) -> untyped
+
+    alias param_as_float param_as_double
+
+    # @param param_number [Integer]
+    # @param value [Float]
+    def set_param_as_double: (untyped param_number, untyped value) -> untyped
+
+    alias set_param_as_float set_param_as_double
+
+    # @param param_number [Integer]
+    # @return [Integer, nil]
+    def param_as_number: (untyped param_number) -> untyped
+
+    alias param_as_integer param_as_number
+
+    # @param param_number [Integer]
+    # @param value [Integer]
+    def set_param_as_number: (untyped param_number, untyped value) -> untyped
+
+    alias set_param_as_integer set_param_as_number
+
+    # @param param_number [Integer]
+    # @return [String, nil]
+    def param_as_string: (untyped param_number) -> untyped
+
+    # @param param_number [Integer]
+    # @param value [String]
+    def set_param_as_string: (untyped param_number, untyped value) -> untyped
+
+    # Returns the R, G, B, A components of a #RRGGBB[AA] formatted string.
+    #
+    # @param color_string [String]
+    # @return [Hash{red => Integer, green => Integer, blue => Integer, alpha => Integer}]
+    def rgb_from_string: (untyped color_string) -> untyped
+  end
+end

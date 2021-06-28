@@ -1,0 +1,78 @@
+module OGR
+  class FeatureDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] C pointer of the C FeatureDefn.
+    attr_reader c_pointer: untyped
+
+    # @param name_or_pointer [String, FFI::Pointer] When given a String, it will
+    #   create a new FeatureDefinition with that name. When given an
+    #   FFI::Pointer, the new object will simply wrap the C FeatureDefinition
+    #   at that address.
+    def initialize: (untyped name_or_pointer) -> untyped
+
+    def release!: () -> untyped
+
+    # @return [String]
+    def name: () -> untyped
+
+    # @return [Integer]
+    def field_count: () -> untyped
+
+    # @param index [Integer]
+    # @return [OGR::FieldDefinition]
+    def field_definition: (untyped index) -> (nil | untyped)
+
+    # @param field_definition [OGR::FieldDefinition, FFI::Pointer]
+    def add_field_definition: (untyped field_definition) -> untyped
+
+    # @param index [Integer] Index of the field definition to delete.
+    # @raise [OGR::Failure]
+    def delete_field_definition: (untyped index) -> untyped
+
+    # @param name [String]
+    # @return [Integer] nil if no match found
+    def field_index: (untyped name) -> untyped
+
+    # @return [FFI::OGR::API::WKBGeometryType]
+    def geometry_type: () -> untyped
+
+    # @param new_type [FFI::OGR::API::WKBGeometryType]
+    def geometry_type=: (untyped new_type) -> untyped
+
+    # @return [Boolean]
+    def geometry_ignored?: () -> untyped
+
+    # @param ignore [Boolean]
+    def ignore_geometry!: (?ignore: bool ignore) -> untyped
+
+    # @return [Boolean]
+    def style_ignored?: () -> untyped
+
+    # @param ignore [Boolean]
+    def ignore_style!: (?ignore: bool ignore) -> untyped
+
+    # @return [Integer]
+    def geometry_field_count: () -> untyped
+
+    # @param index [Integer]
+    # @return [OGR::GeometryFieldDefinition]
+    def geometry_field_definition: (untyped index) -> (nil | untyped)
+
+    # @param name [String]
+    # @return [Integer]
+    def geometry_field_index: (untyped name) -> untyped
+
+    # @param geometry_field_definition [OGR::GeometryFieldDefinition, FFI::Pointer]
+    def add_geometry_field_definition: (untyped geometry_field_definition) -> untyped
+
+    # @param index [Integer]
+    # @raise [OGR::Failure]
+    def delete_geometry_field_definition: (untyped index) -> untyped
+
+    # @param other_feature_definition [OGR::Feature, FFI::Pointer]
+    # @return [Boolean]
+    def same?: (untyped other_feature_definition) -> untyped
+  end
+end

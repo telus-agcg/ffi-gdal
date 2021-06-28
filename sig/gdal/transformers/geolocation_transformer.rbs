@@ -1,0 +1,24 @@
+module GDAL
+  module Transformers
+    class GeolocationTransformer
+      # @return [FFI::Function]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer] C pointer to the C geolocation transformer.
+      attr_reader c_pointer: untyped
+
+      # @param base_dataset [GDAL::Dataset]
+      # @param geolocation_info [Array<String>]
+      # @param reversed [Boolean]
+      def intialize: (untyped base_dataset, untyped geolocation_info, ?reversed: bool reversed) -> untyped
+
+      def destroy!: () -> untyped
+
+      # @return [FFI::Function]
+      def function: () -> untyped
+    end
+  end
+end

@@ -1,0 +1,63 @@
+module OGR
+  module LayerMixins
+    module OGRFieldMethods
+      include OGR::LayerMixins::TestCapability
+      include OGR::LayerMixins::OGRFeatureMethods
+
+      # Creates and writes a new field to the layer. This adds the field to the
+      # internal FeatureDefinition; C API says not to update the FeatureDefinition
+      # directly.
+      #
+      # @param field_definition [OGR::FieldDefinition]
+      # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
+      #   different form, depending on the limitations of the format driver.
+      # @raise [OGR::Failure]
+      def create_field: (untyped field_definition, ?approx_ok: bool approx_ok) -> untyped
+
+      # Deletes the field definition from the layer.
+      #
+      # @raise [OGR::Failure]
+      def delete_field: (untyped field_id) -> untyped
+
+      # @param new_order [Array<Integer>] An array that orders field indexes by
+      #   which they should be reordered.  I.e. [0, 2, 3, 1, 4].
+      # @raise [OGR::Failure]
+      def reorder_fields: (*untyped new_order) -> (::FalseClass | untyped)
+
+      # Puts the field whose index is +old_position+ into index at +new_position+
+      # and shuffles the other indexes accordingly.
+      #
+      # @param old_position [Integer]
+      # @param new_position [Integer]
+      # @raise [OGR::Failure]
+      def reorder_field: (untyped old_position, untyped new_position) -> untyped
+
+      # @param field_index [Integer]
+      # @param new_field_definition [OGR::FieldDefinition] The definition for
+      #   which to base the Field at +field_index+ off of.
+      # @param flags [Integer] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
+      #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
+      # @raise [OGR::Failure]
+      def alter_field_definition: (untyped field_index, untyped new_field_definition, untyped flags) -> untyped
+
+      # Finds the index of a field in this Layer.
+      #
+      # @param field_name [String]
+      # @param exact_match [Boolean] If +false+ and the field doesn't exist in the
+      #   given form, the driver will try to make changes to make a match.
+      # @return [Integer] Index of the field or +nil+ if the field doesn't exist.
+      def find_field_index: (untyped field_name, ?exact_match: bool exact_match) -> untyped
+
+      # Creates and writes a new geometry to the layer. Note: not all drivers
+      # support this.
+      #
+      # @param geometry_field_def [OGR::GeometryFieldDefinition] The definition
+      #   to use for creating the new field.
+      # @param approx_ok [Boolean]
+      # @raise [OGR::Failure]
+      def create_geometry_field: (untyped geometry_field_def, ?approx_ok: bool approx_ok) -> untyped
+
+      def set_ignored_fields: (*untyped field_names) -> (::FalseClass | untyped)
+    end
+  end
+end

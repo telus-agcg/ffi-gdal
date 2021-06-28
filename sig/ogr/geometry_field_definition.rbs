@@ -1,0 +1,48 @@
+module OGR
+  class GeometryFieldDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer]
+    attr_reader c_pointer: untyped
+
+    # @param value [Boolean]
+    attr_writer read_only: untyped
+
+    # @param name_or_pointer [String, FFI::Pointer]
+    # @param type [FFI::OGR::API::WKBGeometryType]
+    def initialize: (untyped name_or_pointer, ?::Symbol `type`) -> untyped
+
+    # @return [Boolean]
+    def read_only?: () -> untyped
+
+    def destroy!: () -> untyped
+
+    # @return [String]
+    def name: () -> untyped
+
+    # @param new_name [String]
+    def name=: (untyped new_name) -> untyped
+
+    # @return [FFI::OGR::API::WKBGeometryType]
+    def type: () -> untyped
+
+    # @param new_type [FFI::OGR::API::WKBGeometryType]
+    def type=: (untyped new_type) -> untyped
+
+    # @return [OGR::SpatialReference]
+    def spatial_reference: () -> untyped
+
+    # This function drops the reference of the previously set SRS object and
+    # acquires a new reference on the passed object (if non-NULL).
+    #
+    # @param new_spatial_reference [OGR::SpatialReference, FFI::Pointer]
+    def spatial_reference=: (untyped new_spatial_reference) -> untyped
+
+    # @return [Boolean]
+    def ignored?: () -> untyped
+
+    # @param value [Boolean]
+    def ignore=: (untyped value) -> untyped
+  end
+end

@@ -1,0 +1,28 @@
+module GDAL
+  class ColorEntry
+    # @return [FFI::GDAL::ColorEntry]
+    attr_reader c_struct: untyped
+
+    # @param color_entry [FFI::GDAL::ColorEntry]
+    def initialize: (?untyped? color_entry) -> untyped
+
+    # @return [FFI::Pointer] Pointer to the C struct.
+    def c_pointer: () -> untyped
+
+    def color1: () -> untyped
+
+    def color1=: (untyped new_color) -> untyped
+
+    def color2: () -> untyped
+
+    def color2=: (untyped new_color) -> untyped
+
+    def color3: () -> untyped
+
+    def color3=: (untyped new_color) -> untyped
+
+    def color4: () -> untyped
+
+    def color4=: (untyped new_color) -> untyped
+  end
+end

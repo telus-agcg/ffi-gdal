@@ -1,0 +1,35 @@
+module GDAL
+  # Wrapper for GDAL's [Grid API](http://www.gdal.org/grid_tutorial.html).
+  class Grid
+    extend Forwardable
+
+    include GDAL::Logger
+
+    # @return [FFI::GDAL::GDAL::DataType]
+    attr_accessor data_type: untyped
+
+    # @param algorithm_type [Symbol]
+    # @param data_type [FFI::GDAL::GDAL::DataType]
+    def initialize: (untyped algorithm_type, ?data_type: ::Symbol data_type) -> untyped
+
+    # @param points [Array,NArray] An Array containing all x, y, and z points.
+    # @param extents [Hash{x_min: Integer, y_min: Integer, x_max: Integer, y_max: Integer}]
+    # @param data_pointer [FFI::Pointer] Pointer that will contain the gridded
+    #   data (after this method is done).
+    # @param output_size [Hash{x: Integer, y: Integer}] Overall dimensions of the
+    #   area of the output raster to grid.
+    # @param progress_block [Proc]
+    # @param progress_arg [FFI::Pointer]
+    # @return [FFI::MemoryPointer] Pointer to the grid data.
+    def create: (untyped points, untyped extents, untyped data_pointer, ?::Hash[untyped, untyped] output_size, ?untyped? progress_block, ?untyped? progress_arg) -> untyped
+
+    private
+
+    # @param points [Array]
+    def make_points_pointer: (untyped points) -> untyped
+
+    # @param algorithm_type [Symbol]
+    # @return [GDAL::GridAlgorithms]
+    def init_algorithm: (untyped algorithm_type) -> untyped
+  end
+end

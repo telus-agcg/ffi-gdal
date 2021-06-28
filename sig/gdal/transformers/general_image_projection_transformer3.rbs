@@ -1,0 +1,12 @@
+module GDAL
+  module Transformers
+    class GeneralImageProjectionTransformer3 < BaseGeneralImageProjectionTransformer
+      # @param source_wkt [String]
+      # @param source_geo_transform [GDAL::GeoTransform, FFI::Pointer]
+      # @param destination_wkt [String]
+      # @param destination_geo_transform [GDAL::GeoTransform, FFI::Pointer]
+      # @return [FFI::Pointer]
+      def initialize: (untyped source_wkt, untyped source_geo_transform, untyped destination_wkt, untyped destination_geo_transform) -> untyped
+    end
+  end
+end

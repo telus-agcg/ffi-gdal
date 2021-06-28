@@ -1,0 +1,45 @@
+module OGR
+  class DataSource
+    include GDAL::MajorObject
+    include GDAL::Logger
+
+    def self.open:
+      (String path, ?"w" | "r" access_flag) -> instance
+    | (String path, ?"w" | "r" access_flag) { (instance) -> untyped } -> untyped
+
+    def self.release: (FFI::Pointer pointer) -> void
+    def self.release_result_set: (FFI::Pointer data_source_pointer, FFI::Pointer layer_pointer) -> void
+
+    attr_reader c_pointer: FFI::Pointer
+
+    def initialize: (String | FFI::Pointer path_or_pointer, "r" | "w" access_flag) -> void
+    def destroy!: () -> void
+    alias close destroy!
+
+    def name: () -> String
+    def driver: () -> OGR::Driver?
+
+    def layer_count: () -> Integer
+    def layer: (Integer index) -> OGR::Layer?
+    def layer_by_name: (String name) -> OGR::Layer?
+
+    def create_layer: (
+      String name,
+      ?geometry_type: FFI::OGR::Core::wkb_geometry_type_symbol,
+      ?spatial_reference: FFI::Pointer | OGR::SpatialReference?,
+      **untyped options
+    ) -> OGR::Layer
+
+    def copy_layer: (OGR::Layer | FFI::Pointer source_layer, String new_name, **untyped options) -> OGR::Layer?
+    def delete_layer: (Integer index) -> void
+
+    def execute_sql: (String command, ?OGR::Geometry | FFI::Pointer? spatial_filter, ?"OGRSQL" | "SQLITE"? dialect) -> OGR::Layer?
+
+    def style_table: () -> OGR::StyleTable?
+    def style_table=: (OGR::StyleTable | FFI::Pointer new_style_table) -> OGR::StyleTable
+
+    def test_capability: ("CreateLayer" | "DeleteLayer" | "CreateGeomFieldAfterCreateLayer" | "CurveGeometries" capability) -> bool
+
+    def sync_to_disk: () -> void
+  end
+end

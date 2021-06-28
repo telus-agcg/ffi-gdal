@@ -1,0 +1,251 @@
+module OGR
+  module SpatialReferenceMixins
+    module CoordinateSystemGetterSetters
+      def set_local_cs: (untyped name) -> untyped
+
+      alias local_cs= set_local_cs
+
+      def set_proj_cs: (untyped name) -> untyped
+
+      alias proj_cs= set_proj_cs
+
+      def set_geoc_cs: (untyped name) -> untyped
+
+      alias geoc_cs= set_geoc_cs
+
+      def set_well_known_geog_cs: (untyped name) -> untyped
+
+      alias well_known_geog_cs= set_well_known_geog_cs
+
+      def set_from_user_input: (untyped definition) -> untyped
+
+      # @return [Array<Float>]
+      # @raise [OGR::Failure]
+      def towgs84: () -> untyped
+
+      # @param x_distance [Float] (In meters.)
+      # @param y_distance [Float] (In meters.)
+      # @param z_distance [Float] (In meters.)
+      # @param x_rotation [Float] (In arc seconds.)
+      # @param y_rotation [Float] (In arc seconds.)
+      # @param z_rotation [Float] (In arc seconds.)
+      # @param scaling_factor [Float] (In parts-per-million.)
+      # @raise [OGR::Failure]
+      def set_towgs84: (?x_distance: untyped? x_distance, ?y_distance: untyped? y_distance, ?z_distance: ::Float z_distance, ?x_rotation: ::Float x_rotation, ?y_rotation: ::Float y_rotation, ?z_rotation: ::Float z_rotation, ?scaling_factor: ::Float scaling_factor) -> untyped
+
+      # @param name [String]
+      # @param horizontal_spatial_ref [OGR::SpatialReference] (a PROJCS or GEOGCS)
+      # @param vertical_spatial_ref [OGR::SpatialReference] (a VERT_CS)
+      # @raise [OGR::Failure]
+      def set_compound_cs: (untyped name, untyped horizontal_spatial_ref, untyped vertical_spatial_ref) -> untyped
+
+      # Set the user-visible GEOGCS name.
+      #
+      # @param [String] geog_name
+      # @param [String] datum_name
+      # @param [String] spheroid_name
+      # @param [Float] semi_major
+      # @param [Float] spheroid_inverse_flattening
+      # @param [String] prime_meridian
+      # @param [Double] offset
+      # @param [String] angular_unit_label
+      # @param [Float] transform_to_radians
+      # @raise [OGR::Failure]
+      def set_geog_cs: (untyped geog_name, untyped datum_name, untyped spheroid_name, untyped semi_major, untyped spheroid_inverse_flattening, untyped prime_meridian, untyped offset, untyped angular_unit_label, untyped transform_to_radians) -> untyped
+
+      # Set the vertical coordinate system.
+      #
+      # @param name [String] User-visible name of the CS.
+      # @param datum_name [String] User-visible name of the datum.  It's helpful
+      #   to have this match the EPSG name.
+      # @param datum_type [Integer] The OGC datum type, usually 2005.
+      # @raise [OGR::Failure]
+      def set_vert_cs: (untyped name, untyped datum_name, untyped datum_type) -> untyped
+
+      # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+      #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+      #   semi-major is found.  If set to +true+, this will return that value if
+      #   the semi-major isn't found.
+      # @return [Float]
+      def semi_major: (?return_wgs84_on_nil: bool return_wgs84_on_nil) -> untyped
+
+      # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+      #   return the value for constant +SRS_WGS84_SEMIMAJOR+ (6378137.0) if no
+      #   semi-major is found.  If set to +true+, this will return that value if
+      #   the semi-major isn't found.
+      # @return [Float]
+      def semi_minor: (?return_wgs84_on_nil: bool return_wgs84_on_nil) -> untyped
+
+      # @param return_wgs84_on_nil [Boolean] The C-API gives you the option to
+      #   return the value for constant +SRS_WGS84_INVFLATTENING+ (298.257223563)
+      #   if no semi-major is found.  If set to +true+, this will return that
+      #   value if the semi-major isn't found.
+      # @return [Float]
+      def spheroid_inverse_flattening: (?return_wgs84_on_nil: bool return_wgs84_on_nil) -> untyped
+
+      # @param target_key [String] The partial or complete path to the node to
+      #   set an authority on ("PROJCS", "GEOGCS|UNIT").
+      # @param authority [String] I.e. "EPSG".
+      # @param code [Integer] Code value for the authority.
+      # @raise [OGR::Failure]
+      def set_authority: (untyped target_key, untyped authority, untyped code) -> untyped
+
+      # @param target_key [String] The partial or complete path to the node to get
+      #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
+      #   search at the root element.
+      # @return [String, nil]
+      def authority_code: (?untyped? target_key) -> untyped
+
+      # @param target_key [String] The partial or complete path to the node to get
+      #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
+      #   search at the root element.
+      # @return [String, nil]
+      def authority_name: (?untyped? target_key) -> untyped
+
+      def set_projection: (untyped projection_name) -> untyped
+
+      alias projection= set_projection
+
+      # @param param_name [String]
+      # @param value [Float]
+      # @raise [OGR::Failure]
+      def set_projection_parameter: (untyped param_name, untyped value) -> untyped
+
+      # @param name [String]
+      # @param default_value [Float] The value to return if the parameter
+      #   doesn't exist.
+      # @raise [OGR::Failure]
+      def projection_parameter: (untyped name, ?::Float default_value) -> untyped
+
+      # @param param_name [String]
+      # @param value [Float]
+      # @raise [OGR::Failure]
+      def set_normalized_projection_parameter: (untyped param_name, untyped value) -> untyped
+
+      # @param name [String] Name of the parameter to fetch; must be from the
+      #   set of SRS_PP codes in ogr_srs_api.h.
+      # @param default_value [Float] The value to return if the parameter
+      #   doesn't exist.
+      def normalized_projection_parameter: (untyped name, ?::Float default_value) -> untyped
+
+      # @param zone [Integer]
+      # @param north [Boolean] True for northern hemisphere, false for southern.
+      # @raise [OGR::Failure]
+      def set_utm: (untyped zone, ?north: bool north) -> untyped
+
+      # @param hemisphere [Symbol] :north or :south.
+      # @return [Integer] The zone, or 0 if this isn't a UTM definition.
+      def utm_zone: (?::Symbol hemisphere) -> untyped
+
+      # @param zone [Integer] State plane zone number (USGS numbering scheme).
+      # @param nad83 [Boolean] Use NAD83 zone definition or not.
+      # @raise [OGR::Failure]
+      def set_state_plane: (untyped zone, ?untyped? override_unit_label, ?::Float override_unit_transform, ?nad83: bool nad83) -> untyped
+
+      # @param axis_number [Integer] The Axis to query (0, 1, or 2)
+      # @param target_key [String] 'GEOGCS' or 'PROJCS'.
+      # @return [String, nil]
+      def axis: (untyped axis_number, untyped target_key) -> { name: untyped, orientation: untyped }
+
+      def set_albers_conic_equal_area: () -> untyped
+
+      alias set_acea set_albers_conic_equal_area
+
+      def set_ae: () -> untyped
+
+      def set_bonne: () -> untyped
+
+      def set_cea: () -> untyped
+
+      def set_cs: () -> untyped
+
+      def set_ec: () -> untyped
+
+      def set_eckert: () -> untyped
+
+      def set_eckert_iv: () -> untyped
+
+      def set_eckert_vi: () -> untyped
+
+      def set_equirectangular: () -> untyped
+
+      def set_equirectangular2: () -> untyped
+
+      def set_gc: () -> untyped
+
+      def set_gh: () -> untyped
+
+      def set_igh: () -> untyped
+
+      def set_geos: () -> untyped
+
+      def set_gauss_schreiber_transverse_mercator: () -> untyped
+
+      def set_gnomonic: () -> untyped
+
+      def set_om: () -> untyped
+
+      def set_hom: () -> untyped
+
+      def set_hom_2_pno: () -> untyped
+
+      def set_iwm_polyconic: () -> untyped
+
+      def set_krovak: () -> untyped
+
+      def set_laea: () -> untyped
+
+      def set_lcc: () -> untyped
+
+      def set_lcc_1sp: () -> untyped
+
+      def set_lccb: () -> untyped
+
+      def set_mc: () -> untyped
+
+      def set_mercator: () -> untyped
+
+      def set_mollweide: () -> untyped
+
+      def set_nzmg: () -> untyped
+
+      def set_os: () -> untyped
+
+      def set_orthographic: () -> untyped
+
+      def set_polyconic: () -> untyped
+
+      def set_ps: () -> untyped
+
+      def set_robinson: () -> untyped
+
+      def set_sinusoidal: () -> untyped
+
+      def set_stereographic: () -> untyped
+
+      def set_soc: () -> untyped
+
+      # @param center_lat [Float]
+      # @param center_long [Float]
+      # @param scale [Float]
+      # @param false_easting [Float]
+      # @param false_northing [Float]
+      # @raise [OGR::Failure]
+      def set_transverse_mercator: (untyped center_lat, untyped center_long, untyped scale, untyped false_easting, untyped false_northing) -> untyped
+
+      alias set_tm set_transverse_mercator
+
+      def set_tm_variant: () -> untyped
+
+      def set_tmg: () -> untyped
+
+      def set_tmso: () -> untyped
+
+      def set_vdg: () -> untyped
+
+      def set_wagner: () -> untyped
+
+      def set_qsc: () -> untyped
+    end
+  end
+end

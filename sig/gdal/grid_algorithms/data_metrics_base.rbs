@@ -1,0 +1,10 @@
+module GDAL
+  module GridAlgorithms
+    class DataMetricsBase
+      # @return [FFI::GDAL::GridDataMetricsOptions]
+      attr_reader options: untyped
+
+      def initialize: () -> untyped
+    end
+  end
+end

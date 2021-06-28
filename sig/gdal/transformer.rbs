@@ -1,0 +1,6 @@
+module GDAL
+  class Transformer
+    # @param transformer_arg [FFI::Pointer]
+    def self.destroy_transformer: (untyped transformer_arg) -> untyped
+  end
+end

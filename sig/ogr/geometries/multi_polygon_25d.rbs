@@ -1,0 +1,8 @@
+module OGR
+  # NOTE: {{#type}} will return :wkbMultiPolygon (read: 2D instead of 2.5D)
+  # until a Z value is set.
+  class MultiPolygon25D < MultiPolygon
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+  end
+end

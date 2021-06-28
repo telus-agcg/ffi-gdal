@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class GridNearestNeighborOptions < FFI::Struct
+    end
+  end
+end
