@@ -39,7 +39,9 @@ module FFI
       if ENV['GDAL_LIBRARY_PATH']
         result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].compact
 
-        return f if (f = result.first) # rubocop: disable Lint/UselessAssignment
+        if (f = result.first)
+          return f
+        end
 
         raise "library '#{lib}' not found"
       end
@@ -53,7 +55,7 @@ module FFI
 
     # @return [Array<String>] List of paths to search for libs in.
     def self.search_paths
-      return ENV['GDAL_LIBRARY_PATH'] if ENV['GDAL_LIBRARY_PATH']
+      return [ENV['GDAL_LIBRARY_PATH']] if ENV['GDAL_LIBRARY_PATH']
 
       @search_paths ||= begin
         paths = ENV['PATH'].split(File::PATH_SEPARATOR)
