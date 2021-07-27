@@ -3,6 +3,7 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
 require_relative 'color_entry'
+require_relative '../gdal'
 
 module FFI
   module GDAL

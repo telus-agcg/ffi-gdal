@@ -1,0 +1,4 @@
+module OGR
+  class Point25D < OGR::Point
+  end
+end

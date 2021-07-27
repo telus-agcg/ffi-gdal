@@ -1,0 +1,6 @@
+module FFI
+  class Buffer < FFI::AbstractMemory
+    def self.alloc_out: (Integer | Symbol | _Size size, ?Integer count, ?bool clear) -> instance
+    alias self.new_out self.alloc_out
+  end
+end

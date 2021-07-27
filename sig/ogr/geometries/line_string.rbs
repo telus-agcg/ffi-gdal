@@ -1,0 +1,7 @@
+module OGR
+  class LineString
+    include OGR::Geometry
+    include OGR::Geometry::Interfaces::Length
+    include OGR::Geometry::Interfaces::XYPoints
+  end
+end

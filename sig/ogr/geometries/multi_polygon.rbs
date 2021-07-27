@@ -1,0 +1,6 @@
+module OGR
+  class MultiPolygon
+    include OGR::Geometry
+    include OGR::Geometry::Interfaces::Area
+  end
+end

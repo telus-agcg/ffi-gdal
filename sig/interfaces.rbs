@@ -1,0 +1,3 @@
+interface _SpatialReference
+  def spatial_reference: -> OGR::SpatialReference
+end

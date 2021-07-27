@@ -1,0 +1,4 @@
+module OGR
+  class GeometryCollection25D < OGR::GeometryCollection
+  end
+end

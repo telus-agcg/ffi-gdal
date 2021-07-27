@@ -244,7 +244,7 @@ RSpec.describe OGR::Point do
     end
 
     describe '#point_count' do
-      specify { expect(subject.point_count).to be_zero }
+      specify { expect(subject.point_count).to eq 1 }
     end
 
     describe '#empty?' do

@@ -1,0 +1,5 @@
+module OGR
+  class SpatialReference
+    def linear_units: -> { unit_name: String, value: Float }?
+  end
+end

@@ -1,0 +1,4 @@
+module FFI
+  class Pointer < FFI::AbstractMemory
+  end
+end

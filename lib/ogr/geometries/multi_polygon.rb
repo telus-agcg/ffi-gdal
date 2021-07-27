@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../geometry_types/container'
-require_relative '../geometry_types/surface'
 
 module OGR
   class MultiPolygon
     include OGR::Geometry
     include GeometryTypes::Container
-    include GeometryTypes::Surface
+    include OGR::Geometry::Interfaces::Area
 
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)

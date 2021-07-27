@@ -1,0 +1,4 @@
+module OGR
+  class MultiLineString25D < OGR::MultiLineString
+  end
+end

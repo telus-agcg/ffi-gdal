@@ -19,7 +19,7 @@ module FFI
              "build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
       end
 
-      @unsupported_gdal_functions << args.first
+      args&.first.tap { |a| @unsupported_gdal_functions << a }
     end
 
     def unsupported_gdal_functions

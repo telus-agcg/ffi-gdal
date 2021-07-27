@@ -51,5 +51,10 @@ module OGR
     def add_point(x, y)
       FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
     end
+
+    # @return [Integer]
+    def point_count
+      FFI::OGR::API.OGR_G_GetPointCount(@c_pointer)
+    end
   end
 end

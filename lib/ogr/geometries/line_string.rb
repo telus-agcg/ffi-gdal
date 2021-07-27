@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../geometry_types/curve'
+require_relative '../geometry/interfaces/length'
+require_relative '../geometry/interfaces/xy_points'
 
 module OGR
   class LineString
     include OGR::Geometry
-    include GeometryTypes::Curve
+    include OGR::Geometry::Interfaces::Length
+    include OGR::Geometry::Interfaces::XYPoints
 
     def self.approximate_arc_angles(center_x, center_y, z, primary_radius, secondary_radius,
       rotation, start_angle, end_angle, max_angle_step_size_degrees = 0)

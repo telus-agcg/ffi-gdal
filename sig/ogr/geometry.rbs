@@ -1,0 +1,6 @@
+module OGR
+  module Geometry
+    include _SpatialReference
+    include GDAL::Logger
+  end
+end

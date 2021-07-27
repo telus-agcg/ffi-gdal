@@ -33,7 +33,7 @@ valgrind_output.log
 
 *.swp
 
-.byebug_history
-
 .tags
 /spec/examples.txt
+
+vendor/sigs/

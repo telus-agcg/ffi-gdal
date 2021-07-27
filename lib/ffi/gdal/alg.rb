@@ -7,7 +7,7 @@ module FFI
   module GDAL
     module Alg
       extend FFI::Library
-      ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       # -----------------------------------------------------------------------
       # Enums

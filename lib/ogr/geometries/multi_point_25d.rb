@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative 'multi_point'
+require_relative '../geometry/interfaces/xyz_points'
 
 module OGR
   # NOTE: {{#type}} will return :wkbMultiPoint (read: 2D instead of 2.5D) until
   # a Z value is set.
   class MultiPoint25D < MultiPoint
+    include OGR::Geometry::Interfaces::XYZPoints
+
     # @param geometry_ptr [FFI::Pointer]
     # @param spatial_reference [OGR::SpatialReference]
     def initialize(geometry_ptr = nil, spatial_reference: nil)

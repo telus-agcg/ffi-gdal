@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'line_string'
+require_relative '../geometry/interfaces/area'
 
 module OGR
   class LinearRing < LineString
+    include OGR::Geometry::Interfaces::Area
+
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbLinearRing)

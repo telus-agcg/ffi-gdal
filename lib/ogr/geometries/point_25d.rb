@@ -12,7 +12,7 @@ module OGR
       super(geometry_ptr, spatial_reference: spatial_reference)
     end
 
-    # @return [Float]
+    # @return [Float, nil]
     def z
       return if empty?
 

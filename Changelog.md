@@ -14,6 +14,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added exception messages for `OGR` methods that raised using `OGR::ErrorHandling`.
 - Added alias for `OGR::SpatialReferenceMixins::Exporters#to_gml` to `to_xml`.
 - Wrapped `OGR_G_ExportToIsoWkt` and `OGR_G_ExportToJsonEx`.
+- Added some `RBS` type definitions.
 
 ### Changed
 
@@ -22,9 +23,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 #### GDAL
 
-- _BREAKING_: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow unsetting the NODATA value.
-- _BREAKING_: Many methods were not communicating errors `CPLErr` back to the caller; these now raise
-  on `CE_Failure` or `CE_Fatal`:
+- _BREAKING_: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow unsetting the NODATA
+  value.
+- _BREAKING_: Many methods were not communicating errors `CPLErr` back to the caller; these now
+  raise on `CE_Failure` or `CE_Fatal`:
   - `GDAL::Dataset#add_band`
   - `GDAL::Dataset#build_overviews`
   - `GDAL::Dataset#create_mask_band`
@@ -56,27 +58,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `GDAL::RasterBand#write_block`
 - `GDAL` errors that return `CPLE_AppDefined` now raise `GDAL::Error`.
 - `GDAL` errors now truncate less of the backtrace.
-- `GDAL::RasterBand#scale` and `#offset` now return the `Float` value and raise
-    on a failed call instead of returning a `Hash` with that info.
+- `GDAL::RasterBand#scale` and `#offset` now return the `Float` value and raise on a failed call
+  instead of returning a `Hash` with that info.
 
 #### OGR
 
-- _BREAKING_: `OGR::DataSource#copy_data_source` now raises instead of returning `nil` on a failure to
-  copy.
+- _BREAKING_: `OGR::DataSource#copy_data_source` now raises instead of returning `nil` on a failure
+  to copy.
 - _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s second param is
   now a keyword arg, `north:` that defaults to `true` (like GDAL's default).
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_towgs84`'s `z_distance` requires a
   value internally, but was defaulted to `nil`; changed the default value to `0.0`.
-- _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is now
-  required.
-- _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`. In
-  GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
+- _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is
+  now required.
+- _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`.
+  In GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it's
   null. Now these raise the same exception.
-- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of
-    returning `nil`.
+- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
+- _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::Interfaces::XYPoints` and
+  `XYZPoints`.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
+- Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
+  `OGR::Geometry::Interfaces` modules: `XYPoints`, `XYZPoints`, `Area`, `Length`.
 
 ### Fixed
 
@@ -152,9 +157,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Removed
 
+#### General
+
 - [DEV-361] Move extension methods to ffi-gdal-extensions.
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
+
+#### OGR
+
+- `OGR::GeometyTypes::Curve` and `OGR::GeometryTypes::Surface` removed; those used to be
+  characteristics of some geometry types, but are their own types as of GDAL 2.1.
 
 ## [1.0.0.beta11] - 2020-06-02
 

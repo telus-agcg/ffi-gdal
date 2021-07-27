@@ -1,0 +1,7 @@
+module FFI
+  class AbstractMemory
+    def read_array_of_double: (Numeric length) -> Array[Float]
+
+    def read_double: () -> Float
+  end
+end

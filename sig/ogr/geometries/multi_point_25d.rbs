@@ -1,0 +1,4 @@
+module OGR
+  class MultiPoint25D < OGR::MultiPoint
+  end
+end

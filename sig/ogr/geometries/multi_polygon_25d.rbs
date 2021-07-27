@@ -1,0 +1,4 @@
+module OGR
+  class MultiPolygon25D < MultiPolygon
+  end
+end

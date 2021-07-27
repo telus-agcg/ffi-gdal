@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'ffi'
+require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module CPL
@@ -15,7 +17,7 @@ module FFI
 
         module ClassMethods
           extend ::FFI::Library
-          ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
+          @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
           #-------------------------------------------------------------------
           # Functions
