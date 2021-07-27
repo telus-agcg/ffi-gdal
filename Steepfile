@@ -4,7 +4,7 @@
 target :lib do
   signature 'sig', 'sig-gems'
 
-  check 'lib/ogr/geometry' # Directory name
+  check 'lib/ogr/geometry/' # Directory name
   # check "Gemfile"                   # File name
   # ignore "lib/templates/*.rb"
 

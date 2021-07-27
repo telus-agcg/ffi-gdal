@@ -1,3 +1,7 @@
+interface _Inspect
+  def inspect: -> String
+end
+
 interface _Size
   def size: -> Integer
 end

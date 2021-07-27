@@ -32,4 +32,18 @@ jobs:
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
       - name: Rubocop
-        run: bundle exec rubocop --format github --parallel
+        run: bundle exec rubocop --format github --parallel    
+
+  type_check:
+    name: RBS+Steep
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+      - name: Rubocop
+        run: bundle exec steep check
