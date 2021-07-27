@@ -31,4 +31,4 @@ AllCops:
   Exclude:
     - vendor/bundle/**/*
   NewCops: enable
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.0

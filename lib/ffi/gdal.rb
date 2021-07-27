@@ -37,9 +37,11 @@ module FFI
       lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
       if ENV['GDAL_LIBRARY_PATH']
-        result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)]
+        result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].compact
 
-        return result.is_a?(Array) ? result.first : result
+        return f if (f = result.first) # rubocop: disable Lint/UselessAssignment
+
+        raise "library '#{lib}' not found"
       end
 
       search_paths.map do |search_path|
@@ -74,12 +76,12 @@ module FFI
 
       header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal]
 
-      header_files.map do |file|
+      header_files.filter_map do |file|
         dir = header_search_paths.find do |d|
           File.exist?("#{d}/#{file}")
         end
         dir ? "#{dir}/#{file}" : nil
-      end.compact
+      end
     end
 
     # Locates one of the files that has constants.

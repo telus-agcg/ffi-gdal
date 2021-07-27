@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.require_paths = %w[lib]
-  spec.required_ruby_version = '>= 2.6'
+  spec.required_ruby_version = '>= 3.0'
 
   spec.add_dependency 'ffi'
   spec.add_dependency 'log_switch', '~> 1.0.0'
