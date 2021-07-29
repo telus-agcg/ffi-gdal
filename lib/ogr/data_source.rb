@@ -36,7 +36,8 @@ module OGR
 
     # Use to release the resulting data pointer from #execute_sql.
     #
-    # @param pointer [FFI::Pointer]
+    # @param data_source_pointer [FFI::Pointer]
+    # @param layer_pointer [FFI::Pointer]
     def self.release_result_set(data_source_pointer, layer_pointer)
       return unless data_source_pointer && !data_source_pointer.null? && layer_pointer && !layer_pointer.null?
 

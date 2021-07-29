@@ -34,7 +34,7 @@ module OGR
           FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
         end
 
-        # @param number [Integer] Index of the point to get.
+        # @param point_number [Integer] Index of the point to get.
         # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
         # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
         def point(point_number)

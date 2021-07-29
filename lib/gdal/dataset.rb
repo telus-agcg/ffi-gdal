@@ -346,11 +346,11 @@ module GDAL
     # @param x_size [Integer] If not given, uses {{#raster_x_size}}.
     # @param y_size [Integer] If not given, uses {{#raster_y_size}}.
     # @param x_offset [Integer] The pixel number in the line to start operating
-    #   on. Note that when using this, {#x_size} - +x_offset+ should be >= 0,
+    #   on. Note that when using this, +x_size+ - +x_offset+ should be >= 0,
     #   otherwise this means you're telling the method to read past the end of
     #   the line. Defaults to 0.
     # @param y_offset [Integer] The line number to start operating on. Note that
-    #   when using this, {#y_size} - +y_offset+ should be >= 0, otherwise this
+    #   when using this, +y_size+ - +y_offset+ should be >= 0, otherwise this
     #   means you're telling the method to read more lines than the raster has.
     #   Defaults to 0.
     # @param buffer_x_size [Integer] The width of the buffer image in which to

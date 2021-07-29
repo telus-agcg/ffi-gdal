@@ -115,7 +115,7 @@ module GDAL
       # then calls FFI::CPL::VSI.VSIFree (which is an alias for
       # FFI::CPL::Conv.CPLFree).
       #
-      # @yields [FFI::MemoryPointer]
+      # @yieldparam string_ptr [FFI::MemoryPointer] The pointer-pointer to write the string to.
       # @return [String]
       def _cpl_read_and_free_string
         result_ptr_ptr = GDAL._pointer_pointer(:string)
