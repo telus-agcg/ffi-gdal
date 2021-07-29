@@ -1,0 +1,11 @@
+module GDAL
+  module VersionInfo
+    def version_num: -> String
+    def release_date: -> Date
+    def release_name: -> String
+    def license: -> String
+    def build_info: -> Hash[String, String]
+    def long_version: -> String
+    def check_version: (Integer major, Integer minor) -> bool
+  end
+end

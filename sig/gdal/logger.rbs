@@ -1,0 +1,5 @@
+module GDAL
+  module Logger
+    include LogSwitch
+  end
+end

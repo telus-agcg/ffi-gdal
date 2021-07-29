@@ -2,6 +2,7 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
+require_relative '../gdal/wraps_pointer'
 require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
 require_relative 'spatial_reference_mixins/exporters'
 require_relative 'spatial_reference_mixins/importers'
@@ -15,6 +16,7 @@ module OGR
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
     include GDAL::Logger
+    include GDAL::WrapsPointer
     include SpatialReferenceMixins::CoordinateSystemGetterSetters
     include SpatialReferenceMixins::Exporters
     include SpatialReferenceMixins::Importers
@@ -22,17 +24,21 @@ module OGR
     include SpatialReferenceMixins::ParameterGetterSetters
     include SpatialReferenceMixins::TypeChecks
 
-    # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
-    FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
-      const_set(obj.ruby_name, obj.value)
+    def self.const_missing(name)
+      finder = lambda do |constants|
+        found = constants.values.find { |c| c.ruby_name == name.to_sym }
+        found&.converted_value
+      end
+
+      FFI::OGR::SRSAPI::SRS_UA.calculate
+      found = finder.call(FFI::OGR::SRSAPI::SRS_UA.constants)
+      return found if found
+
+      FFI::OGR::SRSAPI::SRS_UL.calculate
+      finder.call(FFI::OGR::SRSAPI::SRS_UL.constants)
     end
 
     METER_TO_METER = 1.0
-
-    FFI::OGR::SRSAPI::SRS_UA.constants.each do |_name, obj|
-      const_set(obj.ruby_name, obj.value)
-    end
-
     RADIAN_TO_RADIAN = 1.0
 
     # @deprecated This was removed in GDAL 3.0.
@@ -119,9 +125,7 @@ module OGR
     # Decrements the reference count by one, and destroy if zero.
     #
     # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
-
+    def self.impl_release(pointer)
       FFI::OGR::SRSAPI.OSRRelease(pointer)
     end
 

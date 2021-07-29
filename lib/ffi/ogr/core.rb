@@ -3,47 +3,50 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
 require_relative 'field'
+require_relative '../gdal'
 
 module FFI
   module OGR
     module Core
       extend ::FFI::Library
-      ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #------------------------------------------------------------------------
       # Enums
       #------------------------------------------------------------------------
-      # The C API defines :OGRErr as a function that returns constants.  I'm
-      # taking the liberty to turn this into an enum.
+      # The C API defines :OGRErr as a int typedef.  I'm taking the liberty to
+      # turn this into an enum.
       # https://trac.osgeo.org/gdal/ticket/3153
-      Err = enum :OGRERR_NONE,
-                 :OGRERR_NOT_ENOUGH_DATA,
-                 :OGRERR_NOT_ENOUGH_MEMORY,
-                 :OGRERR_UNSUPPORTED_GEOMETRY_TYPE,
-                 :OGRERR_UNSUPPORTED_OPERATION,
-                 :OGRERR_CORRUPT_DATA,
-                 :OGRERR_FAILURE,
-                 :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE
+      Err = enum :OGRErr, %i[OGRERR_NONE
+                             OGRERR_NOT_ENOUGH_DATA
+                             OGRERR_NOT_ENOUGH_MEMORY
+                             OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+                             OGRERR_UNSUPPORTED_OPERATION
+                             OGRERR_CORRUPT_DATA
+                             OGRERR_FAILURE
+                             OGRERR_UNSUPPORTED_SRS
+                             OGRERR_INVALID_HANDLE
+                             OGRERR_NON_EXISTING_FEATURE]
 
       WKBGeometryType = enum FFI::Type::UINT,
-                             :wkbUnknown,                0,
-                             :wkbPoint,                  1,
-                             :wkbLineString,             2,
-                             :wkbPolygon,                3,
-                             :wkbMultiPoint,             4,
-                             :wkbMultiLineString,        5,
-                             :wkbMultiPolygon,           6,
-                             :wkbGeometryCollection,     7,
-                             :wkbNone,                   100,    # non-standard, for pure attribute records
-                             :wkbLinearRing,             101,    # non-standard, just for createGeometry
-                             :wkbPoint25D,               0x8000_0001,
-                             :wkbLineString25D,          0x8000_0002,
-                             :wkbPolygon25D,             0x8000_0003,
-                             :wkbMultiPoint25D,          0x8000_0004,
-                             :wkbMultiLineString25D,     0x8000_0005,
-                             :wkbMultiPolygon25D,        0x8000_0006,
-                             :wkbGeometryCollection25D,  0x8000_0007
+                             :OGRwkbGeometryType,
+                             [:wkbUnknown, 0,
+                              :wkbPoint,                  1,
+                              :wkbLineString,             2,
+                              :wkbPolygon,                3,
+                              :wkbMultiPoint,             4,
+                              :wkbMultiLineString,        5,
+                              :wkbMultiPolygon,           6,
+                              :wkbGeometryCollection,     7,
+                              :wkbNone,                   100,    # non-standard, for pure attribute records
+                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
+                              :wkbPoint25D,               0x8000_0001,
+                              :wkbLineString25D,          0x8000_0002,
+                              :wkbPolygon25D,             0x8000_0003,
+                              :wkbMultiPoint25D,          0x8000_0004,
+                              :wkbMultiLineString25D,     0x8000_0005,
+                              :wkbMultiPolygon25D,        0x8000_0006,
+                              :wkbGeometryCollection25D,  0x8000_0007]
 
       WKBVariant = enum :wkbVariantOgc, :wkbVariantIso
       WKBByteOrder = enum :wkbXDR, 0,
@@ -81,12 +84,12 @@ module FFI
                        :OGRSTCLabel,   4,
                        :OGRSTCVector,  5
 
-      STUnitId = enum :OGRSTUGround, 0,
-                      :OGRSTUPixel,   1,
-                      :OGRSTUPoints,  2,
-                      :OGRSTUMM,      3,
-                      :OGRSTUCM,      4,
-                      :OGRSTUInches,  5
+      STUnitId = enum :STUnitId, [:OGRSTUGround, 0,
+                                  :OGRSTUPixel,   1,
+                                  :OGRSTUPoints,  2,
+                                  :OGRSTUMM,      3,
+                                  :OGRSTUCM,      4,
+                                  :OGRSTUInches,  5]
 
       STPenParam = enum :OGRSTPenColor, 0,
                         :OGRSTPenWidth,       1,
@@ -165,16 +168,11 @@ module FFI
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :OGRMalloc, [:size_t], :pointer
-      attach_function :OGRCalloc, %i[size_t size_t], :pointer
-      attach_function :OGRRealloc, %i[pointer size_t], :pointer
-      attach_function :OGRFree, [:pointer], :void
-
-      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :strptr
-      attach_function :OGRMergeGeometryTypes,
-                      [WKBGeometryType, WKBGeometryType],
-                      WKBGeometryType
-      attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
+      attach_gdal_function :OGRGeometryTypeToName, [enum_type(:OGRwkbGeometryType)], :strptr
+      attach_gdal_function :OGRMergeGeometryTypes,
+                           [enum_type(:OGRwkbGeometryType), enum_type(:OGRwkbGeometryType)],
+                           enum_type(:OGRwkbGeometryType)
+      attach_gdal_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
     end
   end
 end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'ffi'
+require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module CPL
@@ -15,22 +17,22 @@ module FFI
 
         module ClassMethods
           extend ::FFI::Library
-          ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
+          @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
           #-------------------------------------------------------------------
           # Functions
           #-------------------------------------------------------------------
-          attach_function :CPLListAppend, [List.ptr, :pointer], List.ptr
-          attach_function :CPLListInsert, [List.ptr, :pointer, :int], List.ptr
-          attach_function :CPLListGetLast, [List.ptr], List.ptr
-          attach_function :CPLListGet, [List.ptr, :int], List.ptr
-          attach_function :CPLListCount, [List.ptr], :int
+          attach_gdal_function :CPLListAppend, [List.ptr, :pointer], List.ptr
+          attach_gdal_function :CPLListInsert, [List.ptr, :pointer, :int], List.ptr
+          attach_gdal_function :CPLListGetLast, [List.ptr], List.ptr
+          attach_gdal_function :CPLListGet, [List.ptr, :int], List.ptr
+          attach_gdal_function :CPLListCount, [List.ptr], :int
 
-          attach_function :CPLListRemove, [List.ptr, :int], List.ptr
-          attach_function :CPLListDestroy, [List.ptr], :void
+          attach_gdal_function :CPLListRemove, [List.ptr, :int], List.ptr
+          attach_gdal_function :CPLListDestroy, [List.ptr], :void
 
-          attach_function :CPLListGetNext, [List.ptr], List.ptr
-          attach_function :CPLListGetData, [List.ptr], :pointer
+          attach_gdal_function :CPLListGetNext, [List.ptr], List.ptr
+          attach_gdal_function :CPLListGetData, [List.ptr], :pointer
         end
       end
 

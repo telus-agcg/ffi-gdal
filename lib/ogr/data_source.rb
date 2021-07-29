@@ -4,11 +4,13 @@ require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
 require_relative '../gdal/major_object'
+require_relative '../gdal/wraps_pointer'
 
 module OGR
   class DataSource
     include GDAL::MajorObject
     include GDAL::Logger
+    include GDAL::WrapsPointer
 
     # Same as +.new+.
     #
@@ -16,7 +18,10 @@ module OGR
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
     def self.open(path, access_flag = 'r')
-      ds = new(path, access_flag)
+      uri = URI.parse(path)
+      file_path = uri.scheme.nil? ? ::File.expand_path(path) : path
+      ds_handle = FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+      ds = new(ds_handle)
 
       if block_given?
         result = yield ds
@@ -28,9 +33,7 @@ module OGR
     end
 
     # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
-
+    def self.impl_release(pointer)
       FFI::OGR::API.OGR_DS_Destroy(pointer)
     end
 
@@ -46,28 +49,17 @@ module OGR
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
-    # @param path_or_pointer [String, FFI::Pointer] Path/URL to the file to
-    #   open or the Pointer to an already existing data soruce.
-    # @param access_flag [String] 'r' for read, 'w', for write.
-    def initialize(path_or_pointer, access_flag)
-      @c_pointer =
-        if path_or_pointer.is_a?(String)
-          uri = URI.parse(path_or_pointer)
-          file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
-        else
-          path_or_pointer
-        end
-
-      if @c_pointer.null?
-        error_msg, ptr = FFI::CPL::Error.CPLGetLastErrorMsg
-        ptr.autorelease = false
-
+    # @param pointer [FFI::Pointer] Pointer to an already existing data soruce.
+    def initialize(pointer)
+      if pointer.null?
+        error_msg = FFI::CPL::Error.CPLGetLastErrorMsg
         error_type = FFI::CPL::Error.CPLGetLastErrorType
         FFI::CPL::Error.CPLErrorReset
 
-        raise OGR::OpenFailure, "#{error_type}: #{error_msg} (#{file_path})"
+        raise OGR::OpenFailure, "#{error_type}: #{error_msg}"
       end
+
+      @c_pointer = pointer
 
       @layers = []
     end
@@ -76,7 +68,7 @@ module OGR
     def destroy!
       DataSource.release(@c_pointer)
 
-      @c_pointer = nil
+      # @c_pointer = nil
     end
     alias close destroy!
 
@@ -85,10 +77,7 @@ module OGR
     # @return [String]
     def name
       # This is an internal string and should not be modified or freed.
-      name_ptr = FFI::OGR::API.OGR_DS_GetName(@c_pointer)
-      name_ptr.autorelease = false
-
-      name_ptr.read_string_to_null
+      FFI::OGR::API.OGR_DS_GetName(@c_pointer)
     end
 
     # @return [OGR::Driver]
@@ -145,7 +134,8 @@ module OGR
               'This data source does not support creating layers.'
       end
 
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
+      # spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
+      spatial_ref_ptr = OGR::SpatialReference.get_borrowed_pointer(spatial_reference) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr =
@@ -193,7 +183,7 @@ module OGR
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
     def execute_sql(command, spatial_filter = nil, dialect = nil)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
+      geometry_ptr = GDAL._pointer(::OGR::Geometry, spatial_filter) if spatial_filter
 
       layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr, dialect)
       layer_ptr.autorelease = false
@@ -238,7 +228,7 @@ module OGR
 
     # @raise [OGR::Failure]
     def sync_to_disk
-      OGR::ErrorHandling.handle_ogr_err('Unable to syn datasource to disk') do
+      OGR::ErrorHandling.handle_ogr_err('Unable to sync datasource to disk') do
         FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
       end
     end

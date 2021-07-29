@@ -3,23 +3,30 @@
 module OGR
   module GeometryTypes
     module Curve
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def x(point_number)
         FFI::OGR::API.OGR_G_GetX(@c_pointer, point_number)
       end
 
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def y(point_number)
         FFI::OGR::API.OGR_G_GetY(@c_pointer, point_number)
       end
 
+      # @param point_number [Integer]
       # @return [Float]
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def z(point_number)
         FFI::OGR::API.OGR_G_GetZ(@c_pointer, point_number)
       end
 
       # @param number [Integer] Index of the point to get.
       # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
+      # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def point(number)
         x_ptr = FFI::MemoryPointer.new(:double)
         y_ptr = FFI::MemoryPointer.new(:double)
@@ -39,9 +46,9 @@ module OGR
       #
       # @param x [Float]
       # @param y [Float]
-      # @param z [Float]
-      def add_point(x, y, z = 0)
-        if coordinate_dimension == 3
+      # @param z [Float, nil]
+      def add_point(x, y, z = nil)
+        if z
           FFI::OGR::API.OGR_G_AddPoint(@c_pointer, x, y, z)
         else
           FFI::OGR::API.OGR_G_AddPoint_2D(@c_pointer, x, y)
@@ -51,25 +58,26 @@ module OGR
       # @param index [Integer] The index of the vertex to assign.
       # @param x [Number]
       # @param y [Number]
-      # @param z [Number]
+      # @param z [Number, nil]
       def set_point(index, x, y, z = nil)
-        if is_3d?
+        if z
           FFI::OGR::API.OGR_G_SetPoint(@c_pointer, index, x, y, z)
         else
           FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
         end
       end
 
-      # @return [Array<Array<Float>>] An array of (x, y) or (x, y, z) points.
+      # @return [Array<[Float, Float, Float]>, Array<[Float, Float]>] An array
+      #   of (x, y) or (x, y, z) points.
       def points
         x_stride = FFI::Type::DOUBLE.size
         y_stride = FFI::Type::DOUBLE.size
         z_stride = coordinate_dimension == 3 ? FFI::Type::DOUBLE.size : 0
 
         buffer_size = point_count
-        x_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-        y_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size)
-        z_buffer = FFI::MemoryPointer.new(:buffer_out, buffer_size) if coordinate_dimension == 3
+        x_buffer = FFI::Buffer.alloc_out(buffer_size)
+        y_buffer = FFI::Buffer.alloc_out(buffer_size)
+        z_buffer = FFI::Buffer.alloc_out(buffer_size) if coordinate_dimension == 3
 
         num_points = FFI::OGR::API.OGR_G_GetPoints(@c_pointer,
                                                    x_buffer, x_stride, y_buffer,

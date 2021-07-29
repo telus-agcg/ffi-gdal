@@ -76,7 +76,7 @@ module OGR
 
       raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}" if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr, nil)
+      OGR::DataSource.new(data_source_ptr)
     end
 
     # Creates a new data source at path +file_name+.  Yields the newly created
@@ -97,7 +97,7 @@ module OGR
                                                               file_name, options_ptr)
       raise OGR::CreateFailure, "Unable to create DataSource '#{file_name}'" if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr, 'w')
+      ds = OGR::DataSource.new(data_source_ptr)
       yield ds if block_given?
 
       ds
@@ -131,7 +131,7 @@ module OGR
 
       raise OGR::InvalidDataSource, "Unable to copy data source to #{new_file_name}" if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr, nil)
+      OGR::DataSource.new(data_source_ptr)
     end
 
     # @param [String] capability

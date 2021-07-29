@@ -140,7 +140,7 @@ RSpec.describe GDAL::GeoTransform do
     describe '#compose' do
       context 'given parameter is not a GeoTransform' do
         it 'raises a GDAL::NullObject' do
-          expect { subject.compose('not a pointer') }.to raise_exception GDAL::NullObject
+          expect { subject.compose('not a pointer') }.to raise_exception FFI::GDAL::InvalidPointer
         end
       end
 

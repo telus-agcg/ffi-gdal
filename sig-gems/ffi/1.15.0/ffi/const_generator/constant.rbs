@@ -1,0 +1,15 @@
+module FFI
+  class ConstGenerator
+    class Constant
+      attr_reader cast: String
+      attr_reader format: String
+      attr_reader name: _ToS
+      attr_reader value: untyped?
+
+      def initialize: (_ToS name, String? format, String? cast, _ToS? ruby_name, _Call? converter) -> void
+      def converted_value: -> untyped?
+      def ruby_name: -> String
+      def to_ruby: -> String
+    end
+  end
+end

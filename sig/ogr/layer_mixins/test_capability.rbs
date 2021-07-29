@@ -1,0 +1,7 @@
+module OGR
+  module LayerMixins
+    module TestCapability
+      def test_capability: (String capability) -> bool
+    end
+  end
+end

@@ -9,22 +9,21 @@ module FFI
   module GDAL
     extend ::FFI::Library
 
-    autoload :Alg, File.expand_path('gdal/alg.rb', __dir__)
-    autoload :ColorEntry, File.expand_path('gdal/color_entry.rb', __dir__)
-    autoload :GDAL, File.expand_path('gdal/gdal.rb', __dir__)
-    autoload :GCP, File.expand_path('gdal/gcp.rb', __dir__)
-    autoload :Grid, File.expand_path('gdal/grid.rb', __dir__)
-    autoload :GridDataMetricsOptions, File.expand_path('gdal/grid_data_metrics_options.rb', __dir__)
+    autoload :Alg, File.expand_path('gdal/alg.rb', __dir__ || '.')
+    autoload :ColorEntry, File.expand_path('gdal/color_entry.rb', __dir__ || '.')
+    autoload :GDAL, File.expand_path('gdal/gdal.rb', __dir__ || '.')
+    autoload :GCP, File.expand_path('gdal/gcp.rb', __dir__ || '.')
+    autoload :Grid, File.expand_path('gdal/grid.rb', __dir__ || '.')
+    autoload :GridDataMetricsOptions, File.expand_path('gdal/grid_data_metrics_options.rb', __dir__ || '.')
     autoload :GridInverseDistanceToAPowerOptions,
-             File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
-    autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__)
-    autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__)
-    autoload :Matching, File.expand_path('gdal/matching.rb', __dir__)
-    autoload :RPCInfo, File.expand_path('gdal/rpc_info.rb', __dir__)
-    autoload :TransformerInfo, File.expand_path('gdal/transformer_info.rb', __dir__)
-    autoload :VRT, File.expand_path('gdal/vrt.rb', __dir__)
-    autoload :Warper, File.expand_path('gdal/warper.rb', __dir__)
-    autoload :WarpOptions, File.expand_path('gdal/warp_options.rb', __dir__)
+             File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__ || '.')
+    autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__ || '.')
+    autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__ || '.')
+    autoload :RPCInfo, File.expand_path('gdal/rpc_info.rb', __dir__ || '.')
+    autoload :TransformerInfo, File.expand_path('gdal/transformer_info.rb', __dir__ || '.')
+    autoload :VRT, File.expand_path('gdal/vrt.rb', __dir__ || '.')
+    autoload :Warper, File.expand_path('gdal/warper.rb', __dir__ || '.')
+    autoload :WarpOptions, File.expand_path('gdal/warp_options.rb', __dir__ || '.')
 
     # @return [String]
     def self.gdal_library_path
@@ -36,7 +35,11 @@ module FFI
     def self.find_lib(lib)
       lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
-      return Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].first if ENV['GDAL_LIBRARY_PATH']
+      if ENV['GDAL_LIBRARY_PATH']
+        result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)]
+
+        return result.is_a?(Array) ? result.first : result
+      end
 
       search_paths.map do |search_path|
         Dir.glob(search_path).map do |path|
@@ -91,8 +94,13 @@ module FFI
 
     ffi_lib(gdal_library_path)
 
-    attach_function :GDALVersionInfo, %i[string], :string
-    attach_function :GDALCheckVersion, %i[int int string], :bool
+    # @return [Array<FFI::DynamicLibrary>]
+    def self.loaded_ffi_libs
+      @ffi_libs
+    end
+
+    attach_gdal_function :GDALVersionInfo, %i[string], :string
+    attach_gdal_function :GDALCheckVersion, %i[int int string], :bool
   end
 end
 

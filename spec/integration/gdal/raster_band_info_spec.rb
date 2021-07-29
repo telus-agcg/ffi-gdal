@@ -148,7 +148,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
   end
 
   describe '#mask_band' do
-    it 'returns a GDAL::RasterBand if the mask_band exists' do
+    it 'always returns a GDAL::RasterBand' do
       overview = subject.mask_band
       expect(overview).to be_a GDAL::RasterBand
     end

@@ -1,0 +1,18 @@
+module FFI
+  module CPL
+    module VSI
+      extend ::FFI::Library
+
+      # STAT_EXISTS_FLAG = 0x1
+      STAT_EXISTS_FLAG: 1
+
+      # STAT_NATURE_FLAG = 0x2
+      STAT_NATURE_FLAG: 2
+
+      # STAT_SIZE_FLAG = 0x4
+      STAT_SIZE_FLAG: 4
+
+      def self.VSIFree: (FFI::Pointer ptr) -> void
+    end
+  end
+end

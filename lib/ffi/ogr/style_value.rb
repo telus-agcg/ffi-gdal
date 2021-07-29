@@ -9,7 +9,7 @@ module FFI
              :double_value, :double,
              :int_value, :int,
              :valid, FFI::CPL::Port.find_type(:GBool),
-             :unit, Core::STUnitId
+             :unit, FFI::Core.enum_type(:STUnitId)
     end
   end
 end

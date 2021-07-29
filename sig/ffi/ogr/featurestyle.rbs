@@ -1,0 +1,10 @@
+module FFI
+  module OGR
+    module Featurestyle
+      extend ::FFI::Library
+
+      StyleType: FFI::Enum
+      StyleParamId: FFI::OGR::StyleParam
+    end
+  end
+end

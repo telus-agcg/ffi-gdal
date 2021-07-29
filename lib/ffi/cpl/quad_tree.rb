@@ -3,12 +3,13 @@
 require 'ffi'
 require_relative 'rect_obj'
 require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module CPL
     module QuadTree
       extend ::FFI::Library
-      ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #-------------------------------------------------------------------------
       # Typedefs
@@ -23,31 +24,31 @@ module FFI
       #-------------------------------------------------------------------------
       # Functions
       #-------------------------------------------------------------------------
-      attach_function :CPLQuadTreeCreate,
-                      [RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
-                      :CPLQuadTreeH
-      attach_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
-      attach_function :CPLQuadTreeSetBucketCapacity,
-                      %i[CPLQuadTreeH int],
-                      :void
-      attach_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
-      attach_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
-      attach_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
-      attach_function :CPLQuadTreeInsertWithBounds,
-                      [:CPLQuadTreeH, :pointer, RectObj.ptr],
-                      :void
-      attach_function :CPLQuadTreeSearch,
-                      [:CPLQuadTreeH, RectObj.ptr, :pointer],
-                      :void
-      attach_function :CPLQuadTreeForeach,
-                      %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
-                      :void
-      attach_function :CPLQuadTreeDump,
-                      %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
-                      :void
-      attach_function :CPLQuadTreeGetStats,
-                      %i[CPLQuadTreeH pointer pointer pointer pointer],
-                      :void
+      attach_gdal_function :CPLQuadTreeCreate,
+                           [FFI::CPL::RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
+                           :CPLQuadTreeH
+      attach_gdal_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
+      attach_gdal_function :CPLQuadTreeSetBucketCapacity,
+                           %i[CPLQuadTreeH int],
+                           :void
+      attach_gdal_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
+      attach_gdal_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
+      attach_gdal_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
+      attach_gdal_function :CPLQuadTreeInsertWithBounds,
+                           [:CPLQuadTreeH, :pointer, FFI::CPL::RectObj.ptr],
+                           :void
+      attach_gdal_function :CPLQuadTreeSearch,
+                           [:CPLQuadTreeH, FFI::CPL::RectObj.ptr, :pointer],
+                           :void
+      attach_gdal_function :CPLQuadTreeForeach,
+                           %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
+                           :void
+      attach_gdal_function :CPLQuadTreeDump,
+                           %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
+                           :void
+      attach_gdal_function :CPLQuadTreeGetStats,
+                           %i[CPLQuadTreeH pointer pointer pointer pointer],
+                           :void
     end
   end
 end

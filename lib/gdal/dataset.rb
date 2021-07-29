@@ -4,7 +4,6 @@ require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
 require_relative 'major_object'
-require_relative 'dataset_mixins/matching'
 require_relative 'dataset_mixins/algorithm_methods'
 require_relative 'dataset_mixins/warp_methods'
 
@@ -14,7 +13,6 @@ module GDAL
   # definition of all bands.
   class Dataset
     include MajorObject
-    include DatasetMixins::Matching
     include DatasetMixins::AlgorithmMethods
     include DatasetMixins::WarpMethods
     include GDAL::Logger
@@ -30,7 +28,20 @@ module GDAL
     # @param shared [Boolean] Whether or not to open using GDALOpenShared
     #   vs GDALOpen. Defaults to +true+.
     def self.open(path, access_flag, shared: true)
-      ds = new(path, access_flag, shared_open: shared)
+      file_path = begin
+        uri = URI.parse(path)
+        uri.scheme.nil? ? ::File.expand_path(path) : path
+      rescue URI::InvalidURIError
+        path
+      end
+
+      c_pointer = if shared
+                    FFI::GDAL::GDAL.GDALOpenShared(file_path, ACCESS_FLAGS[access_flag])
+                  else
+                    FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+                  end
+
+      ds = new(c_pointer)
 
       if block_given?
         result = yield ds
@@ -73,8 +84,8 @@ module GDAL
 
     # @param dataset [GDAL::Dataset]
     # @return [FFI::AutoPointer]
-    def self.new_pointer(dataset, warn_on_nil: true)
-      ptr = GDAL._pointer(GDAL::Dataset, dataset, warn_on_nil: warn_on_nil, autorelease: false)
+    def self.new_pointer(dataset)
+      ptr = GDAL._maybe_pointer(GDAL::Dataset, dataset, autorelease: false)
 
       FFI::AutoPointer.new(ptr, Dataset.method(:release))
     end
@@ -94,33 +105,12 @@ module GDAL
     #   this Ruby object.
     attr_reader :c_pointer
 
-    # @param path_or_pointer [String, FFI::Pointer] Path to the file that
-    #   contains the dataset or a pointer to the dataset. If it's a path, it can
+    # @param pointer [FFI::Pointer] Pointer to the dataset. If it's a path, it can
     #   be a local file or a URL.
-    # @param access_flag [String] 'r' or 'w'.
-    # @param shared_open [Boolean] Whether or not to open using GDALOpenShared
-    #   vs GDALOpen. Defaults to +true+.
-    def initialize(path_or_pointer, access_flag, shared_open: true)
-      @c_pointer =
-        if path_or_pointer.is_a? String
-          file_path = begin
-            uri = URI.parse(path_or_pointer)
-            uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          rescue URI::InvalidURIError
-            path_or_pointer
-          end
+    def initialize(pointer)
+      raise FFI::NullPointerError, pointer if pointer.null?
 
-          if shared_open
-            FFI::GDAL::GDAL.GDALOpenShared(file_path, ACCESS_FLAGS[access_flag])
-          else
-            FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
-          end
-        else
-          path_or_pointer
-        end
-
-      raise OpenFailure, path_or_pointer if @c_pointer.null?
-
+      @c_pointer = pointer
       @geo_transform = nil
       @spatial_reference = nil
       @raster_bands = Array.new(raster_count)

@@ -35,7 +35,7 @@ module GDAL
 
     # @return [Boolean]
     def flush_cache_block
-      FFI::GDAL::GDAL.GDALFlushCacheBlock
+      FFI::GDAL::GDAL.GDALFlushCacheBlock || false
     end
 
     # @param file_path [String]

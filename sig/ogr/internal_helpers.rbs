@@ -1,0 +1,11 @@
+module OGR
+  module InternalHelpers
+    def _boolean_access_flag: ("w" | "r" flag) -> bool
+
+    def _format_time_zone_for_ruby: (0 | 1 | 100 time_zone) -> (String | nil)
+
+    def _format_time_zone_for_ogr: (String ?time_zone) -> Integer
+  end
+
+  extend InternalHelpers
+end
