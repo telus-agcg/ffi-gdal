@@ -1,0 +1,11 @@
+module GDAL
+  class ColorInterpretation
+    # @param gdal_color_interp [FFI::GDAL::GDAL::ColorInterp]
+    # @return [String]
+    def self.name: (untyped gdal_color_interp) -> untyped
+
+    # @param name [String]
+    # @return [FFI::GDAL::GDAL::ColorInterp]
+    def self.by_name: (untyped name) -> untyped
+  end
+end

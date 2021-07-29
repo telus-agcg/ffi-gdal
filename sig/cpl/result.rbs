@@ -1,0 +1,8 @@
+module CPL
+  class Result
+    def self.to_exception: (::FFI::CPL::Error::cpl_err_number_symbol error_number, String message) -> Exception
+
+    def initialize: (::FFI::CPL::Error::cpl_err_number_symbol error_number, String message) -> void
+    def to_exception: -> Exception?
+  end
+end

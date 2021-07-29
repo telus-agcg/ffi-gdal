@@ -1,0 +1,18 @@
+module GDAL
+  # @return [FFI::GDAL::RPCInfo]
+  attr_reader c_struct: untyped
+
+  # Wrapper for FFI::GDAL::RPCInfo.
+  class RPCInfo
+    extend Forwardable
+
+    # @param struct_or_ptr [FFI::GDAL::RPCInfo, FFI::Pointer]
+    def initialize: (?untyped? struct_or_ptr) -> untyped
+
+    # @return [FFI::Pointer]
+    def c_pointer: () -> untyped
+
+    # @return [Array<String>]
+    def to_metadata: () -> untyped
+  end
+end

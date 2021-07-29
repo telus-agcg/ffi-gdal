@@ -1,0 +1,24 @@
+module GDAL
+  # Use when you want something quick and easy for when you need something
+  # quick for a +FFI::GDAL::GDALProgressFunc+. Outputs the duration and
+  # percentage completed.
+  #
+  # @return [Proc] A Proc that works for a +GDALProgressFunc+ callback.
+  def self.simple_progress_formatter: () -> untyped
+
+  private
+
+  def self.gdal_require: (untyped path) -> untyped
+end
+
+module GDAL
+  extend VersionInfo
+
+  extend EnvironmentMethods
+
+  extend InternalHelpers
+
+  # We define our own error handler so we can turn GDAL errors into Ruby
+  # exceptions.
+  FFI_GDAL_ERROR_HANDLER: untyped
+end

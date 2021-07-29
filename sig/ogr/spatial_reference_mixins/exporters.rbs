@@ -1,0 +1,41 @@
+module OGR
+  module SpatialReferenceMixins
+    module Exporters
+      # @return [Hash]
+      # @raise [OGR::NotEnoughData] If name, datum name, and units are not set.
+      def to_erm: () -> { projection_name: untyped, datum_name: untyped, units: untyped }
+
+      # @return [Array<String>]
+      # @raise [OGR::Failure]
+      def to_mapinfo: () -> untyped
+
+      # @return [Hash]
+      # @raise [OGR::Failure]
+      def to_pci: () -> untyped
+
+      # @return [String]
+      # @raise [GDAL::UnsupportedOperation] If empty definition.
+      def to_proj4: () -> untyped
+
+      # @return [Hash]
+      # @raise [OGR::Failure]
+      def to_usgs: () -> untyped
+
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_wkt: () -> untyped
+
+      # @param simplify [Boolean] +true+ strips off +AXIS+, +AUTHORITY+ and
+      #   +EXTENSION+ nodes.
+      # @raise [OGR::Failure]
+      # @return [String]
+      def to_pretty_wkt: (?simplify: bool simplify) -> untyped
+
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_xml: () -> untyped
+
+      alias to_gml to_xml
+    end
+  end
+end

@@ -1,0 +1,6 @@
+module FFI
+  module OGR
+    class StyleValue < FFI::Struct
+    end
+  end
+end

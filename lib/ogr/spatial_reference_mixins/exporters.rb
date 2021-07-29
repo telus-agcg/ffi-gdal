@@ -85,10 +85,10 @@ module OGR
           FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys_ptr, zone_ptr, prj_params_ptr_ptr, datum_ptr)
         end
 
-        projection_system_code = proj_sy_ptrs.read_long
-        zone = zon_ptre.read_long
-        projection_parameters = prj_params_pt_ptrr.read_array_of_double(0)
-        datum = datu_ptrm.read_long
+        projection_system_code = proj_sys_ptr.read_long
+        zone = zone_ptr.read_long
+        projection_parameters = prj_params_ptr_ptr.read_array_of_double(0)
+        datum = datum_ptr.read_long
 
         result = {
           projection_system_code: projection_system_code,

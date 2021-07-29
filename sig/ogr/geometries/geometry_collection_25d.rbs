@@ -1,0 +1,7 @@
+module OGR
+  # NOTE: {{#type}} will return :wkbGeometryCollection (read: 2D instead of
+  # 2.5D) until a Z value is set.
+  class GeometryCollection25D < GeometryCollection
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+  end
+end

@@ -1,0 +1,14 @@
+module FFI
+  module CPL
+    class List < ::FFI::Struct
+
+      module ListFunctions
+        module ClassMethods
+          extend ::FFI::Library
+        end
+      end
+
+      include ListFunctions
+    end
+  end
+end

@@ -1,0 +1,5 @@
+module FFI
+  class ManagedStruct < FFI::Struct
+    def initialize: (?FFI::Pointer? pointer) -> void
+  end
+end

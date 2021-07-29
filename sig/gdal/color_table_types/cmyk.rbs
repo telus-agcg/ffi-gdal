@@ -1,0 +1,15 @@
+module GDAL
+  module ColorTableTypes
+    module CMYK
+      def cyans: () -> untyped
+
+      def magentas: () -> untyped
+
+      def yellows: () -> untyped
+
+      def blacks: () -> untyped
+
+      def to_a: () -> untyped
+    end
+  end
+end

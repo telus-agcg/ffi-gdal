@@ -1,0 +1,7 @@
+module FFI
+  module GDAL
+    module VRT
+      extend ::FFI::Library
+    end
+  end
+end

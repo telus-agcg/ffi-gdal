@@ -1,0 +1,213 @@
+module OGR
+  class Feature
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] C pointer of the C Feature.
+    attr_reader c_pointer: untyped
+
+    # @param fd_or_pointer [OGR::FeatureDefinition, FFI::Pointer] Must either be
+    #   a FeatureDefinition (i.e. normal Feature creation) or a Pointer (in the
+    #   case a handle to a C OGR Feature needs to be wrapped with this object).
+    def initialize: (untyped fd_or_pointer) -> untyped
+
+    def destroy!: () -> untyped
+
+    # @return [OGR::Feature]
+    # @raise [OGR::Failure] If, for some reason, the clone fails.
+    def clone: () -> untyped
+
+    # Dumps the feature out to the file in human-readable form.
+    #
+    # @param file_path [String]
+    def dump_readable: (?untyped? file_path) -> untyped
+
+    # Overwrites the contents of this feature from the geometry and attributes
+    # of the +other_feature+.
+    #
+    # @param _other_feature [OGR::Feature]
+    # @param _be_forgiving [Boolean] +true+ if the operation should continue
+    #   despite lacking output fields matching some of the source fields.
+    # @param with_map [Array<Integer>]
+    # @raise [OGR::Failure]
+    # TODO: Implement +with_map+
+    def set_from!: (untyped _other_feature, ?_be_forgiving: bool _be_forgiving, ?with_map: untyped? with_map) -> untyped
+
+    # This will always be the same as the field count for the feature
+    # definition.
+    #
+    # @return [Integer]
+    def field_count: () -> untyped
+
+    # @param index [Integer]
+    # @param value [String]
+    def set_field_string: (untyped index, untyped value) -> untyped
+
+    # @param index [Integer]
+    # @param value [Integer]
+    def set_field_integer: (untyped index, untyped value) -> untyped
+
+    # @param index [Integer]
+    # @param value [Float]
+    def set_field_double: (untyped index, untyped value) -> untyped
+
+    # @param index [Integer]
+    # @param values [Array<String>]
+    # @raise [GDAL::Error] If index isn't valid
+    def set_field_string_list: (untyped index, untyped values) -> untyped
+
+    # @param index [Integer]
+    # @param values [Array<Integer>]
+    def set_field_integer_list: (untyped index, untyped values) -> untyped
+
+    # @param index [Integer]
+    # @param values [Array<Float>]
+    def set_field_double_list: (untyped index, untyped values) -> untyped
+
+    # @param index [Integer]
+    # @param field [OGR::Field]
+    def set_field_raw: (untyped index, untyped field) -> untyped
+
+    # @param index [Integer]
+    # @param value [String]
+    def set_field_binary: (untyped index, untyped value) -> untyped
+
+    # @param index [Integer]
+    # @param value [Date, Time, DateTime]
+    def set_field_date_time: (untyped index, untyped value) -> untyped
+
+    # NOTE: Do not modify the FieldDefinition that's returned here.
+    #
+    # @param index [Integer]
+    # @return [OGR::FieldDefinition]
+    def field_definition: (untyped index) -> (nil | untyped)
+
+    # @param name [String]
+    # @return [Integer, nil]
+    def field_index: (untyped name) -> untyped
+
+    # @param index [Integer]
+    # @return [Boolean]
+    def field_set?: (untyped index) -> untyped
+
+    # @param index [Integer]
+    def unset_field: (untyped index) -> untyped
+
+    # @return [OGR::FeatureDefinition,nil]
+    def definition: () -> (nil | untyped)
+
+    # NOTE: Do not modify the Geometry that's returned here.
+    #
+    # @return [OGR::Geometry]
+    def geometry: () -> (nil | untyped)
+
+    def set_geometry: (untyped new_geometry) -> untyped
+
+    def set_geometry_directly: (untyped new_geometry) -> untyped
+
+    alias geometry= set_geometry_directly
+
+    # Takes away ownership of the Feature's Geometry and returns it to the caller.
+    #
+    # @return [OGR::Geometry]
+    def steal_geometry: () -> untyped
+
+    # @return [Integer]
+    def fid: () -> untyped
+
+    # @param new_fid [Integer]
+    # @raise [OGR::Failure]
+    def fid=: (untyped new_fid) -> untyped
+
+    # The number of Geometries in this feature.
+    #
+    # @return [Integer]
+    def geometry_field_count: () -> untyped
+
+    # NOTE: Do not modify the GeometryFieldDefinition that's returned here.
+    #
+    # @param index [Integer]
+    # @return [OGR::GeometryFieldDefinition] A read-only
+    #   OGR::GeometryFieldDefinition.
+    # @raise [OGR::InvalidGeometryFieldDefinition] If there isn't one at
+    #   +index+.
+    def geometry_field_definition: (untyped index) -> (nil | untyped)
+
+    # @param name [String]
+    # @return [Integer]
+    def geometry_field_index: (untyped name) -> untyped
+
+    # NOTE: Do not modify the Geometry that's returned here.
+    #
+    # @param index [Integer]
+    # @return [OGR::Geometry, nil] A read-only OGR::Geometry.
+    def geometry_field: (untyped index) -> (nil | untyped)
+
+    # Sets the feature geometry of a specified geometry field by making a copy
+    # of +geometry+.
+    #
+    # @param index [Integer]
+    # @param geometry [OGR::Geometry]
+    # @raise [OGR::Failure]
+    def set_geometry_field: (untyped index, untyped geometry) -> untyped
+
+    # Sets the feature geometry of a specified geometry field by taking ownership
+    # of +geometry+.
+    #
+    # @param index [Integer]
+    # @param geometry [OGR::Geometry]
+    # @raise [OGR::Failure]
+    def set_geometry_field_directly: (untyped index, untyped geometry) -> untyped
+
+    # @return [Boolean]
+    def equal?: (untyped other) -> untyped
+
+    alias equals? equal?
+
+    # @param index [Integer]
+    # @return [Integer]
+    def field_as_integer: (untyped index) -> untyped
+
+    # @param index [Integer]
+    # @return [Array<Integer>]
+    def field_as_integer_list: (untyped index) -> (::Array[untyped] | untyped)
+
+    # @param index [Integer]
+    # @return [Float]
+    def field_as_double: (untyped index) -> untyped
+
+    # @param index [Integer]
+    # @return [Array<Float>]
+    def field_as_double_list: (untyped index) -> (::Array[untyped] | untyped)
+
+    # @param index [Integer]
+    # @return [String]
+    def field_as_string: (untyped index) -> untyped
+
+    # @param index [Integer]
+    # @return [Array<String>]
+    def field_as_string_list: (untyped index) -> (::Array[untyped] | untyped)
+
+    # @param index [Integer]
+    # @return [String]
+    def field_as_binary: (untyped index) -> untyped
+
+    def field_as_date_time: (untyped index) -> (nil | untyped)
+
+    # @return [String]
+    def style_string: () -> untyped
+
+    # @param new_style [String]
+    def style_string=: (untyped new_style) -> untyped
+
+    # @return [OGR::StyleTable]
+    def style_table: () -> (nil | untyped)
+
+    # @param new_style_table [OGR::StyleTable]
+    def style_table=: (untyped new_style_table) -> untyped
+
+    private
+
+    def c_pointer_from: (untyped feature) -> untyped
+  end
+end

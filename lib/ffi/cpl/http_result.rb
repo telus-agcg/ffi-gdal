@@ -14,7 +14,7 @@ module FFI
              :data, :pointer,
              :headers, :pointer,
              :mime_part_count, :int,
-             :mime_part, MIMEPart.ptr
+             :mime_part, FFI::CPL::MIMEPart.ptr
     end
   end
 end

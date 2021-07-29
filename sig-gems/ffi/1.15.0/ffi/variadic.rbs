@@ -1,0 +1,19 @@
+module FFI
+  class VariadicInvoker
+    def initialize: (
+      _ToS rb_function,
+      Array[Symbol | FFI::Enum | FFI::Type] rb_parameter_types,
+      ?Symbol | FFI::Enum | FFI::Type ?rb_return_type,
+      ?blocking: boolish,
+      ?convention: :default | :stdcall,
+      ?enums: FFI::Enums?,
+      ?type_map: Hash[String, Symbol]
+    ) -> void
+
+    def attach: (untyped mod, untyped mname) -> self
+
+    def call: (*untyped args) { (*untyped) -> untyped } -> untyped
+
+    def invoke: (Array[untyped] paramter_types, Array[untyped] paramter_values) -> untyped
+  end
+end

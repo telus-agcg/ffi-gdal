@@ -1,0 +1,29 @@
+module OGR
+  class Driver
+    include GDAL::MajorObject
+    include GDAL::Logger
+
+    def self.count: () -> Integer
+    def self.by_name: (String name) -> instance
+    def self.at_index: (Integer index) -> instance
+    def self.names: () -> Array[String]
+
+    attr_reader c_pointer: FFI::Pointer
+
+    def initialize: (FFI::Pointer driver) -> void
+    def name: () -> String
+    def open: (String file_name, ?"w" | "r" access_flag) -> untyped
+
+    def create_data_source: (String file_name, **untyped options) { (untyped) -> untyped } -> OGR::DataSource
+
+    def delete_data_source: (String file_name) -> void
+
+    def copy_data_source: (
+      singleton(OGR::DataSource) | FFI::Pointer source_data_source,
+      String new_file_name,
+      **untyped options
+    ) -> OGR::DataSource
+
+    def test_capability: (String capability) -> bool
+  end
+end

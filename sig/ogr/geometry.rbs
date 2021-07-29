@@ -1,0 +1,374 @@
+module OGR
+  module Geometry
+    module ClassMethods
+      def create: (untyped `type`) -> (nil | untyped)
+
+      # Creates a new Geometry using the class of the geometry that the type
+      # represents.
+      #
+      # @param geometry [OGR::Geometry, FFI::Pointer]
+      # @return [OGR::Geometry]
+      def factory: (untyped geometry) -> (nil | untyped)
+
+      # @param wkt_data [String]
+      # @param spatial_ref [FFI::Pointer] Optional spatial reference
+      #   to assign to the new geometry.
+      # @return [OGR::Geometry]
+      def create_from_wkt: (untyped wkt_data, ?untyped? spatial_ref) -> (nil | untyped)
+
+      # @param wkb_data [String] Binary string of WKB.
+      # @param spatial_ref [OGR::SpatialReference]
+      # @return [OGR::Geometry]
+      def create_from_wkb: (untyped wkb_data, ?untyped? spatial_ref) -> (nil | untyped)
+
+      # @param gml_data [String]
+      # @return [OGR::Geometry]
+      def create_from_gml: (untyped gml_data) -> untyped
+
+      # @param json_data [String]
+      # @return [OGR::Geometry]
+      def create_from_json: (untyped json_data) -> untyped
+
+      # The human-readable string for the geometry type.
+      #
+      # @param type [FFI::OGR::WKBGeometryType]
+      # @return [String]
+      def type_to_name: (untyped `type`) -> untyped
+
+      # Finds the most specific common geometry type from the two given types.
+      # Useful when trying to figure out what geometry type to report for an
+      # entire layer, when the layer uses multiple types.
+      #
+      # @param main [FFI::OGR::WKBGeometryType]
+      # @param extra [FFI::OGR::WKBGeometryType]
+      # @return [FFI::OGR::WKBGeometryType] Returns :wkbUnknown when there is
+      #   no type in common.
+      def merge_geometry_types: (untyped main, untyped extra) -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def release: (untyped pointer) -> (nil | untyped)
+    end
+
+    extend ClassMethods
+
+    def self.included: (untyped base) -> untyped
+
+    # @return [FFI::Pointer]
+    attr_reader c_pointer: untyped
+
+    def destroy!: () -> untyped
+
+    # @return [OGR::Geometry]
+    def clone: () -> untyped
+
+    # Clears all information from the geometry.
+    #
+    # @return nil
+    def empty!: () -> untyped
+
+    # @return [Integer] 0 for points, 1 for lines, 2 for surfaces.
+    def dimension: () -> untyped
+
+    # The dimension of coordinates in this geometry (i.e. 2d vs 3d).
+    #
+    # @return [Integer] 2 or 3, but 0 in the case of an empty point.
+    def coordinate_dimension: () -> untyped
+
+    # @param new_coordinate_dimension [Integer]
+    def coordinate_dimension=: (untyped new_coordinate_dimension) -> untyped
+
+    # @return [OGR::Envelope]
+    def envelope: () -> (nil | untyped)
+
+    # @return [FFI::OGR::API::WKBGeometryType]
+    def type: () -> untyped
+
+    # @return [String]
+    def type_to_name: () -> untyped
+
+    # @return [String]
+    def name: () -> untyped
+
+    # @return [Integer]
+    def geometry_count: () -> untyped
+
+    alias count geometry_count
+
+    # @return [Integer]
+    def point_count: () -> (0 | untyped)
+
+    # @return [Integer]
+    def centroid: () -> (nil | untyped)
+
+    # Dump as WKT to the given +file_path+; dumps to STDOUT if none is given.
+    #
+    # @param file_path [String] The text file to write to.
+    # @param prefix [String] The prefix to put on each line of output.
+    def dump_readable: (?untyped? file_path, ?prefix: untyped? prefix) -> untyped
+
+    # Converts this geometry to a 2D geometry.
+    def flatten_to_2d!: () -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def intersects?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def equals?: (untyped geometry) -> (::FalseClass | untyped)
+
+    alias == equals?
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def disjoint?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def touches?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def crosses?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def within?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def contains?: (untyped geometry) -> untyped
+
+    # @param geometry [OGR::Geometry, FFI::Pointer]
+    # @return [Boolean]
+    def overlaps?: (untyped geometry) -> untyped
+
+    # @return [Boolean]
+    def empty?: () -> untyped
+
+    # @return [Boolean]
+    def valid?: () -> untyped
+
+    # Returns TRUE if the geometry has no anomalous geometric points, such as
+    # self intersection or self tangency. The description of each instantiable
+    # geometric class will include the specific conditions that cause an
+    # instance of that class to be classified as not simple.
+    #
+    # @return [Boolean]
+    def simple?: () -> untyped
+
+    # TRUE if the geometry has no points, otherwise FALSE.
+    #
+    # @return [Boolean]
+    def ring?: () -> untyped
+
+    # @param other_geometry [OGR::Geometry]
+    # @return [OGR::Geometry]
+    def intersection: (untyped other_geometry) -> untyped
+
+    # @param other_geometry [OGR::Geometry]
+    # @return [OGR::Geometry]
+    def union: (untyped other_geometry) -> untyped
+
+    # If this or any contained geometries has polygon rings that aren't closed,
+    # this closes them by adding the starting point at the end.
+    def close_rings!: () -> untyped
+
+    # Creates a polygon from a set of sparse edges.  The newly created geometry
+    # will contain a collection of reassembled Polygons.
+    #
+    # @return [OGR::Geometry] nil if the current geometry isn't a
+    #   MultiLineString or if it's impossible to reassemble due to topological
+    #   inconsistencies.
+    def polygonize: () -> untyped
+
+    # @param geometry [OGR::Geometry]
+    # @return [OGR::Geometry]
+    def difference: (untyped geometry) -> (nil | untyped)
+
+    alias - difference
+
+    # @param geometry [OGR::Geometry]
+    # @return [OGR::Geometry]
+    def symmetric_difference: (untyped geometry) -> (nil | untyped)
+
+    # The shortest distance between the two geometries.
+    #
+    # @param geometry [OGR::Geometry]
+    # @return [Float] -1 if an error occurs.
+    def distance_to: (untyped geometry) -> untyped
+
+    # NOTE: The returned object may be shared with many geometries, and should
+    # thus not be modified.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference: () -> (nil | untyped)
+
+    # Assigns a spatial reference to this geometry.  Any existing spatial
+    # reference is replaced, but this does not reproject the geometry.
+    #
+    # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
+    def spatial_reference=: (untyped new_spatial_ref) -> untyped
+
+    # Transforms the coordinates of this geometry in its current spatial
+    # reference system to a new spatial reference system.  Normally this means
+    # reprojecting the vectors, but it could also include datum shifts, and
+    # changes of units.
+    #
+    # Note that this doesn't require the geometry to have an existing spatial
+    # reference system.
+    #
+    # @param coordinate_transformation [OGR::CoordinateTransformation,
+    #   FFI::Pointer]
+    # @raise [OGR::Failure]
+    def transform!: (untyped coordinate_transformation) -> (nil | untyped)
+
+    # Similar to +#transform+, but this only works if the geometry already has an
+    # assigned spatial reference system _and_ is transformable to the target
+    # coordinate system.
+    #
+    # Because this function requires internal creation and initialization of an
+    # OGRCoordinateTransformation object it is significantly more expensive to
+    # use this function to transform many geometries than it is to create the
+    # OGRCoordinateTransformation in advance, and call transform() with that
+    # transformation. This function exists primarily for convenience when only
+    # transforming a single geometry.
+    #
+    # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
+    # @raise [OGR::Failure]
+    def transform_to!: (untyped new_spatial_ref) -> (nil | untyped)
+
+    # Computes and returns a new, simplified geometry.
+    #
+    # @param distance_tolerance [Float]
+    # @param preserve_topology [Boolean]
+    # @return [OGR::Geometry]
+    def simplify: (untyped distance_tolerance, ?preserve_topology: bool preserve_topology) -> untyped
+
+    # Modify the geometry so that it has no segments longer than +max_length+.
+    #
+    # @param max_length [Float]
+    # @return [OGR::Geometry] Returns self that's been segmentized.
+    def segmentize!: (untyped max_length) -> untyped
+
+    # @return [OGR::Geometry]
+    def boundary: () -> untyped
+
+    # Computes the buffer of the geometry by building a new geometry that
+    # contains the buffer region around the geometry that this was called on.
+    #
+    # @param distance [Float] The buffer distance to be applied.
+    # @param quad_segments [Integer] The number of segments to use to approximate
+    #   a 90 degree (quadrant) of curvature.
+    # @return [OGR::Polygon]
+    def buffer: (untyped distance, ?::Integer quad_segments) -> untyped
+
+    # @return [OGR::Geometry]
+    def convex_hull: () -> untyped
+
+    # Returns a point that's guaranteed to lie on the surface.
+    #
+    # @return [OGR::Point]
+    def point_on_surface: () -> untyped
+
+    # @param wkb_data [String] Binary WKB data.
+    # @raise [OGR::Failure]
+    def import_from_wkb: (untyped wkb_data) -> untyped
+
+    # The exact number of bytes required to hold the WKB of this object.
+    #
+    # @return [Integer]
+    def wkb_size: () -> untyped
+
+    # @return [String]
+    # @raise [OGR::Failure]
+    def to_wkb: (?::Symbol byte_order) -> untyped
+
+    # @param wkt_data [String]
+    # @raise [OGR::Failure]
+    def import_from_wkt: (untyped wkt_data) -> untyped
+
+    # @return [String]
+    # @raise [OGR::Failure]
+    def to_wkt: () -> untyped
+
+    # @return [String]
+    # @raise [OGR::Failure]
+    def to_iso_wkt: () -> untyped
+
+    # This geometry expressed as GML in GML basic data types.
+    #
+    # @param [Hash] options
+    # @option options [String] :format "GML3" is really the only "option" here,
+    #   since without passing this in, GDAL defaults to "GML2.1.2" (as of 1.8.0).
+    # @option options [String] :gml3_linestring_element "curve" is the only
+    #   option here, which only pertains a) to LineString geometries, and b)
+    #   when +:format+ is set to GML3.
+    # @option options [String] :gml3_longsrs Defaults to "YES", which prefixes
+    #   the EPSG authority with "urn:ogc:def:crs:EPSG::".  If "NO", the EPSG
+    #   authority is prefixed with "EPSG:".
+    # @option options [String] :gmlid Use this to write a gml:id attribute at
+    #   the top level of the geometry.
+    # @return [String]
+    def to_gml: (**untyped options) -> untyped
+
+    # @param altitude_mode [String] Value to write in the +altitudeMode+
+    #   element.
+    # @return [String]
+    def to_kml: (?untyped? altitude_mode) -> untyped
+
+    # @return [String]
+    def to_geo_json: () -> untyped
+
+    # @param [Hash] options
+    # @option options [String] :coordinate_precision Maximum number of figures
+    #   after decimal separate to write in coordinates.
+    # @option options [String] :significant_figures Maximum number of
+    #   significant figures.
+    # @return [String]
+    def to_geo_json_ex: (**untyped options) -> untyped
+
+    # Converts the current geometry to a LineString geometry.  The returned
+    # object is a new OGR::Geometry instance.
+    #
+    # @return [OGR::Geometry]
+    def to_line_string: () -> untyped
+
+    # Since GDAL doesn't provide converting to a LinearRing, this is a hackish
+    # method for doing so.
+    #
+    # @return [OGR::LinearRing]
+    def to_linear_ring: (?close_rings: bool close_rings) -> untyped
+
+    # Converts the current geometry to a Polygon geometry.  The returned object
+    # is a new OGR::Geometry instance.
+    #
+    # @return [OGR::Geometry]
+    def to_polygon: () -> untyped
+
+    # Converts the current geometry to a MultiPoint geometry.  The returned
+    # object is a new OGR::Geometry instance.
+    #
+    # @return [OGR::Geometry]
+    def to_multi_point: () -> untyped
+
+    # Converts the current geometry to a MultiLineString geometry.  The returned
+    # object is a new OGR::Geometry instance.
+    #
+    # @return [OGR::Geometry]
+    def to_multi_line_string: () -> untyped
+
+    # Converts the current geometry to a MultiPolygon geometry.  The returned
+    # object is a new OGR::Geometry instance.
+    #
+    # @return [OGR::MultiPolygon]
+    def to_multi_polygon: () -> untyped
+
+    private
+
+    # @param geometry_ptr [OGR::Geometry, FFI::Pointer]
+    def initialize_from_pointer: (untyped geometry_ptr) -> untyped
+
+    def build_geometry: () { () -> untyped } -> (nil | untyped)
+  end
+end

@@ -1,0 +1,123 @@
+module OGR
+  # Represents a geographic coordinate system.  There are two primary types:
+  #   1. "geographic", where positions are measured in long/lat.
+  #   2. "projected", where positions are measure in meters or feet.
+  class SpatialReference
+    include GDAL::Logger
+
+    include SpatialReferenceMixins::CoordinateSystemGetterSetters
+
+    include SpatialReferenceMixins::Exporters
+
+    include SpatialReferenceMixins::Importers
+
+    include SpatialReferenceMixins::Morphers
+
+    include SpatialReferenceMixins::ParameterGetterSetters
+
+    include SpatialReferenceMixins::TypeChecks
+
+    METER_TO_METER: ::Float
+
+    RADIAN_TO_RADIAN: ::Float
+
+    # @deprecated This was removed in GDAL 3.0.
+    # @return [Array<String>]
+    def self.projection_methods: (?strip_underscores: bool strip_underscores) -> untyped
+
+    # @deprecated This was removed in GDAL 3.0.
+    # @param projection_method [String] One of
+    #   OGR::SpatialReference.projection_methods.
+    # @return [Hash{parameter => Array<String>, user_visible_name => String}]
+    def self.parameter_list: (untyped projection_method) -> { parameters: untyped, user_visible_name: untyped }
+
+    # Fetch info about a single parameter of a projection method.
+    #
+    # @deprecated This was removed in GDAL 3.0.
+    # @param projection_method [String]
+    # @param parameter_name [String]
+    def self.parameter_info: (untyped projection_method, untyped parameter_name) -> (::Hash[untyped, untyped] | { :type => untyped, default_value: untyped, user_visible_name: untyped })
+
+    # @param orientation [FFI::OGR::SRSAPI::AxisOrientation]
+    # @return [String]
+    def self.axis_enum_to_name: (untyped orientation) -> untyped
+
+    # Cleans up cached SRS-related memory.
+    def self.cleanup: () -> untyped
+
+    # This static method will destroy a OGRSpatialReference. It is equivalent
+    # to calling delete on the object, but it ensures that the deallocation is
+    # properly executed within the OGR libraries heap on platforms where this
+    # can matter (win32).
+    #
+    # @param pointer [FFI::Pointer]
+    def self.destroy: (untyped pointer) -> (nil | untyped)
+
+    # Decrements the reference count by one, and destroy if zero.
+    #
+    # @param pointer [FFI::Pointer]
+    def self.release: (untyped pointer) -> (nil | untyped)
+
+    # @return [FFI::Pointer] C pointer to the C Spatial Reference.
+    attr_reader c_pointer: untyped
+
+    # Builds a spatial reference object using either the passed-in WKT string,
+    # OGR::SpatialReference object, or a pointer to an in-memory
+    # SpatialReference object. If nothing is passed in, an empty
+    # SpatialReference object is created, in which case you'll need to populate
+    # relevant attributes.
+    #
+    # If a OGR::SpatialReference is given, this clones that object so it can
+    # have it's own object (relevant for cleaning up when garbage collecting).
+    #
+    # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer, String]
+    def initialize: (?untyped? spatial_reference_or_wkt) -> untyped
+
+    def destroy!: () -> untyped
+
+    # Uses the C-API to clone this spatial reference object.
+    #
+    # @return [OGR::SpatialReference]
+    def clone: () -> untyped
+
+    # Makes a duplicate of the GEOGCS node of this spatial reference.
+    #
+    # @return [OGR::SpatialReference]
+    def clone_geog_cs: () -> untyped
+
+    # @param other_spatial_ref [OGR::SpatialReference] The SpatialReference to
+    #   copy GeocCS info from.
+    # @raise [OGR::Failure]
+    def copy_geog_cs_from: (untyped other_spatial_ref) -> untyped
+
+    # @raise [OGR::Failure]
+    def validate: () -> untyped
+
+    # @raise [OGR::Failure]
+    def fixup_ordering!: () -> untyped
+
+    # @raise [OGR::Failure]
+    def fixup!: () -> untyped
+
+    # Strips all OGC coordinate transformation parameters.
+    #
+    # @raise [OGR::Failure]
+    def strip_ct_parameters!: () -> untyped
+
+    # Sets the EPSG authority info if possible.
+    #
+    # @raise [OGR::Failure]
+    def auto_identify_epsg!: () -> untyped
+
+    # @return [Boolean] +true+ if this coordinate system should be treated as
+    #   having lat/long coordinate ordering.
+    def epsg_treats_as_lat_long?: () -> untyped
+
+    # @return [Boolean] +true+ if this coordinate system should be treated as
+    #   having northing/easting coordinate ordering.
+    def epsg_treats_as_northing_easting?: () -> untyped
+
+    # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.
+    def create_coordinate_transformation: (untyped destination_spatial_ref) -> untyped
+  end
+end

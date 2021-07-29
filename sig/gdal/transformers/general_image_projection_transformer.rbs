@@ -1,0 +1,13 @@
+module GDAL
+  module Transformers
+    class GeneralImageProjectionTransformer < BaseGeneralImageProjectionTransformer
+      # @param source_dataset [GDAL::Dataset, FFI::Pointer]
+      # @param destination_dataset [GDAL::Dataset, FFI::Pointer]
+      # @param source_wkt [String]
+      # @param destination_wkt [String]
+      # @param gcp_use_ok [Boolean]
+      # @param order [Integer]
+      def initialize: (untyped source_dataset, ?destination_dataset: untyped? destination_dataset, ?source_wkt: untyped? source_wkt, ?destination_wkt: untyped? destination_wkt, ?gcp_use_ok: bool gcp_use_ok, ?order: ::Integer order) -> untyped
+    end
+  end
+end

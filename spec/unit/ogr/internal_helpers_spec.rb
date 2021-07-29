@@ -3,7 +3,7 @@
 require 'ogr/internal_helpers'
 
 module Tester
-  include OGR::InternalHelpers
+  extend OGR::InternalHelpers
 end
 
 RSpec.describe OGR::InternalHelpers do

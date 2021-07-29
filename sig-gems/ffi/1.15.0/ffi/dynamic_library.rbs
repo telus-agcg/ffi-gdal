@@ -1,0 +1,18 @@
+module FFI
+  class DynamicLibrary
+    def self.last_error: -> String
+    def self.open: (String libname, Integer libflags) -> instance
+
+    attr_reader name: untyped
+
+    def initialize: (String libname, Integer libflags) -> instance
+    def find_function: (String name) -> FFI::DynamicLibrary::Symbol
+    def find_symbol: (String name) -> FFI::DynamicLibrary::Symbol
+    def find_variable: (String name) -> FFI::DynamicLibrary::Symbol
+    def last_error: -> String
+
+    class Symbol < FFI::Pointer
+      include _Inspect
+    end
+  end
+end

@@ -7,7 +7,7 @@ require_relative 'ext/numeric_as_data_type'
 require_relative 'ext/float_ext'
 
 module FFI
-  autoload :CPL, File.expand_path('ffi/cpl.rb', __dir__)
-  autoload :GDAL, File.expand_path('ffi/gdal.rb', __dir__)
-  autoload :OGR, File.expand_path('ffi/ogr.rb', __dir__)
+  autoload :CPL, File.expand_path('ffi/cpl.rb', __dir__ || '.')
+  autoload :GDAL, File.expand_path('ffi/gdal.rb', __dir__ || '.')
+  autoload :OGR, File.expand_path('ffi/ogr.rb', __dir__ || '.')
 end

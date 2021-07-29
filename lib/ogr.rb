@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
 require_relative 'ffi-gdal'
+require_relative 'ffi/ogr'
 require_relative 'ogr/internal_helpers'
 require_relative 'ogr/exceptions'
 require_relative 'ogr/error_handling'
 
 module OGR
-  include InternalHelpers
+  extend InternalHelpers
 
   FFI::OGR::API.OGRRegisterAll
 
   def self.ogr_require(path)
-    File.expand_path(path, __dir__)
+    File.expand_path(path, __dir__ || '.')
   end
 
   # Autoload OGR Geometry object types.

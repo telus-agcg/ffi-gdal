@@ -1,0 +1,7 @@
+module FFI
+  class StructByValue < FFI::Type
+    def initialize: (Class struct_class) -> void
+    def layout: -> FFI::StructLayout
+    def struct_class: -> Class
+  end
+end

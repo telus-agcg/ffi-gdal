@@ -1,0 +1,8 @@
+module OGR
+  class LinearRing < LineString
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+
+    def to_line_string: () -> untyped
+  end
+end

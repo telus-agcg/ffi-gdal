@@ -1,0 +1,7 @@
+interface _Inspect
+  def inspect: -> String
+end
+
+interface _Puts
+  def puts: (*untyped args) -> nil
+end

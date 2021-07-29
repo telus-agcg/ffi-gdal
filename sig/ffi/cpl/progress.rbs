@@ -1,0 +1,10 @@
+module FFI
+  module CPL
+    module Progress
+      extend ::FFI::Library
+
+      ScaledProgress: FFI::VariadicInvoker
+      TermProgress: FFI::VariadicInvoker
+    end
+  end
+end

@@ -1,0 +1,9 @@
+module FFI
+  module CPL
+    module MiniXML
+      extend ::FFI::Library
+
+      XMLNodeType: FFI::Enum
+    end
+  end
+end

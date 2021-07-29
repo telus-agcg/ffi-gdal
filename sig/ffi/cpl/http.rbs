@@ -1,0 +1,7 @@
+module FFI
+  module CPL
+    module HTTP
+      extend ::FFI::Library
+    end
+  end
+end

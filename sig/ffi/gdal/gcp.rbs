@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class GCP < FFI::Struct
+    end
+  end
+end

@@ -1,0 +1,4 @@
+module GDAL
+  module GridAlgorithms
+  end
+end

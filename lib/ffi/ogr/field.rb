@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../cpl/conv'
+require 'ffi'
+require_relative '../cpl/port'
 
 module FFI
   module OGR
@@ -11,7 +12,7 @@ module FFI
       end
 
       class Integer64List < FFI::Struct
-        layout :count, CPL::Port.find_type(:GIntBig),
+        layout :count, FFI::CPL::Port.find_type(:GIntBig),
                :list, :pointer
       end
 
@@ -36,13 +37,13 @@ module FFI
       end
 
       class Date < FFI::Struct
-        layout :year, CPL::Port.find_type(:GInt16),
-               :month, CPL::Port.find_type(:GByte),
-               :day, CPL::Port.find_type(:GByte),
-               :hour, CPL::Port.find_type(:GByte),
-               :minute, CPL::Port.find_type(:GByte),
-               :second, CPL::Port.find_type(:GByte),
-               :tz_flag, CPL::Port.find_type(:GByte)
+        layout :year, FFI::CPL::Port.find_type(:GInt16),
+               :month, FFI::CPL::Port.find_type(:GByte),
+               :day, FFI::CPL::Port.find_type(:GByte),
+               :hour, FFI::CPL::Port.find_type(:GByte),
+               :minute, FFI::CPL::Port.find_type(:GByte),
+               :second, FFI::CPL::Port.find_type(:GByte),
+               :tz_flag, FFI::CPL::Port.find_type(:GByte)
       end
     end
 
@@ -50,7 +51,7 @@ module FFI
       include FieldTypes
 
       layout :integer, :int,
-             :integer64, CPL::Port.find_type(:GIntBig),
+             :integer64, FFI::CPL::Port.find_type(:GIntBig),
              :real, :double,
              :string, :pointer,
              :integer_list, FieldTypes::IntegerList,

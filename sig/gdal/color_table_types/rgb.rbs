@@ -1,0 +1,15 @@
+module GDAL
+  module ColorTableTypes
+    module RGB
+      def reds: () -> untyped
+
+      def greens: () -> untyped
+
+      def blues: () -> untyped
+
+      def alphas: () -> untyped
+
+      def to_a: () -> untyped
+    end
+  end
+end

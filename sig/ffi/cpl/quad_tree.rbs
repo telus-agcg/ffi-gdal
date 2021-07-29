@@ -1,0 +1,7 @@
+module FFI
+  module CPL
+    module QuadTree
+      extend ::FFI::Library
+    end
+  end
+end

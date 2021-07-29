@@ -1,0 +1,29 @@
+module OGR
+  class Point
+    include OGR::Geometry
+
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+
+    # @return [Float]
+    def x: () -> (nil | untyped)
+
+    # @return [Float]
+    def y: () -> (nil | untyped)
+
+    # @return [<Array<Float, Float>] [x, y].
+    def point: () -> ::Array[untyped]
+
+    alias point_value point
+
+    # @param x [Number]
+    # @param y [Number]
+    def set_point: (untyped x, untyped y) -> untyped
+
+    # Adds a point to a LineString or Point geometry.
+    #
+    # @param x [Float]
+    # @param y [Float]
+    def add_point: (untyped x, untyped y) -> untyped
+  end
+end

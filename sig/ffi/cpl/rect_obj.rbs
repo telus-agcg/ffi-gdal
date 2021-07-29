@@ -1,0 +1,6 @@
+module FFI
+  module CPL
+    class RectObj < ::FFI::Struct
+    end
+  end
+end

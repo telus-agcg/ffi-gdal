@@ -154,9 +154,9 @@ module GDAL
         options_pointer
       )
 
-      raise CreateFail if dataset_pointer.null?
+      raise CreateFail, "Unable to create dataset at #{filename}" if dataset_pointer.null?
 
-      dataset = GDAL::Dataset.new(dataset_pointer, 'w')
+      dataset = GDAL::Dataset.new(dataset_pointer)
 
       if block_given?
         result = yield(dataset)
@@ -201,10 +201,12 @@ module GDAL
         progress_arg
       )
 
-      raise CreateFail if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
+      if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
+        raise CreateFail, "Unable to create dataset at #{destination_path}"
+      end
 
       if block_given?
-        dataset = Dataset.new(destination_dataset_ptr, 'w')
+        dataset = Dataset.new(destination_dataset_ptr)
         yield(dataset)
         dataset.close
       end

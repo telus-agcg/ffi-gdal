@@ -1,0 +1,6 @@
+module FFI
+  module CPL
+    class HTTPResult < ::FFI::Struct
+    end
+  end
+end

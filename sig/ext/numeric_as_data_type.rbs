@@ -1,0 +1,10 @@
+module NumericAsDataType: _ToI, _ToF, _ToC
+  # @param data_type [FFI::GDAL::GDAL::DataType]
+  def to_data_type: (untyped data_type) -> untyped
+end
+
+class Numeric
+  include _ToI
+  include _ToF
+  include NumericAsDataType
+end

@@ -1,0 +1,72 @@
+module OGR
+  module LayerMixins
+    module OGRFeatureMethods
+      # The schema information for this layer.
+      #
+      # @return [OGR::FeatureDefinition,nil]
+      def definition: () -> (nil | untyped)
+
+      alias feature_definition definition
+
+      # Adds the new OGR::Feature to the Layer. The feature should have been
+      # created using the Layer's FeatureDefintion.
+      #
+      #   feature = OGR::Feature.new(layer.feature_definition)
+      #   feature.set_field_integer(123)
+      #   layer.create_feature(feature)
+      #
+      # @param feature [OGR::Feature] [description]
+      # @raise [OGR::Failure]
+      def create_feature: (untyped feature) -> untyped
+
+      # Deletes the feature from the layer.
+      #
+      # @param feature_id [Integer] ID of the Feature to delete.
+      # @raise [OGR::Failure] When trying to delete a feature with an ID that
+      #   does not exist.
+      def delete_feature: (untyped feature_id) -> untyped
+
+      # The number of features in this layer.  If +force+ is false and it would be
+      # expensive to determine the feature count, -1 may be returned.
+      #
+      # @param force [Boolean] Force the calculation even if it's expensive.
+      # @return [Integer]
+      def feature_count: (?force: bool force) -> untyped
+
+      # Rewrites an existing feature using the ID within the given Feature.
+      #
+      # @param new_feature [OGR::Feature, FFI::Pointer]
+      # @raise [OGR::Failure]
+      def feature=: (untyped new_feature) -> untyped
+
+      # @param index [Integer] The 0-based index of the feature to get.  It should
+      #   be <= +feature_count+, but no checking is done to ensure.
+      # @return [OGR::Feature, nil]
+      def feature: (untyped index) -> (nil | untyped)
+
+      # The next available feature in this layer.  Only features matching the
+      # current spatial filter will be returned.  Use +reset_reading+ to start at
+      # the beginning again.
+      #
+      # NOTE: You *must* call {{OGR::Feature#destroy!}} on the returned feature,
+      # otherwise expect segfaults.
+      #
+      # @return [OGR::Feature, nil]
+      def next_feature: () -> (nil | untyped)
+
+      # Sets the index for #next_feature.
+      #
+      # @param feature_index [Integer]
+      # @raise [OGR::Failure]
+      def next_feature_index=: (untyped feature_index) -> untyped
+
+      alias set_next_by_index next_feature_index=
+
+      # @return [Integer]
+      def features_read: () -> untyped
+
+      # Resets the sequential reading of features for this layer.
+      def reset_reading: () -> untyped
+    end
+  end
+end

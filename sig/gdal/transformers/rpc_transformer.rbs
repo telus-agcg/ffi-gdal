@@ -1,0 +1,38 @@
+module GDAL
+  module Transformers
+    class RPCTransformer
+      # @return [FFI::Pointer]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer] C pointer to the C RPC transformer.
+      attr_reader c_pointer: untyped
+
+      # @param rpc_info [GDAL::RPCInfo]
+      # @param reversed [Boolean]
+      # @param pixel_error_threshold [Float]
+      # @param options [Hash]
+      # @option options [Number] rpc_height A fixed hight offset to be applied to
+      #   all points passed in.
+      # @option options [Number] rpc_height_scale A factor used to multiply
+      #   heights above ground.  Useful when elevation offsets of the DEM are not
+      #   expressed in meters.
+      # @option options [Number] rpc_dem Name of a GDAL dataset used to extract
+      #   elevation offsets from.  This should be used in replacement of
+      #   +rpc_height+.
+      # @option options [Number] rpc_deminterpolation +near+, +bilinear+, or
+      #   +cubic+.
+      # @option options [Number] rpc_dem_missing_value Value of DEM height that
+      #   must be unsed in case the DEM has a nodata value at the sampling point,
+      #   or if its extent doesn't cover the requested coordinate.
+      def initialize: (untyped rpc_info, untyped pixel_error_threshold, ?reversed: bool reversed, **untyped options) -> untyped
+
+      def destroy!: () -> (nil | untyped)
+
+      # @return [FFI::Pointer]
+      def function: () -> untyped
+    end
+  end
+end

@@ -1,0 +1,29 @@
+module GDAL
+  module Transformers
+    class ApproximateTransformer
+      # @return [FFI::Function]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer]
+      attr_reader c_pointer: untyped
+
+      # @param base_transformer [GDAL::Transformer]
+      # @param max_error [Float] The maximum cartesian error in the "output" space
+      #   that will be accepted in the linear approximation.
+      def initialize: (untyped base_transformer, untyped max_error) -> untyped
+
+      def destroy!: () -> untyped
+
+      # @return [FFI::Function]
+      def function: () -> untyped
+
+      # @param data [FFI::Pointer] Pointer to the data that is passed to
+      #   #function.
+      # @param own_flag [Boolean]
+      def owns_subtransformer: (untyped data, untyped own_flag) -> untyped
+    end
+  end
+end

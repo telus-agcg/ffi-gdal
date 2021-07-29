@@ -1,0 +1,117 @@
+module FFI
+  module OGR
+    module Core
+      extend ::FFI::Library
+
+      type ogr_err_symbol = :OGRERR_NONE
+                          | :OGRERR_NOT_ENOUGH_DATA
+                          | :OGRERR_NOT_ENOUGH_MEMORY
+                          | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+                          | :OGRERR_UNSUPPORTED_OPERATION
+                          | :OGRERR_CORRUPT_DATA
+                          | :OGRERR_FAILURE
+                          | :OGRERR_UNSUPPORTED_SRS
+                          | :OGRERR_INVALID_HANDLE
+                          | :OGRERR_NON_EXISTING_FEATURE
+      Err: FFI::Enum
+
+      type wkb_geometry_type_symbol = :wkbUnknown
+                                    | :wkbPoint
+                                    | :wkbLineString
+                                    | :wkbPolygon
+                                    | :wkbMultiPoint
+                                    | :wkbMultiLineString
+                                    | :wkbMultiPolygon
+                                    | :wkbGeometryCollection
+                                    | :wkbNone
+      WKBGeometryType: FFI::Enum
+
+      WKBVariant: FFI::Enum
+
+      WKBByteOrder: FFI::Enum
+
+      FieldType: FFI::Enum
+      FieldTypeSub: FFI::Enum
+      Justification: FFI::Enum
+
+      type st_class_id_symbol = :OGRSTCNone
+                              | :OGRSTCPen
+                              | :OGRSTCBrush
+                              | :OGRSTCSymbol
+                              | :OGRSTCLabel
+                              | :OGRSTCVector
+      STClassId: FFI::Enum
+
+      type st_unit_id_symbol = :OGRSTUGround
+                             | :OGRSTUPixel
+                             | :OGRSTUPoints
+                             | :OGRSTUMM
+                             | :OGRSTUCM
+                             | :OGRSTUInches
+      STUnitId: FFI::Enum
+
+      type st_pen_param_symbol = :OGRSTPenColor
+                               | :OGRSTPenWidth
+                               | :OGRSTPenPattern
+                               | :OGRSTPenId
+                               | :OGRSTPenPerOffset
+                               | :OGRSTPenPerCap
+                               | :OGRSTPenPerJoin
+                               | :OGRSTPenPerPriority
+                               | :OGRSTPenLast
+      STPenParam: FFI::Enum
+
+      type st_brush_param_symbol = :OGRSTBrushFColor
+                                 | :OGRSTBrushBColor
+                                 | :OGRSTBrushId
+                                 | :OGRSTBrushAngle
+                                 | :OGRSTBrushSize
+                                 | :OGRSTBrushDx
+                                 | :OGRSTBrushDy
+                                 | :OGRSTBrushPriority
+                                 | :OGRSTBrushLast
+      STBrushParam: FFI::Enum
+
+      type st_symbol_param_symbol = :OGRSTSymbolId
+                                  | :OGRSTSymbolAngle
+                                  | :OGRSTSymbolColor
+                                  | :OGRSTSymbolSize
+                                  | :OGRSTSymbolDx
+                                  | :OGRSTSymbolDy
+                                  | :OGRSTSymbolStep
+                                  | :OGRSTSymbolPerp
+                                  | :OGRSTSymbolOffset
+                                  | :OGRSTSymbolPriority
+                                  | :OGRSTSymbolFontName
+                                  | :OGRSTSymbolOColor
+                                  | :OGRSTSymbolLast
+      STSymbolParam: FFI::Enum
+
+      type st_label_param_symbol = :OGRSTLabelFontName
+                                 | :OGRSTLabelSize
+                                 | :OGRSTLabelTextString
+                                 | :OGRSTLabelAngle
+                                 | :OGRSTLabelFColor
+                                 | :OGRSTLabelBColor
+                                 | :OGRSTLabelPlacement
+                                 | :OGRSTLabelAnchor
+                                 | :OGRSTLabelDx
+                                 | :OGRSTLabelDy
+                                 | :OGRSTLabelPerp
+                                 | :OGRSTLabelBold
+                                 | :OGRSTLabelItalic
+                                 | :OGRSTLabelUnderline
+                                 | :OGRSTLabelPriority
+                                 | :OGRSTLabelStrikeout
+                                 | :OGRSTLabelStretch
+                                 | :OGRSTLabelAdjHor
+                                 | :OGRSTLabelAdjVert
+                                 | :OGRSTLabelHColor
+                                 | :OGRSTLabelOColor
+                                 | :OGRSTLabelLast
+      STLabelParam: FFI::Enum
+
+      OGR_ALTER: FFI::ConstGenerator
+    end
+  end
+end

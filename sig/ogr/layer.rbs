@@ -1,0 +1,46 @@
+module OGR
+  class Layer
+    include GDAL::MajorObject
+    include GDAL::Logger
+    include LayerMixins::OGRFeatureMethods
+    include LayerMixins::OGRFieldMethods
+    include LayerMixins::OGRLayerMethodMethods
+    include LayerMixins::OGRQueryFilterMethods
+    include LayerMixins::OGRSQLMethods
+    include LayerMixins::TestCapability
+
+    attr_reader c_pointer: FFI::Pointer
+
+    # @param layer_ptr [FFI::Pointer]
+    def initialize: (untyped layer_ptr) -> untyped
+
+    # @return [String]
+    def name: () -> untyped
+
+    # @return [Boolean]
+    # TODO: This seems to occasionally lead to: 28352 illegal hardware
+    #   instruction, and sometimes full crashes.
+    def sync_to_disk: () -> untyped
+
+    # NOTE: This SpatialReference is owned by the Layer and should thus not be
+    # modified.
+    #
+    # @return [OGR::SpatialReference]
+    def spatial_reference: () -> (nil | untyped)
+
+    # @return [OGR::Envelope]
+    def extent: (?force: bool force) -> (nil | untyped)
+
+    # @return [OGR::Envelope]
+    def extent_by_geometry: (untyped geometry_field_index, ?force: bool force) -> (nil | untyped)
+
+    # @return [Symbol] One of OGRwkbGeometryType.
+    def geometry_type: () -> untyped
+
+    # @return [OGR::StyleTable, nil]
+    def style_table: () -> (nil | untyped)
+
+    # @param new_style_table [OGR::StyleTable, FFI::pointer]
+    def style_table=: (untyped new_style_table) -> untyped
+  end
+end

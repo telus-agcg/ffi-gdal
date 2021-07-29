@@ -1,0 +1,24 @@
+module GDAL
+  module Transformers
+    class GCPTransformer
+      # @return [FFI::Function]
+      def self.function: () -> untyped
+
+      # @param pointer [FFI::Pointer]
+      def self.release: (untyped pointer) -> (nil | untyped)
+
+      # @return [FFI::Pointer] C pointer to the GCP transformer.
+      attr_reader c_pointer: untyped
+
+      # @param gcp_list [Array<FFI::GDAL::GCP>]
+      # @param requested_polynomial_order [Integer] 1, 2, or 3.
+      # @param reversed [Boolean]
+      def initialize: (untyped gcp_list, untyped requested_polynomial_order, ?reversed: bool reversed, ?tolerance: untyped? tolerance, ?minimum_gcps: untyped? minimum_gcps) -> untyped
+
+      def destroy!: () -> untyped
+
+      # @return [FFI::Function]
+      def function: () -> untyped
+    end
+  end
+end

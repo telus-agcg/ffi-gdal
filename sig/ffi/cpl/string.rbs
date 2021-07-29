@@ -1,0 +1,9 @@
+module FFI
+  module CPL
+    module String
+      extend ::FFI::Library
+
+      ValueType: FFI::Enum
+    end
+  end
+end

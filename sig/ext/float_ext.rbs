@@ -1,0 +1,11 @@
+class Float
+  # Converts a packed DMS value (DDDMMMSSS.SS) into decimal degrees.
+  #
+  # @return [Float]
+  def to_decimal_degrees: () -> untyped
+
+  # Converts decimal degrees int a packed DMS value (DDDMMMSSS.SS).
+  #
+  # @return [Float]
+  def to_dms: () -> untyped
+end

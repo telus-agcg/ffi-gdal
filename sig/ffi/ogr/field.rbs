@@ -1,0 +1,30 @@
+module FFI
+  module OGR
+    module FieldTypes
+      class IntegerList < FFI::Struct
+      end
+
+      class Integer64List < FFI::Struct
+      end
+
+      class RealList < FFI::Struct
+      end
+
+      class StringList < FFI::Struct
+      end
+
+      class Binary < FFI::Struct
+      end
+
+      class Set < FFI::Struct
+      end
+
+      class Date < FFI::Struct
+      end
+    end
+
+    class Field < FFI::Union
+      include FieldTypes
+    end
+  end
+end

@@ -1,0 +1,25 @@
+module FFI
+  class ConstGenerator
+    type options = { required: bool }
+
+    def self.options: -> options
+    def self.options=: (options options) -> options
+
+    attr_reader constants: Hash[String, FFI::ConstGenerator::Constant]
+
+    def initialize:
+      (_ToS prefix, ?options? options) -> void
+    | (_ToS prefix, ?options? options) { (FFI::ConstGenerator) -> void } -> void
+
+    def []: (String name) -> untyped
+    def calculate: ({ cppflags: String }? options) -> void
+
+    def const:
+      (_ToS name, String? format, String? cast, _ToS? ruby_name, ?_Call | ^(FFI::ConstGenerator) -> void ?converter) -> void
+    | (_ToS name, String? format, String? cast, _ToS? ruby_name) ?{ (FFI::ConstGenerator::Constant) -> void } -> void
+
+    def dump_constants: (_Puts io) -> void
+    def include: (*String i) -> Array[String]
+    def to_ruby: -> String
+  end
+end

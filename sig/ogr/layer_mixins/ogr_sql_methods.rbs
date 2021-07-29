@@ -1,0 +1,30 @@
+module OGR
+  module LayerMixins
+    module OGRSQLMethods
+      # @raise [OGR::Failure]
+      def start_transaction: () -> untyped
+
+      # @raise [OGR::Failure]
+      def commit_transaction: () -> untyped
+
+      # @raise [OGR::Failure]
+      def rollback_transaction: () -> untyped
+
+      # The name of the underlying database column or "" if not supported.
+      #
+      # @return [String]
+      def fid_column: () -> untyped
+
+      # The name of the underlying database column being used as the geometry
+      # column.  Returns "" if not supported.
+      #
+      # @return [String]
+      def geometry_column: () -> untyped
+
+      private
+
+      # @raise [OGR::Failure]
+      def transact: () { () -> untyped } -> untyped
+    end
+  end
+end

@@ -1,0 +1,5 @@
+module FFI
+  module GDAL
+    VERSION: String
+  end
+end

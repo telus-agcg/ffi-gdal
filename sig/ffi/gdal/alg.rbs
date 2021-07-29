@@ -1,0 +1,42 @@
+module FFI
+  module GDAL
+    module Alg
+      extend FFI::Library
+
+      GridAlgorithm: FFI::Enum
+
+      # Output pointer should be destroyed with  GDALDestroyGenImgProjTransformer()
+      def self.GDALCreateGenImgProjTransformer: (
+        FFI::Pointer ?source_dataset_handle,
+        String ?source_wkt,
+        FFI::Pointer ?destination_dataset_handle,
+        String ?destination_wkt,
+        bool gcp_use_ok,
+        void ?gcp_error_threshold,
+        Integer order
+      ) -> FFI::Pointer
+
+      # Output pointer should be destroyed with  GDALDestroyGenImgProjTransformer()
+      def self.GDALCreateGenImgProjTransformer2: (
+        ?FFI::Pointer source_dataset_handle,
+        ?FFI::Pointer destination_dataset_handle,
+        ?FFI::Pointer options
+      ) -> FFI::Pointer
+
+      # Output pointer should be destroyed with  GDALDestroyGenImgProjTransformer()
+      def self.GDALCreateGenImgProjTransformer3: (
+        ?String source_wkt,
+        ?FFI::Pointer source_geo_transform,
+        ?String destination_wkt,
+        ?FFI::Pointer destination_geo_transform,
+      ) -> FFI::Pointer
+
+      def self.GDALComputeMatchingPoints: (
+        FFI::Pointer first_dataset_handle,
+        FFI::Pointer second_dataset_handle,
+        ?FFI::Pointer options,
+        FFI::Pointer gcp_count
+      ) -> FFI::Pointer
+    end
+  end
+end

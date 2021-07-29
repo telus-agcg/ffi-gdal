@@ -1,0 +1,22 @@
+module OGR
+  # OGR returns errors as Integers--not as part of the GDAL/CPLErr error
+  # handling callback interface.  This hacks together a facility for sort of
+  # doing that with OGR.
+  #
+  # Unlike the OGR API, ffi-gdal defines an Enum for the OGRERR types, which
+  # in turns causes OGR to return Symbols on errors (the #defines for those can
+  # be found here: http://www.gdal.org/ogr__core_8h.html).  This maps those
+  # Symbols to Ruby exceptions (or lack thereof).
+  module ErrorHandling
+    ERROR_CLASS_MAP: untyped
+
+    # Yields, then expects the result to be a Symbol from FFI::OGR::Core::Err.
+    #
+    # @param msg [String]
+    def self.handle_ogr_err: (untyped msg) { () -> untyped } -> untyped
+
+    # Exists solely to strip off the top 4 lines of the backtrace so it doesn't
+    # look like the problem is coming from here.
+    def self.raise_exception: (untyped exception, untyped message) -> untyped
+  end
+end

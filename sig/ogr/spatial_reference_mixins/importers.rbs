@@ -1,0 +1,59 @@
+module OGR
+  module SpatialReferenceMixins
+    module Importers
+      # @param code [Integer]
+      # @return [OGR::SpatialReference] `self`, but updated with the EPSG code.
+      # @raise [GDAL::UnsupportedOperation] On unknown EPSG code.
+      def import_from_epsg: (untyped code) -> untyped
+
+      # @param code [Integer]
+      # @raise [OGR::Failure]
+      def import_from_epsga: (untyped code) -> untyped
+
+      # @param wkt [String]
+      # @raise [OGR::Failure]
+      def import_from_wkt: (untyped wkt) -> untyped
+
+      # @param proj4 [String]
+      # @raise [OGR::Failure]
+      def import_from_proj4: (untyped proj4) -> untyped
+
+      # @param esri_text [Array<String>]
+      # @raise [OGR::Failure]
+      def import_from_esri: (untyped esri_text) -> untyped
+
+      # @param proj [String]
+      # @param units [String]
+      # @param proj_params [Array<String>]
+      # @raise [OGR::Failure]
+      def import_from_pci: (untyped proj, untyped units, *untyped proj_params) -> untyped
+
+      # @param projection_system_code [Integer]
+      # @param zone [Integer]
+      # @param datum [Integer]
+      # @param proj_params [Array<Float>]
+      # @raise [OGR::Failure]
+      def import_from_usgs: (untyped projection_system_code, untyped zone, untyped datum, *untyped proj_params) -> untyped
+
+      # Use for importing a GML coordinate system.
+      #
+      # @param xml [String]
+      # @raise [OGR::Failure]
+      def import_from_xml: (untyped xml) -> untyped
+
+      # @param coord_sys [String] The Mapinfo style CoordSys definition string.
+      # @raise [OGR::Failure]
+      def import_from_mapinfo: (untyped coord_sys) -> untyped
+
+      # @param projection_name [String] I.e. "NUTM11" or "GEOGRAPHIC".
+      # @param datum_name [String] I.e. "NAD83".
+      # @param linear_unit_name [String] Plural form of linear units, i.e. "FEET".
+      # @raise [OGR::Failure]
+      def import_from_erm: (untyped projection_name, untyped datum_name, untyped linear_unit_name) -> untyped
+
+      # @param url [String] URL to fetch the spatial reference from.
+      # @raise [OGR::Failure]
+      def import_from_url: (untyped url) -> untyped
+    end
+  end
+end

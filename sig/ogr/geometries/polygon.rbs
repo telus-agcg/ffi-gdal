@@ -1,0 +1,12 @@
+module OGR
+  class Polygon
+    include OGR::Geometry
+
+    include GeometryTypes::Surface
+
+    include GeometryTypes::Container
+
+    # @param [FFI::Pointer] geometry_ptr
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+  end
+end

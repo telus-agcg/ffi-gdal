@@ -1,0 +1,38 @@
+module GDAL
+  class VirtualDataset
+    include MajorObject
+
+    attr_reader c_pointer: untyped
+
+    def initialize: (untyped x_size, untyped y_size) -> untyped
+
+    def flush_cache: () -> untyped
+
+    # TODO: Build the xml string
+    def to_xml: (?::String path) -> untyped
+
+    # @param data_type [FFI::GDAL::GDAL::DataType]
+    # @param options [Hash]
+    # @return [Boolean]
+    def add_band: (untyped data_type, **untyped options) -> untyped
+
+    # @param vrt_band [FFI::Pointer]
+    # @param new_source [FFI::Pointer]
+    # @return [Boolean] [description]
+    def add_source: (untyped vrt_band, untyped new_source) -> untyped
+
+    # rubocop:disable Metrics/ParameterLists
+    # @return [Boolean]
+    def add_simple_source: (untyped vrt_band, untyped source_band, untyped no_data_value, ?src_x_offset: ::Integer src_x_offset, ?src_y_offset: ::Integer src_y_offset, ?src_x_size: untyped? src_x_size, ?src_y_size: untyped? src_y_size, ?dst_x_offset: ::Integer dst_x_offset, ?dst_y_offset: ::Integer dst_y_offset, ?dst_x_size: untyped? dst_x_size, ?dst_y_size: untyped? dst_y_size, ?resampling: ::String resampling) -> untyped
+
+    # @return [Boolean]
+    def add_complex_source: (untyped vrt_band, untyped source_band, untyped no_data_value, ?src_x_offset: ::Integer src_x_offset, ?src_y_offset: ::Integer src_y_offset, ?src_x_size: untyped? src_x_size, ?src_y_size: untyped? src_y_size, ?dst_x_offset: ::Integer dst_x_offset, ?dst_y_offset: ::Integer dst_y_offset, ?dst_x_size: untyped? dst_x_size, ?dst_y_size: untyped? dst_y_size, ?scale_offset: ::Float scale_offset, ?scale_ratio: ::Float scale_ratio) -> untyped
+
+    # @param vrt_band [FFI::Pointer]
+    # @param read_function [Proc]
+    # @param data [FFI::Pointer]
+    # @param no_data_value [Float]
+    # @return [Boolean]
+    def add_func_source: (untyped vrt_band, untyped read_function, untyped data, untyped no_data_value) -> untyped
+  end
+end

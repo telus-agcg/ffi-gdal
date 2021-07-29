@@ -1,0 +1,20 @@
+module FFI
+  module FFILibraryFunctionChecks
+    def attach_gdal_function: (
+      _ToS c_function_name,
+      Array[Symbol | FFI::Enum | FFI::Type] args,
+      ?Symbol | FFI::Enum | FFI::Type ?returns,
+      ?blocking: boolish,
+      ?convention: :default | :stdcall,
+      ?enums: FFI::Enums?,
+      ?type_map: ::Hash[String, Symbol]
+    ) -> FFI::VariadicInvoker
+
+
+    def unsupported_gdal_functions: () -> untyped
+  end
+
+  module Library
+    include FFILibraryFunctionChecks
+  end
+end

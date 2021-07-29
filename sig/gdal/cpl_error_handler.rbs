@@ -1,0 +1,48 @@
+module GDAL
+  # This is used to override GDAL's built-in error handling.  By default, GDAL
+  # only logs errors to STDOUT, which doesn't allow a whole lot of flexibility.
+  # This maps GDAL's errors to either standard Ruby exceptions or new exceptions
+  # defined in this gem.  Doing so also lets ffi-gdal users rescue these
+  # exceptions, which is beneficial for obvious reasons.
+  class CPLErrorHandler
+    class DefaultSuccessProc < ::Proc
+    end
+
+    class DefaultFailProc < ::Proc
+      def self.raise_error: (singleton(Exception) exception, String message) -> void
+    end
+
+    class HandlerLambda < ::Proc
+      def call: (singleton(Exception) error_class, Integer error_number, String message) -> untyped
+    end
+
+    include GDAL::Logger
+
+    CPLE_MAP: Hash[::FFI::CPL::Error::cpl_err_number_symbol, untyped]
+    DEFAULT_FAIL_PROC: DefaultFailProc
+    DEFAULT_SUCCESS_PROC: DefaultSuccessProc
+
+    def self.handle_error: () -> HandlerLambda
+    def self.manually_handle: (String message) { () -> ::FFI::CPL::Error::cpl_err_class_symbol } -> void
+
+    attr_accessor on_none: Proc
+    attr_accessor on_debug: Proc
+    attr_accessor on_warning: Proc
+    attr_accessor on_failure: Proc
+    attr_accessor on_fatal: Proc
+
+    def initialize: () -> void
+    def handler_lambda: () -> HandlerLambda
+    def custom_handle: () { () -> void } -> untyped
+
+    private
+
+    def result: (
+      ::FFI::CPL::Error::cpl_err_class_symbol error_class,
+      ::FFI::CPL::Error::cpl_err_number_symbol error_number,
+      String message
+    ) -> untyped
+
+    def error_class_map: (::FFI::CPL::Error::cpl_err_class_symbol error_class) -> Proc
+  end
+end

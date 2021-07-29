@@ -1,0 +1,7 @@
+module OGR
+  # NOTE: {{#type}} will return :wkbLineString (read: 2D instead of 2.5D) until
+  # a Z value is set.
+  class LineString25D < LineString
+    def initialize: (?untyped? geometry_ptr, ?spatial_reference: untyped? spatial_reference) -> untyped
+  end
+end

@@ -1,0 +1,7 @@
+module FFI
+  module CPL
+    module Conv
+      extend ::FFI::Library
+    end
+  end
+end

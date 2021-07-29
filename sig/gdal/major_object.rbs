@@ -1,0 +1,25 @@
+module GDAL
+  module MajorObject
+    # @return [Array<String>]
+    def metadata_domain_list: () -> (::Array[untyped] | untyped)
+
+    # @param domain [String] Name of the domain to get metadata for.
+    # @return [Hash]
+    def metadata: (?untyped? domain) -> (nil | ::Hash[untyped, untyped] | untyped)
+
+    # @param name [String]
+    # @param domain [String]
+    # @return [String]
+    def metadata_item: (untyped name, ?::String domain) -> untyped
+
+    def set_metadata_item: (untyped name, untyped value, ?::String domain) -> untyped
+
+    # @return [Hash{domain => Array<String>}]
+    def all_metadata: () -> untyped
+
+    # @return [String]
+    def description: () -> untyped
+
+    def null?: () -> untyped
+  end
+end

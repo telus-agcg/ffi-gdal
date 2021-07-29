@@ -1,0 +1,383 @@
+module GDAL
+  class RasterBand
+    # rubocop:disable Metrics/ClassLength
+    include MajorObject
+
+    include GDAL::Logger
+
+    include RasterBandMixins::AlgorithmMethods
+
+    ALL_VALID: ::Integer
+
+    PER_DATASET: ::Integer
+
+    ALPHA: ::Integer
+
+    NODATA: ::Integer
+
+    # @return [FFI::Pointer] C pointer to the C raster band.
+    attr_reader c_pointer: untyped
+
+    # @return [GDAL::Dataset] The dataset that owns this RasterBand.
+    attr_reader dataset: untyped
+
+    # @param raster_band [GDAL::RasterBand, FFI::Pointer]
+    def initialize: (untyped raster_band, ?untyped? dataset) -> untyped
+
+    # @raise [GDAL::Error]
+    def flush_cache: () -> untyped
+
+    # The raster width in pixels.
+    #
+    # @return [Integer]
+    def x_size: () -> untyped
+
+    # The raster height in pixels.
+    #
+    # @return [Integer]
+    def y_size: () -> untyped
+
+    # The type of access to the raster band this object currently has.
+    #
+    # @return [Symbol] Either :GA_Update or :GA_ReadOnly.
+    def access_flag: () -> untyped
+
+    # The number of band within the associated dataset that this band
+    # represents.
+    #
+    # @return [Integer]
+    def number: () -> untyped
+
+    # @return [Symbol] One of FFI::GDAL::GDAL::ColorInterp.
+    def color_interpretation: () -> untyped
+
+    # @param new_color_interp [FFI::GDAL::GDAL::ColorInterp]
+    # @raise [GDAL::Error]
+    def color_interpretation=: (untyped new_color_interp) -> untyped
+
+    # Gets the associated GDAL::ColorTable. Note that it remains owned by the
+    # RasterBand and cannot be modified.
+    #
+    # @return [GDAL::ColorTable]
+    def color_table: () -> (nil | untyped)
+
+    # @param new_color_table [GDAL::ColorTable]
+    # @raise [GDAL::Error]
+    def color_table=: (untyped new_color_table) -> untyped
+
+    # The pixel data type for this band.
+    #
+    # @return [Symbol] One of FFI::GDAL::GDAL::DataType.
+    def data_type: () -> untyped
+
+    # The natural block size is the block size that is most efficient for
+    # accessing the format. For many formats this is simply a whole scanline
+    # in which case x is set to #x_size, and y is set to 1.
+    #
+    # @return [Hash{x => Integer, y => Integer}]
+    def block_size: () -> { x: untyped, y: untyped }
+
+    # @return [Array<String>]
+    def category_names: () -> (::Array[untyped] | untyped)
+
+    # @param names [Array<String>]
+    # @raise [GDAL::Error]
+    def category_names=: (untyped names) -> untyped
+
+    # The no data value for a band is generally a special marker value used to
+    # mark pixels that are not valid data. Such pixels should generally not be
+    # displayed, nor contribute to analysis operations.
+    #
+    # @return [Hash{value => Float, is_associated => Boolean}]
+    def no_data_value: () -> { value: untyped, is_associated: untyped }
+
+    # Sets the no data value for this band.  Do nothing if attempting to set to nil, because removing a no data value
+    # is impossible until GDAL 2.1.
+    #
+    # @param value [Float, nil]
+    # @raise [GDAL::Error]
+    def no_data_value=: (untyped value) -> untyped
+
+    # @return [Integer]
+    def overview_count: () -> untyped
+
+    # @return [Boolean]
+    def arbitrary_overviews?: () -> untyped
+
+    # @param index [Integer] Must be between 0 and (#overview_count - 1).
+    # @return [GDAL::RasterBand]
+    def overview: (untyped index) -> (nil | untyped)
+
+    # Returns the most reduced overview of this RasterBand that still satisfies
+    # the deisred number of samples. Using 0 fetches the most reduced overview.
+    # If the band doesn't have any overviews or none of the overviews have
+    # enough samples, it will return the same band.
+    #
+    # @param desired_samples [Integer] The returned band will have at least this
+    #   many pixels.
+    # @return [GDAL::RasterBand] An optimal overview or the same raster band if
+    #   the raster band has no overviews.
+    def raster_sample_overview: (?::Integer desired_samples) -> (nil | untyped)
+
+    # @return [GDAL::RasterBand]
+    def mask_band: () -> (nil | untyped)
+
+    # @return [Array<Symbol>]
+    def mask_flags: () -> untyped
+
+    # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
+    # @raise [GDAL::Error]
+    def create_mask_band: (*untyped flags) -> untyped
+
+    # Fill this band with constant value.  Useful for clearing a band and
+    # setting to a default value.
+    #
+    # @param real_value [Float]
+    # @param imaginary_value [Float]
+    # @raise [GDAL::Error]
+    def fill: (untyped real_value, ?::Integer imaginary_value) -> untyped
+
+    # Returns minimum, maximum, mean, and standard deviation of all pixel values
+    # in this band.
+    #
+    # @param approx_ok [Boolean] If +true+, stats may be computed based on
+    #   overviews or a subset of all tiles.
+    # @param force [Boolean] If +false+, stats will only be returned if the
+    #   calculating can be done without rescanning the image.
+    # @return [Hash{minimum: Float, maximum: Float, mean: Float,
+    #   standard_deviation: Float}]
+    def statistics: (?approx_ok: bool approx_ok, ?force: bool force) -> untyped
+
+    # @param approx_ok [Boolean] If +true+, allows for some approximating,
+    #   which may speed up calculations.
+    # @return [Hash{minimum => Float, maximum => Float, mean => Float,
+    #   standard_deviation => Float}]
+    def compute_statistics: (?approx_ok: bool approx_ok) { () -> untyped } -> { minimum: untyped, maximum: untyped, mean: untyped, standard_deviation: untyped }
+
+    # The raster value scale.  This value (in combination with the #offset
+    # value) is used to transform raw pixel values into the units returned by
+    # #units. For example this might be used to store elevations in GUInt16
+    # bands with a precision of 0.1, and starting from -100.
+    #
+    # Units value = (raw value * scale) + offset
+    #
+    # For file formats that don't know this intrinsically a value of one is
+    # returned.
+    #
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
+    def scale: () -> untyped
+
+    # @param new_scale [Float]
+    # @raise [GDAL::Error]
+    def scale=: (untyped new_scale) -> untyped
+
+    # This value (in combination with the #scale value) is used to
+    # transform raw pixel values into the units returned by #units. For example
+    # this might be used to store elevations in GUInt16 bands with a precision
+    # of 0.1, and starting from -100.
+    #
+    # Units value = (raw value * scale) + offset.
+    #
+    # For file formats that don't know this intrinsically a value of 0.0 is
+    # returned.
+    #
+    # @return Float
+    # @raise GDAL::Error if the underlying call fails.
+    def offset: () -> untyped
+
+    # Sets the scaling offset. Very few formats support this method.
+    #
+    # @param new_offset [Float]
+    # @return [Boolean]
+    def offset=: (untyped new_offset) -> untyped
+
+    # @return [String]
+    def unit_type: () -> untyped
+
+    # @param new_unit_type [String] "" indicates unknown, "m" is meters, "ft"
+    #   is feet; other non-standard values are allowed.
+    # @raise [GDAL::Error]
+    def unit_type=: (untyped new_unit_type) -> (nil | untyped)
+
+    # @return [GDAL::RasterAttributeTable]
+    def default_raster_attribute_table: () -> (nil | untyped)
+
+    # @raise [GDAL::Error]
+    def default_raster_attribute_table=: (untyped rat_table) -> untyped
+
+    # Gets the default raster histogram.  Results are returned as a Hash so some
+    # metadata about the histogram can be returned.  Example:
+    #
+    #   {
+    #     :minimum => -0.9,
+    #     :maximum => 255.9,
+    #     :buckets => 256,
+    #     :totals => [
+    #       3954, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0,
+    #       0, 0, 10, 27, 201, 699, 1766, 3472, 5013, 6464, 7698, 8352,
+    #       9039, 10054, 11378, 13132, 14377, 14371, 14221, 14963, 14740,
+    #       14379, 13724, 12938, 11318, 9828, 8504, 7040, 5700, 4890,
+    #       4128, 3276, 2749, 2322, 1944, 1596, 1266, 1050, 784, 663,
+    #       547, 518, 367, 331, 309, 279, 178, 169, 162, 149, 109, 98,
+    #       90, 89, 82, 85, 74, 75, 42, 40, 39, 35, 39, 36, 36, 27, 20,
+    #       12, 13, 19, 16, 12, 11, 6, 6, 8, 12, 6, 8, 11, 3, 7, 9, 2,
+    #       5, 2, 5, 1, 4, 0, 0, 1, 0, 1, 2, 1, 0, 2, 1, 0, 0, 1, 0, 1,
+    #       1, 1, 0, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    #       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    #     ]
+    #   }
+    #
+    # Also, you can pass a block to get status on the processing.  Conforms to
+    # FFI::GDAL::GDAL::GDALProgressFunc.
+    #
+    # @param force [Boolean] Forces the computation of the histogram.  If
+    #   +false+ and the default histogram isn't available, this returns nil.
+    # @param block [Proc] No required, but can be used to output progress info
+    #   during processing.
+    #
+    # @yieldparam completion [Float] The ration completed as a decimal.
+    # @yieldparam message [String] Message string to display.
+    #
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
+    #   totals => Array<Integer>}] Returns +nil+ if no default histogram is
+    #   available.
+    def default_histogram: (?force: bool force) { () -> untyped } -> untyped
+
+    # Computes a histogram using the given inputs.  If you just want the default
+    # histogram, use #default_histogram.
+    #
+    # @param min [Float] The lower bound of the histogram.
+    # @param max [Float] The upper bound of the histogram.
+    # @param buckets [Integer]
+    # @param include_out_of_range [Boolean] If +true+, values below the
+    #   histogram range will be mapped into the first bucket of the output
+    #   data; values above the range will be mapped into the last bucket. If
+    #   +false+, values outside of the range will be discarded.
+    # @param approx_ok [Boolean]
+    # @param block [Proc] No required, but can be used to output progress info
+    #   during processing.
+    #
+    # @yieldparam completion [Float] The ration completed as a decimal.
+    # @yieldparam message [String] Message string to display.
+    #
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
+    #   totals => Array<Integer>}]
+    #
+    # @see #default_histogram for more info.
+    def histogram: (untyped min, untyped max, untyped buckets, ?include_out_of_range: bool include_out_of_range, ?approx_ok: bool approx_ok) { () -> untyped } -> untyped
+
+    # Copies the contents of one raster to another similarly configure band.
+    # The two bands must have the same width and height but do not have to be
+    # the same data type.
+    #
+    # Options:
+    #   * :compressed
+    #     * 'YES': forces alignment on the destination_band to achieve the best
+    #       compression.
+    #
+    # @param destination_band [GDAL::RasterBand]
+    # @param options [Hash]
+    # @option options compress [String] Only 'YES' is supported.
+    # @return [Boolean]
+    def copy_whole_raster: (untyped destination_band, **untyped options) { () -> untyped } -> untyped
+
+    # IO access for raster data in this band. Default values are set up to
+    # operate on one line at a time, keeping the same aspect ratio.
+    #
+    # On buffers... You can use different size buffers from the original x and
+    # y size to allow for resampling. Using larger buffers will upsample the
+    # raster data; smaller buffers will downsample it.
+    #
+    # On +pixel_space+ and +line_space+.... These values control how data is
+    # organized in the buffer.
+    #
+    # @param access_flag [Symbol] Must be 'r' or 'w'.
+    # @param buffer [FFI::MemoryPointer] Allows for passing in your own buffer,
+    #   which is really only useful when writing.
+    # @param x_size [Integer] The number of pixels per line to operate on.
+    #   Defaults to the value of {{#x_size}}.
+    # @param y_size [Integer] The number of lines to operate on. Defaults to the
+    #   value of {{#y_size}}.
+    # @param x_offset [Integer] The pixel number in the line to start operating
+    #   on. Note that when using this, {#x_size} - +x_offset+ should be >= 0,
+    #   otherwise this means you're telling the method to read past the end of
+    #   the line. Defaults to 0.
+    # @param y_offset [Integer] The line number to start operating on. Note that
+    #   when using this, {#y_size} - +y_offset+ should be >= 0, otherwise this
+    #   means you're telling the method to read more lines than the raster has.
+    #   Defaults to 0.
+    # @param buffer_x_size [Integer] The width of the buffer image in which to
+    #   read/write the raster data into/from. Typically this should be the same
+    #   size as +x_size+; if it's different, GDAL will resample accordingly.
+    # @param buffer_y_size [Integer] The height of the buffer image in which to
+    #   read/write the raster data into/from. Typically this should be the same
+    #   size as +y_size+; if it's different, GDAL will resample accordingly.
+    # @param buffer_data_type [FFI::GDAL::GDAL::DataType] Can be used to convert the
+    #   data to a different type. You must account for this when reading/writing
+    #   to/from your buffer--your buffer size must be +buffer_x_size+ *
+    #   +buffer_y_size+. Defaults to {{#data_type}}.
+    # @param pixel_space [Integer] The byte offset from the start of one pixel
+    #   value in the buffer to the start of the next pixel value within a line.
+    #   If defaulted (0), the size of +buffer_data_type+ is used.
+    # @param line_space [Integer] The byte offset from the start of one line in
+    #   the buffer to the start of the next. If defaulted (0), the size of
+    #   +buffer_data_type+ * +buffer_x_size* is used.
+    # @return [FFI::MemoryPointer] Pointer to the data that was read/written.
+    # rubocop:disable Metrics/ParameterLists
+    def raster_io: (untyped access_flag, ?untyped? buffer, ?x_size: untyped? x_size, ?y_size: untyped? y_size, ?x_offset: ::Integer x_offset, ?y_offset: ::Integer y_offset, ?buffer_x_size: untyped? buffer_x_size, ?buffer_y_size: untyped? buffer_y_size, ?buffer_data_type: untyped buffer_data_type, ?pixel_space: ::Integer pixel_space, ?line_space: ::Integer line_space) -> (nil | untyped)
+
+    # Read a block of image data, more efficiently than #read.  Doesn't
+    # resample or do data type conversion.
+    #
+    # @param x_block_number [Integer] The horizontal block offset, with 0 indicating
+    #   the left-most block, 1 the next block, etc.
+    # @param y_block_number [Integer] The vertical block offset, with 0 indicating the
+    #   top-most block, 1 the next block, etc.
+    # @param image_buffer [FFI::Pointer] Optional pointer to use for reading
+    #   the data into. If not provided, one will be created and returned.
+    # @return [FFI::MemoryPointer] The image buffer that contains the read data.
+    #   If you passed in +image_buffer+ you don't need to bother with this
+    #   return value since that original buffer will contain the data.
+    def read_block: (untyped x_block_number, untyped y_block_number, ?untyped? image_buffer) -> untyped
+
+    # @param x_block_number [Integer] The horizontal block offset, with 0 indicating
+    #   the left-most block, 1 the next block, etc.
+    # @param y_block_number [Integer] The vertical block offset, with 0 indicating the
+    #   top-most block, 1 the next block, etc.
+    # @param data_pointer [FFI::Pointer] Optional pointer to write the data to.
+    #   If not provided, one will be created and returned.
+    def write_block: (untyped x_block_number, untyped y_block_number, ?untyped? data_pointer) -> untyped
+
+    # The minimum and maximum values for this band.
+    #
+    # @return [Hash{min => Float, max => Float}]
+    def min_max: (?approx_ok: bool approx_ok) -> { :min => untyped, max: untyped }
+
+    # The minimum value in the band, not counting NODATA values. For file
+    # formats that don't know this intrinsically, the minimum supported value
+    # for the data type will generally be returned.
+    #
+    # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
+    #   tells whether the minimum is a tight minimum.
+    def minimum_value: () -> { value: untyped, is_tight: untyped }
+
+    # The maximum value in the band, not counting NODATA values. For file
+    # formats that don't know this intrinsically, the maximum supported value
+    # for the data type will generally be returned.
+    #
+    # @return [Hash{value => Float, is_tight => Boolean}] The +is_tight+ value
+    #   tells whether the maximum is a tight maximum.
+    def maximum_value: () -> { value: untyped, is_tight: untyped }
+
+    private
+
+    # @return [GDAL::Dataset, nil]
+    def init_dataset: () -> (nil | untyped)
+  end
+end

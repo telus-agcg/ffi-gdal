@@ -4,22 +4,28 @@ require 'ffi'
 require 'ffi/library'
 
 module FFI
-  # Redefining #attach_function so we can avoid bombing out if a called method
+  # Wrapping #attach_function so we can avoid bombing out if a called method
   # is not defined.
-  module Library
-    alias old_attach_function attach_function
+  module FFILibraryFunctionChecks
+    def attach_gdal_function(func, args, returns, **options)
+      raise "Must specify return type for function '#{func}'" if returns.nil?
 
-    def attach_function(*args)
-      old_attach_function(*args)
+      attach_function(func, args, returns, options)
+    rescue TypeError
+      puts "func: #{func}"
+      puts "args: #{args}"
+      puts "arg count: #{args.length}"
+      puts "returns: #{returns}"
+      raise
     rescue FFI::NotFoundError
       @unsupported_gdal_functions ||= []
 
       if $VERBOSE || ENV['VERBOSE']
-        warn "ffi-gdal warning: function '#{args.first}' is not available in this " \
+        warn "ffi-gdal warning: function '#{args&.first}' is not available in this " \
           "build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
       end
 
-      @unsupported_gdal_functions << args.first
+      @unsupported_gdal_functions << args&.first if args&.first
     end
 
     def unsupported_gdal_functions
@@ -27,3 +33,5 @@ module FFI
     end
   end
 end
+
+FFI::Library.include(FFI::FFILibraryFunctionChecks)

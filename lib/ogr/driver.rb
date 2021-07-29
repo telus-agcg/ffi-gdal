@@ -53,9 +53,9 @@ module OGR
     # You probably don't want to use this directly--see .by_name and .at_index
     # to instantiate a OGR::Driver object.
     #
-    # @param driver [OGR::Driver, FFI::Pointer]
+    # @param driver_pointer [FFI::Pointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(OGR::Driver, driver)
+      @c_pointer = driver
     end
 
     # @return [String]
@@ -76,7 +76,7 @@ module OGR
 
       raise OGR::InvalidDataSource, "Unable to open data source at #{file_name}" if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr, nil)
+      OGR::DataSource.new(data_source_ptr)
     end
 
     # Creates a new data source at path +file_name+.  Yields the newly created
@@ -97,7 +97,7 @@ module OGR
                                                               file_name, options_ptr)
       raise OGR::CreateFailure, "Unable to create DataSource '#{file_name}'" if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr, 'w')
+      ds = OGR::DataSource.new(data_source_ptr)
       yield ds if block_given?
 
       ds
@@ -118,7 +118,8 @@ module OGR
     # @param source_data_source [OGR::DataSource, FFI::Pointer]
     # @param new_file_name [String]
     # @param options [Hash]
-    # @return [OGR::DataSource, nil]
+    # @return [OGR::DataSource]
+    # @raise [OGR::InvalidDataSource] if copy failed.
     def copy_data_source(source_data_source, new_file_name, **options)
       source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
 
@@ -131,7 +132,7 @@ module OGR
 
       raise OGR::InvalidDataSource, "Unable to copy data source to #{new_file_name}" if data_source_ptr.null?
 
-      OGR::DataSource.new(data_source_ptr, nil)
+      OGR::DataSource.new(data_source_ptr)
     end
 
     # @param [String] capability

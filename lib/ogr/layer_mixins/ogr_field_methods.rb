@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
+require_relative 'ogr_feature_methods'
+require_relative 'test_capability'
+
 module OGR
   module LayerMixins
     module OGRFieldMethods
+      include OGR::LayerMixins::OGRFeatureMethods
+      include OGR::LayerMixins::TestCapability
+
       # Creates and writes a new field to the layer. This adds the field to the
       # internal FeatureDefinition; C API says not to update the FeatureDefinition
       # directly.

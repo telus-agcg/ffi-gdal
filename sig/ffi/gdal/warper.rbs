@@ -1,0 +1,97 @@
+module FFI
+  module GDAL
+    module Warper
+      extend ::FFI::Library
+
+      type resample_arg_symbols = :GRA_NearestNeighbor
+        | :GRA_Bilinear
+        | :GRA_Cubic
+        | :GRA_CubicSpline
+        | :GRA_Lanczos
+        | :GRA_Average
+        | :GRA_Mode
+        | :GRA_Max
+        | :GRA_Min
+        | :GRA_Med
+        | :GRA_Q1
+        | :GRA_Q3
+        | :GRA_Sum
+        | :GRA_RMS
+
+      ResampleAlg: FFI::Enum
+
+      def self.GDALCreateWarpOperation: (FFI::Pointer new_options) -> FFI::Pointer
+      def self.GDALDestroyWarpOperation: (FFI::Pointer warp_operation_handle) -> void
+
+      def self.GDALCreateAndReprojectImage: (
+        FFI::Pointer source_dataset_handle,
+        String? source_wkt,
+        String destination_filename,
+        String? destination_wkt,
+        FFI::Pointer destination_driver_handle,
+        FFI::Pointer create_options,
+        resample_arg_symbols resample_algorithm,
+        Float warp_memory_limit,
+        Float max_error,
+        FFI::CallbackInfo progress,
+        FFI::Pointer? progress_arg,
+        FFI::Pointer? warp_options
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+
+      def self.GDALReprojectImage: (
+        FFI::Pointer source_dataset_handle,
+        String? source_wkt,
+        FFI::Pointer destination_dataset_handle,
+        String? destination_wkt,
+        resample_arg_symbols resample_algorithm,
+        Float warp_memory_limit,
+        Float max_error,
+        FFI::CallbackInfo progress,
+        FFI::Pointer? progress_arg,
+        FFI::Pointer? warp_options
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+
+      def self.GDALWarpRegion: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+        Integer ?source_x_offset,
+        Integer ?source_y_offset,
+        Integer ?source_x_size,
+        Integer ?source_y_size,
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+
+      def self.GDALWarpRegionToBuffer: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+        FFI::Buffer output_buffer,
+        GDAL::DataType output_buffer_type,
+        Integer ?source_x_offset,
+        Integer ?source_y_offset,
+        Integer ?source_x_size,
+        Integer ?source_y_size,
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+
+      def self.GDALChunkAndWarpImage: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+
+      def self.GDALChunkAndWarpMulti: (
+        FFI::Pointer warp_operation_handle,
+        Integer destination_x_offset,
+        Integer destination_y_offset,
+        Integer destination_x_size,
+        Integer destination_y_size,
+      ) -> ::FFI::CPL::Error::cpl_err_class_symbol
+    end
+  end
+end

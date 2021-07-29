@@ -1,0 +1,49 @@
+module OGR
+  class Envelope
+    # @return [FFI::OGR::Envelope, FFI::OGR::Envelope3D] The C struct that this
+    #   object wraps.
+    attr_reader c_struct: untyped
+
+    # @param envelope_struct [FFI::OGR::Envelope]
+    def initialize: (?untyped? envelope_struct, ?three_d: bool three_d) -> untyped
+
+    # @return [FFI::Pointer] Pointer to the C struct.
+    def c_pointer: () -> untyped
+
+    # @return [Float]
+    def x_min: () -> untyped
+
+    # @param new_x_min [Float]
+    def x_min=: (untyped new_x_min) -> untyped
+
+    # @return [Float]
+    def x_max: () -> untyped
+
+    # @param new_x_max [Float]
+    def x_max=: (untyped new_x_max) -> untyped
+
+    # @return [Float]
+    def y_min: () -> untyped
+
+    # @param new_y_min [Float]
+    def y_min=: (untyped new_y_min) -> untyped
+
+    # @return [Float]
+    def y_max: () -> untyped
+
+    # @param new_y_max [Float]
+    def y_max=: (untyped new_y_max) -> untyped
+
+    # @return [Float, nil]
+    def z_min: () -> (nil | untyped)
+
+    # @param new_z_min [Float]
+    def z_min=: (untyped new_z_min) -> (nil | untyped)
+
+    # @return [Float, nil]
+    def z_max: () -> (nil | untyped)
+
+    # @param new_z_max [Float]
+    def z_max=: (untyped new_z_max) -> (nil | untyped)
+  end
+end

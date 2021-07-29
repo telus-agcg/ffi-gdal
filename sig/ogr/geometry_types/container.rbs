@@ -1,0 +1,41 @@
+module OGR
+  module GeometryTypes
+    module Container
+      # If this geometry is a container, this adds +geometry+ to the container.
+      # If this is a Polygon, +geometry+ must be a LinearRing.  If the Polygon is
+      # empty, the first added +geometry+ will be the exterior ring.  Subsequent
+      # geometries added will be interior rings.
+      #
+      # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @raise [OGR::Failure]
+      def add_geometry: (untyped sub_geometry) -> untyped
+
+      # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @raise [OGR::Failure]
+      def add_geometry_directly: (untyped sub_geometry) -> untyped
+
+      # @param geometry_index [Integer]
+      # @param delete [Boolean]
+      # @raise [OGR::Failure]
+      def remove_geometry: (untyped geometry_index, ?delete: bool delete) -> untyped
+
+      # If this geometry is a container, this fetches the geometry at the
+      # sub_geometry_index.
+      #
+      # @param sub_geometry_index [Integer]
+      # @return [OGR::Geometry]
+      def geometry_at: (untyped sub_geometry_index) -> untyped
+
+      alias geometry_ref geometry_at
+
+      # Build a ring from a bunch of arcs.  The collection must be
+      # a MultiLineString or GeometryCollection.
+      #
+      # @param tolerance [Float]
+      # @param auto_close [Boolean]
+      # @return [OGR::Geometry]
+      # @raise [OGR::Failure]
+      def polygon_from_edges: (untyped tolerance, ?auto_close: bool auto_close) -> untyped
+    end
+  end
+end

@@ -1,0 +1,6 @@
+module FFI
+  module GDAL
+    class GridDataMetricsOptions < FFI::Struct
+    end
+  end
+end

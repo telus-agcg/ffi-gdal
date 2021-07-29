@@ -1,0 +1,81 @@
+module GDAL
+  class WarpOptions
+    attr_reader c_struct: untyped
+
+    attr_reader source_dataset: untyped
+
+    attr_reader destination_dataset: untyped
+
+    attr_reader cutline: untyped
+
+    def initialize: (?::Hash[untyped, untyped] options) -> untyped
+
+    def c_pointer: () -> untyped
+
+    # @param options [Hash]
+    def warp_operation_options=: (untyped options) -> untyped
+
+    # @return [Hash]
+    def warp_operation_options: () -> untyped
+
+    # @param dataset [GDAL::Dataset]
+    def source_dataset=: (untyped dataset) -> untyped
+
+    # @param dataset [GDAL::Dataset]
+    def destination_dataset=: (untyped dataset) -> untyped
+
+    # @param band_numbers [Array<Integer>]
+    def source_bands=: (untyped band_numbers) -> untyped
+
+    # @return [Array<Integer>]
+    def source_bands: () -> (::Array[untyped] | untyped)
+
+    # @param band_numbers [Array<Integer>]
+    def destination_bands=: (untyped band_numbers) -> untyped
+
+    # @return [Array<Integer>]
+    def destination_bands: () -> (::Array[untyped] | untyped)
+
+    def transformer_arg=: (untyped transformation_object) -> untyped
+
+    # @param geometry [OGR::Geometry]
+    def cutline=: (untyped geometry) -> untyped
+
+    # @param values [Array<Float>]
+    def source_no_data_real=: (untyped values) -> untyped
+
+    # @return [Array<Float>]
+    def source_no_data_real: () -> (::Array[untyped] | untyped)
+
+    # @param values [Array<Float>]
+    def source_no_data_imaginary=: (untyped values) -> untyped
+
+    # @return [Array<Float>]
+    def source_no_data_imaginary: () -> (::Array[untyped] | untyped)
+
+    # @param values [Array<Float>]
+    def destination_no_data_real=: (untyped values) -> untyped
+
+    # @return [Array<Float>]
+    def destination_no_data_real: () -> (::Array[untyped] | untyped)
+
+    # @param values [Array<Float>]
+    def destination_no_data_imaginary=: (untyped values) -> untyped
+
+    # @return [Array<Float>]
+    def destination_no_data_imaginary: () -> (::Array[untyped] | untyped)
+
+    # Set a Proc per source band; number of procs in +band_procs+ should equal
+    # {band_count}.
+    #
+    # @param band_procs [Array<Proc>]
+    def source_per_band_validity_mask_function=: (untyped band_procs) -> untyped
+
+    # Used for getting attributes of the internal WarpOptions struct.
+    #
+    # @param meth [Symbol] The FFI::GDAL::WarpOptions key.
+    def method_missing: (untyped meth) -> untyped
+
+    def respond_to_missing?: (untyped method_name, ?bool include_private) -> untyped
+  end
+end
