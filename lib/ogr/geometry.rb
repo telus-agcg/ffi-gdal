@@ -5,11 +5,19 @@ require_relative '../gdal'
 require_relative 'geometry/class_methods'
 
 module OGR
-  module Geometry
+  class Geometry
     extend ClassMethods
 
     # @return [FFI::Pointer]
     attr_reader :c_pointer
+
+    # @param geometry_ptr [FFI::Pointer, nil]
+    # @param spatial_reference [OGR::SpatialReference, nil]
+    def initialize(geometry_ptr = nil, spatial_reference: nil)
+      geometry_ptr ||= OGR::Geometry.create(GEOMETRY_TYPE)
+      OGR::Geometry.initialize_from_pointer(geometry_ptr)
+      self.spatial_reference = spatial_reference if spatial_reference
+    end
 
     def destroy!
       self.class.release(@c_pointer)

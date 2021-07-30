@@ -1,0 +1,13 @@
+module OGR
+  module GeometryTypes
+    module Container
+      def add_geometry: (OGR::Geometry | FFI::Pointer sub_geometry) -> void
+      def add_geometry_directly: (OGR::Geometry | FFI::Pointer sub_geometry) -> void
+      def remove_geometry: (Integer sub_geometry, ?delete: bool) -> void
+      def geometry_at: (Integer sub_geometry_index) -> OGR::Geometry?
+      alias geometry_ref geometry_at
+
+      def polygon_from_edges: (Float tolerance, ?auto_close: bool) -> OGR::Geometry
+    end
+  end
+end

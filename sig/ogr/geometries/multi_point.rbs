@@ -1,5 +1,0 @@
-module OGR
-  class MultiPoint
-    include OGR::Geometry
-  end
-end

@@ -1,0 +1,5 @@
+module OGR
+  class Polygon25D < Polygon
+    GEOMETRY_TYPE: Symbol
+  end
+end

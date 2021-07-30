@@ -1,5 +1,0 @@
-module OGR
-  class Point
-    include OGR::Geometry
-  end
-end

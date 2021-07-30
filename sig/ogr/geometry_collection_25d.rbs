@@ -1,0 +1,5 @@
+module OGR
+  class GeometryCollection25D < OGR::GeometryCollection
+    GEOMETRY_TYPE: Symbol
+  end
+end

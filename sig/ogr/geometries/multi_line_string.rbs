@@ -1,5 +1,0 @@
-module OGR
-  class MultiLineString
-    include OGR::Geometry
-  end
-end

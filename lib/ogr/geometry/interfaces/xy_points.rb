@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module Geometry
+  class Geometry
     module Interfaces
       module XYPoints
         # @param point_number [Integer]

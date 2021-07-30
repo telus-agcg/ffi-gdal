@@ -1,0 +1,5 @@
+module OGR
+  class MultiLineString < OGR::Geometry
+    GEOMETRY_TYPE: Symbol
+  end
+end

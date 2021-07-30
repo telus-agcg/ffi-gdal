@@ -1,0 +1,5 @@
+module OGR
+  class Point25D < OGR::Point
+    GEOMETRY_TYPE: Symbol
+  end
+end

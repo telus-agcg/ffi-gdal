@@ -1,0 +1,3 @@
+interface _ToWkt
+  def to_wkt: -> String
+end

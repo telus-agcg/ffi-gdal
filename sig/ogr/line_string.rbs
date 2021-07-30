@@ -1,0 +1,8 @@
+module OGR
+  class LineString < OGR::Geometry
+    include OGR::Geometry::Interfaces::Length
+    include OGR::Geometry::Interfaces::XYPoints
+
+    GEOMETRY_TYPE: Symbol
+  end
+end

@@ -1,0 +1,5 @@
+module OGR
+  class MultiPolygon25D < MultiPolygon
+    GEOMETRY_TYPE: Symbol
+  end
+end

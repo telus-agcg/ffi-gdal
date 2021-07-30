@@ -1,8 +1,11 @@
 module OGR
-  module Geometry
+  class Geometry
+    include _HasPointer
     include _SpatialReference
+    include _ToWkt
     extend OGR::Geometry::ClassMethods
     include GDAL::Logger
+
     type geometry_class = (
         OGR::Point
         | OGR::Point25D
@@ -20,5 +23,10 @@ module OGR
         | OGR::GeometryCollection
         | OGR::GeometryCollection25D
     )
+
+    def initialize: (?FFI::Pointer? geometry_ptr, ?spatial_reference: FFI::Pointer?) -> void
+    def empty?: -> bool
+    def import_from_wkt: (String wkt_data) -> void
+    def type: -> FFI::OGR::Core::wkb_geometry_type_symbol
   end
 end

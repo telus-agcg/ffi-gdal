@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module Geometry
+  class Geometry
     module Interfaces
       module Length
         # Computes the length for this geometry.  Computes area for Curve or

@@ -82,6 +82,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `Symbol`.
 - Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
   `OGR::Geometry::Interfaces` modules: `XYPoints`, `XYZPoints`, `Area`, `Length`.
+- `OGR::Geometry` is now a (abstract) `class` from which other, concrete geometry objects inherit.
 
 ### Fixed
 

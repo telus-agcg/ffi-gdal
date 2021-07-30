@@ -1,0 +1,7 @@
+module OGR
+  class LinearRing < OGR::LineString
+    include OGR::Geometry::Interfaces::Area
+
+    GEOMETRY_TYPE: Symbol
+  end
+end

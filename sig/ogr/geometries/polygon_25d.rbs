@@ -1,4 +1,0 @@
-module OGR
-  class Polygon25D < Polygon
-  end
-end

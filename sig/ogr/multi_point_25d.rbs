@@ -1,0 +1,5 @@
+module OGR
+  class MultiPoint25D < OGR::MultiPoint
+    GEOMETRY_TYPE: Symbol
+  end
+end

@@ -1,0 +1,7 @@
+module OGR
+  class Polygon < OGR::Geometry
+    include OGR::Geometry::Interfaces::Area
+
+    GEOMETRY_TYPE: Symbol
+  end
+end

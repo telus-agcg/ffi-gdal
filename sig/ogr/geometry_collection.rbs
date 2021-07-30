@@ -1,0 +1,7 @@
+module OGR
+  class GeometryCollection < OGR::Geometry
+    include OGR::Geometry::Interfaces::Area
+
+    GEOMETRY_TYPE: Symbol
+  end
+end
