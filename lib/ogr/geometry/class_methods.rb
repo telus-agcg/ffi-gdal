@@ -36,41 +36,46 @@ module OGR
       # @param c_pointer [FFI::Pointer]
       # @return [OGR::Geometry]
       # @raise [RuntimeError]
+      # rubocop: disable Metrics/CyclomaticComplexity
       def factory(c_pointer)
         geom_type = FFI::OGR::API.OGR_G_GetGeometryType(c_pointer)
 
-        case geom_type
-        when :wkbPoint then OGR::Point.new(c_pointer: c_pointer)
-        when :wkbPoint25D then OGR::Point25D.new(c_pointer: c_pointer)
-        when :wkbLineString25D then OGR::LineString25D.new(c_pointer: c_pointer)
-        when :wkbLinearRing then OGR::LinearRing.new(c_pointer: c_pointer)
-        when :wkbPolygon then OGR::Polygon.new(c_pointer: c_pointer)
-        when :wkbPolygon25D then OGR::Polygon25D.new(c_pointer: c_pointer)
-        when :wkbMultiPoint then OGR::MultiPoint.new(c_pointer: c_pointer)
-        when :wkbMultiPoint25D then OGR::MultiPoint25D.new(c_pointer: c_pointer)
-        when :wkbMultiLineString then OGR::MultiLineString.new(c_pointer: c_pointer)
-        when :wkbMultiLineString25D then OGR::MultiLineString25D.new(c_pointer: c_pointer)
-        when :wkbMultiPolygon then OGR::MultiPolygon.new(c_pointer: c_pointer)
-        when :wkbMultiPolygon25D then OGR::MultiPolygon25D.new(c_pointer: c_pointer)
-        when :wkbGeometryCollection then OGR::GeometryCollection.new(c_pointer: c_pointer)
-        when :wkbGeometryCollection25D then OGR::GeometryCollection25D.new(c_pointer: c_pointer)
-        when :wkbLineString
-          # Putting this down low in the logic gate due to the performance hit
-          # on converting to WKT.
-          if /^LINEARRING/.match?(to_wkt(c_pointer))
-            OGR::LinearRing.new(c_pointer: c_pointer)
-          else
-            OGR::LineString.new(c_pointer: c_pointer)
-          end
-        when :wkbCircularString then OGR::CircularString.new(c_pointer: c_pointer)
-        when :wkbCompoundCurve then OGR::CompoundCurve.new(c_pointer: c_pointer)
-        when :wkbCurvePolygon then OGR::CurvePolygon.new(c_pointer: c_pointer)
-        when :wkbNone then OGR::NoneGeometry.new(c_pointer)
-        when :wkbUnknown then OGR::UnknownGeometry.new(c_pointer)
-        else
-          raise "Unknown geometry type '#{geom_type}'"
-        end
+        klass = case geom_type
+                when :wkbPoint then OGR::Point
+                when :wkbPoint25D then OGR::Point25D
+                when :wkbLineString25D then OGR::LineString25D
+                when :wkbLinearRing then OGR::LinearRing
+                when :wkbPolygon then OGR::Polygon
+                when :wkbPolygon25D then OGR::Polygon25D
+                when :wkbMultiPoint then OGR::MultiPoint
+                when :wkbMultiPoint25D then OGR::MultiPoint25D
+                when :wkbMultiLineString then OGR::MultiLineString
+                when :wkbMultiLineString25D then OGR::MultiLineString25D
+                when :wkbMultiPolygon then OGR::MultiPolygon
+                when :wkbMultiPolygon25D then OGR::MultiPolygon25D
+                when :wkbGeometryCollection then OGR::GeometryCollection
+                when :wkbGeometryCollection25D then OGR::GeometryCollection25D
+                when :wkbLineString
+                  # Putting this down low in the logic gate due to the performance hit
+                  # on converting to WKT.
+                  if /^LINEARRING/.match?(to_wkt(c_pointer))
+                    OGR::LinearRing
+                  else
+                    OGR::LineString
+                  end
+                when :wkbCircularString then OGR::CircularString
+                when :wkbCompoundCurve then OGR::CompoundCurve
+                when :wkbCurvePolygon then OGR::CurvePolygon
+                when :wkbMultiCurve then OGR::MultiCurve
+                when :wkbNone then return OGR::NoneGeometry.new(c_pointer)
+                when :wkbUnknown then return OGR::UnknownGeometry.new(c_pointer)
+                else
+                  raise "Unknown geometry type '#{geom_type}'"
+                end
+
+        klass.new(c_pointer: c_pointer)
       end
+      # rubocop: enable Metrics/CyclomaticComplexity
 
       # @param wkt_data [String]
       # @param spatial_ref [OGR::SpatialReference]

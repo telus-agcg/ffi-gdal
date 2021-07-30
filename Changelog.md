@@ -24,6 +24,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `OGR::CircularString`
   - `OGR::CompoundCurve`
   - `OGR::CurvePolygon`
+  - `OGR::MultiCurve`
 
 ### Changed
 

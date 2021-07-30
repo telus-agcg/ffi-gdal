@@ -18,22 +18,26 @@ module OGR
   autoload :CircularString,         ogr_require('ogr/circular_string')
   autoload :CompoundCurve,          ogr_require('ogr/compound_curve')
   autoload :CurvePolygon,           ogr_require('ogr/curve_polygon')
+  autoload :MultiCurve,             ogr_require('ogr/multi_curve')
+
   autoload :GeometryCollection,     ogr_require('ogr/geometry_collection')
-  autoload :GeometryCollection25D,  ogr_require('ogr/geometry_collection_25d')
   autoload :LineString,             ogr_require('ogr/line_string')
-  autoload :LineString25D,          ogr_require('ogr/line_string_25d')
   autoload :LinearRing,             ogr_require('ogr/linear_ring')
   autoload :MultiLineString,        ogr_require('ogr/multi_line_string')
-  autoload :MultiLineString25D,     ogr_require('ogr/multi_line_string_25d')
   autoload :MultiPoint,             ogr_require('ogr/multi_point')
-  autoload :MultiPoint25D,          ogr_require('ogr/multi_point_25d')
   autoload :MultiPolygon,           ogr_require('ogr/multi_polygon')
-  autoload :MultiPolygon25D,        ogr_require('ogr/multi_polygon_25d')
-  autoload :NoneGeometry,           ogr_require('ogr/none_geometry')
   autoload :Point,                  ogr_require('ogr/point')
-  autoload :Point25D,               ogr_require('ogr/point_25d')
   autoload :Polygon,                ogr_require('ogr/polygon')
+
+  autoload :GeometryCollection25D,  ogr_require('ogr/geometry_collection_25d')
+  autoload :LineString25D,          ogr_require('ogr/line_string_25d')
+  autoload :MultiLineString25D,     ogr_require('ogr/multi_line_string_25d')
+  autoload :MultiPoint25D,          ogr_require('ogr/multi_point_25d')
+  autoload :MultiPolygon25D,        ogr_require('ogr/multi_polygon_25d')
+  autoload :Point25D,               ogr_require('ogr/point_25d')
   autoload :Polygon25D,             ogr_require('ogr/polygon_25d')
+
+  autoload :NoneGeometry,           ogr_require('ogr/none_geometry')
   autoload :UnknownGeometry,        ogr_require('ogr/unknown_geometry')
 
   # Autoload core OGR types
