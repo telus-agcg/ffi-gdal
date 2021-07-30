@@ -16,6 +16,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Wrapped `OGR_G_ExportToIsoWkt` and `OGR_G_ExportToJsonEx`.
 - Added some `RBS` type definitions.
 
+#### OGR
+
+- Added `wkb` geometry types that have been added since GDAL 2.0. This includes
+  [curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries) and
+  [measured geometries](https://trac.osgeo.org/gdal/wiki/rfc61_support_for_measured_geometries):
+  - `OGR::CircularString`
+
 ### Changed
 
 - _BREAKING_: All methods with default boolean args are now keyword args.
@@ -78,6 +85,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
 - _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::Interfaces::XYPoints` and
   `XYZPoints`.
+- _BREAKING_: Moved `OGR::Geometry#geometry_count` to `OGR::Geometry::Container`.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
 - Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new

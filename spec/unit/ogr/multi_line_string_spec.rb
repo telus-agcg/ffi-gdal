@@ -12,4 +12,8 @@ RSpec.describe OGR::MultiLineString do
       OGR::LineString.new
     end
   end
+
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
 end

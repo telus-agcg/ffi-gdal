@@ -22,6 +22,7 @@ module OGR
         | OGR::MultiPolygon25D
         | OGR::GeometryCollection
         | OGR::GeometryCollection25D
+        | OGR::CircularString
         | OGR::NoneGeometry
         | OGR::UnknownGeometry
     )

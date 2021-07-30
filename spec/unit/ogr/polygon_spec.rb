@@ -10,6 +10,10 @@ RSpec.describe OGR::Polygon do
     let(:geometry) { polygon }
   end
 
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
+
   describe '#to_multi_polygon' do
     it 'returns a MultiPolygon' do
       expect(subject.to_multi_polygon).to be_a OGR::MultiPolygon

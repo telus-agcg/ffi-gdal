@@ -3,6 +3,10 @@
 require 'ogr'
 
 RSpec.describe OGR::MultiPolygon25D do
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
+
   describe '#type' do
     context 'when created with data' do
       subject { OGR::Geometry.create_from_wkt(wkt) }

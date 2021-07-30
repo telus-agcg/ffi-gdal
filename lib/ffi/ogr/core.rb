@@ -27,6 +27,8 @@ module FFI
                  :OGRERR_UNSUPPORTED_SRS,
                  :OGRERR_INVALID_HANDLE
 
+      # https://gdal.org/api/vector_c_api.html#_CPPv418OGRwkbGeometryType
+      #
       WKBGeometryType = enum FFI::Type::UINT,
                              :wkbUnknown,                0,
                              :wkbPoint,                  1,
@@ -36,6 +38,7 @@ module FFI
                              :wkbMultiLineString,        5,
                              :wkbMultiPolygon,           6,
                              :wkbGeometryCollection,     7,
+                             :wkbCircularString,         8,
                              :wkbNone,                   100,    # non-standard, for pure attribute records
                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
                              :wkbPoint25D,               0x8000_0001,

@@ -31,6 +31,10 @@ RSpec.describe OGR::LineString do
     let(:geometry) { open_line_string }
   end
 
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { open_line_string }
+  end
+
   describe '#name' do
     subject { open_line_string.name }
     it { is_expected.to eq 'LINESTRING' }

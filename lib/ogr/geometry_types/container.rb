@@ -3,6 +3,12 @@
 module OGR
   module GeometryTypes
     module Container
+      # @return [Integer]
+      def geometry_count
+        FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
+      end
+      alias count geometry_count
+
       # If this geometry is a container, this adds +geometry+ to the container.
       # If this is a Polygon, +geometry+ must be a LinearRing.  If the Polygon is
       # empty, the first added +geometry+ will be the exterior ring.  Subsequent

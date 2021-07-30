@@ -14,6 +14,10 @@ RSpec.describe OGR::LinearRing do
     g
   end
 
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
+
   it_behaves_like 'a geometry' do
     let(:geometry) { linear_ring }
   end

@@ -11,6 +11,10 @@ RSpec.describe OGR::MultiPolygon do
     let(:child_geometry) { OGR::Polygon.new }
   end
 
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
+
   describe '#to_polygon' do
     subject { OGR::Geometry.create_from_wkt(wkt) }
 

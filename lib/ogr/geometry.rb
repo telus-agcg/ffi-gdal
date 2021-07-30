@@ -102,12 +102,6 @@ module OGR
     end
 
     # @return [Integer]
-    def geometry_count
-      FFI::OGR::API.OGR_G_GetGeometryCount(@c_pointer)
-    end
-    alias count geometry_count
-
-    # @return [Integer]
     def centroid
       point = is_3d? ? OGR::Point25D.new : OGR::Point.new
 

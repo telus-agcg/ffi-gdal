@@ -41,10 +41,6 @@ RSpec.describe OGR::Point do
       end
     end
 
-    describe '#geometry_count' do
-      specify { expect(subject.geometry_count).to be_zero }
-    end
-
     describe '#point_count' do
       specify { expect(subject.point_count).to eq 1 }
     end
@@ -237,10 +233,6 @@ RSpec.describe OGR::Point do
 
     describe '#coordinate_dimension' do
       specify { expect(subject.coordinate_dimension).to eq 2 }
-    end
-
-    describe '#geometry_count' do
-      specify { expect(subject.geometry_count).to be_zero }
     end
 
     describe '#point_count' do

@@ -13,6 +13,10 @@ RSpec.describe OGR::GeometryCollection do
     end
   end
 
+  it_behaves_like 'a capable exporter' do
+    let(:geometry) { described_class.new }
+  end
+
   describe '#to_polygon' do
     let(:polygon) do
       OGR::Geometry.create_from_wkt('POLYGON ((0 0,0 1,1 1,1 0,0 0))')

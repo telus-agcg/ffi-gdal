@@ -382,25 +382,4 @@ RSpec.shared_examples 'a geometry' do
       expect(geometry.to_wkt).to_not be_empty
     end
   end
-
-  describe '#to_gml' do
-    it 'returns some String data' do
-      expect(geometry.to_gml).to be_a String
-      expect(geometry.to_gml).to_not be_empty
-    end
-  end
-
-  describe '#to_kml' do
-    it 'returns some String data' do
-      expect(geometry.to_kml).to be_a String
-      expect(geometry.to_kml).to_not be_empty
-    end
-  end
-
-  describe '#to_geo_json' do
-    it 'returns some String data' do
-      expect(geometry.to_geo_json).to be_a String
-      expect(geometry.to_geo_json).to_not be_empty
-    end
-  end
 end
