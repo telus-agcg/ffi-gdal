@@ -15,7 +15,6 @@ module OGR
       ) -> OGR::Geometry::geometry_class
 
       def build_geometry: { () -> FFI::Pointer } -> OGR::Geometry::geometry_class
-
       def factory: (FFI::Pointer c_pointer) -> OGR::Geometry::geometry_class
 
       def to_wkt: (FFI::Pointer geometry_handle) -> String

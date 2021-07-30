@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
-require_relative 'geometry_types/container'
-require_relative 'geometry/interfaces/xy_points'
-require_relative 'geometry/interfaces/length'
+require_relative 'geometry/container'
+require_relative 'geometry/xy_points'
+require_relative 'geometry/length'
+require_relative 'geometry/polygon_from_edges'
 
 module OGR
   class MultiLineString < OGR::Geometry
-    include OGR::GeometryTypes::Container
-    include OGR::Geometry::Interfaces::XYPoints
-    include OGR::Geometry::Interfaces::Length
     include GDAL::Logger
+    include OGR::Geometry::Container
+    include OGR::Geometry::XYPoints
+    include OGR::Geometry::Length
+    include OGR::Geometry::PolygonFromEdges
 
     GEOMETRY_TYPE = :wkbMultiLineString
 

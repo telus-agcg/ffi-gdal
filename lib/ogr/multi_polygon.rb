@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-require_relative 'geometry_types/container'
+require_relative 'geometry/area'
+require_relative 'geometry/container'
 
 module OGR
   class MultiPolygon < OGR::Geometry
-    include OGR::GeometryTypes::Container
-    include OGR::Geometry::Interfaces::Area
     include GDAL::Logger
+    include OGR::Geometry::Area
+    include OGR::Geometry::Container
 
     GEOMETRY_TYPE = :wkbMultiPolygon
 

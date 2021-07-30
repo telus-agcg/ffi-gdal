@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative 'geometry/interfaces/length'
-require_relative 'geometry/interfaces/xy_points'
+require_relative 'geometry/length'
+require_relative 'geometry/xy_points'
 
 module OGR
   class LineString < OGR::Geometry
-    include OGR::Geometry::Interfaces::Length
-    include OGR::Geometry::Interfaces::XYPoints
     include GDAL::Logger
+    include OGR::Geometry::Length
+    include OGR::Geometry::XYPoints
 
     GEOMETRY_TYPE = :wkbLineString
 

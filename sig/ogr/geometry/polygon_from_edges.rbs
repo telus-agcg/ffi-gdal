@@ -1,0 +1,8 @@
+module OGR
+  class Geometry
+    module PolygonFromEdges
+      def polygon_from_edges: (Float tolerance, ?auto_close: bool) -> OGR::Geometry::geometry_class
+    end
+  end
+end
+

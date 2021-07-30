@@ -1,7 +1,7 @@
 module OGR
   class LineString < OGR::Geometry
-    include OGR::Geometry::Interfaces::Length
-    include OGR::Geometry::Interfaces::XYPoints
+    include OGR::Geometry::Length
+    include OGR::Geometry::XYPoints
 
     GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
 

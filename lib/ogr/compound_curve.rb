@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'geometry_types/container'
+require_relative 'geometry/container'
 
 module OGR
   # Per [RFC 49: Curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries):
@@ -9,7 +9,7 @@ module OGR
   #
   class CompoundCurve < OGR::Geometry
     include GDAL::Logger
-    include OGR::GeometryTypes::Container
+    include OGR::Geometry::Container
 
     GEOMETRY_TYPE = :wkbCompoundCurve
 

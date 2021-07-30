@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module GeometryTypes
+  class Geometry
     module Container
       # @return [Integer]
       def geometry_count
@@ -9,6 +9,11 @@ module OGR
       end
       alias count geometry_count
 
+      # Adds sub_geometry to self by cloning sub_geometry. Use this if you need
+      # to keep using sub_geometry for other things. If sub_geometry won't be
+      # used after this call, consider using #add_geometry_directly, as it's
+      # less expensive.
+      #
       # If this geometry is a container, this adds +geometry+ to the container.
       # If this is a Polygon, +geometry+ must be a LinearRing.  If the Polygon is
       # empty, the first added +geometry+ will be the exterior ring.  Subsequent
@@ -25,6 +30,10 @@ module OGR
         end
       end
 
+      # Takes ownership of sub_geometry and added it to self; thus sub_geometry
+      # is set to `autorelease: false` and it's up to you to release sub_geometry
+      # when self is released.
+      #
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
       # @raise [FFI::GDAL::InvalidPointer]
       # @raise [OGR::Failure]
@@ -53,38 +62,16 @@ module OGR
       # @param sub_geometry_index [Integer]
       # @return [OGR::Geometry]
       def geometry_at(sub_geometry_index)
-        OGR::Geometry.build_geometry do
-          tmp_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
-          tmp_ptr.autorelease = false
-          tmp_ptr.null? ? nil : FFI::OGR::API.OGR_G_Clone(tmp_ptr)
-        end
+        tmp_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
+
+        return if tmp_ptr.null?
+
+        tmp_ptr.autorelease = false
+
+        # TODO: This clone doesn't seem necessary...
+        OGR::Geometry.factory(FFI::OGR::API.OGR_G_Clone(tmp_ptr))
       end
       alias geometry_ref geometry_at
-
-      # Build a ring from a bunch of arcs.  The collection must be
-      # a MultiLineString or GeometryCollection.
-      #
-      # @param tolerance [Float]
-      # @param auto_close [Boolean]
-      # @return [OGR::Geometry]
-      # @raise [OGR::Failure]
-      def polygon_from_edges(tolerance, auto_close: false)
-        best_effort = false
-
-        ogrerr_ptr = FFI::MemoryPointer.new(:pointer)
-
-        new_geometry_ptr = FFI::OGR::API.OGRBuildPolygonFromEdges(@c_pointer,
-                                                                  best_effort,
-                                                                  auto_close,
-                                                                  tolerance,
-                                                                  ogrerr_ptr)
-
-        OGR::ErrorHandling.handle_ogr_err('Unable to create polygon from edges') do
-          FFI::OGR::Core::Err[ogrerr_ptr.read_int]
-        end
-
-        OGR::Geometry.factory(new_geometry_ptr)
-      end
     end
   end
 end

@@ -1,0 +1,18 @@
+module OGR
+  class Geometry
+    module XYZPoints
+      include GDAL::Logger
+
+      def x: (Integer point_number) -> Float
+      def y: (Integer point_number) -> Float
+      def z: (Integer point_number) -> Float
+
+      def add_point: (Float x, Float y, Float y) -> void
+      def point: (Integer point_number) -> [Float, Float, Float]
+      def set_point: (Integer point_number, Float s, Float y, Float z) -> void
+      def points: -> Array[Array[Float]]
+      def point_count=: (Integer new_count) -> void
+      def point_count: -> Integer
+    end
+  end
+end

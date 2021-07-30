@@ -1,6 +1,7 @@
 module OGR
   class GeometryCollection < OGR::Geometry
-    include OGR::Geometry::Interfaces::Area
+    include OGR::Geometry::Area
+    include OGR::Geometry::PolygonFromEdges
 
     GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
 

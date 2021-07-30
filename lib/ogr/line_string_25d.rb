@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require_relative 'line_string'
-require_relative 'geometry/interfaces/xyz_points'
+require_relative 'geometry/xyz_points'
 
 module OGR
   # NOTE: {{#type}} will return :wkbLineString (read: 2D instead of 2.5D) until
   # a Z value is set.
   class LineString25D < LineString
-    include OGR::Geometry::Interfaces::XYZPoints
     include GDAL::Logger
+    include OGR::Geometry::XYZPoints
 
     GEOMETRY_TYPE = :wkbLineString25D
 
