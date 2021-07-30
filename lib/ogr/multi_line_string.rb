@@ -11,6 +11,11 @@ module OGR
     include OGR::Geometry::Interfaces::Length
     include GDAL::Logger
 
-    GEOMETRY_TYPE = :wkbLineString
+    GEOMETRY_TYPE = :wkbMultiLineString
+
+    def initialize(c_pointer: nil, spatial_reference: nil)
+      c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
+      super(c_pointer, spatial_reference)
+    end
   end
 end

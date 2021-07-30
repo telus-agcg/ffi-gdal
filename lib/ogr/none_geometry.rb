@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 module OGR
-  class NoneGeometry
-    include OGR::Geometry
+  class NoneGeometry < OGR::Geometry
+    GEOMETRY_TYPE = :wkbNone
 
-    # OGR doesn't seem to let you create NoneGeometries, so let's only allow
-    # creation from a pointer.
-    #
-    # @param geometry_ptr [FFI::Pointer]
-    def initialize(geometry_ptr)
-      OGR::Geometry.new_from_pointer(geometry_ptr)
+    def initialize(c_pointer)
+      super(c_pointer, nil)
     end
   end
 end

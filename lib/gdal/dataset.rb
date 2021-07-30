@@ -75,8 +75,8 @@ module GDAL
     # @param dataset [GDAL::Dataset]
     # @return [FFI::AutoPointer]
     # @raise [FFI::GDAL::InvalidPointer]
-    def self.new_pointer(dataset, warn_on_nil: true)
-      ptr = GDAL._pointer(dataset, warn_on_nil: warn_on_nil, autorelease: false)
+    def self.new_pointer(dataset)
+      ptr = GDAL._pointer(dataset, autorelease: false)
 
       FFI::AutoPointer.new(ptr, Dataset.method(:release))
     end

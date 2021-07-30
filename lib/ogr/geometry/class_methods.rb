@@ -18,50 +18,54 @@ module OGR
         @c_pointer = GDAL._pointer(geometry_ptr, autorelease: false)
       end
 
+      # @param type [FFI::OGR::Core::WKBGeometryType]
+      # @return [FFI::Pointer]
+      # @raise [FFI::GDAL::InvalidPointer]
       def create(type)
         geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometry(type)
-        return if geometry_pointer.null?
+        raise FFI::GDAL::InvalidPointer, "Unable to instantiate Geometry from type '#{type}'" if geometry_pointer.null?
 
         geometry_pointer.autorelease = false
 
-        factory(geometry_pointer)
+        geometry_pointer
       end
 
       # Creates a new Geometry using the class of the geometry that the type
       # represents.
       #
-      # @param geometry_handle [FFI::Pointer]
+      # @param c_pointer [FFI::Pointer]
       # @return [OGR::Geometry]
-      def factory(geometry_handle)
-        geometry = OGR::Geometry.new(geometry_handle)
+      # @raise [RuntimeError]
+      def factory(c_pointer)
+        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(c_pointer)
 
-        new_pointer = geometry.c_pointer
-        return if new_pointer.nil? || new_pointer.null?
-
-        case geometry.type
-        when :wkbPoint then OGR::Point.new(new_pointer)
-        when :wkbPoint25D then OGR::Point25D.new(new_pointer)
+        case geom_type
+        when :wkbPoint then OGR::Point.new(c_pointer: c_pointer)
+        when :wkbPoint25D then OGR::Point25D.new(c_pointer: c_pointer)
+        when :wkbLineString25D then OGR::LineString25D.new(c_pointer: c_pointer)
+        when :wkbLinearRing then OGR::LinearRing.new(c_pointer: c_pointer)
+        when :wkbPolygon then OGR::Polygon.new(c_pointer: c_pointer)
+        when :wkbPolygon25D then OGR::Polygon25D.new(c_pointer: c_pointer)
+        when :wkbMultiPoint then OGR::MultiPoint.new(c_pointer: c_pointer)
+        when :wkbMultiPoint25D then OGR::MultiPoint25D.new(c_pointer: c_pointer)
+        when :wkbMultiLineString then OGR::MultiLineString.new(c_pointer: c_pointer)
+        when :wkbMultiLineString25D then OGR::MultiLineString25D.new(c_pointer: c_pointer)
+        when :wkbMultiPolygon then OGR::MultiPolygon.new(c_pointer: c_pointer)
+        when :wkbMultiPolygon25D then OGR::MultiPolygon25D.new(c_pointer: c_pointer)
+        when :wkbGeometryCollection then OGR::GeometryCollection.new(c_pointer: c_pointer)
+        when :wkbGeometryCollection25D then OGR::GeometryCollection25D.new(c_pointer: c_pointer)
         when :wkbLineString
-          if /^LINEARRING/.match?(geometry.to_wkt)
-            OGR::LinearRing.new(new_pointer)
+          # Putting this down low in the logic gate due to the performance hit
+          # on converting to WKT.
+          if /^LINEARRING/.match?(to_wkt(c_pointer))
+            OGR::LinearRing.new(c_pointer: c_pointer)
           else
-            OGR::LineString.new(new_pointer)
+            OGR::LineString.new(c_pointer: c_pointer)
           end
-        when :wkbLineString25D then OGR::LineString25D.new(new_pointer)
-        when :wkbLinearRing then OGR::LinearRing.new(new_pointer)
-        when :wkbPolygon then OGR::Polygon.new(new_pointer)
-        when :wkbPolygon25D then OGR::Polygon25D.new(new_pointer)
-        when :wkbMultiPoint then OGR::MultiPoint.new(new_pointer)
-        when :wkbMultiPoint25D then OGR::MultiPoint25D.new(new_pointer)
-        when :wkbMultiLineString then OGR::MultiLineString.new(new_pointer)
-        when :wkbMultiLineString25D then OGR::MultiLineString25D.new(new_pointer)
-        when :wkbMultiPolygon then OGR::MultiPolygon.new(new_pointer)
-        when :wkbMultiPolygon25D then OGR::MultiPolygon25D.new(new_pointer)
-        when :wkbGeometryCollection then OGR::GeometryCollection.new(new_pointer)
-        when :wkbGeometryCollection25D then OGR::GeometryCollection25D.new(new_pointer)
-        when :wkbNone then OGR::NoneGeometry.new(new_pointer)
+        when :wkbNone then OGR::NoneGeometry.new(c_pointer)
+        when :wkbUnknown then OGR::UnknownGeometry.new(c_pointer)
         else
-          geometry
+          raise "Unknown geometry type '#{geom_type}'"
         end
       end
 
@@ -74,7 +78,7 @@ module OGR
         wkt_pointer_pointer.write_pointer(wkt_data_pointer)
 
         spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
-        geometry_ptr_ptr = GDAL._buffer_out_pointer_pointer(:pointer)
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
 
         FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
                                           spatial_ref_pointer, geometry_ptr_ptr)
@@ -92,7 +96,7 @@ module OGR
         wkb_data_pointer.write_bytes(wkb_data)
 
         spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
-        geometry_ptr_ptr = GDAL._buffer_out_pointer_pointer(:pointer)
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
 
         byte_count = wkb_data.length
         FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
@@ -143,6 +147,16 @@ module OGR
         return unless pointer && !pointer.null?
 
         FFI::OGR::API.OGR_G_DestroyGeometry(pointer)
+      end
+
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_wkt(c_pointer)
+        GDAL._cpl_read_and_free_string do |output_ptr|
+          OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+            FFI::OGR::API.OGR_G_ExportToWkt(c_pointer, output_ptr)
+          end
+        end
       end
     end
   end

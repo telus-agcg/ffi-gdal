@@ -12,6 +12,11 @@ module OGR
 
     GEOMETRY_TYPE = :wkbLineString25D
 
+    def initialize(c_pointer: nil, spatial_reference: nil)
+      c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
+      super(c_pointer: c_pointer, spatial_reference: spatial_reference)
+    end
+
     # Wrapper for {#add_point} to allow passing in an {OGR::Point} instead of
     # individual coordinates.
     #

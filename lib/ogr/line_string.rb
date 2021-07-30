@@ -29,6 +29,11 @@ module OGR
       new(geometry_ptr)
     end
 
+    def initialize(c_pointer: nil, spatial_reference: nil)
+      c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
+      super(c_pointer, spatial_reference)
+    end
+
     # Wrapper for {#add_point} to allow passing in an {OGR::Point} instead of
     # individual coordinates.
     #

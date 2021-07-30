@@ -14,5 +14,7 @@ module GDAL
     def _buffer_out_pointer_pointer: (
       Integer | FFI::Type::builtin_symbol | FFI::Type size
     ) -> FFI::MemoryPointer
+
+    def _cpl_read_and_free_string: () { (FFI::MemoryPointer) -> void } -> String
   end
 end

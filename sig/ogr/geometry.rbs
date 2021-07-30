@@ -22,9 +22,11 @@ module OGR
         | OGR::MultiPolygon25D
         | OGR::GeometryCollection
         | OGR::GeometryCollection25D
+        | OGR::NoneGeometry
+        | OGR::UnknownGeometry
     )
 
-    def initialize: (?FFI::Pointer? geometry_ptr, ?spatial_reference: FFI::Pointer?) -> void
+    def initialize: (FFI::Pointer geometry_ptr, OGR::SpatialReference ?spatial_reference) -> void
     def empty?: -> bool
     def import_from_wkt: (String wkt_data) -> void
     def type: -> FFI::OGR::Core::wkb_geometry_type_symbol

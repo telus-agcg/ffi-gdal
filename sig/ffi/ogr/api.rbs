@@ -17,7 +17,11 @@ module FFI
         FFI::MemoryPointer geometry_out,
       ) -> (:OGRERR_NONE | :OGRERR_NOT_ENOUGH_DATA | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE | :OGRERR_CORRUPT_DATA)
 
+      def self.OGR_G_ExportToWkt: (FFI::Pointer pointer, FFI::MemoryPointer wkt_out) -> :OGRERR_NONE
+
       def self.OGR_G_DestroyGeometry: (FFI::Pointer geometry_handle) -> void
+
+      def self.OGR_G_GetGeometryType: (FFI::Pointer geometry_handle) -> FFI::OGR::Core::wkb_geometry_type_symbol
 
       def self.OGR_G_Area: (FFI::Pointer geometry_handle) -> Float
       def self.OGR_G_Length: (FFI::Pointer geometry_handle) -> Float

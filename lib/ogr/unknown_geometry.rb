@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 module OGR
-  class UnknownGeometry
-    include OGR::Geometry
+  class UnknownGeometry < OGR::Geometry
+    GEOMETRY_TYPE = :wkbUnknown
 
-    # @param geometry_ptr [FFI::Pointer]
-    def initialize(geometry_ptr)
-      OGR::Geometry.new_from_pointer(geometry_ptr)
+    def initialize(c_pointer)
+      super(c_pointer, nil)
     end
   end
 end

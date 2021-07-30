@@ -3,6 +3,8 @@ module OGR
     include OGR::Geometry::Interfaces::Length
     include OGR::Geometry::Interfaces::XYPoints
 
-    GEOMETRY_TYPE: Symbol
+    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+
+    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
   end
 end

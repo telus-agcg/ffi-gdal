@@ -11,11 +11,14 @@ module OGR
     # @return [FFI::Pointer]
     attr_reader :c_pointer
 
-    # @param geometry_ptr [FFI::Pointer, nil]
+    # OGR::Geometry is really an abstract class, so this shouldn't really need
+    # to be called directly.
+    #
+    # @param geometry_pointer [FFI::Pointer]
     # @param spatial_reference [OGR::SpatialReference, nil]
-    def initialize(geometry_ptr = nil, spatial_reference: nil)
-      geometry_ptr ||= OGR::Geometry.create(GEOMETRY_TYPE)
-      OGR::Geometry.initialize_from_pointer(geometry_ptr)
+    def initialize(c_pointer, spatial_reference = nil)
+      @c_pointer = c_pointer
+
       self.spatial_reference = spatial_reference if spatial_reference
     end
 
@@ -292,20 +295,22 @@ module OGR
       spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
       return if spatial_ref_ptr.null?
 
-      OGR::SpatialReference.new(spatial_ref_ptr)
+      spatial_ref_ptr.autorelease = false
+
+      OGR::SpatialReference.new(spatial_ref_ptr).freeze
     end
 
     # Assigns a spatial reference to this geometry.  Any existing spatial
     # reference is replaced, but this does not reproject the geometry.
     #
-    # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
+    # @param new_spatial_ref [OGR::SpatialReference]
     # @raise [FFI::GDAL::InvalidPointer]
     def spatial_reference=(new_spatial_ref)
       #  Note that assigning a spatial reference increments the reference count
       #  on the OGRSpatialReference, but does not copy it.
-      new_spatial_ref_ptr = GDAL._pointer(new_spatial_ref, autorelease: false)
+      new_spatial_ref.c_pointer.autorelease = false
 
-      FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref_ptr)
+      FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref.c_pointer)
     end
 
     # Transforms the coordinates of this geometry in its current spatial
@@ -447,11 +452,7 @@ module OGR
     # @return [String]
     # @raise [OGR::Failure]
     def to_wkt
-      GDAL._cpl_read_and_free_string do |output_ptr|
-        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
-          FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
-        end
-      end
+      OGR::Geometry.to_wkt(@c_pointer)
     end
 
     # @return [String]

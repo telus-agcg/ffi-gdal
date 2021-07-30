@@ -171,7 +171,7 @@ module FFI
       attach_function :OGRRealloc, %i[pointer size_t], :pointer
       attach_function :OGRFree, [:pointer], :void
 
-      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :strptr
+      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :string
       attach_function :OGRMergeGeometryTypes,
                       [WKBGeometryType, WKBGeometryType],
                       WKBGeometryType

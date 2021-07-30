@@ -10,6 +10,11 @@ module OGR
 
     GEOMETRY_TYPE = :wkbLinearRing
 
+    def initialize(c_pointer: nil, spatial_reference: nil)
+      c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
+      super(c_pointer: c_pointer, spatial_reference: spatial_reference)
+    end
+
     def to_line_string
       line_string = OGR::LineString.new
       line_string.spatial_reference = spatial_reference if spatial_reference

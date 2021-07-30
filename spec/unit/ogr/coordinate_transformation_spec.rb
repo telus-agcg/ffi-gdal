@@ -26,14 +26,14 @@ RSpec.describe OGR::CoordinateTransformation do
     context 'source_srs is not an OGR::SpatialReference' do
       it do
         expect { described_class.new(123, dest_srs) }
-          .to raise_exception GDAL::Error
+          .to raise_exception FFI::GDAL::InvalidPointer
       end
     end
 
     context 'dest_srs is not an OGR::SpatialReference' do
       it do
         expect { described_class.new(source_srs, 123) }
-          .to raise_exception GDAL::Error
+          .to raise_exception FFI::GDAL::InvalidPointer
       end
     end
 

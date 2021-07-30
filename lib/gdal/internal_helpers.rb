@@ -6,13 +6,12 @@ module GDAL
     # Internal factory method for returning a pointer from +variable+, which could
     # be either of +klass+ class or a type of FFI::Pointer.
     #
-    # @param klass [Class]
     # @param variable [klass, FFI::MemoryPointer, FFI::Pointer]
     # @param autorelease [Boolean] Pass this on to the pointer.
     # @return [FFI::Pointer]
     # @raise [FFI::GDAL::InvalidPointer]
     def _pointer(variable, autorelease: true)
-      pointer = _maybe_pointer(klass, variable, autorelease: autorelease)
+      pointer = _maybe_pointer(variable, autorelease: autorelease)
 
       if pointer.nil? || pointer.null?
         raise FFI::GDAL::InvalidPointer,
@@ -110,20 +109,6 @@ module GDAL
       pointer = FFI::MemoryPointer.new(type)
       pointer_ptr = FFI::MemoryPointer.new(:pointer)
       pointer_ptr.write_pointer(pointer)
-
-      pointer_ptr
-    end
-
-    # Makes an out FFI::MemoryPointer to an out FFI::Buffer pointer; essentially
-    # a ** that's used for an out buffer.
-    #
-    # @param type [Symbol, Integer, FFI::Type] FFI type of pointer to make a
-    #   pointer to.
-    # @return [FFI::Buffer] Pointer to a pointer.
-    def _buffer_out_pointer_pointer(type)
-      buffer = FFI::Buffer.new_out(type)
-      pointer_ptr = FFI::MemoryPointer.new(:pointer)
-      pointer_ptr.write_pointer(buffer)
 
       pointer_ptr
     end

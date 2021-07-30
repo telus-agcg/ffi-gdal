@@ -4,13 +4,9 @@ require 'gdal/internal_helpers'
 require 'ogr/spatial_reference'
 require 'gdal/dataset'
 
-module Tester
-  include GDAL::InternalHelpers
-end
-
 RSpec.describe GDAL::InternalHelpers do
   subject(:tester) do
-    Tester
+    extend GDAL::InternalHelpers
   end
 
   describe '._pointer' do
@@ -19,7 +15,7 @@ RSpec.describe GDAL::InternalHelpers do
 
       it "returns the variable's pointer with autorelease = true" do
         expect(variable.c_pointer).to receive(:autorelease=).with(true)
-        expect(subject._pointer(OGR::SpatialReference, variable)).to eq variable.c_pointer
+        expect(subject._pointer(variable)).to eq variable.c_pointer
       end
     end
 
@@ -28,13 +24,39 @@ RSpec.describe GDAL::InternalHelpers do
 
       it 'returns the pointer with autorelease = true' do
         expect(variable).to receive(:autorelease=).with(true)
-        expect(subject._pointer(GDAL::Dataset, variable)).to eq variable
+        expect(subject._pointer(variable)).to eq variable
       end
     end
 
     context 'variable is nil' do
       it 'returns nil' do
-        expect(subject._pointer(GDAL::Dataset, nil, warn_on_nil: false)).to be_nil
+        expect { subject._pointer(nil) }.to raise_exception FFI::GDAL::InvalidPointer
+      end
+    end
+  end
+
+  describe '._maybe_pointer' do
+    context 'variable is a kind of the klass that was passed in' do
+      let(:variable) { OGR::SpatialReference.new }
+
+      it "returns the variable's pointer with autorelease = true" do
+        expect(variable.c_pointer).to receive(:autorelease=).with(true)
+        expect(subject._maybe_pointer(variable)).to eq variable.c_pointer
+      end
+    end
+
+    context 'variable is an FFI::Pointer' do
+      let(:variable) { FFI::MemoryPointer.new(:pointer) }
+
+      it 'returns the pointer with autorelease = true' do
+        expect(variable).to receive(:autorelease=).with(true)
+        expect(subject._maybe_pointer(variable)).to eq variable
+      end
+    end
+
+    context 'variable is nil' do
+      it 'returns nil' do
+        expect(subject._maybe_pointer(nil)).to be_nil
       end
     end
   end

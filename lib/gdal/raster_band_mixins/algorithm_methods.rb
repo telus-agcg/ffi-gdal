@@ -231,7 +231,7 @@ module GDAL
       # @raise [FFI::GDAL::InvalidPointer]
       def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(mask_band, warn_on_nil: false)
+        mask_band_ptr = GDAL._pointer(mask_band) if mask_band
         layer_ptr = GDAL._pointer(layer)
 
         log "Pixel value field: #{pixel_value_field}"
@@ -318,7 +318,7 @@ module GDAL
       # @raise [FFI::GDAL::InvalidPointer]
       def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(mask_band, warn_on_nil: false)
+        mask_band_ptr = GDAL._pointer(mask_band) if mask_band
         destination_band_ptr = GDAL._pointer(destination_band)
 
         if destination_band.nil? || destination_band.null?
