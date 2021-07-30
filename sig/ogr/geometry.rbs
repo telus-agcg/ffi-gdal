@@ -1,6 +1,24 @@
 module OGR
   module Geometry
     include _SpatialReference
+    extend OGR::Geometry::ClassMethods
     include GDAL::Logger
+    type geometry_class = (
+        OGR::Point
+        | OGR::Point25D
+        | OGR::LinearRing
+        | OGR::LineString
+        | OGR::LineString25D
+        | OGR::Polygon
+        | OGR::Polygon25D
+        | OGR::MultiPoint
+        | OGR::MultiPoint25D
+        | OGR::MultiLineString
+        | OGR::MultiLineString25D
+        | OGR::MultiPolygon
+        | OGR::MultiPolygon25D
+        | OGR::GeometryCollection
+        | OGR::GeometryCollection25D
+    )
   end
 end
