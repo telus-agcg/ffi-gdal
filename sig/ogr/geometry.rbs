@@ -23,6 +23,7 @@ module OGR
         | OGR::GeometryCollection
         | OGR::GeometryCollection25D
         | OGR::CircularString
+        | OGR::CompoundCurve
         | OGR::NoneGeometry
         | OGR::UnknownGeometry
     )

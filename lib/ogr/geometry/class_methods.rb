@@ -63,6 +63,7 @@ module OGR
             OGR::LineString.new(c_pointer: c_pointer)
           end
         when :wkbCircularString then OGR::CircularString.new(c_pointer: c_pointer)
+        when :wkbCompoundCurve then OGR::CompoundCurve.new(c_pointer: c_pointer)
         when :wkbNone then OGR::NoneGeometry.new(c_pointer)
         when :wkbUnknown then OGR::UnknownGeometry.new(c_pointer)
         else

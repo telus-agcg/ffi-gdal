@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
+require_relative 'geometry_types/container'
+
 module OGR
   # Per [RFC 49: Curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries):
   #
-  # a circular arc, or a sequence of connected circular arcs, each of them
-  # describe by 3 points: the first point of the arc, an intermediate point and
-  # the final point.
+  # a sequence of connected curves, either line strings or circular strings
   #
-  class CircularString < OGR::Geometry
+  class CompoundCurve < OGR::Geometry
     include GDAL::Logger
+    include OGR::GeometryTypes::Container
 
-    GEOMETRY_TYPE = :wkbCircularString
+    GEOMETRY_TYPE = :wkbCompoundCurve
 
     def initialize(c_pointer: nil, spatial_reference: nil)
       c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
