@@ -9,7 +9,7 @@ RSpec.describe OGR::CurvePolygon do
 
   it_behaves_like 'a container geometry' do
     let(:child_geometry) do
-      OGR::Geometry.create_from_wkt('LINESTRING ((0 0,0 1,1 1,1 0,0 0))')
+      OGR::Geometry.create_from_wkt('LINESTRING (0 0,0 1,1 1,1 0,0 0)')
     end
   end
 end
