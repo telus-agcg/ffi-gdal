@@ -19,6 +19,7 @@ module OGR
   autoload :CompoundCurve,          ogr_require('ogr/compound_curve')
   autoload :CurvePolygon,           ogr_require('ogr/curve_polygon')
   autoload :MultiCurve,             ogr_require('ogr/multi_curve')
+  autoload :MultiSurface,           ogr_require('ogr/multi_surface')
 
   autoload :GeometryCollection,     ogr_require('ogr/geometry_collection')
   autoload :LineString,             ogr_require('ogr/line_string')

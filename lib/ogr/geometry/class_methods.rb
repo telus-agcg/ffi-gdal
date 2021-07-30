@@ -67,6 +67,7 @@ module OGR
                 when :wkbCompoundCurve then OGR::CompoundCurve
                 when :wkbCurvePolygon then OGR::CurvePolygon
                 when :wkbMultiCurve then OGR::MultiCurve
+                when :wkbMultiSurface then OGR::MultiSurface
                 when :wkbNone then return OGR::NoneGeometry.new(c_pointer)
                 when :wkbUnknown then return OGR::UnknownGeometry.new(c_pointer)
                 else
