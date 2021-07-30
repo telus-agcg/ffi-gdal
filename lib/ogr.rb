@@ -16,6 +16,8 @@ module OGR
 
   # Autoload OGR Geometry object types.
   autoload :CircularString,         ogr_require('ogr/circular_string')
+  autoload :CompoundCurve,          ogr_require('ogr/compound_curve')
+  autoload :CurvePolygon,           ogr_require('ogr/curve_polygon')
   autoload :GeometryCollection,     ogr_require('ogr/geometry_collection')
   autoload :GeometryCollection25D,  ogr_require('ogr/geometry_collection_25d')
   autoload :LineString,             ogr_require('ogr/line_string')

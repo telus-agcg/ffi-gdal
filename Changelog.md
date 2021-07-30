@@ -23,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   [measured geometries](https://trac.osgeo.org/gdal/wiki/rfc61_support_for_measured_geometries):
   - `OGR::CircularString`
   - `OGR::CompoundCurve`
+  - `OGR::CurvePolygon`
 
 ### Changed
 

@@ -7,25 +7,15 @@ module OGR
     include GDAL::Logger
 
     type geometry_class = (
-        OGR::Point
-        | OGR::Point25D
-        | OGR::LinearRing
-        | OGR::LineString
-        | OGR::LineString25D
-        | OGR::Polygon
-        | OGR::Polygon25D
-        | OGR::MultiPoint
-        | OGR::MultiPoint25D
-        | OGR::MultiLineString
-        | OGR::MultiLineString25D
-        | OGR::MultiPolygon
-        | OGR::MultiPolygon25D
-        | OGR::GeometryCollection
-        | OGR::GeometryCollection25D
-        | OGR::CircularString
-        | OGR::CompoundCurve
-        | OGR::NoneGeometry
-        | OGR::UnknownGeometry
+        OGR::Point | OGR::Point25D
+        | OGR::LinearRing | OGR::LineString | OGR::LineString25D
+        | OGR::Polygon | OGR::Polygon25D
+        | OGR::MultiPoint | OGR::MultiPoint25D
+        | OGR::MultiLineString | OGR::MultiLineString25D
+        | OGR::MultiPolygon | OGR::MultiPolygon25D
+        | OGR::GeometryCollection | OGR::GeometryCollection25D
+        | OGR::CircularString | OGR::CompoundCurve | OGR::CurvePolygon
+        | OGR::NoneGeometry | OGR::UnknownGeometry
     )
 
     def initialize: (FFI::Pointer geometry_ptr, OGR::SpatialReference ?spatial_reference) -> void
