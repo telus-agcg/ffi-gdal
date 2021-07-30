@@ -1,5 +1,7 @@
 module OGR
   class SpatialReference
+    include _HasPointer
+
     def linear_units: -> { unit_name: String, value: Float }?
   end
 end

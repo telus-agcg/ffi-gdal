@@ -151,9 +151,10 @@ module OGR
 
       private
 
+      # @raise [FFI::GDAL::InvalidPointer]
       # @raise [OGR::Failure]
       def run_layer_method(method_name, method_layer, output_layer, **options, &progress)
-        method_layer_ptr = GDAL._pointer(OGR::Layer, method_layer)
+        method_layer_ptr = GDAL._pointer(method_layer)
         options_ptr = GDAL::Options.pointer(options)
         result_layer_ptr = output_layer.c_pointer
 

@@ -89,11 +89,11 @@ module OGR
     # acquires a new reference on the passed object (if non-NULL).
     #
     # @param new_spatial_reference [OGR::SpatialReference, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def spatial_reference=(new_spatial_reference)
       raise OGR::ReadOnlyObject if @read_only
 
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_reference, autorelease: false)
-      raise if spatial_ref_ptr.null?
+      spatial_ref_ptr = GDAL._pointer(new_spatial_reference, autorelease: false)
 
       FFI::OGR::API.OGR_GFld_SetSpatialRef(
         @c_pointer,

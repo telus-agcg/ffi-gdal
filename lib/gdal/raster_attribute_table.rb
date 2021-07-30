@@ -8,9 +8,10 @@ module GDAL
     #
     # @param color_table [GDAL::ColorTable, FFI::Pointer]
     # @return [GDAL::RasterAttributeTable]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [GDAL::Error]
     def self.from_color_table(color_table)
-      color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
+      color_table_ptr = GDAL._pointer(color_table, autorelease: false)
       rat_ptr = FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
 
       GDAL::CPLErrorHandler.manually_handle('Unable to initialize from ColorTable') do
@@ -22,8 +23,9 @@ module GDAL
 
     # @param raster_attribute_table [GDAL::RasterAttributeTable]
     # @return [FFI::AutoPointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def self.new_pointer(raster_attribute_table)
-      ptr = GDAL._pointer(GDAL::Dataset, raster_attribute_table, autorelease: false)
+      ptr = GDAL._pointer(raster_attribute_table, autorelease: false)
 
       FFI::AutoPointer.new(ptr, RasterAttributeTable.method(:release))
     end

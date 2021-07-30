@@ -1,0 +1,3 @@
+module GDAL
+  extend GDAL::InternalHelpers
+end

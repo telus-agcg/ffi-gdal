@@ -54,8 +54,9 @@ module GDAL
     attr_reader :c_pointer
 
     # @param driver [GDAL::Driver, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(GDAL::Driver, driver, autorelease: false)
+      @c_pointer = GDAL._pointer(driver, autorelease: false)
     end
 
     # @return [String]
@@ -237,11 +238,12 @@ module GDAL
     # @param [GDAL::Dataset, FFI::Pointer, String] dataset Can be another
     #   dataset, the pointer to another dataset, or the path to a dataset.
     # @return [GDAL::Dataset]
+    # @raise [FFI::GDAL::InvalidPointer]
     def make_dataset_pointer(dataset)
       if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        GDAL._pointer(GDAL::Dataset, dataset, autorelease: false)
+        GDAL._pointer(dataset, autorelease: false)
       end
     end
   end

@@ -196,10 +196,10 @@ module OGR
 
     # @param other_spatial_ref [OGR::SpatialReference] The SpatialReference to
     #   copy GeocCS info from.
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def copy_geog_cs_from(other_spatial_ref)
-      other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
-      raise OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
+      other_spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
 
       OGR::ErrorHandling.handle_ogr_err('Unable to copy GEOGCS') do
         FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)

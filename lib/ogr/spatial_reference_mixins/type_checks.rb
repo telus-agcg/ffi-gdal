@@ -36,8 +36,9 @@ module OGR
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
       # @return [Boolean] True if both SpatialReferences describe the same
       #   system.
+      # @raise [FFI::GDAL::InvalidPointer]
       def same?(other_spatial_ref)
-        spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
+        spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
 
         FFI::OGR::SRSAPI.OSRIsSame(@c_pointer, spatial_ref_ptr)
       end
@@ -45,8 +46,9 @@ module OGR
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
       # @return [Boolean] True if the GEOGCS nodes of each SpatialReference
       #   match.
+      # @raise [FFI::GDAL::InvalidPointer]
       def geog_cs_is_same?(other_spatial_ref)
-        spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
+        spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
 
         FFI::OGR::SRSAPI.OSRIsSameGeogCS(@c_pointer, spatial_ref_ptr)
       end
@@ -54,8 +56,9 @@ module OGR
       # @param other_spatial_ref [OGR::SpatialReference, FFI::Pointer]
       # @return [Boolean] True if the VERT_CS nodes of each SpatialReference
       #   match.
+      # @raise [FFI::GDAL::InvalidPointer]
       def vert_cs_is_same?(other_spatial_ref)
-        spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
+        spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
 
         FFI::OGR::SRSAPI.OSRIsSameVertCS(@c_pointer, spatial_ref_ptr)
       end

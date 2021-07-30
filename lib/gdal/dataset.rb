@@ -60,10 +60,11 @@ module GDAL
     # @option options compressed: true
     # @option options skip_holes: true
     # @param progress_function [Proc]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [GDAL::Error]
     def self.copy_whole_raster(source, destination, options = {}, progress_function = nil)
-      source_ptr = GDAL._pointer(GDAL::Dataset, source, autorelease: false)
-      dest_ptr = GDAL._pointer(GDAL::Dataset, destination, autorelease: false)
+      source_ptr = GDAL._pointer(source, autorelease: false)
+      dest_ptr = GDAL._pointer(destination, autorelease: false)
       options_ptr = GDAL::Options.pointer(options)
 
       GDAL::CPLErrorHandler.manually_handle('Unable to copy whole raster') do
@@ -73,8 +74,9 @@ module GDAL
 
     # @param dataset [GDAL::Dataset]
     # @return [FFI::AutoPointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def self.new_pointer(dataset, warn_on_nil: true)
-      ptr = GDAL._pointer(GDAL::Dataset, dataset, warn_on_nil: warn_on_nil, autorelease: false)
+      ptr = GDAL._pointer(dataset, warn_on_nil: warn_on_nil, autorelease: false)
 
       FFI::AutoPointer.new(ptr, Dataset.method(:release))
     end
@@ -259,9 +261,10 @@ module GDAL
 
     # @param new_transform [GDAL::GeoTransform, FFI::Pointer]
     # @return [GDAL::GeoTransform]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [GDAL::Error]
     def geo_transform=(new_transform)
-      new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
+      new_pointer = GDAL._pointer(new_transform)
 
       GDAL::CPLErrorHandler.manually_handle('Unable to set geo_transform') do
         FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)

@@ -1,0 +1,18 @@
+module GDAL
+  module InternalHelpers
+    def _pointer: (
+      _HasPointer | FFI::MemoryPointer | FFI::Pointer variable,
+      ?autorelease: boolish
+    ) -> (FFI::Pointer | FFI::MemoryPointer)
+
+    def _maybe_pointer: (
+      _HasPointer | FFI::MemoryPointer | FFI::Pointer | nil variable,
+      ?autorelease: boolish
+    ) -> (FFI::Pointer | FFI::MemoryPointer | nil)
+
+    def _pointer_pointer: (Integer | FFI::Type::builtin_symbol | FFI::Type size) -> FFI::MemoryPointer
+    def _buffer_out_pointer_pointer: (
+      Integer | FFI::Type::builtin_symbol | FFI::Type size
+    ) -> FFI::MemoryPointer
+  end
+end

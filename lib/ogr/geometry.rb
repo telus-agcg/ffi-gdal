@@ -273,8 +273,9 @@ module OGR
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def intersects?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Intersects(@c_pointer, geometry_ptr)
     end
 
@@ -289,8 +290,9 @@ module OGR
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def disjoint?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Disjoint(@c_pointer, geometry_ptr)
     end
 
@@ -302,29 +304,33 @@ module OGR
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def crosses?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Crosses(@c_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def within?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Within(@c_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def contains?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Contains(@c_pointer, geometry_ptr)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def overlaps?(geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+      geometry_ptr = GDAL._pointer(geometry)
       FFI::OGR::API.OGR_G_Overlaps(@c_pointer, geometry_ptr)
     end
 
@@ -435,10 +441,11 @@ module OGR
     # reference is replaced, but this does not reproject the geometry.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def spatial_reference=(new_spatial_ref)
       #  Note that assigning a spatial reference increments the reference count
       #  on the OGRSpatialReference, but does not copy it.
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
+      new_spatial_ref_ptr = GDAL._pointer(new_spatial_ref, autorelease: false)
 
       FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref_ptr)
     end
@@ -453,12 +460,10 @@ module OGR
     #
     # @param coordinate_transformation [OGR::CoordinateTransformation,
     #   FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def transform!(coordinate_transformation)
-      coord_trans_ptr = GDAL._pointer(OGR::CoordinateTransformation,
-                                      coordinate_transformation)
-
-      return if coord_trans_ptr.nil? || coord_trans_ptr.null?
+      coord_trans_ptr = GDAL._pointer(coordinate_transformation)
 
       OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
         FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
@@ -477,10 +482,10 @@ module OGR
     # transforming a single geometry.
     #
     # @param new_spatial_ref [OGR::SpatialReference, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def transform_to!(new_spatial_ref)
-      new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
-      return if new_spatial_ref_ptr.null?
+      new_spatial_ref_ptr = GDAL._pointer(new_spatial_ref, autorelease: false)
 
       OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
         FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)

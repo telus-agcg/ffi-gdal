@@ -15,8 +15,9 @@ module OGR
       end
 
       # @param new_spatial_filter [OGR::Geometry, FFI::Pointer]
+      # @raise [FFI::GDAL::InvalidPointer]
       def spatial_filter=(new_spatial_filter)
-        spatial_filter_ptr = GDAL._pointer(OGR::Geometry, new_spatial_filter)
+        spatial_filter_ptr = GDAL._pointer(new_spatial_filter)
 
         FFI::OGR::API.OGR_L_SetSpatialFilter(@c_pointer, spatial_filter_ptr)
       end
@@ -27,8 +28,9 @@ module OGR
       #   geometry field.
       # @param geometry [OGR::Geometry] Use this geometry as the filtering
       #   region.
+      # @raise [FFI::GDAL::InvalidPointer]
       def set_spatial_filter_ex(geometry_field_index, geometry)
-        geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
+        geometry_ptr = GDAL._pointer(geometry)
 
         FFI::OGR::API.OGR_L_SetSpatialFilterEx(
           @c_pointer, geometry_field_index, geometry_ptr

@@ -48,7 +48,7 @@ require_relative 'gdal/cpl_error_handler'
 module GDAL
   extend VersionInfo
   extend EnvironmentMethods
-  include InternalHelpers
+  extend InternalHelpers
 
   # Register all drivers!
   ::FFI::GDAL::GDAL.GDALAllRegister

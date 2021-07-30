@@ -54,8 +54,9 @@ module OGR
     # to instantiate a OGR::Driver object.
     #
     # @param driver [OGR::Driver, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(OGR::Driver, driver)
+      @c_pointer = GDAL._pointer(driver)
     end
 
     # @return [String]
@@ -119,10 +120,9 @@ module OGR
     # @param new_file_name [String]
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
+    # @raise [FFI::GDAL::InvalidPointer]
     def copy_data_source(source_data_source, new_file_name, **options)
-      source_ptr = GDAL._pointer(OGR::DataSource, source_data_source)
-
-      raise OGR::InvalidDataSource, source_data_source if source_ptr.nil? || source_ptr.null?
+      source_ptr = GDAL._pointer(source_data_source)
 
       options_ptr = GDAL::Options.pointer(options)
 

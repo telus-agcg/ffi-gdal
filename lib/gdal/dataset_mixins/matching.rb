@@ -8,8 +8,9 @@ module GDAL
       # @return [Hash{count => Integer, gcp: => FFI::GDAL::GCP}] Not sure why,
       #   but the C function seems to return a single GCP instead of an Array of
       #   them.
+      # @raise [FFI::GDAL::InvalidPointer]
       def compute_matching_points(other_dataset, **options)
-        other_dataset_ptr = GDAL._pointer(GDAL::Dataset, other_dataset)
+        other_dataset_ptr = GDAL._pointer(other_dataset)
         options_ptr = GDAL::Options.pointer(options)
         gcp_count_ptr = FFI::MemoryPointer.new(:int)
 

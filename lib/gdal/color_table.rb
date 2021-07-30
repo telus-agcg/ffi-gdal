@@ -18,8 +18,9 @@ module GDAL
   class ColorTable
     # @param color_table [GDAL::ColorTable]
     # @return [FFI::AutoPointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def self.new_pointer(color_table)
-      ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
+      ptr = GDAL._pointer(color_table, autorelease: false)
 
       FFI::AutoPointer.new(ptr, ColorTable.method(:release))
     end

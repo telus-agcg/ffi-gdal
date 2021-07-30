@@ -9,9 +9,10 @@ module OGR
       # geometries added will be interior rings.
       #
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @raise [FFI::GDAL::InvalidPointer]
       # @raise [OGR::Failure]
       def add_geometry(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry)
+        sub_geometry_ptr = GDAL._pointer(sub_geometry)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to add geometry: #{sub_geometry}") do
           FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry_ptr)
@@ -19,9 +20,10 @@ module OGR
       end
 
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @raise [FFI::GDAL::InvalidPointer]
       # @raise [OGR::Failure]
       def add_geometry_directly(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(OGR::Geometry, sub_geometry, autorelease: false)
+        sub_geometry_ptr = GDAL._pointer(sub_geometry, autorelease: false)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to add geometry directly: #{sub_geometry}") do
           FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
