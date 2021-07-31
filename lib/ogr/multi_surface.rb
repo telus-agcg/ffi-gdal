@@ -15,7 +15,7 @@ module OGR
 
     def initialize(c_pointer: nil, spatial_reference: nil)
       c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
-      super(c_pointer, spatial_reference)
+      super(c_pointer: c_pointer, spatial_reference: spatial_reference)
     end
   end
 end
