@@ -16,7 +16,7 @@ module OGR
         | OGR::GeometryCollection | OGR::GeometryCollection25D
         | OGR::CircularString | OGR::CompoundCurve | OGR::CurvePolygon
         | OGR::MultiCurve | OGR::MultiSurface
-        | OGR::Curve
+        | OGR::Curve | OGR::Surface
         | OGR::NoneGeometry | OGR::UnknownGeometry
     )
 

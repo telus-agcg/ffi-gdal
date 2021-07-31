@@ -27,6 +27,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `OGR::CurvePolygon`
   - `OGR::MultiCurve`
   - `OGR::MultiSurface`
+  - `OGR::Surface`
 
 ### Changed
 
