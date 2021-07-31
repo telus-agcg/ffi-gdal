@@ -21,6 +21,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `wkb` geometry types that have been added since GDAL 2.0. This includes
   [curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries) and
   [measured geometries](https://trac.osgeo.org/gdal/wiki/rfc61_support_for_measured_geometries):
+  - `OGR::Curve`
   - `OGR::CircularString`
   - `OGR::CompoundCurve`
   - `OGR::CurvePolygon`

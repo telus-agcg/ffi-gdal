@@ -7,7 +7,7 @@ module OGR
   #
   # a collection of curves (line strings, circular strings, compound curves)
   #
-  class MultiCurve < OGR::Geometry
+  class MultiCurve < OGR::GeometryCollection
     include GDAL::Logger
     include OGR::Geometry::Container
 

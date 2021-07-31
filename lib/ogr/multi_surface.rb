@@ -7,7 +7,7 @@ module OGR
   #
   # a collection of surfaces (polygons, curve polygons)
   #
-  class MultiSurface < OGR::Geometry
+  class MultiSurface < OGR::GeometryCollection
     include GDAL::Logger
     include OGR::Geometry::Container
 

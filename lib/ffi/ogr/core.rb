@@ -43,6 +43,7 @@ module FFI
                              :wkbCurvePolygon,           10,
                              :wkbMultiCurve,             11,
                              :wkbMultiSurface,           12,
+                             :wkbCurve,                  13,
                              :wkbNone,                   100,    # non-standard, for pure attribute records
                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
                              :wkbPoint25D,               0x8000_0001,
