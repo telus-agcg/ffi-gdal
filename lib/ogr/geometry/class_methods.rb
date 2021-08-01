@@ -83,6 +83,7 @@ module OGR
       # @param wkt_data [String]
       # @param spatial_ref [OGR::SpatialReference]
       # @return [OGR::Geometry]
+      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
       def create_from_wkt(wkt_data, spatial_ref = nil)
         wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
         wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
@@ -91,10 +92,10 @@ module OGR
         spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
         geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
 
-        FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
-                                          spatial_ref_pointer, geometry_ptr_ptr)
-
-        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
+        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKT: '#{wkt_data}'") do
+          FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
+                                            spatial_ref_pointer, geometry_ptr_ptr)
+        end
 
         factory(geometry_ptr_ptr.read_pointer)
       end
@@ -102,17 +103,18 @@ module OGR
       # @param wkb_data [String] Binary string of WKB.
       # @param spatial_ref [OGR::SpatialReference]
       # @return [OGR::Geometry]
+      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
       def create_from_wkb(wkb_data, spatial_ref = nil)
         wkb_data_pointer = FFI::MemoryPointer.new(:char, wkb_data.length)
         wkb_data_pointer.write_bytes(wkb_data)
 
         spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
         geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
-
         byte_count = wkb_data.length
-        FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
 
-        return if geometry_ptr_ptr.null? || geometry_ptr_ptr.read_pointer.null?
+        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKB: '#{wkb_data}'") do
+          FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
+        end
 
         factory(geometry_ptr_ptr.read_pointer)
       end

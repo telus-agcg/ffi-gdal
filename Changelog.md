@@ -93,6 +93,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - _BREAKING_: Moved `OGR::Geometry#geometry_count` to `OGR::Geometry::Container`.
 - _BREAKING_: Moved `OGR::Geometry::Container#polygon_from_edges` to
   `OGR::Geometry::PolygonFromEdges`.
+- _BREAKING_: `OGR::Geometry.create_from_wkt`, `.create_from_wkb` raise instead
+  of returning `nil` if creation failed.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
 - Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
