@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'geometry/length'
-require_relative 'geometry/xy_points'
+require_relative 'geometry/simple_curve'
 
 module OGR
   class LineString < OGR::Curve
     include GDAL::Logger
+    include OGR::Geometry::SimpleCurve
 
     GEOMETRY_TYPE = :wkbLineString
 
@@ -29,7 +29,7 @@ module OGR
 
     def initialize(c_pointer: nil, spatial_reference: nil)
       c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
-      super(c_pointer: c_pointer, spatial_reference: spatial_reference)
+      super(c_pointer, spatial_reference: spatial_reference)
     end
 
     # Wrapper for {#add_point} to allow passing in an {OGR::Point} instead of

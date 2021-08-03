@@ -145,6 +145,14 @@ module GDAL
       result
     end
 
+    def _cpl_read_and_free_strptr
+      string, ptr = yield
+
+      FFI::CPL::VSI.VSIFree(ptr)
+
+      string
+    end
+
     # Maps GDAL DataTypes to FFI types.
     #
     # @param data_type [FFI::GDAL::GDAL::DataType]

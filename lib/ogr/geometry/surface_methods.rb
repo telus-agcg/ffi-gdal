@@ -4,7 +4,7 @@ module OGR
   class Geometry
     # Methods used for getting the area of a geometry.
     #
-    module Area
+    module SurfaceMethods
       # Computes area for a LinearRing, Polygon, or MultiPolygon.  The area of
       # the feature is in square units of the spatial reference system in use.
       #
@@ -18,6 +18,13 @@ module OGR
       # @return [{ unit_name: String, value: Float }, nil]
       def area_units
         spatial_reference ? spatial_reference.linear_units : nil
+      end
+
+      # Returns a point that's guaranteed to lie on the surface.
+      #
+      # @return [OGR::Point]
+      def point_on_surface
+        OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer) }
       end
     end
   end

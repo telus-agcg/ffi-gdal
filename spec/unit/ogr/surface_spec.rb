@@ -3,7 +3,5 @@
 require 'ogr/geometry'
 
 RSpec.describe OGR::Surface do
-  it_behaves_like 'a geometry' do
-    let(:geometry) { described_class.new }
-  end
+  # It's only possible to instantiate an OGR::Curve using the GeoPackage driver.
 end

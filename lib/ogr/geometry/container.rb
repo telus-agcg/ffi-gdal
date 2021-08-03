@@ -21,7 +21,7 @@ module OGR
       #
       # @param sub_geometry [OGR::Geometry, FFI::Pointer]
       # @raise [FFI::GDAL::InvalidPointer]
-      # @raise [OGR::Failure]
+      # @raise [GDAL::Error, OGR::UnsupportedGeometryType]
       def add_geometry(sub_geometry)
         sub_geometry_ptr = GDAL._pointer(sub_geometry)
 

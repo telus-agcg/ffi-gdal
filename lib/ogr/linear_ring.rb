@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'line_string'
-require_relative 'geometry/area'
+require_relative 'geometry/surface_methods'
 
 module OGR
   class LinearRing < LineString
     include GDAL::Logger
-    include OGR::Geometry::Area
+    include OGR::Geometry::SurfaceMethods
 
     GEOMETRY_TYPE = :wkbLinearRing
 

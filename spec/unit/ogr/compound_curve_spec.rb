@@ -3,13 +3,15 @@
 require 'ogr/geometry'
 
 RSpec.describe OGR::CompoundCurve do
-  it_behaves_like 'a geometry' do
-    let(:geometry) { described_class.new }
+  subject do
+    g = described_class.new
+    g.add_geometry(child_geometry)
+    g
   end
 
-  it_behaves_like 'a container geometry' do
-    let(:child_geometry) do
-      OGR::Geometry.create_from_wkt('LINESTRING (0 0,0 1,1 1,1 0,0 0)')
-    end
-  end
+  let(:child_geometry) { OGR::Geometry.create_from_wkt('CIRCULARSTRING (0 0,0 1,1 1)') }
+
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a curve geometry'
+  it_behaves_like 'a container geometry'
 end

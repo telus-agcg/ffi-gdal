@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'ogr/envelope'
+require 'ogr/envelope_3d'
 require 'gdal/geo_transform'
 
-RSpec.describe OGR::Envelope do
+RSpec.describe OGR::Envelope3D do
   describe '#x_min' do
     context 'default value' do
       subject { described_class.new.x_min }
@@ -57,6 +57,34 @@ RSpec.describe OGR::Envelope do
     it 'sets the y_max value' do
       subject.y_max = 123
       expect(subject.y_max).to eq 123.0
+    end
+  end
+
+  describe '#z_min' do
+    context 'default value' do
+      subject { described_class.new.z_min }
+      it { is_expected.to eq 0.0 }
+    end
+  end
+
+  describe '#z_min= + #z_min' do
+    it 'sets the z_min value' do
+      subject.z_min = 123
+      expect(subject.z_min).to eq 123.0
+    end
+  end
+
+  describe '#z_max' do
+    context 'default value' do
+      subject { described_class.new.z_max }
+      it { is_expected.to eq 0.0 }
+    end
+  end
+
+  describe '#z_max= + #z_max' do
+    it 'sets the z_max value' do
+      subject.z_max = 123
+      expect(subject.z_max).to eq 123.0
     end
   end
 end

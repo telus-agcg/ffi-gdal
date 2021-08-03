@@ -4,14 +4,12 @@ require_relative '../ogr'
 
 module OGR
   class Envelope
-    # @return [FFI::OGR::Envelope, FFI::OGR::Envelope3D] The C struct that this
-    #   object wraps.
+    # @return [FFI::OGR::Envelope] The C struct that this object wraps.
     attr_reader :c_struct
 
     # @param envelope_struct [FFI::OGR::Envelope]
-    def initialize(envelope_struct = nil, three_d: false)
-      @c_struct = envelope_struct
-      @c_struct ||= three_d ? FFI::OGR::Envelope3D.new : FFI::OGR::Envelope.new
+    def initialize(envelope_struct = nil)
+      @c_struct = envelope_struct || FFI::OGR::Envelope.new
     end
 
     # @return [FFI::Pointer] Pointer to the C struct.
@@ -57,34 +55,6 @@ module OGR
     # @param new_y_max [Float]
     def y_max=(new_y_max)
       @c_struct[:max_y] = new_y_max
-    end
-
-    # @return [Float, nil]
-    def z_min
-      return nil unless @c_struct.is_a? FFI::OGR::Envelope3D
-
-      @c_struct[:min_z]
-    end
-
-    # @param new_z_min [Float]
-    def z_min=(new_z_min)
-      return unless @c_struct.is_a? FFI::OGR::Envelope3D
-
-      @c_struct[:min_z] = new_z_min
-    end
-
-    # @return [Float, nil]
-    def z_max
-      return nil unless @c_struct.is_a? FFI::OGR::Envelope3D
-
-      @c_struct[:max_z]
-    end
-
-    # @param new_z_max [Float]
-    def z_max=(new_z_max)
-      return unless @c_struct.is_a? FFI::OGR::Envelope3D
-
-      @c_struct[:max_z] = new_z_max
     end
   end
 end

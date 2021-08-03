@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'geometry/container'
-require_relative 'geometry/area'
+require_relative 'geometry/surface_methods'
 
 module OGR
   class Polygon < OGR::CurvePolygon
     include GDAL::Logger
     include OGR::Geometry::Container
-    include OGR::Geometry::Area
+    include OGR::Geometry::SurfaceMethods
 
     GEOMETRY_TYPE = :wkbPolygon
 

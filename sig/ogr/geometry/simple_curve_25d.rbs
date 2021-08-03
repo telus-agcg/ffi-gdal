@@ -1,6 +1,6 @@
 module OGR
   class Geometry
-    module XYZPoints
+    module SimpleCurve25D
       include GDAL::Logger
 
       def x: (Integer point_number) -> Float

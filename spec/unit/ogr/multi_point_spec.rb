@@ -3,17 +3,18 @@
 require 'ogr/geometry'
 
 RSpec.describe OGR::MultiPoint do
-  it_behaves_like 'a geometry' do
-    let(:geometry) { described_class.new }
+  subject do
+    g = described_class.new
+    g.add_geometry(child_geometry)
+    g
   end
 
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
-  end
+  let(:child_geometry) { OGR::Point.new_from_coordinates(1, 2) }
 
-  it_behaves_like 'a container geometry' do
-    let(:child_geometry) { OGR::Point.new }
-    let(:edge_geometry1) { OGR::Point.new }
-    let(:edge_geometry2) { OGR::Point.new }
-  end
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a 2D geometry'
+  it_behaves_like 'a container geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 end

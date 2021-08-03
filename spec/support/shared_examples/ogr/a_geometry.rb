@@ -3,9 +3,20 @@
 RSpec.shared_examples 'a geometry' do
   require 'ogr'
 
-  describe '#coordinate_dimension' do
-    subject { geometry.coordinate_dimension }
-    it { is_expected.to eq 2 }
+  describe '#type' do
+    context 'when created with data' do
+      it 'returns :wkbMultiPoint25D' do
+        expect(subject.type).to eq described_class::GEOMETRY_TYPE
+      end
+    end
+
+    context 'when created without data' do
+      subject { described_class.new }
+
+      it 'returns :wkbMultiPoint25D' do
+        expect(subject.type).to eq described_class::GEOMETRY_TYPE
+      end
+    end
   end
 
   describe '#coordinate_dimension=' do
@@ -24,14 +35,16 @@ RSpec.shared_examples 'a geometry' do
 
   describe '#empty!' do
     it 'removes all points/geometries from the geometry' do
-      skip
+      thing = subject.clone
+      thing.empty!
+      expect(thing).to be_empty
+      expect(thing.spatial_reference).to be_nil
     end
   end
 
   describe '#empty?' do
     context 'when empty' do
-      subject { described_class.new }
-      it { is_expected.to be_empty }
+      specify { expect(described_class.new).to be_empty }
     end
 
     context 'when with points' do
@@ -42,8 +55,7 @@ RSpec.shared_examples 'a geometry' do
   end
 
   describe '#envelope' do
-    subject { geometry.envelope }
-    it { is_expected.to be_a OGR::Envelope }
+    specify { expect(subject.envelope).to be_a OGR::Envelope }
   end
 
   describe '#dump_readable' do
@@ -63,7 +75,7 @@ RSpec.shared_examples 'a geometry' do
   describe '#intersects?' do
     context 'self intersects other geometry' do
       it 'returns true' do
-        skip
+        expect(subject.intersects?(subject.clone)).to eq true
       end
     end
 
@@ -77,13 +89,13 @@ RSpec.shared_examples 'a geometry' do
   describe '#equals?' do
     context 'self equals other geometry' do
       it 'returns true' do
-        skip
+        expect(subject.equals?(subject.clone)).to eq true
       end
     end
 
     context 'self does not equals other geometry' do
       it 'returns false' do
-        skip
+        expect(subject.equals?(described_class.new)).to eq false
       end
     end
   end
@@ -175,7 +187,7 @@ RSpec.shared_examples 'a geometry' do
   describe '#valid?' do
     context 'self is valid' do
       it 'returns true' do
-        skip
+        expect(subject).to be_valid
       end
     end
 
@@ -234,12 +246,6 @@ RSpec.shared_examples 'a geometry' do
     end
   end
 
-  describe '#polygonize' do
-    it 'adds points to close any potential rings' do
-      skip
-    end
-  end
-
   describe '#difference' do
     it 'creates a new geometry that represents the difference' do
       skip
@@ -269,14 +275,14 @@ RSpec.shared_examples 'a geometry' do
   describe '#spatial_reference' do
     context 'none assigned' do
       it 'returns nil' do
-        expect(geometry.spatial_reference).to be_nil
+        expect(subject.spatial_reference).to be_nil
       end
     end
 
     context 'has one assigned' do
       it 'returns a spatial reference' do
-        geometry.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
-        expect(geometry.spatial_reference).to be_a OGR::SpatialReference
+        subject.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+        expect(subject.spatial_reference).to be_a OGR::SpatialReference
       end
     end
   end
@@ -355,31 +361,35 @@ RSpec.shared_examples 'a geometry' do
 
   describe '#wkb_size' do
     it 'returns a non-zero integer' do
-      expect(geometry.wkb_size).to be_a Integer
+      size = subject.wkb_size
 
-      if geometry.name == 'LINEARRING'
-        expect(geometry.wkb_size).to be_zero
+      expect(size).to be_a Integer
+
+      if subject.name == 'LINEARRING'
+        expect(size).to be_zero
       else
-        expect(geometry.wkb_size).to be_positive
+        expect(size).to be_positive
       end
     end
   end
 
   describe '#to_wkb' do
     it 'returns some binary String data' do
-      if geometry.name == 'LINEARRING'
-        expect { geometry.to_wkb }.to raise_exception OGR::UnsupportedOperation
+      if subject.name == 'LINEARRING'
+        expect { subject.to_wkb }.to raise_exception OGR::UnsupportedOperation
       else
-        expect(geometry.to_wkb).to be_a String
-        expect(geometry.to_wkb).to_not be_empty
+        wkb = subject.to_wkb
+        expect(wkb).to be_a String
+        expect(wkb).to_not be_empty
       end
     end
   end
 
   describe '#to_wkt' do
     it 'returns some String data' do
-      expect(geometry.to_wkt).to be_a String
-      expect(geometry.to_wkt).to_not be_empty
+      wkt = subject.to_wkt
+      expect(wkt).to be_a String
+      expect(wkt).to_not be_empty
     end
   end
 end

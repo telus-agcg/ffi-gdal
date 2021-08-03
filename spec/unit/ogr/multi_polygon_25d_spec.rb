@@ -3,26 +3,18 @@
 require 'ogr'
 
 RSpec.describe OGR::MultiPolygon25D do
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
+  subject do
+    g = described_class.new
+    g.add_geometry(child_geometry)
+    g
   end
 
-  describe '#type' do
-    context 'when created with data' do
-      subject { OGR::Geometry.create_from_wkt(wkt) }
-      let(:wkt) { 'MULTIPOLYGON(((0 0 1,0 1 1,1 1 1,0 0 1)),((0 0 5,1 1 5,1 0 5,0 0 5)))' }
+  let(:child_geometry) { OGR::Geometry.create_from_wkt('POLYGON((0 0 1,0 1 1,1 1 1,0 0 1))') }
 
-      it 'returns :wkbMultiPolygon25D' do
-        expect(subject.type).to eq :wkbMultiPolygon25D
-      end
-    end
-
-    context 'when created without data' do
-      subject { described_class.new }
-
-      it 'returns :wkbMultiPolygon' do
-        expect(subject.type).to eq :wkbMultiPolygon
-      end
-    end
-  end
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a 2.5D geometry'
+  it_behaves_like 'a container geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 end

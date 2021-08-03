@@ -3,9 +3,21 @@
 require 'ogr/geometry'
 
 RSpec.describe OGR::GeometryCollection do
-  it_behaves_like 'a geometry' do
-    let(:geometry) { described_class.new }
+  let(:polygon) do
+    OGR::Geometry.create_from_wkt('POLYGON ((0 0,0 1,1 1,1 0,0 0))')
   end
+
+  subject do
+    gc = described_class.new
+    gc.add_geometry(polygon)
+    gc
+  end
+
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a 2D geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 
   it_behaves_like 'a container geometry' do
     let(:child_geometry) do
@@ -13,21 +25,7 @@ RSpec.describe OGR::GeometryCollection do
     end
   end
 
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
-  end
-
   describe '#to_polygon' do
-    let(:polygon) do
-      OGR::Geometry.create_from_wkt('POLYGON ((0 0,0 1,1 1,1 0,0 0))')
-    end
-
-    subject do
-      gc = described_class.new
-      gc.add_geometry(polygon)
-      gc
-    end
-
     it 'returns a Polygon' do
       expect(subject.to_polygon).to be_a OGR::Polygon
     end

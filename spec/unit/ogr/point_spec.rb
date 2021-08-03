@@ -14,6 +14,12 @@ RSpec.describe OGR::Point do
     OGR::Geometry.create_from_wkt(wkt)
   end
 
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a 2D geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
+
   describe '#dimension' do
     specify { expect(subject.dimension).to be_zero }
   end
@@ -31,16 +37,6 @@ RSpec.describe OGR::Point do
   end
 
   context 'non-empty point' do
-    describe '#coordinate_dimension' do
-      specify { expect(subject.coordinate_dimension).to eq 2 }
-    end
-
-    describe '#envelope' do
-      it 'returns an OGR::Envelope' do
-        expect(subject.envelope).to be_a OGR::Envelope
-      end
-    end
-
     describe '#point_count' do
       specify { expect(subject.point_count).to eq 1 }
     end
@@ -179,12 +175,6 @@ RSpec.describe OGR::Point do
     describe '#ring?' do
       it 'returns false' do
         expect(subject.ring?).to eq false
-      end
-    end
-
-    describe '#polygonize' do
-      it 'returns nil' do
-        expect(subject.polygonize).to be_nil
       end
     end
 

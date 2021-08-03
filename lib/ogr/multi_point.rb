@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'geometry/container'
-require_relative 'geometry/xy_points'
-
 module OGR
   class MultiPoint < OGR::GeometryCollection
     include GDAL::Logger
-    include OGR::Geometry::Container
-    include OGR::Geometry::XYPoints
 
     GEOMETRY_TYPE = :wkbMultiPoint
 

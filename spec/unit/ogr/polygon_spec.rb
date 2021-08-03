@@ -3,16 +3,26 @@
 require 'ogr/geometry'
 
 RSpec.describe OGR::Polygon do
-  subject(:polygon) { OGR::Geometry.create_from_wkt(wkt) }
-  let(:wkt) { 'POLYGON((10 10, 20 20, 30 30))' }
-
-  it_behaves_like 'a geometry' do
-    let(:geometry) { polygon }
+  subject(:polygon) do
+    g = described_class.new
+    g.add_geometry(child_geometry)
+    g
   end
 
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
+  let(:child_geometry) do
+    g = OGR::LinearRing.new
+    g.import_from_wkt('LINEARRING(0 0,0 1,1 1,0 0)')
+
+    g
   end
+
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a container geometry'
+  it_behaves_like 'a surface geometry'
+  it_behaves_like 'a 2D geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 
   describe '#to_multi_polygon' do
     it 'returns a MultiPolygon' do

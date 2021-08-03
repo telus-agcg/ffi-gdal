@@ -65,21 +65,8 @@ module OGR
 
     # @return [OGR::Envelope]
     def envelope
-      case coordinate_dimension
-      when 2
-        envelope = FFI::OGR::Envelope.new
-        FFI::OGR::API.OGR_G_GetEnvelope(@c_pointer, envelope)
-      when 3
-        envelope = FFI::OGR::Envelope3D.new
-        FFI::OGR::API.OGR_G_GetEnvelope3D(@c_pointer, envelope)
-      when 0 then return nil
-      else
-        raise 'Unknown envelope dimension.'
-      end
-
-      return if envelope.null?
-
-      OGR::Envelope.new(envelope)
+      raise 'child class must include `OGR::HasTwoCoordinateDimensions` or ' \
+        '`OGR::HasThreeCoordinateDimensions`'
     end
 
     # @return [FFI::OGR::API::WKBGeometryType]
@@ -103,12 +90,8 @@ module OGR
 
     # @return [Integer]
     def centroid
-      point = is_3d? ? OGR::Point25D.new : OGR::Point.new
-
-      ogr_err = FFI::OGR::API.OGR_G_Centroid(@c_pointer, point.c_pointer)
-      return if point.c_pointer.null? || ogr_err.positive?
-
-      point
+      raise 'child class must include `OGR::HasTwoCoordinateDimensions` or ' \
+        '`OGR::HasThreeCoordinateDimensions`'
     end
 
     # Dump as WKT to the given +file_path+; dumps to STDOUT if none is given.
@@ -119,11 +102,6 @@ module OGR
       file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
       FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file_ptr, prefix)
       FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
-    end
-
-    # Converts this geometry to a 2D geometry.
-    def flatten_to_2d!
-      FFI::OGR::API.OGR_G_FlattenTo2D(@c_pointer)
     end
 
     # @param geometry [OGR::Geometry, FFI::Pointer]
@@ -242,16 +220,6 @@ module OGR
     # this closes them by adding the starting point at the end.
     def close_rings!
       FFI::OGR::API.OGR_G_CloseRings(@c_pointer)
-    end
-
-    # Creates a polygon from a set of sparse edges.  The newly created geometry
-    # will contain a collection of reassembled Polygons.
-    #
-    # @return [OGR::Geometry] nil if the current geometry isn't a
-    #   MultiLineString or if it's impossible to reassemble due to topological
-    #   inconsistencies.
-    def polygonize
-      OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Polygonize(@c_pointer) }
     end
 
     # @param geometry [OGR::Geometry]
@@ -397,13 +365,6 @@ module OGR
       OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_ConvexHull(@c_pointer) }
     end
 
-    # Returns a point that's guaranteed to lie on the surface.
-    #
-    # @return [OGR::Point]
-    def point_on_surface
-      OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer) }
-    end
-
     # @param wkb_data [String] Binary WKB data.
     # @raise [OGR::Failure]
     def import_from_wkb(wkb_data)
@@ -459,6 +420,13 @@ module OGR
       end
     end
 
+    # @return [String, nil]
+    def to_gml
+      GDAL._cpl_read_and_free_strptr do
+        FFI::OGR::API.OGR_G_ExportToGML(@c_pointer)
+      end
+    end
+
     # This geometry expressed as GML in GML basic data types.
     #
     # @param [Hash] options
@@ -473,30 +441,28 @@ module OGR
     # @option options [String] :gmlid Use this to write a gml:id attribute at
     #   the top level of the geometry.
     # @return [String]
-    def to_gml(**options)
+    def to_gml_ex(**options)
       options_ptr = GDAL::Options.pointer(options)
-      gml, ptr = FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
-      FFI::CPL::VSI.VSIFree(ptr)
 
-      gml
+      GDAL._cpl_read_and_free_strptr do
+        FFI::OGR::API.OGR_G_ExportToGMLEx(@c_pointer, options_ptr)
+      end
     end
 
     # @param altitude_mode [String] Value to write in the +altitudeMode+
     #   element.
     # @return [String]
     def to_kml(altitude_mode = nil)
-      kml, ptr = FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
-      FFI::CPL::VSI.VSIFree(ptr)
-
-      kml
+      GDAL._cpl_read_and_free_strptr do
+        FFI::OGR::API.OGR_G_ExportToKML(@c_pointer, altitude_mode)
+      end
     end
 
     # @return [String]
     def to_geo_json
-      json, ptr = FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
-      FFI::CPL::VSI.VSIFree(ptr)
-
-      json
+      GDAL._cpl_read_and_free_strptr do
+        FFI::OGR::API.OGR_G_ExportToJson(@c_pointer)
+      end
     end
 
     # @param [Hash] options
@@ -507,10 +473,10 @@ module OGR
     # @return [String]
     def to_geo_json_ex(**options)
       options_ptr = GDAL::Options.pointer(options)
-      json, ptr = FFI::OGR::API.OGR_G_ExportToJsonEx(@c_pointer, options_ptr)
-      FFI::CPL::VSI.VSIFree(ptr)
 
-      json
+      GDAL._cpl_read_and_free_strptr do
+        FFI::OGR::API.OGR_G_ExportToJsonEx(@c_pointer, options_ptr)
+      end
     end
 
     # Converts the current geometry to a LineString geometry.  The returned

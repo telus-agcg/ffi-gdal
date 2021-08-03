@@ -23,17 +23,16 @@ RSpec.describe OGR::LineString do
     g
   end
 
-  it_behaves_like 'a geometry' do
-    let(:geometry) { open_line_string }
-  end
+  subject { open_line_string }
 
-  it_behaves_like 'a line string' do
-    let(:geometry) { open_line_string }
-  end
-
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { open_line_string }
-  end
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a curve geometry'
+  it_behaves_like 'a simple curve geometry'
+  it_behaves_like 'a 2D geometry'
+  it_behaves_like 'a line string'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 
   describe '#name' do
     subject { open_line_string.name }

@@ -3,26 +3,12 @@
 require 'ogr'
 
 RSpec.describe OGR::LineString25D do
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
-  end
+  let(:wkt) { 'LINESTRING (0 1 2, 1 20 30, 2 40 50)' }
+  subject { described_class.create_from_wkt(wkt) }
 
-  describe '#type' do
-    context 'when created with data' do
-      subject { OGR::Geometry.create_from_wkt(wkt) }
-      let(:wkt) { 'LINESTRING(1 2 3, 2 2 3)' }
-
-      it 'returns :wkbLineString25D' do
-        expect(subject.type).to eq :wkbLineString25D
-      end
-    end
-
-    context 'when created without data' do
-      subject { described_class.new }
-
-      it 'returns :wkbLineString' do
-        expect(subject.type).to eq :wkbLineString
-      end
-    end
-  end
+  it_behaves_like 'a curve geometry'
+  it_behaves_like 'a 2.5D geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 end

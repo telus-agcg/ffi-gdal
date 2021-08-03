@@ -3,26 +3,19 @@
 require 'ogr'
 
 RSpec.describe OGR::MultiLineString25D do
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
+  subject do
+    g = described_class.new
+    g.add_geometry(child_geometry)
+    g
   end
 
-  describe '#type' do
-    context 'when created with data' do
-      subject { OGR::Geometry.create_from_wkt(wkt) }
-      let(:wkt) { 'MULTILINESTRING((1 2 3, 2 2 3),(9 9 9, 10 10 10))' }
+  let(:child_geometry) { OGR::LineString.create_from_wkt('LINESTRING(4 6 8,7 10 11))') }
 
-      it 'returns :wkbMultiLineString25D' do
-        expect(subject.type).to eq :wkbMultiLineString25D
-      end
-    end
-
-    context 'when created without data' do
-      subject { described_class.new }
-
-      it 'returns :wkbMultiLineString' do
-        expect(subject.type).to eq :wkbMultiLineString
-      end
-    end
-  end
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a multi-curve geometry'
+  it_behaves_like 'a 2.5D geometry'
+  it_behaves_like 'a container geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 end

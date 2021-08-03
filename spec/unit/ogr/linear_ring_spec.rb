@@ -5,28 +5,22 @@ require 'ogr/geometry'
 RSpec.describe OGR::LinearRing do
   let(:linear_ring) do
     g = described_class.new
-    g.add_point(0, 0)
-    g.add_point(0, 10)
-    g.add_point(10, 10)
-    g.add_point(10, 0)
-    g.add_point(0, 0)
+    g.add_point(65.9, 0)
+    g.add_point(9, -34.5)
+    g.add_point(40, -20)
+    g.add_point(65.9, 0)
 
     g
   end
 
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
-  end
-
-  it_behaves_like 'a geometry' do
-    let(:geometry) { linear_ring }
-  end
-
-  it_behaves_like 'a line string' do
-    let(:geometry) { linear_ring }
-  end
-
   subject { linear_ring }
+
+  it_behaves_like 'a curve geometry'
+  it_behaves_like 'a simple curve geometry'
+  it_behaves_like 'a line string'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 
   describe '#name' do
     subject { linear_ring.name }
@@ -35,14 +29,14 @@ RSpec.describe OGR::LinearRing do
 
   describe '#point_count' do
     subject { linear_ring.point_count }
-    it { is_expected.to eq 5 }
+    it { is_expected.to eq 4 }
   end
 
   describe '#intersects?' do
     context 'other geometry is a point' do
       context 'inside the ring' do
         let(:other_geometry) do
-          OGR::Geometry.create_from_wkt('POINT (0 1)')
+          OGR::Point.new_from_coordinates(65.9, 1)
         end
 
         subject { linear_ring.intersects?(other_geometry) }

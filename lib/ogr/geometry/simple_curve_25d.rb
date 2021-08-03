@@ -2,7 +2,7 @@
 
 module OGR
   class Geometry
-    module XYZPoints
+    module SimpleCurve25D
       # @param point_number [Integer]
       # @return [Float]
       # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.

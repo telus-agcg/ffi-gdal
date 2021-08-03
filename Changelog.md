@@ -28,6 +28,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `OGR::MultiCurve`
   - `OGR::MultiSurface`
   - `OGR::Surface`
+- Added `.new_from_coordinates` for `OGR::Point` and `OGR::Point25D`.
+- Added `OGR::Geometry#to_gml_ex` (well, changed `#to_gml` to wrap
+  `OGR_G_ExportToGML` instead of `OGR_G_ExportToGMLEx`.
 
 ### Changed
 
@@ -89,17 +92,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it's
   null. Now these raise the same exception.
 - _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
-- _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::XYPoints` and `XYZPoints`.
+- _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::SimpleCurve` and
+    `SimpleCurve25D`.
 - _BREAKING_: Moved `OGR::Geometry#geometry_count` to `OGR::Geometry::Container`.
 - _BREAKING_: Moved `OGR::Geometry::Container#polygon_from_edges` to
   `OGR::Geometry::PolygonFromEdges`.
 - _BREAKING_: `OGR::Geometry.create_from_wkt`, `.create_from_wkb` raise instead
   of returning `nil` if creation failed.
+- _BREAKING_: Moved `OGR::Geometry#polygonize` to `OGR::MultiLineString`.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
 - Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
-  `OGR::Geometry` mixins: `XYPoints`, `XYZPoints`, `Area`, `Length`.
+  `OGR::Geometry` mixins: `SimpleCurve`/`SimpleCurve25D`, `Area`, `Length`.
 - `OGR::Geometry` is now a (abstract) `class` from which other, concrete geometry objects inherit.
+- Moved `OGR::MultiPolygon#union_cascaded` to `OGR::MultiSurface`.
 
 ### Fixed
 

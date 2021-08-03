@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'geometry/container'
+require_relative 'geometry/length'
 
 module OGR
   # Per [RFC 49: Curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries):
@@ -9,7 +9,7 @@ module OGR
   #
   class MultiCurve < OGR::GeometryCollection
     include GDAL::Logger
-    include OGR::Geometry::Container
+    include OGR::Geometry::Length
 
     GEOMETRY_TYPE = :wkbMultiCurve
 

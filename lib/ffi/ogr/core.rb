@@ -17,15 +17,15 @@ module FFI
       # The C API defines :OGRErr as a function that returns constants.  I'm
       # taking the liberty to turn this into an enum.
       # https://trac.osgeo.org/gdal/ticket/3153
-      Err = enum :OGRERR_NONE,
-                 :OGRERR_NOT_ENOUGH_DATA,
-                 :OGRERR_NOT_ENOUGH_MEMORY,
-                 :OGRERR_UNSUPPORTED_GEOMETRY_TYPE,
-                 :OGRERR_UNSUPPORTED_OPERATION,
-                 :OGRERR_CORRUPT_DATA,
-                 :OGRERR_FAILURE,
-                 :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE
+      Err = enum :ogr_err, %i[OGRERR_NONE
+                              OGRERR_NOT_ENOUGH_DATA
+                              OGRERR_NOT_ENOUGH_MEMORY
+                              OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+                              OGRERR_UNSUPPORTED_OPERATION
+                              OGRERR_CORRUPT_DATA
+                              OGRERR_FAILURE
+                              OGRERR_UNSUPPORTED_SRS
+                              OGRERR_INVALID_HANDLE]
 
       # https://gdal.org/api/vector_c_api.html#_CPPv418OGRwkbGeometryType
       #

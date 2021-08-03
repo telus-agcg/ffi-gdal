@@ -3,26 +3,25 @@
 require 'ogr'
 
 RSpec.describe OGR::Polygon25D do
-  it_behaves_like 'a capable exporter' do
-    let(:geometry) { described_class.new }
+  subject do
+    g = described_class.new
+    g.add_geometry(linear_ring)
+    g
   end
 
-  describe '#type' do
-    context 'when created with data' do
-      subject { OGR::Geometry.create_from_wkt(wkt) }
-      let(:wkt) { 'POLYGON((0 0 1,0 1 1,1 1 1,0 0 1))' }
+  let(:linear_ring) do
+    g = OGR::LinearRing.new
+    g.import_from_wkt('LINEARRING(0 0 1,0 1 1,1 1 1,0 0 1)')
+    g
+  end
 
-      it 'returns :wkbPolygon25D' do
-        expect(subject.type).to eq :wkbPolygon25D
-      end
-    end
+  it_behaves_like 'a geometry'
+  it_behaves_like 'a 2.5D geometry'
+  it_behaves_like 'a GML exporter'
+  it_behaves_like 'a KML exporter'
+  it_behaves_like 'a GeoJSON exporter'
 
-    context 'when created without data' do
-      subject { described_class.new }
-
-      it 'returns :wkbPolygon' do
-        expect(subject.type).to eq :wkbPolygon
-      end
-    end
+  it_behaves_like 'a container geometry' do
+    let(:child_geometry) { linear_ring.to_line_string }
   end
 end
