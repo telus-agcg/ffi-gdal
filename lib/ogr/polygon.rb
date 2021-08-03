@@ -6,7 +6,6 @@ require_relative 'geometry/surface_methods'
 module OGR
   class Polygon < OGR::CurvePolygon
     include GDAL::Logger
-    include OGR::Geometry::Container
     include OGR::Geometry::SurfaceMethods
 
     GEOMETRY_TYPE = :wkbPolygon

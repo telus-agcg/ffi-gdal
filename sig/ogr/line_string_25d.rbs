@@ -1,9 +1,8 @@
 module OGR
   class LineString25D < OGR::LineString
-    include OGR::Geometry::SimpleCurve
+    include OGR::Geometry::HasThreeCoordinateDimensions
+    include OGR::Geometry::SimpleCurve25D
 
     GEOMETRY_TYPE: :wkbLineString25D
-
-    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
   end
 end

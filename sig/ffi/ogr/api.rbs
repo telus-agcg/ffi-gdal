@@ -25,7 +25,7 @@ module FFI
         FFI::Pointer lines_as_collection,
         bool best_effort,
         bool auto_close,
-        Float tolerance,
+        ffi_floatable tolerance,
         FFI::Buffer ogr_err
       ) -> FFI::Pointer
 
@@ -77,16 +77,25 @@ module FFI
         FFI::Buffer? z_buffer
       ) -> void
 
+      def self.OGR_G_SetCoordinateDimension: (FFI::Pointer geometry_handle, (2 | 3) new_coord_count) -> void
+
       def self.OGR_G_GetPointCount: (FFI::Pointer geometry_handle) -> Integer
       def self.OGR_G_SetPointCount: (FFI::Pointer geometry_handle, Integer new_point_count) -> void
 
-      def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, Float x, Float y, Float m) -> void
-      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, Float x, Float y) -> void
+      def self.OGR_G_AddPoint: (FFI::Pointer geometry_handle, ffi_floatable x, ffi_floatable y, ffi_floatable m) -> void
+      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_handle, ffi_floatable x, ffi_floatable y) -> void
 
-      def self.OGR_G_SetPoint: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y, Float z) -> void
-      def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_handle, Integer vertex_index, Float x, Float y) -> void
+      def self.OGR_G_SetPoint: (FFI::Pointer geometry_handle, Integer vertex_index, ffi_floatable x, ffi_floatable y, ffi_floatable z) -> void
+      def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_handle, Integer vertex_index, ffi_floatable x, ffi_floatable y) -> void
 
+      def self.OGR_G_Centroid: (FFI::Pointer geometry_handle, FFI::Pointer out_geom) -> (:OGRERR_NONE | :OGRERR_FAILURE)
+      def self.OGR_G_GetEnvelope: (FFI::Pointer geometry_handle, FFI::OGR::Envelope out_envelope) -> void
+      def self.OGR_G_GetEnvelope3D: (FFI::Pointer geometry_handle, FFI::OGR::Envelope3D out_envelope) -> void
+      def self.OGR_G_PointOnSurface: (FFI::Pointer geometry_handle) -> FFI::Pointer
+
+      def self.OGR_G_FlattenTo2D: (FFI::Pointer geometry_handle) -> void
       def self.OGR_G_UnionCascaded: (FFI::Pointer geometry_handle) -> FFI::Pointer
+      def self.OGR_G_Polygonize: (FFI::Pointer geometry_handle) -> FFI::Pointer
     end
   end
 end

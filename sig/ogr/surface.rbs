@@ -1,7 +1,10 @@
 module OGR
   class Surface < OGR::Geometry
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    include OGR::Geometry::SurfaceMethods
+    include OGR::Geometry::HasTwoCoordinateDimensions
 
-    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+    GEOMETRY_TYPE: :wkbSurface
+
+    def initialize: (FFI::Pointer c_pointer, ?spatial_reference: OGR::SpatialReference?) -> void
   end
 end

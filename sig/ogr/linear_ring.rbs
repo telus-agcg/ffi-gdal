@@ -1,9 +1,7 @@
 module OGR
   class LinearRing < OGR::LineString
-    include OGR::Geometry::Area
+    include OGR::Geometry::SurfaceMethods
 
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
-
-    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+    GEOMETRY_TYPE: :wkbLinearRing
   end
 end

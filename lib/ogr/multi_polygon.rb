@@ -5,7 +5,6 @@ require_relative 'geometry/surface_methods'
 module OGR
   class MultiPolygon < OGR::MultiSurface
     include GDAL::Logger
-    include OGR::Geometry::SurfaceMethods
 
     GEOMETRY_TYPE = :wkbMultiPolygon
 

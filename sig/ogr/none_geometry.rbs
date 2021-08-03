@@ -1,6 +1,6 @@
 module OGR
   class NoneGeometry < OGR::Geometry
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    GEOMETRY_TYPE: :wkbNone
 
     def initialize: (FFI::Pointer geometry_ptr) -> void
   end

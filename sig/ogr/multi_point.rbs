@@ -1,5 +1,5 @@
 module OGR
   class MultiPoint < OGR::GeometryCollection
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    GEOMETRY_TYPE: :wkbMultiPoint
   end
 end

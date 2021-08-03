@@ -1,9 +1,12 @@
 module OGR
   class Point25D < OGR::Point
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    include OGR::Geometry::HasThreeCoordinateDimensions
 
-    def self.new_from_coordinates: (Numeric x, Numeric y, Numeric z) -> void
+    GEOMETRY_TYPE: :wkbPoint25D
+
+    def self.new_from_coordinates: (ffi_floatable x, ffi_floatable y, ffi_floatable z) -> void
 
     def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+    def add_point: (ffi_floatable x, ffi_floatable y, ffi_floatable z) -> void
   end
 end

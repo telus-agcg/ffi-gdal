@@ -2,6 +2,6 @@ module OGR
   class MultiLineString < OGR::MultiCurve
     include OGR::Geometry::PolygonFromEdges
 
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    GEOMETRY_TYPE: :wkbMultiLineString
   end
 end

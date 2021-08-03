@@ -1,0 +1,3 @@
+# Numbers of these types can be passed in to FFI functions that are of types
+# :float or :double.
+type ffi_floatable = (Float | Integer | Rational)

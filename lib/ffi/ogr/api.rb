@@ -62,10 +62,10 @@ module FFI
       attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
       attach_function :OGR_G_Clone, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_GetEnvelope,
-                      [:OGRGeometryH, FFI::OGR::Envelope.ptr],
+                      [:OGRGeometryH, FFI::OGR::Envelope.by_ref],
                       :void
       attach_function :OGR_G_GetEnvelope3D,
-                      [:OGRGeometryH, FFI::OGR::Envelope3D.ptr],
+                      [:OGRGeometryH, FFI::OGR::Envelope3D.by_ref],
                       :void
 
       attach_function :OGR_G_ImportFromWkb,

@@ -27,8 +27,6 @@ module OGR
         envelope = FFI::OGR::Envelope3D.new
         FFI::OGR::API.OGR_G_GetEnvelope3D(@c_pointer, envelope)
 
-        return if envelope.null?
-
         OGR::Envelope3D.new(envelope)
       end
     end

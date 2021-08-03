@@ -1,6 +1,9 @@
 module OGR
   class MultiPoint25D < OGR::MultiPoint
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+    include OGR::Geometry::SimpleCurve25D
+    include OGR::Geometry::HasThreeCoordinateDimensions
+
+    GEOMETRY_TYPE: :wkbMultiPoint25D
 
     def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
   end
