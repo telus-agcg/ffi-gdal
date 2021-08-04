@@ -572,7 +572,8 @@ module OGR
         when OGR::MultiLineString25D::GEOMETRY_TYPE then OGR::MultiLineString25D.new(c_pointer: new_geometry_ptr)
         else
           raise OGR::InvalidGeometry,
-                "Expected #{OGR::MultiLineString::GEOMETRY_TYPE} or #{OGR::MultiLineString25D::GEOMETRY_TYPE}, got #{geom_type}"
+                "Expected #{OGR::MultiLineString::GEOMETRY_TYPE} or #{OGR::MultiLineString25D::GEOMETRY_TYPE}, " \
+                "got #{geom_type}"
         end
       end
 
@@ -594,7 +595,8 @@ module OGR
         when OGR::MultiPolygon25D::GEOMETRY_TYPE then OGR::MultiPolygon25D.new(c_pointer: new_geometry_ptr)
         else
           raise OGR::InvalidGeometry,
-                "Expected #{OGR::MultiPolygon::GEOMETRY_TYPE} or #{OGR::MultiPolygon25D::GEOMETRY_TYPE}, got #{geom_type}"
+                "Expected #{OGR::MultiPolygon::GEOMETRY_TYPE} or #{OGR::MultiPolygon25D::GEOMETRY_TYPE}, " \
+                "got #{geom_type}"
         end
       end
     end
