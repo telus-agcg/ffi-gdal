@@ -1,5 +1,11 @@
 module OGR
-  class GeometryCollection < OGR::Geometry
+  class GeometryCollection
+    include _HasAutoPointer[OGR::Geometry::AutoPointer]
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::Container
     include OGR::Geometry::PolygonFromEdges
     include OGR::Geometry::HasTwoCoordinateDimensions

@@ -1,28 +1,37 @@
 module OGR
-  class Geometry
-    include _HasPointer
-    include _SpatialReference
-    include _ToWkt
-    extend OGR::Geometry::ClassMethods
-    include GDAL::Logger
-
+  module Geometry
     type geometry_class = (
-        OGR::Point | OGR::Point25D
+        OGR::Curve
+        | OGR::CircularString | OGR::CompoundCurve
         | OGR::LinearRing | OGR::LineString | OGR::LineString25D
+        | OGR::Surface
+        | OGR::CurvePolygon
         | OGR::Polygon | OGR::Polygon25D
-        | OGR::MultiPoint | OGR::MultiPoint25D
-        | OGR::MultiLineString | OGR::MultiLineString25D
-        | OGR::MultiPolygon | OGR::MultiPolygon25D
         | OGR::GeometryCollection | OGR::GeometryCollection25D
-        | OGR::CircularString | OGR::CompoundCurve | OGR::CurvePolygon
-        | OGR::MultiCurve | OGR::MultiSurface
-        | OGR::Curve | OGR::Surface
-        | OGR::NoneGeometry | OGR::UnknownGeometry
+        | OGR::MultiCurve | OGR::MultiLineString | OGR::MultiLineString25D
+        | OGR::MultiPoint | OGR::MultiPoint25D
+        | OGR::MultiSurface | OGR::MultiPolygon | OGR::MultiPolygon25D
+        | OGR::Point | OGR::Point25D
+        | OGR::NoneGeometry
+        | OGR::UnknownGeometry
     )
 
-    def initialize: (FFI::Pointer geometry_ptr, OGR::SpatialReference ?spatial_reference) -> void
-    def empty?: -> bool
-    def import_from_wkt: (String wkt_data) -> void
-    def type: -> FFI::OGR::Core::wkb_geometry_type_symbol
+    def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> FFI::Pointer
+
+    def self.create_from_wkt: (
+      String wkt_data,
+      ?OGR::SpatialReference ?spatial_ref
+    ) -> OGR::Geometry::geometry_class
+
+    def self.create_from_wkb: (
+      String wkb_data,
+      ?OGR::SpatialReference ?spatial_ref
+    ) -> OGR::Geometry::geometry_class
+
+    def self.build_geometry: { () -> FFI::Pointer } -> (OGR::Geometry::geometry_class | nil)
+    def self.factory: (FFI::Pointer c_pointer) -> OGR::Geometry::geometry_class
+
+    def self.type_to_name: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> String
+    def self.to_wkt: (FFI::Pointer geometry_handle) -> String
   end
 end

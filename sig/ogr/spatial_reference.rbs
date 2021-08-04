@@ -2,6 +2,7 @@ module OGR
   class SpatialReference
     include _HasPointer
 
+    def initialize: (OGR::SpatialReference | String | nil | FFI::AutoPointer | FFI::Pointer | FFI::MemoryPointer) -> void
     def linear_units: -> { unit_name: String, value: Float }?
   end
 end

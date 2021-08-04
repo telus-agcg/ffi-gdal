@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  class Geometry
+  module Geometry
     module SimpleCurve
       # @param point_number [Integer]
       # @return [Float]

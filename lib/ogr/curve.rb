@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'geometry/geometry_methods'
 require_relative 'geometry/has_two_coordinate_dimensions'
 require_relative 'geometry/length'
 
@@ -11,15 +12,17 @@ module OGR
   # for more info about how this type is only instantiable using the `GeoPackage`
   # driver.
   #
-  class Curve < OGR::Geometry
+  class Curve
     include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::Length
     include OGR::Geometry::HasTwoCoordinateDimensions
 
     GEOMETRY_TYPE = :wkbCurve
 
     def initialize(c_pointer, spatial_reference: nil)
-      super(c_pointer, spatial_reference)
+      @c_pointer = c_pointer
+      self.spatial_reference = spatial_reference if spatial_reference
     end
   end
 end

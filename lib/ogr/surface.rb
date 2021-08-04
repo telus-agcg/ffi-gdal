@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'geometry/geometry_methods'
 require_relative 'geometry/surface_methods'
 require_relative 'geometry/has_two_coordinate_dimensions'
 
@@ -11,15 +12,19 @@ module OGR
   # for more info about how this type is only instantiable using the `GeoPackage`
   # driver.
   #
-  class Surface < OGR::Geometry
+  class Surface
     include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::SurfaceMethods
     include OGR::Geometry::HasTwoCoordinateDimensions
 
     GEOMETRY_TYPE = :wkbSurface
 
+    attr_reader :c_pointer
+
     def initialize(c_pointer, spatial_reference: nil)
-      super(c_pointer, spatial_reference)
+      @c_pointer = c_pointer
+      self.spatial_reference = spatial_reference if spatial_reference
     end
   end
 end

@@ -4,7 +4,7 @@ require_relative '../error_handling'
 require_relative '../envelope_3d'
 
 module OGR
-  class Geometry
+  module Geometry
     module HasThreeCoordinateDimensions
       # @return [Integer]
       def centroid

@@ -104,8 +104,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `Symbol`.
 - Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
   `OGR::Geometry` mixins: `SimpleCurve`/`SimpleCurve25D`, `Area`, `Length`.
-- `OGR::Geometry` is now a (abstract) `class` from which other, concrete geometry objects inherit.
+- Moved instance methods from `OGR::Geometry` to `OGR::Geometry::GeometryMethods`.
 - Moved `OGR::MultiPolygon#union_cascaded` to `OGR::MultiSurface`.
+- `OGR::Geometry::GeometryMethods#to_line_string` now raises or returns an
+  `OGR::LineString`/`OGR::LineString25D`.
+- `OGR::Geometry::GeometryMethods#to_polygon` now raises or returns an
+  `OGR::Polygon`/`OGR::Polygon25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_point` now raises or returns an
+  `OGR::MultiPoint`/`OGR::MultiPoint25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_line_string` now raises or returns an
+  `OGR::MultiLineString`/`OGR::MultiLineString25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_polygon` now raises or returns an
+  `OGR::MultiPolygon`/`OGR::MultiPolygon25D`.
 
 ### Fixed
 

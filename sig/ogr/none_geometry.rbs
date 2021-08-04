@@ -1,5 +1,8 @@
 module OGR
-  class NoneGeometry < OGR::Geometry
+  class NoneGeometry
+    include _HasPointer
+    include OGR::Geometry::GeometryMethods
+
     GEOMETRY_TYPE: :wkbNone
 
     def initialize: (FFI::Pointer geometry_ptr) -> void

@@ -1,5 +1,5 @@
 module OGR
-  class Geometry
+  module Geometry
     module SurfaceMethods: _SpatialReference
       def area: -> Float
 

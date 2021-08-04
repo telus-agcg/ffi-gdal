@@ -4,7 +4,7 @@ require_relative '../error_handling'
 require_relative '../envelope'
 
 module OGR
-  class Geometry
+  module Geometry
     module HasTwoCoordinateDimensions
       # @return [OGR::Point]
       def centroid

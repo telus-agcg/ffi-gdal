@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  class Geometry
+  module Geometry
     module PolygonFromEdges
       # Build a ring from a bunch of arcs.  The collection must be
       # a MultiLineString or GeometryCollection.

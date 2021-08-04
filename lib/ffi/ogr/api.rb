@@ -51,11 +51,11 @@ module FFI
                       ],
                       :OGRGeometryH
 
-      attach_function :OGR_G_ForceToPolygon, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToLineString, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_ForceToMultiPolygon, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_ForceToMultiPoint, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToMultiLineString, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToMultiPoint, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToMultiPolygon, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToPolygon, %i[OGRGeometryH], :OGRGeometryH
 
       attach_function :OGR_G_GetDimension, %i[OGRGeometryH], :int
       attach_function :OGR_G_GetCoordinateDimension, %i[OGRGeometryH], :int

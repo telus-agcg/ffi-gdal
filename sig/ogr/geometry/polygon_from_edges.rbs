@@ -1,7 +1,7 @@
 module OGR
-  class Geometry
+  module Geometry
     module PolygonFromEdges
-      def polygon_from_edges: (ffi_floatable tolerance, ?auto_close: bool) -> OGR::Geometry::geometry_class
+      def polygon_from_edges: (FFI::floatable tolerance, ?auto_close: bool) -> OGR::Geometry::geometry_class
     end
   end
 end

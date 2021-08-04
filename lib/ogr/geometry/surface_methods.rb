@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  class Geometry
+  module Geometry
     # Methods used for getting the area of a geometry.
     #
     module SurfaceMethods

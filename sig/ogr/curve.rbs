@@ -1,5 +1,11 @@
 module OGR
-  class Curve < OGR::Geometry
+  class Curve
+    include _HasPointer
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::Length
     include OGR::Geometry::HasTwoCoordinateDimensions
 

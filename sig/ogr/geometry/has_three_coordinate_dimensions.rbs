@@ -1,5 +1,5 @@
 module OGR
-  class Geometry
+  module Geometry
     module HasThreeCoordinateDimensions
       def centroid: -> OGR::Point25D
       def envelope: -> OGR::Envelope3D?

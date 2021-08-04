@@ -1,0 +1,10 @@
+module FFI
+  module DataConverter
+    def native_type:
+      (String | Symbol | FFI::Type type_name) -> FFI::Type
+    | () -> untyped
+
+    def to_native: (untyped value, void ctx) -> untyped
+    def from_native: (untyped value, void ctx) -> untyped
+  end
+end

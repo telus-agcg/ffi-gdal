@@ -1,5 +1,11 @@
 module OGR
-  class Surface < OGR::Geometry
+  class Surface
+    include _HasPointer
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::SurfaceMethods
     include OGR::Geometry::HasTwoCoordinateDimensions
 

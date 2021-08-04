@@ -1,0 +1,5 @@
+module OGR
+  class CoordinateTransformation
+    include _HasPointer
+  end
+end

@@ -1,6 +1,9 @@
 module OGR
-  class UnknownGeometry < OGR::Geometry
-    GEOMETRY_TYPE: FFI::OGR::Core::wkb_geometry_type_symbol
+  class UnknownGeometry
+    include _HasPointer
+    include OGR::Geometry::GeometryMethods
+
+    GEOMETRY_TYPE: :wkbUnknown
 
     def initialize: (FFI::Pointer c_pointer) -> void
   end

@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require_relative 'geometry/geometry_methods'
 require_relative 'geometry/has_two_coordinate_dimensions'
 
 module OGR
-  class Point < OGR::Geometry
+  class Point
     include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
     include OGR::Geometry::HasTwoCoordinateDimensions
 
     GEOMETRY_TYPE = :wkbPoint
@@ -17,9 +19,11 @@ module OGR
       point
     end
 
+    attr_reader :c_pointer
+
     def initialize(c_pointer: nil, spatial_reference: nil)
-      c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
-      super(c_pointer, spatial_reference)
+      @c_pointer = c_pointer || OGR::Geometry.create(GEOMETRY_TYPE)
+      self.spatial_reference = spatial_reference if spatial_reference
     end
 
     # @return [Float]

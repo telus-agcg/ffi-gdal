@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  class Geometry
+  module Geometry
     module Container
       # @return [Integer]
       def geometry_count

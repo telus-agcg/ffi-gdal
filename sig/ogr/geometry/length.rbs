@@ -1,5 +1,5 @@
 module OGR
-  class Geometry
+  module Geometry
     module Length
       def length: -> Float
     end

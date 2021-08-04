@@ -16,5 +16,6 @@ module GDAL
     ) -> FFI::MemoryPointer
 
     def _cpl_read_and_free_string: () { (FFI::MemoryPointer) -> void } -> String
+    def _cpl_read_and_free_strptr: () { () -> FFI::strptr } -> String
   end
 end

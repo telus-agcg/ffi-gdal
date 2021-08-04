@@ -50,6 +50,8 @@ module FFI
         | :wkbMultiPoint25D | :wkbMultiLineString25D | :wkbMultiPolygon25D | :wkbGeometryCollection25D
       )
 
+      type wkb_byte_order_symbol = (:wkbXDR | :wkbNDR)
+
       def self.OGRGeometryTypeToName: (wkb_geometry_type_symbol geometry_type) -> String
       def self.OGRMergeGeometryTypes: (wkb_geometry_type_symbol lhs, wkb_geometry_type_symbol rhs) -> wkb_geometry_type_symbol
     end
