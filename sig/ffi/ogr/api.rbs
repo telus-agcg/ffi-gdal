@@ -39,7 +39,7 @@ module FFI
       #---------------------------
       # Read-only Attributes
       #---------------------------
-      def self.OGR_G_GetGeometryName: (FFI::Pointer geometry_ptr) -> FFI::strptr
+      def self.OGR_G_GetGeometryName: (FFI::Pointer geometry_ptr) -> String
       def self.OGR_G_GetGeometryType: (FFI::Pointer geometry_ptr) -> FFI::OGR::Core::wkb_geometry_type_symbol
       def self.OGR_G_GetGeometryCount: (FFI::Pointer geometry_ptr) -> Integer
 

@@ -367,7 +367,7 @@ module OGR
       # @raise [OGR::Failure]
       def to_wkb(byte_order = :wkbXDR)
         size = wkb_size
-        output = FFI::MemoryPointer.new(:uchar, size)
+        output = FFI::Buffer.new_out(:uchar, size)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
           FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
