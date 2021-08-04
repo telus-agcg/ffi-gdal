@@ -81,7 +81,7 @@ module FFI
       attach_function :OGR_G_ExportToIsoWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
 
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
-      attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :strptr
+      attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :string
       attach_function :OGR_G_DumpReadable,
                       %i[OGRGeometryH pointer string],
                       :void

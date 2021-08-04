@@ -9,7 +9,7 @@ RSpec.describe OGR::MultiLineString do
     g
   end
 
-  let(:child_geometry) { OGR::LineString.create_from_wkt('LINESTRING(4 6,7 10)') }
+  let(:child_geometry) { OGR::Geometry.create_from_wkt('LINESTRING(4 6,7 10)') }
 
   it_behaves_like 'a geometry'
   it_behaves_like 'a 2D geometry'

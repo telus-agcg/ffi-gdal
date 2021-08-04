@@ -26,14 +26,14 @@ module OGR
       self.spatial_reference = spatial_reference if spatial_reference
     end
 
-    # @return [Float]
+    # @return [Float, nil]
     def x
       return nil if empty?
 
       FFI::OGR::API.OGR_G_GetX(@c_pointer, 0)
     end
 
-    # @return [Float]
+    # @return [Float, nil]
     def y
       return nil if empty?
 

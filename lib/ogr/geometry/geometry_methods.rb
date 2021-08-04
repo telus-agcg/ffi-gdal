@@ -61,10 +61,8 @@ module OGR
 
       # @return [String]
       def name
-        GDAL._cpl_read_and_free_strptr do
-          # The returned pointer is to a static internal string and should not be modified or freed.
-          FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer)
-        end
+        # The returned pointer is to a static internal string and should not be modified or freed.
+        FFI::OGR::API.OGR_G_GetGeometryName(@c_pointer).freeze
       end
 
       # @raise [RuntimeError]
@@ -368,13 +366,14 @@ module OGR
       # @return [String]
       # @raise [OGR::Failure]
       def to_wkb(byte_order = :wkbXDR)
-        output = FFI::Buffer.new_out(:uchar, wkb_size)
+        size = wkb_size
+        output = FFI::MemoryPointer.new(:uchar, size)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
           FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
         end
 
-        output.read_bytes(wkb_size)
+        output.read_bytes(size)
       end
 
       # @param wkt_data [String]

@@ -20,6 +20,8 @@ module OGR
 
     GEOMETRY_TYPE = :wkbCurve
 
+    attr_reader :c_pointer
+
     def initialize(c_pointer, spatial_reference: nil)
       @c_pointer = c_pointer
       self.spatial_reference = spatial_reference if spatial_reference

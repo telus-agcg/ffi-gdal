@@ -47,13 +47,13 @@ module FFI
                              :wkbSurface,                14,
                              :wkbNone,                   100,    # non-standard, for pure attribute records
                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
-                             :wkbPoint25D,               -2_147_483_647,
-                             :wkbLineString25D,          -2_147_483_646,
-                             :wkbPolygon25D,             -2_147_483_645,
-                             :wkbMultiPoint25D,          -2_147_483_644,
-                             :wkbMultiLineString25D,     -2_147_483_643,
-                             :wkbMultiPolygon25D,        -2_147_483_642,
-                             :wkbGeometryCollection25D,  -2_147_483_641
+                             :wkbPoint25D,               0x8000_0001,
+                             :wkbLineString25D,          0x8000_0002,
+                             :wkbPolygon25D,             0x8000_0003,
+                             :wkbMultiPoint25D,          0x8000_0004,
+                             :wkbMultiLineString25D,     0x8000_0005,
+                             :wkbMultiPolygon25D,        0x8000_0006,
+                             :wkbGeometryCollection25D,  0x8000_0007
 
       WKBVariant = enum :wkbVariantOgc, :wkbVariantIso
       WKBByteOrder = enum :wkbXDR, 0,

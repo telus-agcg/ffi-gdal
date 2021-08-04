@@ -9,7 +9,7 @@ RSpec.describe OGR::MultiPolygon do
     g
   end
 
-  let(:child_geometry) { OGR::Polygon.create_from_wkt('POLYGON((4 6,7 10,12 40,4 6))') }
+  let(:child_geometry) { OGR::Geometry.create_from_wkt('POLYGON((4 6,7 10,12 40,4 6))') }
 
   it_behaves_like 'a geometry'
   it_behaves_like 'a container geometry'

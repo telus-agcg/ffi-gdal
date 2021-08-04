@@ -3,7 +3,7 @@
 require_relative 'geometry/geometry_methods'
 
 module OGR
-  class NoneGeometry < OGR::Geometry
+  class NoneGeometry
     include OGR::Geometry::GeometryMethods
 
     GEOMETRY_TYPE = :wkbNone

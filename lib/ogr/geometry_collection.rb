@@ -18,7 +18,7 @@ module OGR
     attr_reader :c_pointer
 
     def initialize(c_pointer: nil, spatial_reference: nil)
-      @c_pointer = OGR::Geometry::AutoPointer.new(c_pointer || OGR::Geometry.create(GEOMETRY_TYPE))
+      @c_pointer = c_pointer || OGR::Geometry.create(GEOMETRY_TYPE)
       self.spatial_reference = spatial_reference if spatial_reference
     end
   end
