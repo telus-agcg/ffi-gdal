@@ -45,5 +45,5 @@ jobs:
           bundler-cache: true
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
-      - name: Rubocop
+      - name: Steep
         run: bundle exec steep check
