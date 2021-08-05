@@ -9,20 +9,6 @@ module OGR
 
     GEOMETRY_TYPE = :wkbMultiLineString
 
-    class << self
-      private
-
-      # @param c_pointer [FFI::Pointer]
-      # @return [[FFI::Pointer, FFI::OGR::Core::WKBGeometryType]]
-      def polygonize(c_pointer)
-        polygon_ptr = FFI::OGR::API.OGR_G_Polygonize(c_pointer)
-
-        raise OGR::Failure, 'Error polygonizing MultiLineString' if polygon_ptr.null?
-
-        [polygon_ptr, FFI::OGR::API.OGR_G_GetGeometryType(polygon_ptr)]
-      end
-    end
-
     def initialize(c_pointer: nil, spatial_reference: nil)
       c_pointer ||= OGR::Geometry.create(GEOMETRY_TYPE)
       super(c_pointer: c_pointer, spatial_reference: spatial_reference)
