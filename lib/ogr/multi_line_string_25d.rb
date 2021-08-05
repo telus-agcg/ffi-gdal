@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'multi_line_string'
-require_relative 'geometry/simple_curve_25d'
 require_relative 'geometry/has_three_coordinate_dimensions'
 
 module OGR
   class MultiLineString25D < MultiLineString
     include GDAL::Logger
-    include OGR::Geometry::SimpleCurve25D
     include OGR::Geometry::HasThreeCoordinateDimensions
 
     GEOMETRY_TYPE = :wkbMultiLineString25D

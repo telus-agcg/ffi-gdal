@@ -13,6 +13,7 @@ RSpec.describe OGR::LineString25D do
 
   it_behaves_like 'a curve geometry'
   it_behaves_like 'a 2.5D geometry'
+  it_behaves_like 'a simple curve 2.5D geometry'
   it_behaves_like 'a GML exporter'
   it_behaves_like 'a KML exporter'
   it_behaves_like 'a GeoJSON exporter'

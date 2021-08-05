@@ -26,7 +26,7 @@ module OGR
       end
 
       # @param point_number [Integer] Index of the point to get.
-      # @return [Array<Float, Float, Float>] [x, y] if 2d or [x, y, z] if 3d.
+      # @return [[Float, Float]] [x, y].
       # @raise [GDAL::UnsupportedOperation] If `point_number` doesn't exist.
       def point(point_number)
         x_ptr = FFI::Buffer.new_out(:double)
@@ -45,7 +45,7 @@ module OGR
         FFI::OGR::API.OGR_G_SetPoint_2D(@c_pointer, index, x, y)
       end
 
-      # @return [Array<[Float, Float]>] An array of (x, y) points.
+      # @return [[Float, Float]] An array of (x, y) points.
       def points
         stride = FFI::Type::DOUBLE.size
 
@@ -67,6 +67,9 @@ module OGR
       alias get_points points
       alias point_values points
 
+      # Primary use case for this is to preset the number of points in the Curve
+      # before adding points, which avoids reallocating as points get added.
+      #
       # @param new_count [Integer]
       def point_count=(new_count)
         FFI::OGR::API.OGR_G_SetPointCount(@c_pointer, new_count)

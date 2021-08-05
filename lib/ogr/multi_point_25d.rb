@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 require_relative 'multi_point'
-require_relative 'geometry/simple_curve_25d'
 require_relative 'geometry/has_three_coordinate_dimensions'
 
 module OGR
   class MultiPoint25D < MultiPoint
     include GDAL::Logger
-    include OGR::Geometry::SimpleCurve25D
     include OGR::Geometry::HasThreeCoordinateDimensions
 
     GEOMETRY_TYPE = :wkbMultiPoint25D
