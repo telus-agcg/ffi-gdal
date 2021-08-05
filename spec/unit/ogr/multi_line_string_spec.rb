@@ -9,19 +9,20 @@ RSpec.describe OGR::MultiLineString do
     g
   end
 
-  let(:child_geometry) { OGR::Geometry.create_from_wkt('LINESTRING(4 6,7 10)') }
+  let(:child_geometry) { OGR::Geometry.create_from_wkt('LINESTRING(65 0,9 -34,40 -20,65 0)') }
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Multi Line String'
   it_behaves_like 'a 2D geometry'
   it_behaves_like 'a multi-curve geometry'
   it_behaves_like 'a container geometry'
+  it_behaves_like 'not a geometry collection'
   it_behaves_like 'a GML exporter'
   it_behaves_like 'a KML exporter'
   it_behaves_like 'a GeoJSON exporter'
 
   describe '#polygonize' do
-    it 'returns a OGR::Polygon from the set of sparse edges' do
-      skip
+    it 'returns a geometry from the set of sparse edges' do
+      expect(subject.polygonize).to be_a OGR::GeometryCollection
     end
   end
 end

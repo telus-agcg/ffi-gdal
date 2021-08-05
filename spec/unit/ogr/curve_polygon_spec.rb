@@ -11,8 +11,9 @@ RSpec.describe OGR::CurvePolygon do
 
   let(:child_geometry) { OGR::Geometry.create_from_wkt('COMPOUNDCURVE(CIRCULARSTRING (0 0,1 1,2 0),(2 0,0 0))') }
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Curve Polygon'
   it_behaves_like 'a surface geometry'
   it_behaves_like 'a 2D geometry'
   it_behaves_like 'a container geometry'
+  it_behaves_like 'not a geometry collection'
 end

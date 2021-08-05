@@ -11,7 +11,8 @@ RSpec.describe OGR::CompoundCurve do
 
   let(:child_geometry) { OGR::Geometry.create_from_wkt('CIRCULARSTRING (0 0,0 1,1 1)') }
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Compound Curve'
   it_behaves_like 'a curve geometry'
   it_behaves_like 'a container geometry'
+  it_behaves_like 'not a geometry collection'
 end

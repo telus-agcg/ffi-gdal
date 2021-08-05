@@ -13,7 +13,7 @@ RSpec.describe OGR::GeometryCollection do
     gc
   end
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Geometry Collection'
   it_behaves_like 'a 2D geometry'
   it_behaves_like 'a GML exporter'
   it_behaves_like 'a KML exporter'
@@ -22,12 +22,6 @@ RSpec.describe OGR::GeometryCollection do
   it_behaves_like 'a container geometry' do
     let(:child_geometry) do
       OGR::Geometry.create_from_wkt('POLYGON ((0 0,0 1,1 1,1 0,0 0))')
-    end
-  end
-
-  describe '#to_polygon' do
-    it 'returns a Polygon' do
-      expect(subject.to_polygon).to be_a OGR::Polygon
     end
   end
 

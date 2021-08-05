@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'geometry/surface_methods'
+require_relative 'geometry/not_a_geometry_collection'
 
 module OGR
   # Per [RFC 49: Curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries):
@@ -10,6 +11,7 @@ module OGR
   class MultiSurface < OGR::GeometryCollection
     include GDAL::Logger
     include OGR::Geometry::SurfaceMethods
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE = :wkbMultiSurface
 

@@ -25,10 +25,11 @@ RSpec.describe OGR::LineString do
 
   subject { open_line_string }
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Line String'
   it_behaves_like 'a curve geometry'
   it_behaves_like 'a simple curve geometry'
   it_behaves_like 'a 2D geometry'
+  it_behaves_like 'not a geometry collection'
   it_behaves_like 'a line string'
   it_behaves_like 'a GML exporter'
   it_behaves_like 'a KML exporter'

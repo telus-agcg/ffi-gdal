@@ -9,8 +9,9 @@ RSpec.describe OGR::CircularString do
     cs
   end
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Circular String'
   it_behaves_like 'a curve geometry'
   it_behaves_like 'a simple curve geometry'
   it_behaves_like 'a 2D geometry'
+  it_behaves_like 'not a geometry collection'
 end

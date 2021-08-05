@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'geometry/not_a_geometry_collection'
+
 module OGR
   class MultiPoint < OGR::GeometryCollection
     include GDAL::Logger
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE = :wkbMultiPoint
 

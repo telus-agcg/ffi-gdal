@@ -35,9 +35,10 @@ module OGR
       end
 
       # @param new_coordinate_dimension [Integer]
+      # @raise [OGR::Failure] if +new_coordinate_dimension+ isn't 2 or 3.
       def coordinate_dimension=(new_coordinate_dimension)
         unless [2, 3].include?(new_coordinate_dimension)
-          raise "Can't set coordinate to #{new_coordinate_dimension}.  Must be 2 or 3."
+          raise OGR::Failure, "Can't set coordinate to #{new_coordinate_dimension}; must be 2 or 3."
         end
 
         FFI::OGR::API.OGR_G_SetCoordinateDimension(@c_pointer, new_coordinate_dimension)
@@ -79,6 +80,69 @@ module OGR
         file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
         FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file_ptr, prefix)
         FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
+      end
+
+      # NOTE: The returned object may be shared with many geometries, and should
+      # thus not be modified.
+      #
+      # @return [OGR::SpatialReference]
+      def spatial_reference
+        spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
+        return if spatial_ref_ptr.null?
+
+        spatial_ref_ptr.autorelease = false
+
+        OGR::SpatialReference.new(spatial_ref_ptr).freeze
+      end
+
+      # Assigns a spatial reference to this geometry.  Any existing spatial
+      # reference is replaced, but this does not reproject the geometry.
+      #
+      # @param new_spatial_ref [OGR::SpatialReference]
+      # @raise [FFI::GDAL::InvalidPointer]
+      def spatial_reference=(new_spatial_ref)
+        #  Note that assigning a spatial reference increments the reference count
+        #  on the OGRSpatialReference, but does not copy it.
+        new_spatial_ref.c_pointer.autorelease = false
+
+        FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref.c_pointer)
+      end
+
+      # Transforms the coordinates of this geometry in its current spatial
+      # reference system to a new spatial reference system.  Normally this means
+      # reprojecting the vectors, but it could also include datum shifts, and
+      # changes of units.
+      #
+      # Note that this doesn't require the geometry to have an existing spatial
+      # reference system.
+      #
+      # @param coordinate_transformation [OGR::CoordinateTransformation]
+      # @raise [FFI::GDAL::InvalidPointer]
+      # @raise [OGR::Failure]
+      def transform!(coordinate_transformation)
+        OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+          FFI::OGR::API.OGR_G_Transform(@c_pointer, coordinate_transformation.c_pointer)
+        end
+      end
+
+      # Similar to +#transform+, but this only works if the geometry already has an
+      # assigned spatial reference system _and_ is transformable to the target
+      # coordinate system.
+      #
+      # Because this function requires internal creation and initialization of an
+      # OGRCoordinateTransformation object it is significantly more expensive to
+      # use this function to transform many geometries than it is to create the
+      # OGRCoordinateTransformation in advance, and call transform() with that
+      # transformation. This function exists primarily for convenience when only
+      # transforming a single geometry.
+      #
+      # @param new_spatial_ref [OGR::SpatialReference]
+      # @raise [FFI::GDAL::InvalidPointer]
+      # @raise [OGR::Failure]
+      def transform_to!(new_spatial_ref)
+        OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+          FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref.c_pointer)
+        end
       end
 
       # @param geometry [OGR::Geometry]
@@ -152,16 +216,6 @@ module OGR
         false
       end
 
-      # Returns TRUE if the geometry has no anomalous geometric points, such as
-      # self intersection or self tangency. The description of each instantiable
-      # geometric class will include the specific conditions that cause an
-      # instance of that class to be classified as not simple.
-      #
-      # @return [Boolean]
-      def simple?
-        FFI::OGR::API.OGR_G_IsSimple(@c_pointer)
-      end
-
       # TRUE if the geometry has no points, otherwise FALSE.
       #
       # @return [Boolean]
@@ -196,7 +250,8 @@ module OGR
       end
 
       # @param geometry [OGR::Geometry]
-      # @return [OGR::Geometry, nil]
+      # @return [OGR::Geometry, nil] Returns nil if the difference is empty, OR
+      #   if there was an error (i.e. there's no way to distinguish).
       def difference(geometry)
         new_geometry_ptr = FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
         return if new_geometry_ptr.null?
@@ -227,69 +282,6 @@ module OGR
         result
       end
 
-      # NOTE: The returned object may be shared with many geometries, and should
-      # thus not be modified.
-      #
-      # @return [OGR::SpatialReference]
-      def spatial_reference
-        spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
-        return if spatial_ref_ptr.null?
-
-        spatial_ref_ptr.autorelease = false
-
-        OGR::SpatialReference.new(spatial_ref_ptr).freeze
-      end
-
-      # Assigns a spatial reference to this geometry.  Any existing spatial
-      # reference is replaced, but this does not reproject the geometry.
-      #
-      # @param new_spatial_ref [OGR::SpatialReference]
-      # @raise [FFI::GDAL::InvalidPointer]
-      def spatial_reference=(new_spatial_ref)
-        #  Note that assigning a spatial reference increments the reference count
-        #  on the OGRSpatialReference, but does not copy it.
-        new_spatial_ref.c_pointer.autorelease = false
-
-        FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref.c_pointer)
-      end
-
-      # Transforms the coordinates of this geometry in its current spatial
-      # reference system to a new spatial reference system.  Normally this means
-      # reprojecting the vectors, but it could also include datum shifts, and
-      # changes of units.
-      #
-      # Note that this doesn't require the geometry to have an existing spatial
-      # reference system.
-      #
-      # @param coordinate_transformation [OGR::CoordinateTransformation]
-      # @raise [FFI::GDAL::InvalidPointer]
-      # @raise [OGR::Failure]
-      def transform!(coordinate_transformation)
-        OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
-          FFI::OGR::API.OGR_G_Transform(@c_pointer, coordinate_transformation.c_pointer)
-        end
-      end
-
-      # Similar to +#transform+, but this only works if the geometry already has an
-      # assigned spatial reference system _and_ is transformable to the target
-      # coordinate system.
-      #
-      # Because this function requires internal creation and initialization of an
-      # OGRCoordinateTransformation object it is significantly more expensive to
-      # use this function to transform many geometries than it is to create the
-      # OGRCoordinateTransformation in advance, and call transform() with that
-      # transformation. This function exists primarily for convenience when only
-      # transforming a single geometry.
-      #
-      # @param new_spatial_ref [OGR::SpatialReference]
-      # @raise [FFI::GDAL::InvalidPointer]
-      # @raise [OGR::Failure]
-      def transform_to!(new_spatial_ref)
-        OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
-          FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref.c_pointer)
-        end
-      end
-
       # Computes and returns a new, simplified geometry.
       #
       # @param distance_tolerance [Float]
@@ -313,16 +305,6 @@ module OGR
         FFI::OGR::API.OGR_G_Segmentize(@c_pointer, max_length)
 
         self
-      end
-
-      # @return [OGR::Geometry]
-      # @raise [OGR::Failure]
-      def boundary
-        result = OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Boundary(@c_pointer) }
-
-        raise OGR::Failure, 'Failure computing boundary' unless result
-
-        result
       end
 
       # Computes the buffer of the geometry by building a new geometry that
@@ -349,6 +331,10 @@ module OGR
         result
       end
 
+      # Note that there is no check that the +wkb_data+ actually describes a
+      # geometry that correlates to the current class. If you don't know what
+      # to expect, you're better off using +OGR::Geometry.create_from_wkb+.
+      #
       # @param wkb_data [String] Binary WKB data.
       # @raise [OGR::Failure]
       def import_from_wkb(wkb_data)
@@ -470,23 +456,12 @@ module OGR
         end
       end
 
-      # Converts the current geometry to a LineString geometry.  The returned
-      # object is a new OGR::Geometry instance.
+      # Tries to convert the current geometry to a LineString (but may not).
       #
-      # @return [OGR::LineString, OGR::LineString25D]
-      # @raise [OGR::InvalidGeometry] If the geometry pointer returned by the block
-      #   is not one for a LineString or LineString25D.
+      # @return [#to_line_string]
       def to_line_string
-        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer)
-
-        raise if new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
-
-        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
-        when OGR::LineString::GEOMETRY_TYPE then OGR::LineString.new(c_pointer: new_geometry_ptr)
-        when OGR::LineString25D::GEOMETRY_TYPE then OGR::LineString25D.new(c_pointer: new_geometry_ptr)
-        else
-          raise OGR::InvalidGeometry,
-                "Expected #{OGR::LineString::GEOMETRY_TYPE} or #{OGR::LineString25D::GEOMETRY_TYPE}, got #{geom_type}"
+        OGR::Geometry.build_geometry do
+          FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer)
         end
       end
 
@@ -509,86 +484,57 @@ module OGR
         linear_ring
       end
 
-      # Converts the current geometry to a Polygon geometry.  The returned object
-      # is a new OGR::Geometry instance.
+      # Tries to convert the current geometry to a Polygon geometry (but may
+      # not).
       #
-      # @return [OGR::Geometry]
-      # @raise [OGR::InvalidGeometry] If the geometry pointer returned by the block
-      #   is not one for a Polygon or Polygon25D.
+      # @return [#to_polygon]
       def to_polygon
-        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToPolygon(clone.c_pointer)
-
-        raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
-
-        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
-        when OGR::Polygon::GEOMETRY_TYPE then OGR::Polygon.new(c_pointer: new_geometry_ptr)
-        when OGR::Polygon25D::GEOMETRY_TYPE then OGR::Polygon25D.new(c_pointer: new_geometry_ptr)
-        else
-          raise OGR::InvalidGeometry,
-                "Expected #{OGR::Polygon::GEOMETRY_TYPE} or #{OGR::Polygon25D::GEOMETRY_TYPE}, got #{geom_type}"
+        OGR::Geometry.build_geometry do
+          FFI::OGR::API.OGR_G_ForceToPolygon(clone.c_pointer)
         end
       end
 
-      # Converts the current geometry to a MultiPoint geometry.  The returned
-      # object is a new OGR::Geometry instance.
+      # Tries to onvert the current geometry to a MultiPoint geometry (but may
+      # not).
       #
-      # @return [OGR::MultiPoint, OGR::MultiPoint25D]
-      # @raise [OGR::InvalidGeometry] If the geometry pointer returned by the block
-      #   is not one for a MultiPoint or MultiPoint25D.
+      # @return [#to_multi_point]
       def to_multi_point
-        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToMultiPoint(clone.c_pointer)
-
-        raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
-
-        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
-        when OGR::MultiPoint::GEOMETRY_TYPE then OGR::MultiPoint.new(c_pointer: new_geometry_ptr)
-        when OGR::MultiPoint25D::GEOMETRY_TYPE then OGR::MultiPoint25D.new(c_pointer: new_geometry_ptr)
-        else
-          raise OGR::InvalidGeometry,
-                "Expected #{OGR::MultiPoint::GEOMETRY_TYPE} or #{OGR::MultiPoint25D::GEOMETRY_TYPE}, got #{geom_type}"
+        OGR::Geometry.build_geometry do
+          FFI::OGR::API.OGR_G_ForceToMultiPoint(clone.c_pointer)
         end
       end
 
-      # Converts the current geometry to a MultiLineString geometry.  The returned
-      # object is a new OGR::Geometry instance.
+      # Tries to convert the current geometry to a MultiLineString geometry (but
+      # may not).
       #
-      # @return [OGR::MultiLineString, OGR::MultiLineString25D]
-      # @raise [OGR::InvalidGeometry] If the geometry pointer returned by the block
-      #   is not one for a MultiPoint or MultiPoint25D.
+      # @return [#to_multi_line_string]
       def to_multi_line_string
-        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToMultiLineString(clone.c_pointer)
-
-        raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
-
-        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
-        when OGR::MultiLineString::GEOMETRY_TYPE then OGR::MultiLineString.new(c_pointer: new_geometry_ptr)
-        when OGR::MultiLineString25D::GEOMETRY_TYPE then OGR::MultiLineString25D.new(c_pointer: new_geometry_ptr)
-        else
-          raise OGR::InvalidGeometry,
-                "Expected #{OGR::MultiLineString::GEOMETRY_TYPE} or #{OGR::MultiLineString25D::GEOMETRY_TYPE}, " \
-                "got #{geom_type}"
+        OGR::Geometry.build_geometry do
+          FFI::OGR::API.OGR_G_ForceToMultiLineString(clone.c_pointer)
         end
       end
 
-      # Converts the current geometry to a MultiPolygon geometry.  The returned
-      # object is a new OGR::Geometry instance.
+      # Tries to convert the current geometry to a MultiPolygon geometry (but
+      # may not).
       #
-      # @return [OGR::MultiPolygon, OGR::MultiPolygon25D]
-      # @raise [OGR::InvalidGeometry] If the geometry pointer returned by the block
-      #   is not one for a MultiPoint or MultiPoint25D.
+      # @return [#to_multi_polygon]
       def to_multi_polygon
-        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToMultiPolygon(clone.c_pointer)
-
-        raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
-
-        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
-        when OGR::MultiPolygon::GEOMETRY_TYPE then OGR::MultiPolygon.new(c_pointer: new_geometry_ptr)
-        when OGR::MultiPolygon25D::GEOMETRY_TYPE then OGR::MultiPolygon25D.new(c_pointer: new_geometry_ptr)
-        else
-          raise OGR::InvalidGeometry,
-                "Expected #{OGR::MultiPolygon::GEOMETRY_TYPE} or #{OGR::MultiPolygon25D::GEOMETRY_TYPE}, " \
-                "got #{geom_type}"
+        OGR::Geometry.build_geometry do
+          FFI::OGR::API.OGR_G_ForceToMultiPolygon(clone.c_pointer)
         end
+      end
+
+      # @param geometry_type [FFI::OGR::Core::WKBGeometryType]
+      # @param options
+      # @return Should return an object of the type that corresponds to +geometry_type+,
+      #   but that's no guaranteed.
+      def force_to_type(geometry_type, **options)
+        options_ptr = GDAL::Options.pointer(options)
+        new_geometry_ptr = FFI::OGR::API.OGR_G_ForceTo(clone.c_pointer, geometry_type, options_ptr)
+
+        raise if new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+
+        OGR::Geometry.factory(new_geometry_ptr)
       end
     end
   end

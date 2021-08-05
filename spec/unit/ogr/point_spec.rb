@@ -19,8 +19,9 @@ RSpec.describe OGR::Point do
     OGR::Geometry.create_from_wkt(wkt)
   end
 
-  it_behaves_like 'a geometry'
+  it_behaves_like 'a geometry', 'Point'
   it_behaves_like 'a 2D geometry'
+  it_behaves_like 'not a geometry collection'
   it_behaves_like 'a GML exporter'
   it_behaves_like 'a KML exporter'
   it_behaves_like 'a GeoJSON exporter'

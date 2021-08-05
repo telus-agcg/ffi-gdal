@@ -2,12 +2,14 @@
 
 require_relative 'geometry/geometry_methods'
 require_relative 'geometry/has_two_coordinate_dimensions'
+require_relative 'geometry/not_a_geometry_collection'
 
 module OGR
   class Point
     include GDAL::Logger
     include OGR::Geometry::GeometryMethods
     include OGR::Geometry::HasTwoCoordinateDimensions
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE = :wkbPoint
 
