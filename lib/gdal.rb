@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'ffi-gdal'
+require_relative 'ffi/gdal'
 
 module GDAL
   class << self
@@ -47,7 +48,7 @@ require_relative 'gdal/cpl_error_handler'
 module GDAL
   extend VersionInfo
   extend EnvironmentMethods
-  include InternalHelpers
+  extend InternalHelpers
 
   # Register all drivers!
   ::FFI::GDAL::GDAL.GDALAllRegister

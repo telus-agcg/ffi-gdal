@@ -1,0 +1,27 @@
+interface _Inspect
+  def inspect: -> String
+end
+
+interface _Size
+  def size: -> Integer
+end
+
+interface _Call
+  def call: (*untyped args) -> untyped
+end
+
+interface _FromNative
+  def from_native: (*untyped args) -> untyped
+end
+
+interface _NativeType
+  def native_type: -> FFI::Type
+end
+
+interface _ToNative
+  def to_native: -> untyped
+end
+
+interface _ToPtr
+  def to_ptr: -> (FFI::AbstractMemory | FFI::Pointer)
+end

@@ -14,6 +14,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added exception messages for `OGR` methods that raised using `OGR::ErrorHandling`.
 - Added alias for `OGR::SpatialReferenceMixins::Exporters#to_gml` to `to_xml`.
 - Wrapped `OGR_G_ExportToIsoWkt` and `OGR_G_ExportToJsonEx`.
+- Added some `RBS` type definitions.
+
+#### OGR
+
+- Added `wkb` geometry types that have been added since GDAL 2.0. This includes
+  [curve geometries](https://trac.osgeo.org/gdal/wiki/rfc49_curve_geometries) and
+  [measured geometries](https://trac.osgeo.org/gdal/wiki/rfc61_support_for_measured_geometries):
+  - `OGR::Curve`
+  - `OGR::CircularString`
+  - `OGR::CompoundCurve`
+  - `OGR::CurvePolygon`
+  - `OGR::MultiCurve`
+  - `OGR::MultiSurface`
+  - `OGR::Surface`
+- Added `.new_from_coordinates` for `OGR::Point` and `OGR::Point25D`.
+- Added `OGR::Geometry#to_gml_ex` (well, changed `#to_gml` to wrap
+  `OGR_G_ExportToGML` instead of `OGR_G_ExportToGMLEx`.
 
 ### Changed
 
@@ -22,9 +39,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 #### GDAL
 
-- _BREAKING_: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow unsetting the NODATA value.
-- _BREAKING_: Many methods were not communicating errors `CPLErr` back to the caller; these now raise
-  on `CE_Failure` or `CE_Fatal`:
+- _BREAKING_: `GDAL::RasterBand#no_data_value=` now accepts `nil` to allow unsetting the NODATA
+  value.
+- _BREAKING_: Many methods were not communicating errors `CPLErr` back to the caller; these now
+  raise on `CE_Failure` or `CE_Fatal`:
   - `GDAL::Dataset#add_band`
   - `GDAL::Dataset#build_overviews`
   - `GDAL::Dataset#create_mask_band`
@@ -56,27 +74,48 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `GDAL::RasterBand#write_block`
 - `GDAL` errors that return `CPLE_AppDefined` now raise `GDAL::Error`.
 - `GDAL` errors now truncate less of the backtrace.
-- `GDAL::RasterBand#scale` and `#offset` now return the `Float` value and raise
-    on a failed call instead of returning a `Hash` with that info.
+- `GDAL::RasterBand#scale` and `#offset` now return the `Float` value and raise on a failed call
+  instead of returning a `Hash` with that info.
 
 #### OGR
 
-- _BREAKING_: `OGR::DataSource#copy_data_source` now raises instead of returning `nil` on a failure to
-  copy.
+- _BREAKING_: `OGR::DataSource#copy_data_source` now raises instead of returning `nil` on a failure
+  to copy.
 - _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s second param is
   now a keyword arg, `north:` that defaults to `true` (like GDAL's default).
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_towgs84`'s `z_distance` requires a
   value internally, but was defaulted to `nil`; changed the default value to `0.0`.
-- _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is now
-  required.
-- _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`. In
-  GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
+- _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is
+  now required.
+- _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`.
+  In GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it's
   null. Now these raise the same exception.
-- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of
-    returning `nil`.
+- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
+- _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::SimpleCurve` and
+    `SimpleCurve25D`.
+- _BREAKING_: Moved `OGR::Geometry#geometry_count` to `OGR::Geometry::Container`.
+- _BREAKING_: Moved `OGR::Geometry::Container#polygon_from_edges` to
+  `OGR::Geometry::PolygonFromEdges`.
+- _BREAKING_: `OGR::Geometry.create_from_wkt`, `.create_from_wkb` raise instead
+  of returning `nil` if creation failed.
+- _BREAKING_: Moved `OGR::Geometry#polygonize` to `OGR::MultiLineString`.
 - `OGR::SpatialReferenceMixins::Importers` now return `self` instead of the `OGR` error code
   `Symbol`.
+- Extracted methods from `OGR::GeometryTypes::Curve` and `OGR::GeometryTypes::Surface` to new
+  `OGR::Geometry` mixins: `SimpleCurve`/`SimpleCurve25D`, `Area`, `Length`.
+- Moved instance methods from `OGR::Geometry` to `OGR::Geometry::GeometryMethods`.
+- Moved `OGR::MultiPolygon#union_cascaded` to `OGR::MultiSurface`.
+- `OGR::Geometry::GeometryMethods#to_line_string` now raises or returns an
+  `OGR::LineString`/`OGR::LineString25D`.
+- `OGR::Geometry::GeometryMethods#to_polygon` now raises or returns an
+  `OGR::Polygon`/`OGR::Polygon25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_point` now raises or returns an
+  `OGR::MultiPoint`/`OGR::MultiPoint25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_line_string` now raises or returns an
+  `OGR::MultiLineString`/`OGR::MultiLineString25D`.
+- `OGR::Geometry::GeometryMethods#to_multi_polygon` now raises or returns an
+  `OGR::MultiPolygon`/`OGR::MultiPolygon25D`.
 
 ### Fixed
 
@@ -151,6 +190,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `OGR::SpatialReferenceMixins::Exporters#to_xml` now actually works.
 
 ### Removed
+
+#### General
 
 - [DEV-361] Move extension methods to ffi-gdal-extensions.
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.

@@ -1,0 +1,8 @@
+module FFI
+  class StructByReference
+    def initialize: (FFI::Struct struct_class) -> void
+    def from_native: (FFI::AbstractMemory value, void ctx) -> FFI::Struct
+    def native_type: () -> FFI::Type::Builtin
+    def to_native: (nil | FFI::Struct value, nil ctx) -> FFI::AbstractMemory
+  end
+end

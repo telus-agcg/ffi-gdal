@@ -25,8 +25,9 @@ module GDAL
     attr_reader :dataset
 
     # @param raster_band [GDAL::RasterBand, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def initialize(raster_band, dataset = nil)
-      @c_pointer = GDAL._pointer(GDAL::RasterBand, raster_band, autorelease: false)
+      @c_pointer = GDAL._pointer(raster_band, autorelease: false)
 
       # Init the dataset too--the dataset owns the raster band, so when the dataset
       # gets closed, the raster band gets cleaned up. Storing a reference to the
@@ -485,7 +486,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         min = min_pointer.read_double
         max = max_pointer.read_double
@@ -546,7 +547,7 @@ module GDAL
       progress_proc = block || nil
 
       handler = GDAL::CPLErrorHandler.new
-      handler.on_warning = proc { nil }
+      handler.on_warning = proc {}
       handler.on_none = proc do
         totals = if buckets.zero?
                    []
@@ -588,8 +589,9 @@ module GDAL
     # @param options [Hash]
     # @option options compress [String] Only 'YES' is supported.
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def copy_whole_raster(destination_band, **options, &progress)
-      destination_pointer = GDAL._pointer(GDAL::RasterBand, destination_band)
+      destination_pointer = GDAL._pointer(destination_band)
       options_ptr = GDAL::Options.pointer(options)
 
       GDAL::CPLErrorHandler.manually_handle('Unable to copy whole raster') do

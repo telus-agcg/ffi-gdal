@@ -1,0 +1,8 @@
+module OGR
+  class MultiSurface < OGR::GeometryCollection
+    include OGR::Geometry::SurfaceMethods
+    include OGR::Geometry::NotAGeometryCollection
+
+    GEOMETRY_TYPE: :wkbMultiSurface
+  end
+end

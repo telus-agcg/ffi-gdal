@@ -6,4 +6,10 @@ RSpec.shared_examples 'a 2.5D geometry' do
       skip
     end
   end
+
+  describe '#centroid' do
+    it 'returns a OGR::Point25D' do
+      expect(subject.centroid).to be_a OGR::Point25D
+    end
+  end
 end

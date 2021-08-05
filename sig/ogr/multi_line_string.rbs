@@ -1,0 +1,7 @@
+module OGR
+  class MultiLineString < OGR::MultiCurve
+    include OGR::Geometry::PolygonFromEdges
+
+    GEOMETRY_TYPE: :wkbMultiLineString
+  end
+end

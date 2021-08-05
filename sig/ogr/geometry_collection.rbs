@@ -1,0 +1,17 @@
+module OGR
+  class GeometryCollection
+    include _HasPointer
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
+    include OGR::Geometry::Container
+    include OGR::Geometry::PolygonFromEdges
+    include OGR::Geometry::HasTwoCoordinateDimensions
+
+    GEOMETRY_TYPE: :wkbGeometryCollection
+
+    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+  end
+end

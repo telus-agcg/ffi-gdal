@@ -1,0 +1,74 @@
+module FFI
+  class Type
+    include _Inspect
+
+    BOOL: FFI::Type::Builtin
+    BUFFER_IN: FFI::Type::Builtin
+    BUFFER_INOUT: FFI::Type::Builtin
+    BUFFER_OUT: FFI::Type::Builtin
+    CHAR: FFI::Type::Builtin
+    DOUBLE: FFI::Type::Builtin
+    FLOAT64: FFI::Type::Builtin
+    FLOAT: FFI::Type::Builtin
+    INT16: FFI::Type::Builtin
+    INT32: FFI::Type::Builtin
+    INT64: FFI::Type::Builtin
+    INT8: FFI::Type::Builtin
+    INT: FFI::Type::Builtin
+    LONG: FFI::Type::Builtin
+    LONGDOUBLE: FFI::Type::Builtin
+    LONG_LONG: FFI::Type::Builtin
+    POINTER: FFI::Type::Builtin
+    SCHAR: FFI::Type::Builtin
+    SHORT: FFI::Type::Builtin
+    SINT: FFI::Type::Builtin
+    SLONG: FFI::Type::Builtin
+    SLONG_LONG: FFI::Type::Builtin
+    SSHORT: FFI::Type::Builtin
+    STRING: FFI::Type::Builtin
+    UCHAR: FFI::Type::Builtin
+    UINT16: FFI::Type::Builtin
+    UINT32: FFI::Type::Builtin
+    UINT64: FFI::Type::Builtin
+    UINT8: FFI::Type::Builtin
+    UINT: FFI::Type::Builtin
+    ULONG: FFI::Type::Builtin
+    ULONG_LONG: FFI::Type::Builtin
+    USHORT: FFI::Type::Builtin
+    VARARGS: FFI::Type::Builtin
+    VOID: FFI::Type::Builtin
+
+    type builtin_symbol = (
+      :char | :uchar
+      | :int8 | :uint8
+      | :short | :ushort
+      | :int16 | :uint16
+      | :int | :uint
+      | :int32 | :uint32
+      | :long | :ulong
+      | :int64 | :uint64
+      | :long_long | :ulong_long
+      | :float | :double
+      | :pointer | :string
+      | :bool
+      | :void | :strptr
+      | :buffer_in | :buffer_out | :buffer_inout
+      | :varargs
+    )
+
+    def initialize: (Integer | FFI::Type value) -> void
+    def alignment: -> Integer
+    def size: -> Integer
+
+    class Builtin < ::FFI::Type
+      include _Inspect
+    end
+
+    class Mapped < ::FFI::Type
+      def initialize: (_NativeType & _ToNative & _FromNative converter) -> void
+      def from_native: (*untyped args) -> untyped
+      def native_type: -> FFI::Type
+      def to_native: -> untyped
+    end
+  end
+end

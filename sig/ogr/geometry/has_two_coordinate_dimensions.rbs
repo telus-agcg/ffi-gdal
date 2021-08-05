@@ -1,0 +1,8 @@
+module OGR
+  module Geometry
+    module HasTwoCoordinateDimensions
+      def centroid: -> OGR::Point
+      def envelope: -> OGR::Envelope?
+    end
+  end
+end

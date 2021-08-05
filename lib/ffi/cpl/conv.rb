@@ -2,6 +2,7 @@
 
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module CPL
@@ -127,8 +128,6 @@ module FFI
 
       attach_function :CPLValidateXML, %i[string string pointer], :int
       attach_function :CPLsetlocale, %i[int string], :strptr
-
-      attach_function :CPLCleanupSetlocaleMutex, %i[], :void
     end
   end
 end

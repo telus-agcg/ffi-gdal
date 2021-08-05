@@ -1,0 +1,106 @@
+module OGR
+  module Geometry
+    module GeometryMethods
+      include _SpatialReference
+      include _ToWkt
+
+      #---------------------------
+      # Constructors
+      #---------------------------
+      def clone: -> OGR::Geometry::geometry_class
+
+      #---------------------------
+      # Getter/setters
+      #---------------------------
+      def coordinate_dimension: -> (2 | 3)
+      def coordinate_dimension=: (2 | 3 new_coordinate_dimension) -> void
+      def dimension: -> (0 | 1 | 2)
+      def dump_readable: (?String ?file_path, ?prefix: String?) -> void
+      def empty!: -> void
+      def envelope: -> (OGR::Envelope | OGR::Envelope3D)
+      def import_from_wkt: (String wkt_data) -> void
+      def name: -> String
+      def type: -> FFI::OGR::Core::wkb_geometry_type_symbol
+      def type_to_name: -> String
+
+      #---------------------------
+      # Exporters
+      #---------------------------
+      def to_geo_json: -> String
+      def to_geo_json_ex: (?coordinate_precision: Integer) -> String
+      | (?significant_figures: Integer) -> String
+      | () -> String
+      def to_gml: -> String
+      def to_gml_ex: (format: "GML2", ?namespace_decl: ("YES" | "NO")) -> String
+      | (
+        format: "GML3",
+        ?gml3_linestring_element: "curve",
+        ?gml3_longsrs: ("YES" | "NO"),
+        ?namespace_decl: ("YES" | "NO"),
+        ?srsdimension_loc: ("POSLIST" | "GEOMETRY" | "GEOMETRY,POSLIST"),
+        ?srsname_format: ("SHORT" | "OGC_URN" | "OGC_URL")
+      ) -> String
+      | (
+        format: "GML32",
+        gmlid: String,
+        ?namespace_decl: ("YES" | "NO"),
+        ?srsdimension_loc: ("POSLIST" | "GEOMETRY" | "GEOMETRY,POSLIST"),
+      ) -> String
+      | () -> String
+
+      def to_iso_wkt: -> String
+      def to_kml: (?String altitude_mode) -> String
+      def to_wkb: (?FFI::OGR::Core::wkb_byte_order_symbol byte_order) -> String
+      def wkb_size: -> Integer
+
+      #---------------------------
+      #
+      #---------------------------
+      def empty?: -> bool
+      def ring?: -> bool
+      def valid?: -> bool
+
+      #---------------------------
+      # Boolean-ops
+      #---------------------------
+      def centroid: -> (OGR::Point | OGR::Point25D)
+      def convex_hull: -> OGR::Geometry::geometry_class
+
+      #---------------------------
+      # Boolean-ops
+      #---------------------------
+      def contains?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def crosses?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def disjoint?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def equals?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def intersects?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def overlaps?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def touches?: (OGR::Geometry::geometry_class other_geometry) -> bool
+      def within?: (OGR::Geometry::geometry_class other_geometry) -> bool
+
+      def difference: (OGR::Geometry::geometry_class other_geometry) -> OGR::Geometry::geometry_class?
+      def intersection: (OGR::Geometry::geometry_class other_geometry) -> OGR::Geometry::geometry_class?
+      def symmetric_difference: (OGR::Geometry::geometry_class other_geometry) -> OGR::Geometry::geometry_class?
+      def union: (OGR::Geometry::geometry_class other_geometry) -> OGR::Geometry::geometry_class?
+
+      # def buffer: (FFI::floatable distance, ?Integer quad_segments) -> OGR::Geometry::geometry_class
+      def buffer: (FFI::floatable distance, ?Integer quad_segments) -> untyped
+      def close_rings!: -> void
+      def distance_to: (OGR::Geometry::geometry_class other_geometry) -> Float
+      def segmentize!: (FFI::floatable max_length) -> self
+      def simplify: (FFI::floatable distance_tolerance, ?preserve_topology: bool) -> void
+      def transform!: (OGR::CoordinateTransformation coordinate_transformation) -> void
+      def transform_to!: (OGR::SpatialReference new_spatial_reference) -> void
+
+      #---------------------------
+      # Geometry-type casters
+      #---------------------------
+      def to_line_string: -> OGR::Geometry::geometry_class
+      def to_liner_ring: (?close_rings: bool) -> OGR::LinearRing
+      def to_multi_line_string: -> OGR::Geometry::geometry_class
+      def to_multi_point: -> OGR::Geometry::geometry_class
+      def to_multi_polygon: -> OGR::Geometry::geometry_class
+      def to_polygon: -> OGR::Geometry::geometry_class
+    end
+  end
+end

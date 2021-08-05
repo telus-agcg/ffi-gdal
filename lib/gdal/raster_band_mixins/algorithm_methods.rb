@@ -63,13 +63,14 @@ module GDAL
         #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
         # @return [GDAL::RasterBand] +output_band+ with the dithering algorithm
         #   applied.
+        # @raise [FFI::GDAL::InvalidPointer]
         def dither_rgb_to_pct(red_band, green_band, blue_band, output_band,
           color_table, progress_function: nil, progress_arg: nil)
-          red_ptr = GDAL._pointer(GDAL::RasterBand, red_band)
-          green_ptr = GDAL._pointer(GDAL::RasterBand, green_band)
-          blue_ptr = GDAL._pointer(GDAL::RasterBand, blue_band)
-          output_ptr = GDAL._pointer(GDAL::RasterBand, output_band)
-          color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table)
+          red_ptr = GDAL._pointer(red_band)
+          green_ptr = GDAL._pointer(green_band)
+          blue_ptr = GDAL._pointer(blue_band)
+          output_ptr = GDAL._pointer(output_band)
+          color_table_ptr = GDAL._pointer(color_table)
 
           FFI::GDAL::Alg.GDALDitherRGB2PCT(
             red_ptr,
@@ -130,8 +131,9 @@ module GDAL
       # @option options [Integer] fixed_buf_val If set, all pixels within the
       #   +maxdist+ threshold are set to this fixed value instead of to a
       #   proximity distance.
+      # @raise [FFI::GDAL::InvalidPointer]
       def compute_proximity!(proximity_band, progress_function: nil, progress_arg: nil, **options)
-        proximity_band_ptr = GDAL._pointer(GDAL::RasterBand, proximity_band)
+        proximity_band_ptr = GDAL._pointer(proximity_band)
         options_ptr = GDAL::Options.pointer(options)
 
         FFI::GDAL::Alg.GDALComputeProximity(
@@ -170,10 +172,11 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash]
+      # @raise [FFI::GDAL::InvalidPointer]
       # TODO: document what valid options are.
       def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil, progress_arg: nil,
         **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
+        mask_band_ptr = GDAL._pointer(mask_band)
         options_ptr = GDAL::Options.pointer(options)
 
         !!FFI::GDAL::Alg.GDALFillNodata(@c_pointer,
@@ -225,11 +228,11 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @return [OGR::Layer]
+      # @raise [FFI::GDAL::InvalidPointer]
       def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
-        layer_ptr = GDAL._pointer(OGR::Layer, layer)
-        raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+        mask_band_ptr = GDAL._pointer(mask_band) if mask_band
+        layer_ptr = GDAL._pointer(layer)
 
         log "Pixel value field: #{pixel_value_field}"
 
@@ -312,10 +315,11 @@ module GDAL
       # @param progress_arg [FFI::Pointer] Usually used when when using a
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash] None supported in GDAL as of this writing.
+      # @raise [FFI::GDAL::InvalidPointer]
       def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
-        destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
+        mask_band_ptr = GDAL._pointer(mask_band) if mask_band
+        destination_band_ptr = GDAL._pointer(destination_band)
 
         if destination_band.nil? || destination_band.null?
           raise GDAL::InvalidRasterBand, "destination_band isn't a valid GDAL::RasterBand: #{destination_band}"

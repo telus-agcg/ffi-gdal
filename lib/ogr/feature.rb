@@ -342,10 +342,10 @@ module OGR
     #
     # @param index [Integer]
     # @param geometry [OGR::Geometry]
+    # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def set_geometry_field(index, geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry)
-      raise OGR::InvalidGeometry if geometry_ptr.nil?
+      geometry_ptr = GDAL._pointer(geometry)
 
       OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field at index #{index}") do
         FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
@@ -358,10 +358,9 @@ module OGR
     # @param index [Integer]
     # @param geometry [OGR::Geometry]
     # @raise [OGR::Failure]
+    # @raise [FFI::GDAL::InvalidPointer]
     def set_geometry_field_directly(index, geometry)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, geometry, autorelease: false)
-
-      raise OGR::InvalidGeometry if geometry_ptr.nil?
+      geometry_ptr = GDAL._pointer(geometry, autorelease: false)
 
       OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field directly at index #{index}") do
         FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)
@@ -518,10 +517,9 @@ module OGR
     end
 
     # @param new_style_table [OGR::StyleTable]
+    # @raise [FFI::GDAL::InvalidPointer]
     def style_table=(new_style_table)
-      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table, autorelease: false)
-
-      raise OGR::InvalidStyleTable unless new_style_table_ptr
+      new_style_table_ptr = GDAL._pointer(new_style_table, autorelease: false)
 
       FFI::OGR::API.OGR_F_SetStyleTableDirectly(@c_pointer, new_style_table_ptr)
     end

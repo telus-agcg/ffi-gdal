@@ -7,7 +7,6 @@ require 'gdal/warp_operation'
 require 'gdal/warp_options'
 require 'gdal/transformers/general_image_projection_transformer'
 require 'gdal/transformers/general_image_projection_transformer2'
-require 'byebug'
 
 GDAL::Logger.logging_enabled = true
 

@@ -1,0 +1,7 @@
+module OGR
+  class Polygon < OGR::CurvePolygon
+    include OGR::Geometry::SurfaceMethods
+
+    GEOMETRY_TYPE: :wkbPolygon
+  end
+end

@@ -35,9 +35,10 @@ module OGR
 
     # @param source_srs [OGR::SpatialReference]
     # @param destination_srs [OGR::SpatialReference]
+    # @raise [FFI::GDAL::InvalidPointer]
     def initialize(source_srs, destination_srs)
-      source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
-      destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
+      source_ptr = GDAL._pointer(source_srs)
+      destination_ptr = GDAL._pointer(destination_srs)
 
       # Input spatial reference system objects are assigned by copy (calling clone() method)
       # and no ownership transfer occurs.

@@ -1,0 +1,7 @@
+module OGR
+  class Polygon25D < Polygon
+    include OGR::Geometry::HasThreeCoordinateDimensions
+
+    GEOMETRY_TYPE: :wkbPolygon25D
+  end
+end

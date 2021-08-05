@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require_relative '../../ext/ffi_library_function_checks'
+require_relative '../gdal'
 
 module FFI
   module OGR
     module API
       extend ::FFI::Library
-      ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       # -----------------------------------------------------------------------
       # Typedefs
@@ -50,21 +51,22 @@ module FFI
                       ],
                       :OGRGeometryH
 
-      attach_function :OGR_G_ForceToPolygon, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToLineString, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_ForceToMultiPolygon, %i[OGRGeometryH], :OGRGeometryH
-      attach_function :OGR_G_ForceToMultiPoint, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_ForceToMultiLineString, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToMultiPoint, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToMultiPolygon, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceToPolygon, %i[OGRGeometryH], :OGRGeometryH
+      attach_function :OGR_G_ForceTo, [:OGRGeometryH, FFI::OGR::Core::WKBGeometryType, :pointer], :OGRGeometryH
 
       attach_function :OGR_G_GetDimension, %i[OGRGeometryH], :int
       attach_function :OGR_G_GetCoordinateDimension, %i[OGRGeometryH], :int
       attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
       attach_function :OGR_G_Clone, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_GetEnvelope,
-                      [:OGRGeometryH, FFI::OGR::Envelope.ptr],
+                      [:OGRGeometryH, FFI::OGR::Envelope.by_ref],
                       :void
       attach_function :OGR_G_GetEnvelope3D,
-                      [:OGRGeometryH, FFI::OGR::Envelope3D.ptr],
+                      [:OGRGeometryH, FFI::OGR::Envelope3D.by_ref],
                       :void
 
       attach_function :OGR_G_ImportFromWkb,
@@ -80,7 +82,7 @@ module FFI
       attach_function :OGR_G_ExportToIsoWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
 
       attach_function :OGR_G_GetGeometryType, %i[OGRGeometryH], FFI::OGR::Core::WKBGeometryType
-      attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :strptr
+      attach_function :OGR_G_GetGeometryName, %i[OGRGeometryH], :string
       attach_function :OGR_G_DumpReadable,
                       %i[OGRGeometryH pointer string],
                       :void

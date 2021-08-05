@@ -37,8 +37,9 @@ module GDAL
       # geotransform.
       #
       # @param [FFI::Pointer, GDAL::GeoTransform] geo_transform
+      # @raise [FFI::GDAL::InvalidPointer]
       def destination_geo_transform=(geo_transform)
-        geo_transform_ptr = GDAL._pointer(GDAL::GeoTransform, geo_transform)
+        geo_transform_ptr = GDAL._pointer(geo_transform)
 
         FFI::GDAL::Alg.GDALSetGenImgProjTransformerDstGeoTransform(
           @c_pointer, geo_transform_ptr

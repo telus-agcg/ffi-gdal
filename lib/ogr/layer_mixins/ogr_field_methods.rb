@@ -11,13 +11,14 @@ module OGR
       # @param approx_ok [Boolean] If +true+ the field may be created in a slightly
       #   different form, depending on the limitations of the format driver.
       # @raise [OGR::Failure]
+      # @raise [FFI::GDAL::InvalidPointer]
       def create_field(field_definition, approx_ok: false)
         unless test_capability('CreateField')
           raise OGR::UnsupportedOperation,
                 'This layer does not support field creation.'
         end
 
-        field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
+        field_definition_ptr = GDAL._pointer(field_definition)
 
         OGR::ErrorHandling.handle_ogr_err('Unable to create field') do
           FFI::OGR::API.OGR_L_CreateField(@c_pointer, field_definition_ptr, approx_ok)
@@ -79,12 +80,13 @@ module OGR
       # @param flags [Integer] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
       #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
       # @raise [OGR::Failure]
+      # @raise [FFI::GDAL::InvalidPointer]
       def alter_field_definition(field_index, new_field_definition, flags)
         unless test_capability('AlterFieldDefn')
           raise OGR::UnsupportedOperation, 'This layer does not support field definition altering.'
         end
 
-        new_field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, new_field_definition)
+        new_field_definition_ptr = GDAL._pointer(new_field_definition)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to alter field definition at field index #{field_index}") do
           FFI::OGR::API.OGR_L_AlterFieldDefn(
@@ -115,12 +117,13 @@ module OGR
       #   to use for creating the new field.
       # @param approx_ok [Boolean]
       # @raise [OGR::Failure]
+      # @raise [FFI::GDAL::InvalidPointer]
       def create_geometry_field(geometry_field_def, approx_ok: false)
         unless test_capability('CreateGeomField')
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end
 
-        geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_def)
+        geometry_field_definition_ptr = GDAL._pointer(geometry_field_def)
 
         OGR::ErrorHandling.handle_ogr_err('Unable to create geometry field') do
           FFI::OGR::API.OGR_L_CreateGeomField(

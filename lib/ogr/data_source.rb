@@ -36,7 +36,8 @@ module OGR
 
     # Use to release the resulting data pointer from #execute_sql.
     #
-    # @param pointer [FFI::Pointer]
+    # @param data_source_pointer [FFI::Pointer]
+    # @param layer_pointer [FFI::Pointer]
     def self.release_result_set(data_source_pointer, layer_pointer)
       return unless data_source_pointer && !data_source_pointer.null? && layer_pointer && !layer_pointer.null?
 
@@ -145,7 +146,7 @@ module OGR
               'This data source does not support creating layers.'
       end
 
-      spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
+      spatial_ref_ptr = GDAL._maybe_pointer(spatial_reference, autorelease: false) if spatial_reference
       options_obj = GDAL::Options.pointer(options)
 
       layer_ptr =
@@ -162,8 +163,9 @@ module OGR
     # @param new_name [String]
     # @param options [Hash]
     # @return [OGR::Layer, nil]
+    # @raise [FFI::GDAL::InvalidPointer]
     def copy_layer(source_layer, new_name, **options)
-      source_layer_ptr = GDAL._pointer(OGR::Layer, source_layer)
+      source_layer_ptr = GDAL._pointer(source_layer)
       options_ptr = GDAL::Options.pointer(options)
 
       layer_ptr = FFI::OGR::API.OGR_DS_CopyLayer(@c_pointer, source_layer_ptr,
@@ -193,7 +195,7 @@ module OGR
     # @return [OGR::Layer, nil]
     # @see http://www.gdal.org/ogr_sql.html
     def execute_sql(command, spatial_filter = nil, dialect = nil)
-      geometry_ptr = GDAL._pointer(OGR::Geometry, spatial_filter) if spatial_filter
+      geometry_ptr = GDAL._maybe_pointer(spatial_filter) if spatial_filter
 
       layer_ptr = FFI::OGR::API.OGR_DS_ExecuteSQL(@c_pointer, command, geometry_ptr, dialect)
       layer_ptr.autorelease = false
@@ -216,8 +218,9 @@ module OGR
     end
 
     # @param new_style_table [OGR::StyleTable, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def style_table=(new_style_table)
-      new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
+      new_style_table_ptr = GDAL._pointer(new_style_table)
 
       FFI::OGR::API.OGR_DS_SetStyleTable(@c_pointer, new_style_table_ptr)
 

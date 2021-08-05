@@ -36,7 +36,15 @@ module FFI
     def self.find_lib(lib)
       lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
-      return Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].first if ENV['GDAL_LIBRARY_PATH']
+      if ENV['GDAL_LIBRARY_PATH']
+        result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].compact
+
+        if (f = result.first)
+          return f
+        end
+
+        raise "library '#{lib}' not found"
+      end
 
       search_paths.map do |search_path|
         Dir.glob(search_path).map do |path|
@@ -47,7 +55,7 @@ module FFI
 
     # @return [Array<String>] List of paths to search for libs in.
     def self.search_paths
-      return ENV['GDAL_LIBRARY_PATH'] if ENV['GDAL_LIBRARY_PATH']
+      return [ENV['GDAL_LIBRARY_PATH']] if ENV['GDAL_LIBRARY_PATH']
 
       @search_paths ||= begin
         paths = ENV['PATH'].split(File::PATH_SEPARATOR)
@@ -90,6 +98,11 @@ module FFI
     end
 
     ffi_lib(gdal_library_path)
+
+    # @return [Array<FFI::DynamicLibrary>]
+    def self.loaded_ffi_libs
+      @ffi_libs
+    end
 
     attach_function :GDALVersionInfo, %i[string], :string
     attach_function :GDALCheckVersion, %i[int int string], :bool

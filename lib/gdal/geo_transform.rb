@@ -32,7 +32,7 @@ module GDAL
 
     # @param geo_transform [FFI::Pointer]
     def initialize(geo_transform = nil)
-      @c_pointer = geo_transform ? GDAL._pointer(GDAL::GeoTransform, geo_transform) : self.class.new_pointer
+      @c_pointer = geo_transform ? GDAL._maybe_pointer(geo_transform) : self.class.new_pointer
 
       self.pixel_width ||= 1.0
       self.pixel_height ||= 1.0
@@ -162,10 +162,9 @@ module GDAL
     #
     # @param other_geo_transform [GDAL::GeoTransform, FFI::Pointer]
     # @return [GDAL::GeoTransform]
+    # @raise [FFI::GDAL::InvalidPointer]
     def compose(other_geo_transform)
-      other_ptr = GDAL._pointer(GDAL::GeoTransform, other_geo_transform)
-
-      raise GDAL::NullObject, "Unable to access pointer for '#{other_geo_transform}'" unless other_ptr
+      other_ptr = GDAL._pointer(other_geo_transform)
 
       new_gt_ptr = self.class.new_pointer
       FFI::GDAL::GDAL.GDALComposeGeoTransforms(@c_pointer, other_ptr, new_gt_ptr)

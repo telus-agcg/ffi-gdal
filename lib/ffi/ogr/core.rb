@@ -3,12 +3,13 @@
 require 'ffi'
 require_relative '../../ext/ffi_library_function_checks'
 require_relative 'field'
+require_relative '../gdal'
 
 module FFI
   module OGR
     module Core
       extend ::FFI::Library
-      ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
+      @ffi_libs = FFI::GDAL.loaded_ffi_libs
 
       #------------------------------------------------------------------------
       # Enums
@@ -16,16 +17,18 @@ module FFI
       # The C API defines :OGRErr as a function that returns constants.  I'm
       # taking the liberty to turn this into an enum.
       # https://trac.osgeo.org/gdal/ticket/3153
-      Err = enum :OGRERR_NONE,
-                 :OGRERR_NOT_ENOUGH_DATA,
-                 :OGRERR_NOT_ENOUGH_MEMORY,
-                 :OGRERR_UNSUPPORTED_GEOMETRY_TYPE,
-                 :OGRERR_UNSUPPORTED_OPERATION,
-                 :OGRERR_CORRUPT_DATA,
-                 :OGRERR_FAILURE,
-                 :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE
+      Err = enum :ogr_err, %i[OGRERR_NONE
+                              OGRERR_NOT_ENOUGH_DATA
+                              OGRERR_NOT_ENOUGH_MEMORY
+                              OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+                              OGRERR_UNSUPPORTED_OPERATION
+                              OGRERR_CORRUPT_DATA
+                              OGRERR_FAILURE
+                              OGRERR_UNSUPPORTED_SRS
+                              OGRERR_INVALID_HANDLE]
 
+      # https://gdal.org/api/vector_c_api.html#_CPPv418OGRwkbGeometryType
+      #
       WKBGeometryType = enum FFI::Type::UINT,
                              :wkbUnknown,                0,
                              :wkbPoint,                  1,
@@ -35,6 +38,13 @@ module FFI
                              :wkbMultiLineString,        5,
                              :wkbMultiPolygon,           6,
                              :wkbGeometryCollection,     7,
+                             :wkbCircularString,         8,
+                             :wkbCompoundCurve,          9,
+                             :wkbCurvePolygon,           10,
+                             :wkbMultiCurve,             11,
+                             :wkbMultiSurface,           12,
+                             :wkbCurve,                  13,
+                             :wkbSurface,                14,
                              :wkbNone,                   100,    # non-standard, for pure attribute records
                              :wkbLinearRing,             101,    # non-standard, just for createGeometry
                              :wkbPoint25D,               0x8000_0001,
@@ -170,7 +180,7 @@ module FFI
       attach_function :OGRRealloc, %i[pointer size_t], :pointer
       attach_function :OGRFree, [:pointer], :void
 
-      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :strptr
+      attach_function :OGRGeometryTypeToName, [WKBGeometryType], :string
       attach_function :OGRMergeGeometryTypes,
                       [WKBGeometryType, WKBGeometryType],
                       WKBGeometryType

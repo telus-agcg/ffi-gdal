@@ -1,0 +1,38 @@
+module FFI
+  class Struct
+    extend _Size
+    include _Size
+
+    def self.alignment: () -> Integer
+    def self.auto_ptr: () -> FFI::Type::Mapped
+    def self.by_ref: (?::Symbol flags) -> FFI::Type::Mapped
+    def self.by_value: () -> FFI::StructByValue
+    def self.in: () -> FFI::Type::Mapped
+    def self.layout:
+      (*Symbol | Integer args) -> FFI::StructLayout
+
+    def self.members: () -> Array[Symbol]
+    def self.offset_of: (Symbol name) -> Numeric
+    def self.offsets: () -> Array[Array[Symbol | Numeric]]
+    def self.out: () -> FFI::Type::Mapped
+    def self.ptr: (?:inout | :in | :out flags) -> FFI::Type::Mapped
+    def self.size=: (Numeric size) -> Numeric
+    def self.val: () -> FFI::StructByValue
+
+    def alignment: () -> Integer
+    alias align alignment
+
+    def clear: () -> self
+    def members: () -> Array[Symbol]
+    def offset_of: (Symbol name) -> Numeric
+    def offsets: () -> Array[Array[Symbol | Numeric]]
+    def to_ptr: () -> FFI::AbstractMemory
+    def values: () -> Array[untyped]
+
+    class ManagedStructConverter < StructByReference
+      def initialize: (FFI::Struct struct_class) -> void
+
+      def from_native: (FFI::Pointer ptr, void ctx) -> FFI::Struct
+    end
+  end
+end

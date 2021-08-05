@@ -65,12 +65,9 @@ module OGR
     end
 
     # @param field_definition [OGR::FieldDefinition, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def add_field_definition(field_definition)
-      field_definition_ptr = GDAL._pointer(OGR::FieldDefinition, field_definition)
-
-      if field_definition_ptr.nil?
-        raise OGR::InvalidFieldDefinition, "Unable to add OGR::FieldDefinition: '#{field_definition}'"
-      end
+      field_definition_ptr = GDAL._pointer(field_definition)
 
       FFI::OGR::API.OGR_FD_AddFieldDefn(@c_pointer, field_definition_ptr)
     end
@@ -148,8 +145,9 @@ module OGR
     end
 
     # @param geometry_field_definition [OGR::GeometryFieldDefinition, FFI::Pointer]
+    # @raise [FFI::GDAL::InvalidPointer]
     def add_geometry_field_definition(geometry_field_definition)
-      geometry_field_definition_ptr = GDAL._pointer(OGR::GeometryFieldDefinition, geometry_field_definition)
+      geometry_field_definition_ptr = GDAL._pointer(geometry_field_definition)
       FFI::OGR::API.OGR_FD_AddGeomFieldDefn(@c_pointer, geometry_field_definition_ptr)
     end
 
@@ -163,8 +161,9 @@ module OGR
 
     # @param other_feature_definition [OGR::Feature, FFI::Pointer]
     # @return [Boolean]
+    # @raise [FFI::GDAL::InvalidPointer]
     def same?(other_feature_definition)
-      fd_ptr = GDAL._pointer(OGR::FeatureDefinition, other_feature_definition)
+      fd_ptr = GDAL._pointer(other_feature_definition)
 
       FFI::OGR::API.OGR_FD_IsSame(@c_pointer, fd_ptr)
     end

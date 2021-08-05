@@ -1,0 +1,8 @@
+module OGR
+  module Geometry
+    module HasThreeCoordinateDimensions
+      def centroid: -> OGR::Point25D
+      def envelope: -> OGR::Envelope3D?
+    end
+  end
+end

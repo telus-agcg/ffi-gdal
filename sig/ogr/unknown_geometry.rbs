@@ -1,0 +1,10 @@
+module OGR
+  class UnknownGeometry
+    include _HasPointer
+    include OGR::Geometry::GeometryMethods
+
+    GEOMETRY_TYPE: :wkbUnknown
+
+    def initialize: (FFI::Pointer c_pointer) -> void
+  end
+end

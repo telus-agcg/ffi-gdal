@@ -1,0 +1,17 @@
+module OGR
+  class Surface
+    include _HasPointer
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
+    include OGR::Geometry::SurfaceMethods
+    include OGR::Geometry::HasTwoCoordinateDimensions
+    include OGR::Geometry::NotAGeometryCollection
+
+    GEOMETRY_TYPE: :wkbSurface
+
+    def initialize: (FFI::Pointer c_pointer, ?spatial_reference: OGR::SpatialReference?) -> void
+  end
+end

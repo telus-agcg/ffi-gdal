@@ -1,0 +1,8 @@
+module OGR
+  module Geometry
+    module NotAGeometryCollection
+      def simple?: -> bool
+      def boundary: -> OGR::Geometry::geometry_class
+    end
+  end
+end

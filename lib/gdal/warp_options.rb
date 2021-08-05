@@ -97,8 +97,6 @@ module GDAL
 
     # @param geometry [OGR::Geometry]
     def cutline=(geometry)
-      raise 'Not a geom' unless geometry.is_a?(OGR::Geometry)
-
       @cutline = geometry
 
       @c_struct[:cutline] = geometry.c_pointer
@@ -169,7 +167,7 @@ module GDAL
     end
 
     # Set a Proc per source band; number of procs in +band_procs+ should equal
-    # {band_count}.
+    # {GDAL::WarpOptions#band_count}.
     #
     # @param band_procs [Array<Proc>]
     def source_per_band_validity_mask_function=(band_procs)

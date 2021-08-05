@@ -1,0 +1,9 @@
+module OGR
+  class GeometryCollection25D < OGR::GeometryCollection
+    include OGR::Geometry::HasThreeCoordinateDimensions
+
+    GEOMETRY_TYPE: :wkbGeometryCollection25D
+
+    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+  end
+end

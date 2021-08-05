@@ -1,0 +1,19 @@
+module OGR
+  class Point
+    include _HasPointer
+    include _SpatialReference
+    include _ToWkt
+
+    include GDAL::Logger
+    include OGR::Geometry::GeometryMethods
+    include OGR::Geometry::HasTwoCoordinateDimensions
+    include OGR::Geometry::NotAGeometryCollection
+
+    GEOMETRY_TYPE: :wkbPoint
+
+    def self.new_from_coordinates: (FFI::floatable x, FFI::floatable y) -> void
+
+    def initialize: (?c_pointer: FFI::Pointer?, ?spatial_reference: OGR::SpatialReference?) -> void
+    def add_point: (FFI::floatable x, FFI::floatable y) -> void
+  end
+end

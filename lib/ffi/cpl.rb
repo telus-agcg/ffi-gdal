@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'ffi'
+
 module FFI
   module CPL
+    extend ::FFI::Library
+
     autoload :Conv, File.expand_path('cpl/conv.rb', __dir__)
     autoload :Error, File.expand_path('cpl/error.rb', __dir__)
     autoload :HashSet, File.expand_path('cpl/hash_set.rb', __dir__)

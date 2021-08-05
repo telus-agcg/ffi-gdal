@@ -13,7 +13,6 @@ module OGR
   # Symbols to Ruby exceptions (or lack thereof).
   module ErrorHandling
     ERROR_CLASS_MAP = {
-      OGRERR_NONE: nil,
       OGRERR_NOT_ENOUGH_DATA: OGR::NotEnoughData,
       OGRERR_NOT_ENOUGH_MEMORY: ::NoMemoryError,
       OGRERR_UNSUPPORTED_GEOMETRY_TYPE: OGR::UnsupportedGeometryType,
@@ -28,11 +27,17 @@ module OGR
     #
     # @param msg [String]
     def self.handle_ogr_err(msg)
-      ogr_err_symbol = yield
+      ogr_err_symbol_or_value = yield
 
-      klass = ERROR_CLASS_MAP.fetch(ogr_err_symbol) { raise "Unknown OGRERR type: #{self}" }
+      ogr_err_symbol = case ogr_err_symbol_or_value
+                       when Symbol then ogr_err_symbol_or_value
+                       when Integer then FFI::OGR::Core::Err[ogr_err_symbol_or_value]
+                       end
 
-      raise_exception(klass, msg) if klass
+      return if ogr_err_symbol == :OGRERR_NONE
+
+      ERROR_CLASS_MAP.fetch(ogr_err_symbol) { raise "Unknown OGRERR type: #{self}" }
+                     .tap { |klass| raise_exception(klass, msg) }
     end
 
     # Exists solely to strip off the top 4 lines of the backtrace so it doesn't

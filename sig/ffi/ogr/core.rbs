@@ -1,0 +1,59 @@
+module FFI
+  module OGR
+    module Core
+      type ogr_err_symbol = (
+        :OGRERR_NONE
+        | :OGRERR_NOT_ENOUGH_DATA
+        | :OGRERR_NOT_ENOUGH_MEMORY
+        | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE
+        | :OGRERR_UNSUPPORTED_OPERATION
+        | :OGRERR_CORRUPT_DATA
+        | :OGRERR_FAILURE
+        | :OGRERR_UNSUPPORTED_SRS
+        | :OGRERR_INVALID_HANDLE
+      )
+
+      type wkb_geometry_type_symbol = (
+        :wkbUnknown | :wkbPoint | :wkbLineString | :wkbPolygon
+        | :wkbMultiPoint | :wkbMultiLineString | :wkbMultiPolygon | :wkbGeometryCollection
+        | :wkbCircularString | :wkbCompoundCurve | :wkbCurvePolygon
+        | :wkbMultiCurve | :wkbMultiSurface
+        | :wkbCurve | :wkbSurface
+        | :wkbPolyhedralSurface
+        | :wkbTIN
+        | :wkbTriangle
+        | :wkbNone
+        | :wkbLinearRing
+        | :wkbCircularStringZ | :wkbCompoundCurveZ | :wkbCurvePolygonZ
+        | :wkbMultiCurveZ | :wkbMultiSurfaceZ
+        | :wkbCurveZ | :wkbSurfaceZ
+        | :wkbPolyhedralSurfaceZ
+        | :wkbTINZ
+        | :wkbTriangleZ
+        | :wkbPointM | :wkbLineStringM | :wkbPolygonM
+        | :wkbMultiPointM | :wkbMultiLineStringM | :wkbMultiPolygonM | :wkbGeometryCollectionM
+        | :wkbCircularStringM | :wkbCompoundCurve | :wkbCurvePolygonM
+        | :wkbMultiCurveM | :wkbMultiSurfaceM
+        | :wkbCurveM | :wkbSurfaceM
+        | :wkbPolyhedralSurfaceM
+        | :wkbTINM
+        | :wkbTriangleM
+        | :wkbPointZM | :wkbLineStringZM | :wkbPolygonZM
+        | :wkbMultiPointZM | :wkbMultiLineStringZM | :wkbMultiPolygonZM | :wkbGeometryCollectionZM
+        | :wkbCircularStringZM | :wkbCompoundCurveZM | :wkbCurvePolygonZM
+        | :wkbMultiCurveZM | :wkbMultiSurfaceZM
+        | :wkbCurveZM | :wkbSurfaceZM
+        | :wkbPolyhedralSurfaceZM
+        | :wkbTINZM
+        | :wkbTriangleZM
+        | :wkbPoint25D | :wkbLineString25D | :wkbPolygon25D
+        | :wkbMultiPoint25D | :wkbMultiLineString25D | :wkbMultiPolygon25D | :wkbGeometryCollection25D
+      )
+
+      type wkb_byte_order_symbol = (:wkbXDR | :wkbNDR)
+
+      def self.OGRGeometryTypeToName: (wkb_geometry_type_symbol geometry_type) -> String
+      def self.OGRMergeGeometryTypes: (wkb_geometry_type_symbol lhs, wkb_geometry_type_symbol rhs) -> wkb_geometry_type_symbol
+    end
+  end
+end

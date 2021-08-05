@@ -1,0 +1,9 @@
+module OGR
+  module Geometry
+    module SurfaceMethods: _SpatialReference
+      def area: -> Float
+
+      def area_units: -> { unit_name: String, value: Float }?
+    end
+  end
+end

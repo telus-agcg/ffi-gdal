@@ -66,11 +66,11 @@ module OGR
       #
       # @param new_feature [OGR::Feature, FFI::Pointer]
       # @raise [OGR::Failure]
+      # @raise [FFI::GDAL::InvalidPointer]
       def feature=(new_feature)
         raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless test_capability('RandomWrite')
 
-        new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
-        raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
+        new_feature_ptr = GDAL._pointer(new_feature)
 
         OGR::ErrorHandling.handle_ogr_err('Unable to set feature') do
           FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)

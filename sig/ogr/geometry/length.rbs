@@ -1,0 +1,7 @@
+module OGR
+  module Geometry
+    module Length
+      def length: -> Float
+    end
+  end
+end

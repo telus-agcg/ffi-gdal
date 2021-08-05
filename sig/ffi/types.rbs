@@ -1,0 +1,8 @@
+module FFI
+  # Numbers of these types can be passed in to FFI functions that are of types
+  # :float or :double.
+  type floatable = (Float | Integer | Rational)
+
+  # Represents the FFI type :strptr.
+  type strptr = [String, FFI::Pointer]
+end

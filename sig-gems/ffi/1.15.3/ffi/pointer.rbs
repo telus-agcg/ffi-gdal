@@ -1,0 +1,10 @@
+module FFI
+  class Pointer < FFI::AbstractMemory
+    def initialize:
+      (instance pointer)                     -> void
+    | (FFI::Type type_name, Integer address) -> void
+
+    def autorelease=: (bool autorelease) -> bool
+    def null?: -> bool
+  end
+end

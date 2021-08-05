@@ -91,9 +91,10 @@ module OGR
       # @param horizontal_spatial_ref [OGR::SpatialReference] (a PROJCS or GEOGCS)
       # @param vertical_spatial_ref [OGR::SpatialReference] (a VERT_CS)
       # @raise [OGR::Failure]
+      # @raise [FFI::GDAL::InvalidPointer]
       def set_compound_cs(name, horizontal_spatial_ref, vertical_spatial_ref)
-        horizontal_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, horizontal_spatial_ref)
-        vertical_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, vertical_spatial_ref)
+        horizontal_spatial_ref_ptr = GDAL._pointer(horizontal_spatial_ref)
+        vertical_spatial_ref_ptr = GDAL._pointer(vertical_spatial_ref)
 
         OGR::ErrorHandling.handle_ogr_err("Unable to set compound CS '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetCompoundCS(
@@ -489,7 +490,7 @@ module OGR
       # @raise [OGR::Failure]
       def set_transverse_mercator(center_lat, center_long, scale, false_easting, false_northing)
         msg = 'Unable to set transverse mercator: ' \
-          "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"
+              "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"
 
         OGR::ErrorHandling.handle_ogr_err(msg) do
           FFI::OGR::SRSAPI.OSRSetTM(

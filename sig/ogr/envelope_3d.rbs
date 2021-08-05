@@ -1,0 +1,7 @@
+module OGR
+  class Envelope3D
+    attr_reader c_struct: FFI::OGR::Envelope3D
+
+    def initialize: (FFI::OGR::Envelope3D envelope_struct) -> void
+  end
+end

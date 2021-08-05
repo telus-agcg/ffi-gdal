@@ -1,0 +1,18 @@
+module OGR
+  module Geometry
+    module SimpleCurve25D
+      include GDAL::Logger
+
+      def x: (Integer point_number) -> Float
+      def y: (Integer point_number) -> Float
+      def z: (Integer point_number) -> Float
+
+      def add_point: (FFI::floatable x, FFI::floatable y, FFI::floatable y) -> void
+      def point: (Integer point_number) -> [Float, Float, Float]
+      def set_point: (Integer point_number, FFI::floatable s, FFI::floatable y, FFI::floatable z) -> void
+      def points: -> Array[Array[Float]]
+      def point_count=: (Integer new_count) -> void
+      def point_count: -> Integer
+    end
+  end
+end

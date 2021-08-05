@@ -1,0 +1,199 @@
+module FFI
+  class AbstractMemory
+    include _Size
+
+    def []: (Numeric idx) -> untyped
+    def clear: -> self
+    def size_limit?: -> bool
+    alias total size
+
+    def type_size: -> Numeric
+
+    def get: (Symbol | FFI::Type type_name, Numeric offset) -> untyped
+    def get_array_of_float32: (Numeric offset, Numeric length) -> Array[Float]
+    def get_array_of_float64: (Numeric offset, Numeric length) -> Array[Float]
+    def get_array_of_int16: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_int32: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_int64: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_int8: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_long: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_pointer: (Numeric offset, Numeric length) -> Array[FFI::Pointer]
+    def get_array_of_string: (Numeric offset, Numeric length) -> Array[String]
+    def get_array_of_uint16: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_uint32: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_uint64: (Numeric offset, Numeric length) -> Array[Integer]
+    def get_array_of_uint8: (Numeric offset, Numeric length) -> Array[Integer]
+
+    def get_bytes: (Numeric offset, Numeric length) -> String
+    def get_float32: (Numeric offset) -> Float
+    def get_float64: (Numeric offset) -> Float
+    def get_int16: (Numeric offset) -> Integer
+    def get_int32: (Numeric offset) -> Integer
+    def get_int64: (Numeric offset) -> Integer
+    def get_int8: (Numeric offset) -> Integer
+    def get_long: (Numeric offset) -> Integer
+    def get_pointer: (Numeric offset) -> FFI::Pointer
+    def get_string: (Numeric offset, Numeric ?length) -> String
+    def get_uint16: (Numeric offset) -> Integer
+    def get_uint32: (Numeric offset) -> Integer
+    def get_uint64: (Numeric offset) -> Integer
+    def get_uint8: (Numeric offset) -> Integer
+    def get_ulong: (Numeric offset) -> Integer
+
+    def put: (Symbol | FFI::Type type_name, Numeric offset, untyped value) -> nil
+    def put_array_of_float32: (Numeric offset, Array[Numeric] ary) -> self
+    def put_array_of_float64: (Numeric offset, Array[Numeric] ary) -> self
+    def put_array_of_int16: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_int32: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_int64: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_int8: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_long: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_pointer: (Numeric offset, Array[FFI::Pointer] ary) -> self
+    def put_array_of_uint16: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_uint32: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_uint64: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_uint8: (Numeric offset, Array[Integer] ary) -> self
+    def put_array_of_ulong: (Numeric offset, Array[Integer] ary) -> self
+
+    def put_bytes: (Numeric offset, String str, Numeric ?index, Numeric ?length) -> self
+    def put_float32: (Numeric offset, Float value) -> self
+    def put_float64: (Numeric offset, Float value) -> self
+    def put_int16: (Numeric offset, Integer value) -> self
+    def put_int32: (Numeric offset, Integer value) -> self
+    def put_int64: (Numeric offset, Integer value) -> self
+    def put_int8: (Numeric offset, Integer value) -> self
+    def put_long: (Numeric offset, Integer value) -> self
+    def put_pointer: (Numeric offset, nil | FFI::Pointer | Integer | _ToPtr value) -> self
+    def put_string: (Numeric offset, String str) -> self
+    def put_uint16: (Numeric offset, Integer value) -> self
+    def put_uint32: (Numeric offset, Integer value) -> self
+    def put_uint64: (Numeric offset, Integer value) -> self
+    def put_uint8: (Numeric offset, Integer value) -> self
+    def put_ulong: (Numeric offset, Integer value) -> self
+
+    def read_array_of_double: (Numeric length) -> Array[Float]
+    def read_array_of_float: (Numeric length) -> Array[Float]
+    def read_array_of_int16: (Numeric length) -> Array[Integer]
+    def read_array_of_int32: (Numeric length) -> Array[Integer]
+    def read_array_of_int64: (Numeric length) -> Array[Integer]
+    def read_array_of_int8: (Numeric length) -> Array[Integer]
+    def read_array_of_long: (Numeric length) -> Array[Integer]
+    def read_array_of_pointer: (Numeric length) -> Array[FFI::Pointer]
+    def read_array_of_uint16: (Numeric length) -> Array[Integer]
+    def read_array_of_uint32: (Numeric length) -> Array[Integer]
+    def read_array_of_uint64: (Numeric length) -> Array[Integer]
+    def read_array_of_uint8: (Numeric length) -> Array[Integer]
+    def read_array_of_ulong: (Numeric length) -> Array[Integer]
+
+    def read_bytes: (Numeric length) -> String
+    def read_double: () -> Float
+    def read_float: () -> Float
+    def read_int16: () -> Integer
+    def read_int32: () -> Integer
+    def read_int64: () -> Integer
+    def read_int8: () -> Integer
+    def read_long: () -> Integer
+    def read_pointer: () -> FFI::Pointer
+    def read_uint16: () -> Integer
+    def read_uint32: () -> Integer
+    def read_uint64: () -> Integer
+    def read_uint8: () -> Integer
+    def read_ulong: () -> Integer
+
+    def write_array_of_double: (Array[Numeric] ary) -> self
+    def write_array_of_float: (Array[Numeric] ary) -> self
+    def write_array_of_int16: (Array[Integer] ary) -> self
+    def write_array_of_int32: (Array[Integer] ary) -> self
+    def write_array_of_int64: (Array[Integer] ary) -> self
+    def write_array_of_int8: (Array[Integer] ary) -> self
+    def write_array_of_pointer: (Array[_ToPtr] ary) -> self
+    def write_array_of_uint16: (Array[Integer] ary) -> self
+    def write_array_of_uint32: (Array[Integer] ary) -> self
+    def write_array_of_uint64: (Array[Integer] ary) -> self
+    def write_array_of_uint8: (Array[Integer] ary) -> self
+
+    def write_bytes: (String str, ?Numeric ?index, ?Numeric ?length) -> self
+    def write_double: (Numeric value) -> self
+    def write_float: (Numeric value) -> self
+    def write_int16: (Numeric value) -> self
+    def write_int32: (Numeric value) -> self
+    def write_int64: (Numeric value) -> self
+    def write_int8: (Numeric value) -> self
+    def write_pointer: (nil | FFI::Pointer | Integer | _ToPtr value) -> self
+    def write_uint16: (Numeric offset) -> self
+    def write_uint32: (Numeric offset) -> self
+    def write_uint64: (Numeric offset) -> self
+    def write_uint8: (Numeric offset) -> self
+
+    alias get_array_of_char       get_array_of_int8
+    alias get_array_of_double     get_array_of_float64
+    alias get_array_of_float      get_array_of_float32
+    alias get_array_of_int        get_array_of_int32
+    alias get_array_of_long_long  get_array_of_int64
+    alias get_array_of_short      get_array_of_int16
+    alias get_array_of_uchar      get_array_of_uint8
+    alias get_array_of_uint       get_array_of_uint32
+    alias get_array_of_ulong_long get_array_of_uint64
+    alias get_array_of_ushort     get_array_of_uint16
+
+    alias get_char       get_int8
+    alias get_double     get_float64
+    alias get_float      get_float32
+    alias get_int        get_int32
+    alias get_long_long  get_int64
+    alias get_short      get_int16
+    alias get_uchar      get_uint8
+    alias get_uint       get_uint32
+    alias get_ulong_long get_uint64
+    alias get_ushort     get_uint16
+
+    alias put_array_of_char       put_array_of_int8
+    alias put_array_of_double     put_array_of_float64
+    alias put_array_of_float      put_array_of_float32
+    alias put_array_of_int        put_array_of_int32
+    alias put_array_of_long_long  put_array_of_int64
+    alias put_array_of_short      put_array_of_int16
+    alias put_array_of_uchar      put_array_of_uint8
+    alias put_array_of_uint       put_array_of_uint32
+    alias put_array_of_ulong_long put_array_of_uint64
+    alias put_array_of_ushort     put_array_of_uint16
+
+    alias put_char       put_int8
+    alias put_double     put_float64
+    alias put_float      put_float32
+    alias put_int        put_int32
+    alias put_long_long  put_int64
+    alias put_short      put_int16
+    alias put_uchar      put_uint8
+    alias put_uint       put_uint32
+    alias put_ulong_long put_uint64
+    alias put_ushort     put_uint16
+
+    alias read_array_of_char       read_array_of_int8
+    alias read_array_of_int        read_array_of_int32
+    alias read_array_of_long_long  read_array_of_int64
+    alias read_array_of_short      read_array_of_int16
+    alias read_array_of_uchar      read_array_of_uint8
+    alias read_array_of_uint       read_array_of_uint32
+    alias read_array_of_ulong_long read_array_of_uint64
+    alias read_array_of_ushort     read_array_of_uint16
+
+    alias read_char       read_int8
+    alias read_int        read_int32
+    alias read_long_long  read_int64
+    alias read_short      read_int16
+    alias read_uchar      read_uint8
+    alias read_uint       read_uint32
+    alias read_ulong_long read_uint64
+    alias read_ushort     read_uint16
+
+    alias write_array_of_short     write_array_of_int16
+    alias write_array_of_int       write_array_of_int32
+    alias write_array_of_long_long write_array_of_int64
+    alias write_array_of_char      write_array_of_int8
+    alias write_short              write_int16
+    alias write_int                write_int32
+    alias write_long_long          write_int64
+    alias write_char               write_int8
+  end
+end
