@@ -8,6 +8,7 @@ module OGR
     include OGR::Geometry::GeometryMethods
     include OGR::Geometry::Length
     include OGR::Geometry::HasTwoCoordinateDimensions
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE: :wkbCurve
 

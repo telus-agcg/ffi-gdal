@@ -1,6 +1,7 @@
 module OGR
   class MultiCurve < OGR::GeometryCollection
     include OGR::Geometry::Length
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE: :wkbMultiCurve
   end

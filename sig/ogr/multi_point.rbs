@@ -1,5 +1,7 @@
 module OGR
   class MultiPoint < OGR::GeometryCollection
+    include OGR::Geometry::NotAGeometryCollection
+
     GEOMETRY_TYPE: :wkbMultiPoint
   end
 end

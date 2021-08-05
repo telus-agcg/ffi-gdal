@@ -164,6 +164,7 @@ module FFI
       def self.OGR_G_ForceToMultiPoint: (FFI::Pointer geometry_ptr) -> FFI::Pointer
       def self.OGR_G_ForceToMultiPolygon: (FFI::Pointer geometry_ptr) -> FFI::Pointer
       def self.OGR_G_ForceToPolygon: (FFI::Pointer geometry_ptr) -> FFI::Pointer
+      def self.OGR_G_ForceTo: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_geometry_type_symbol geometry_type, FFI::Pointer options) -> FFI::Pointer
     end
   end
 end

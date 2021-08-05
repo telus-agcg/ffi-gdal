@@ -58,13 +58,11 @@ module OGR
       #---------------------------
       def empty?: -> bool
       def ring?: -> bool
-      def simple?: -> bool
       def valid?: -> bool
 
       #---------------------------
       # Boolean-ops
       #---------------------------
-      def boundary: -> OGR::Geometry::geometry_class
       def centroid: -> (OGR::Point | OGR::Point25D)
       def convex_hull: -> OGR::Geometry::geometry_class
 
@@ -97,12 +95,12 @@ module OGR
       #---------------------------
       # Geometry-type casters
       #---------------------------
-      def to_line_string: -> (OGR::LineString | OGR::LineString25D)
+      def to_line_string: -> OGR::Geometry::geometry_class
       def to_liner_ring: (?close_rings: bool) -> OGR::LinearRing
-      def to_multi_line_string: -> (OGR::MultiLineString | OGR::MultiLineString25D)
-      def to_multi_point: -> (OGR::MultiPoint | OGR::MultiPoint25D)
-      def to_multi_polygon: -> (OGR::MultiPolygon | OGR::MultiPolygon25D)
-      def to_polygon: -> (OGR::Polygon | OGR::Polygon25D)
+      def to_multi_line_string: -> OGR::Geometry::geometry_class
+      def to_multi_point: -> OGR::Geometry::geometry_class
+      def to_multi_polygon: -> OGR::Geometry::geometry_class
+      def to_polygon: -> OGR::Geometry::geometry_class
     end
   end
 end

@@ -460,9 +460,13 @@ module OGR
       #
       # @return [#to_line_string]
       def to_line_string
-        OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_geometry do
           FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer)
         end
+
+        raise OGR::Failure, 'Failure forcing geometry to LineString' unless result
+
+        result
       end
 
       # Since GDAL doesn't provide converting to a LinearRing, this is a hackish
@@ -489,9 +493,13 @@ module OGR
       #
       # @return [#to_polygon]
       def to_polygon
-        OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_geometry do
           FFI::OGR::API.OGR_G_ForceToPolygon(clone.c_pointer)
         end
+
+        raise OGR::Failure, 'Failure forcing geometry to Polygon' unless result
+
+        result
       end
 
       # Tries to onvert the current geometry to a MultiPoint geometry (but may
@@ -499,9 +507,13 @@ module OGR
       #
       # @return [#to_multi_point]
       def to_multi_point
-        OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiPoint(clone.c_pointer)
         end
+
+        raise OGR::Failure, 'Failure forcing geometry to MultiPoint' unless result
+
+        result
       end
 
       # Tries to convert the current geometry to a MultiLineString geometry (but
@@ -509,9 +521,13 @@ module OGR
       #
       # @return [#to_multi_line_string]
       def to_multi_line_string
-        OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiLineString(clone.c_pointer)
         end
+
+        raise OGR::Failure, 'Failure forcing geometry to MultiLineString' unless result
+
+        result
       end
 
       # Tries to convert the current geometry to a MultiPolygon geometry (but
@@ -519,9 +535,13 @@ module OGR
       #
       # @return [#to_multi_polygon]
       def to_multi_polygon
-        OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiPolygon(clone.c_pointer)
         end
+
+        raise OGR::Failure, 'Failure forcing geometry to MultiPolygon' unless result
+
+        result
       end
 
       # @param geometry_type [FFI::OGR::Core::WKBGeometryType]

@@ -7,6 +7,7 @@ module OGR
     include GDAL::Logger
     include OGR::Geometry::GeometryMethods
     include OGR::Geometry::HasTwoCoordinateDimensions
+    include OGR::Geometry::NotAGeometryCollection
 
     GEOMETRY_TYPE: :wkbPoint
 
