@@ -3,10 +3,6 @@ interface _HasPointer
   def c_pointer: -> FFI::Pointer
 end
 
-interface _HasAutoPointer[P]
-  def c_pointer: -> P
-end
-
 interface _SpatialReference
   def spatial_reference: -> OGR::SpatialReference
   def spatial_reference=: (OGR::SpatialReference new_spatial_ref) -> void

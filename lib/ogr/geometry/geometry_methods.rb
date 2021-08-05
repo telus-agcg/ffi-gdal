@@ -332,6 +332,7 @@ module OGR
       # @param quad_segments [Integer] The number of segments to use to approximate
       #   a 90 degree (quadrant) of curvature.
       # @return [Self]
+      # @raise [OGR::Failure]
       def buffer(distance, quad_segments = 30)
         result = OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Buffer(@c_pointer, distance, quad_segments) }
         raise OGR::Failure, 'Failure computing buffer' unless result
@@ -478,11 +479,9 @@ module OGR
       def to_line_string
         new_geometry_ptr = FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer)
 
-        raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+        raise if new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
-        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr)
-
-        case geom_type
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
         when OGR::LineString::GEOMETRY_TYPE then OGR::LineString.new(c_pointer: new_geometry_ptr)
         when OGR::LineString25D::GEOMETRY_TYPE then OGR::LineString25D.new(c_pointer: new_geometry_ptr)
         else
@@ -521,9 +520,7 @@ module OGR
 
         raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
-        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr)
-
-        case geom_type
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
         when OGR::Polygon::GEOMETRY_TYPE then OGR::Polygon.new(c_pointer: new_geometry_ptr)
         when OGR::Polygon25D::GEOMETRY_TYPE then OGR::Polygon25D.new(c_pointer: new_geometry_ptr)
         else
@@ -543,9 +540,7 @@ module OGR
 
         raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
-        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr)
-
-        case geom_type
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
         when OGR::MultiPoint::GEOMETRY_TYPE then OGR::MultiPoint.new(c_pointer: new_geometry_ptr)
         when OGR::MultiPoint25D::GEOMETRY_TYPE then OGR::MultiPoint25D.new(c_pointer: new_geometry_ptr)
         else
@@ -565,9 +560,7 @@ module OGR
 
         raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
-        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr)
-
-        case geom_type
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
         when OGR::MultiLineString::GEOMETRY_TYPE then OGR::MultiLineString.new(c_pointer: new_geometry_ptr)
         when OGR::MultiLineString25D::GEOMETRY_TYPE then OGR::MultiLineString25D.new(c_pointer: new_geometry_ptr)
         else
@@ -588,9 +581,7 @@ module OGR
 
         raise if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
 
-        geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr)
-
-        case geom_type
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(new_geometry_ptr))
         when OGR::MultiPolygon::GEOMETRY_TYPE then OGR::MultiPolygon.new(c_pointer: new_geometry_ptr)
         when OGR::MultiPolygon25D::GEOMETRY_TYPE then OGR::MultiPolygon25D.new(c_pointer: new_geometry_ptr)
         else

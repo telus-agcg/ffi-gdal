@@ -8,7 +8,7 @@ RSpec.describe OGR::GeometryCollection do
   end
 
   subject do
-    gc = described_class.new
+    gc = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
     gc.add_geometry(polygon)
     gc
   end

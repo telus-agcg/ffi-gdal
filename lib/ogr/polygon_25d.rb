@@ -4,8 +4,6 @@ require_relative 'polygon'
 require_relative 'geometry/has_three_coordinate_dimensions'
 
 module OGR
-  # NOTE: {{#type}} will return :wkbPolygon (read: 2D instead of 2.5D) until a Z
-  # value is set.
   class Polygon25D < Polygon
     include GDAL::Logger
     include OGR::Geometry::HasThreeCoordinateDimensions

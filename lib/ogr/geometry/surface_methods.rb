@@ -22,9 +22,20 @@ module OGR
 
       # Returns a point that's guaranteed to lie on the surface.
       #
-      # @return [OGR::Point]
+      # @return [OGR::Point, OGR::Point25D]
+      # @raise [OGR::Failure]
       def point_on_surface
-        OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer) }
+        point_ptr = FFI::OGR::API.OGR_G_PointOnSurface(@c_pointer)
+
+        raise OGR::Failure, 'Error fetching point on surface' if point_ptr.null?
+
+        case (geom_type = FFI::OGR::API.OGR_G_GetGeometryType(point_ptr))
+        when OGR::Point::GEOMETRY_TYPE then OGR::Point.new(c_pointer: point_ptr)
+        when OGR::Point25D::GEOMETRY_TYPE then OGR::Point25D.new(c_pointer: point_ptr)
+        else
+          raise OGR::InvalidGeometry,
+                "Expected #{OGR::Point::GEOMETRY_TYPE} or #{OGR::Point25D::GEOMETRY_TYPE}, got #{geom_type}"
+        end
       end
     end
   end

@@ -4,7 +4,7 @@ require 'ogr/geometry'
 
 RSpec.describe OGR::LinearRing do
   let(:linear_ring) do
-    g = described_class.new
+    g = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
     g.add_point(65.9, 0)
     g.add_point(9, -34.5)
     g.add_point(40, -20)

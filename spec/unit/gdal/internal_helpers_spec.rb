@@ -29,7 +29,7 @@ RSpec.describe GDAL::InternalHelpers do
     end
 
     context 'variable is nil' do
-      it 'returns nil' do
+      it 'raises an FFI::GDAL::InvalidPointer' do
         expect { subject._pointer(nil) }.to raise_exception FFI::GDAL::InvalidPointer
       end
     end

@@ -5,7 +5,7 @@ RSpec.shared_examples 'a geometry' do
 
   describe '#type' do
     context 'when created with data' do
-      it 'returns :wkbMultiPoint25D' do
+      it 'returns described_class::GEOMETRY_TYPE' do
         expect(subject.type).to eq described_class::GEOMETRY_TYPE
       end
     end
@@ -13,7 +13,7 @@ RSpec.shared_examples 'a geometry' do
     context 'when created without data' do
       subject { described_class.new }
 
-      it 'returns :wkbMultiPoint25D' do
+      it 'returns described_class::GEOMETRY_TYPE' do
         expect(subject.type).to eq described_class::GEOMETRY_TYPE
       end
     end
@@ -38,7 +38,6 @@ RSpec.shared_examples 'a geometry' do
       thing = subject.clone
       thing.empty!
       expect(thing).to be_empty
-      expect(thing.spatial_reference).to be_nil
     end
   end
 
@@ -274,6 +273,8 @@ RSpec.shared_examples 'a geometry' do
 
   describe '#spatial_reference' do
     context 'none assigned' do
+      subject { described_class.new }
+
       it 'returns nil' do
         expect(subject.spatial_reference).to be_nil
       end

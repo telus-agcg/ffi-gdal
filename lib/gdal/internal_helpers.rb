@@ -4,9 +4,10 @@ module GDAL
   # @private
   module InternalHelpers
     # Internal factory method for returning a pointer from +variable+, which could
-    # be either of +klass+ class or a type of FFI::Pointer.
+    # be an object that responds to #c_pointer, a FFI::Pointer, or FFI::MemoryPointer.
+    # It raises if the pointer is nil or null.
     #
-    # @param variable [klass, FFI::MemoryPointer, FFI::Pointer]
+    # @param variable [#c_pointer, FFI::MemoryPointer, FFI::Pointer]
     # @param autorelease [Boolean] Pass this on to the pointer.
     # @return [FFI::Pointer]
     # @raise [FFI::GDAL::InvalidPointer]
@@ -22,10 +23,11 @@ module GDAL
     end
 
     # Internal factory method for returning a pointer from +variable+, which could
-    # be either of +klass+ class or a type of FFI::Pointer.  Returns +nil+ if it was
-    # unable to make the pointer.
+    # be an object that responds to #c_pointer, a FFI::Pointer, or FFI::MemoryPointer.
+    # When given an expected type, there is no checking if the resulting pointer
+    # is +nil+ or null; if +variable+ is an unexpected type, it returns +nil+.
     #
-    # @param variable [Class, FFI::MemoryPointer, FFI::Pointer]
+    # @param variable [#c_pointer, FFI::MemoryPointer, FFI::Pointer]
     # @param autorelease [Boolean] Pass this on to the pointer.
     # @return [FFI::Pointer, nil]
     def _maybe_pointer(variable, autorelease: true)
@@ -145,6 +147,11 @@ module GDAL
       result
     end
 
+    # Convenience function for handling FFI calls that return a +strptr+, where
+    # this expects the [String, FFI::Pointer] back from that call, then frees
+    # the associated pointer using VSIFree() and returns the string.
+    #
+    # @return [String]
     def _cpl_read_and_free_strptr
       string, ptr = yield
 

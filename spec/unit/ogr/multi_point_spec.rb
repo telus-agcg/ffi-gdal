@@ -4,7 +4,7 @@ require 'ogr/geometry'
 
 RSpec.describe OGR::MultiPoint do
   subject do
-    g = described_class.new
+    g = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
     g.add_geometry(child_geometry)
     g
   end

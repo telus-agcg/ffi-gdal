@@ -3,7 +3,12 @@
 require 'ogr'
 
 RSpec.describe OGR::Point25D do
-  subject { OGR::Geometry.create_from_wkt(wkt) }
+  subject do
+    g = OGR::Geometry.create_from_wkt(wkt)
+    g.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+    g
+  end
+
   let(:wkt) { 'POINT(1 2 3)' }
 
   it_behaves_like 'a geometry'

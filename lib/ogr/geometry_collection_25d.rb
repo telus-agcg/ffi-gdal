@@ -4,8 +4,6 @@ require_relative 'geometry_collection'
 require_relative 'geometry/has_three_coordinate_dimensions'
 
 module OGR
-  # NOTE: {{#type}} will return :wkbGeometryCollection (read: 2D instead of
-  # 2.5D) until a Z value is set.
   class GeometryCollection25D < GeometryCollection
     include GDAL::Logger
     include OGR::Geometry::HasThreeCoordinateDimensions

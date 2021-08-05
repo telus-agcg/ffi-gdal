@@ -197,11 +197,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
 
-#### OGR
-
-- `OGR::GeometyTypes::Curve` and `OGR::GeometryTypes::Surface` removed; those used to be
-  characteristics of some geometry types, but are their own types as of GDAL 2.1.
-
 ## [1.0.0.beta11] - 2020-06-02
 
 ### Fixed

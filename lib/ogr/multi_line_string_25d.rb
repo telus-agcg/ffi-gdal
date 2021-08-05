@@ -5,8 +5,6 @@ require_relative 'geometry/simple_curve_25d'
 require_relative 'geometry/has_three_coordinate_dimensions'
 
 module OGR
-  # NOTE: {{#type}} will return :wkbMultiLineString (read: 2D instead of 2.5D)
-  # until a Z value is set.
   class MultiLineString25D < MultiLineString
     include GDAL::Logger
     include OGR::Geometry::SimpleCurve25D
