@@ -35,7 +35,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - _BREAKING_: All methods with default boolean args are now keyword args.
-- _BREAKING_: `required_ruby_version` set to `>= 3.0`
+- _BREAKING_: `required_ruby_version` set to `>= 2.6`
 
 #### GDAL
 
