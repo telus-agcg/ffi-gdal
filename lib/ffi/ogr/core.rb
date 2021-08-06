@@ -55,11 +55,9 @@ module FFI
                              :wkbMultiPolygon25D,        0x8000_0006,
                              :wkbGeometryCollection25D,  0x8000_0007
 
-      WKBVariant = enum :wkbVariantOgc, :wkbVariantIso
-      WKBByteOrder = enum :wkbXDR, 0,
-                          :wkbNDR, 1
+      WKBByteOrder = enum %i[wkbXDR wkbNDR]
 
-      FieldType = enum :OFTInteger, 0,
+      FieldType = enum :OFTInteger,         0,
                        :OFTIntegerList,     1,
                        :OFTReal,            2,
                        :OFTRealList,        3,
@@ -75,85 +73,65 @@ module FFI
                        :OFTInteger64List,   13,
                        :OFTMaxType,         13
 
-      FieldSubType = enum :OFSTNone,
-                          :OFSTBoolean,
-                          :OFSTInt16,
-                          :OFSTFloat32
+      # TODO: Add related methods
+      FieldSubType = enum %i[OFSTNone OFSTBoolean OFSTInt16 OFSTFloat32 OFSTJSON OFSTUUID OFSTMaxSubType]
 
-      Justification = enum :OJUndefined, 0,
-                           :OJLeft,   1,
-                           :OJRight,  2
+      Justification = enum %i[OJUndefined OJLeft OJRight]
+      STClassId = enum %i[OGRSTCNone OGRSTCPen OGRSTCBrush OGRSTCSymbol OGRSTCLabel OGRSTCVector]
+      STUnitId = enum %i[OGRSTUGround OGRSTUPixel OGRSTUPoints OGRSTUMM OGRSTUCM OGRSTUInches]
 
-      STClassId = enum :OGRSTCNone, 0,
-                       :OGRSTCPen,     1,
-                       :OGRSTCBrush,   2,
-                       :OGRSTCSymbol,  3,
-                       :OGRSTCLabel,   4,
-                       :OGRSTCVector,  5
+      STPenParam = enum %i[OGRSTPenColor
+                           OGRSTPenWidth
+                           OGRSTPenPattern
+                           OGRSTPenId
+                           OGRSTPenPerOffset
+                           OGRSTPenPerCap
+                           OGRSTPenPerJoin
+                           OGRSTPenPerPriority]
 
-      STUnitId = enum :OGRSTUGround, 0,
-                      :OGRSTUPixel,   1,
-                      :OGRSTUPoints,  2,
-                      :OGRSTUMM,      3,
-                      :OGRSTUCM,      4,
-                      :OGRSTUInches,  5
+      STBrushParam = enum %i[OGRSTBrushFColor
+                             OGRSTBrushBColor
+                             OGRSTBrushId
+                             OGRSTBrushAngle
+                             OGRSTBrushSize
+                             OGRSTBrushDx
+                             OGRSTBrushDy
+                             OGRSTBrushPriority]
 
-      STPenParam = enum :OGRSTPenColor, 0,
-                        :OGRSTPenWidth,       1,
-                        :OGRSTPenPattern,     2,
-                        :OGRSTPenId,          3,
-                        :OGRSTPenPerOffset,   4,
-                        :OGRSTPenPerCap,      5,
-                        :OGRSTPenPerJoin,     6,
-                        :OGRSTPenPerPriority, 7,
-                        :OGRSTPenLast,        8
+      STSymbolParam = enum %i[OGRSTSymbolId
+                              OGRSTSymbolAngle
+                              OGRSTSymbolColor
+                              OGRSTSymbolSize
+                              OGRSTSymbolDx
+                              OGRSTSymbolDy
+                              OGRSTSymbolStep
+                              OGRSTSymbolPerp
+                              OGRSTSymbolOffset
+                              OGRSTSymbolPriority
+                              OGRSTSymbolFontName
+                              OGRSTSymbolOColor]
 
-      STBrushParam = enum :OGRSTBrushFColor, 0,
-                          :OGRSTBrushBColor,    1,
-                          :OGRSTBrushId,        2,
-                          :OGRSTBrushAngle,     3,
-                          :OGRSTBrushSize,      4,
-                          :OGRSTBrushDx,        5,
-                          :OGRSTBrushDy,        6,
-                          :OGRSTBrushPriority,  7,
-                          :OGRSTBrushLast,      8
-
-      STSymbolParam = enum :OGRSTSymbolId, 0,
-                           :OGRSTSymbolAngle,     1,
-                           :OGRSTSymbolColor,     2,
-                           :OGRSTSymbolSize,      3,
-                           :OGRSTSymbolDx,        4,
-                           :OGRSTSymbolDy,        5,
-                           :OGRSTSymbolStep,      6,
-                           :OGRSTSymbolPerp,      7,
-                           :OGRSTSymbolOffset,    8,
-                           :OGRSTSymbolPriority,  9,
-                           :OGRSTSymbolFontName, 10,
-                           :OGRSTSymbolOColor,   11,
-                           :OGRSTSymbolLast,      12
-
-      STLabelParam = enum :OGRSTLabelFontName, 0,
-                          :OGRSTLabelSize,        1,
-                          :OGRSTLabelTextString,  2,
-                          :OGRSTLabelAngle,       3,
-                          :OGRSTLabelFColor,      4,
-                          :OGRSTLabelBColor,      5,
-                          :OGRSTLabelPlacement,   6,
-                          :OGRSTLabelAnchor,      7,
-                          :OGRSTLabelDx,          8,
-                          :OGRSTLabelDy,          9,
-                          :OGRSTLabelPerp,        10,
-                          :OGRSTLabelBold,        11,
-                          :OGRSTLabelItalic,      12,
-                          :OGRSTLabelUnderline,   13,
-                          :OGRSTLabelPriority,    14,
-                          :OGRSTLabelStrikeout,   15,
-                          :OGRSTLabelStretch,     16,
-                          :OGRSTLabelAdjHor,      17,
-                          :OGRSTLabelAdjVert,     18,
-                          :OGRSTLabelHColor,      19,
-                          :OGRSTLabelOColor,      20,
-                          :OGRSTLabelLast,        21
+      STLabelParam = enum %i[OGRSTLabelFontName
+                             OGRSTLabelSize
+                             OGRSTLabelTextString
+                             OGRSTLabelAngle
+                             OGRSTLabelFColor
+                             OGRSTLabelBColor
+                             OGRSTLabelPlacement
+                             OGRSTLabelAnchor
+                             OGRSTLabelDx
+                             OGRSTLabelDy
+                             OGRSTLabelPerp
+                             OGRSTLabelBold
+                             OGRSTLabelItalic
+                             OGRSTLabelUnderline
+                             OGRSTLabelPriority
+                             OGRSTLabelStrikeout
+                             OGRSTLabelStretch
+                             OGRSTLabelAdjHor
+                             OGRSTLabelAdjVert
+                             OGRSTLabelHColor
+                             OGRSTLabelOColor]
 
       #------------------------------------------------------------------------
       # Constants
@@ -168,23 +146,14 @@ module FFI
       OGR_ALTER.calculate
 
       #------------------------------------------------------------------------
-      # Typedefs
-      #------------------------------------------------------------------------
-      typedef :int, :OGRBoolean
-
-      #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
-      attach_function :OGRMalloc, [:size_t], :pointer
-      attach_function :OGRCalloc, %i[size_t size_t], :pointer
-      attach_function :OGRRealloc, %i[pointer size_t], :pointer
-      attach_function :OGRFree, [:pointer], :void
-
       attach_function :OGRGeometryTypeToName, [WKBGeometryType], :string
       attach_function :OGRMergeGeometryTypes,
                       [WKBGeometryType, WKBGeometryType],
                       WKBGeometryType
-      attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :int
+      # TODO: use this
+      attach_function :OGRParseDate, [:string, FFI::OGR::Field.ptr, :int], :bool
     end
   end
 end

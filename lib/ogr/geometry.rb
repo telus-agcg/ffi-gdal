@@ -9,7 +9,9 @@ module OGR
       # @return [OGR::Geometry, nil]
       def build_geometry
         new_geometry_ptr = yield
-        return if new_geometry_ptr.nil? || new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+        if new_geometry_ptr.nil? || new_geometry_ptr.null? || (defined?(@c_pointer) && new_geometry_ptr == @c_pointer)
+          return
+        end
 
         factory(new_geometry_ptr)
       end

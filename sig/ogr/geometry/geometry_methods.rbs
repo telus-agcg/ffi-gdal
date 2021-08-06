@@ -38,8 +38,14 @@ module OGR
         ?gml3_longsrs: ("YES" | "NO"),
         ?namespace_decl: ("YES" | "NO"),
         ?srsdimension_loc: ("POSLIST" | "GEOMETRY" | "GEOMETRY,POSLIST"),
-        ?srsname_format: ("SHORT" | "OGC_URN" | "OGC_URL")
       ) -> String
+      | (
+          format: "GML3",
+          ?gml3_linestring_element: "curve",
+          ?namespace_decl: ("YES" | "NO"),
+          ?srsdimension_loc: ("POSLIST" | "GEOMETRY" | "GEOMETRY,POSLIST"),
+          ?srsname_format: ("SHORT" | "OGC_URN" | "OGC_URL")
+        ) -> String
       | (
         format: "GML32",
         gmlid: String,

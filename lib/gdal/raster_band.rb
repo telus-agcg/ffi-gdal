@@ -8,7 +8,7 @@ require_relative 'raster_band_mixins/algorithm_methods'
 require_relative 'major_object'
 
 module GDAL
-  class RasterBand # rubocop:disable Metrics/ClassLength
+  class RasterBand
     include MajorObject
     include GDAL::Logger
     include RasterBandMixins::AlgorithmMethods
@@ -237,19 +237,17 @@ module GDAL
       flags
     end
 
-    # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
+    # @param flags [Array<FFI::GDAL::GDAL::MaskFlag>] Any of the :GMF symbols.
     # @raise [GDAL::Error]
     def create_mask_band(*flags)
       flag_value = 0
 
       flag_value = flags.each_with_object(flag_value) do |flag, result|
-        result + case flag
-                 when :GMF_ALL_VALID then 0x01
-                 when :GMF_PER_DATASET then 0x02
-                 when :GMF_PER_ALPHA then 0x04
-                 when :GMF_NODATA then 0x08
-                 else 0
-                 end
+        if FFI::GDAL::GDAL::MaskFlag.symbols.include?(flag)
+          result + FFI::GDAL::GDAL::MaskFlag[flag]
+        else
+          result
+        end
       end
 
       GDAL::CPLErrorHandler.manually_handle('Unable to create mask band') do

@@ -42,8 +42,8 @@ module FFI
              :cutline, :pointer,
              :cutline_blend_distance, :double
 
-      def initialize
-        super
+      def initialize(struct_class)
+        super(struct_class)
         self[:progress] = proc { true } if self[:progress].null?
       end
     end
