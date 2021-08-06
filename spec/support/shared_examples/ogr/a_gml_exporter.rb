@@ -36,7 +36,7 @@ RSpec.shared_examples 'a GML exporter' do
       it 'returns some String data' do
         # TODO: This doesn't work for MultiLineString25D and LinearRing.
         unless [OGR::MultiLineString25D, OGR::LinearRing].include?(described_class)
-          gml = subject.to_gml_ex(format: 'GML3', gml3_linestring_element: 'curve', gml3_longsrs: 'YES',
+          gml = subject.to_gml_ex(format: 'GML3', gml3_linestring_element: 'curve',
                                   srsdimension_loc: 'GEOMETRY', srsname_format: 'OGC_URL')
           expect(gml).to include 'http://www.opengis.net'
         end

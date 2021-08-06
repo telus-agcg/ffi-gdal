@@ -23,7 +23,7 @@ jobs:
           sudo apt-get install -y libgdal-dev
           bundle install --jobs 4 --retry 3
       - name: Run tests
-        run: bundle exec rake spec
+        run: bundle exec rake spec SPEC_OPTS="--format RSpec::Github::Formatter"
 
   static_analysis:
     name: Rubocop
@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
       - name: Rubocop
-        run: bundle exec rubocop --format github --parallel    
+        run: bundle exec rubocop --format github --parallel
 
   type_check:
     name: RBS+Steep
@@ -51,4 +51,6 @@ jobs:
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3
       - name: Steep
-        run: bundle exec steep check
+        run: |
+          bundle exec steep check | ruby -pe 'sub(/^(.+):(\d+):(\d+): (.+)$/, %q{::error file=\1,line=\2,col=\3::\4})'
+        shell: bash

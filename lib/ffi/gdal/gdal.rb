@@ -14,7 +14,13 @@ module FFI
       # ----------------------------------------------------------------
       # Enums
       # ----------------------------------------------------------------
-      DataType = enum :GDT_Unknown, 0,
+      # Not really an emum in gdal
+      MaskFlag = enum :GMF_ALL_VALID, 0x01,
+                      :GMF_PER_DATASET, 0x02,
+                      :GMF_PER_ALPHA, 0x04,
+                      :GMF_NODATA, 0x08
+
+      DataType = enum :GDT_Unknown,     0,
                       :GDT_Byte,        1,
                       :GDT_UInt16,      2,
                       :GDT_Int16,       3,
@@ -28,19 +34,19 @@ module FFI
                       :GDT_CFloat64,    11,
                       :GDT_TypeCount,   12
 
-      AsyncStatusType = enum :GARIO_PENDING, 0,
+      AsyncStatusType = enum :GARIO_PENDING,    0,
                              :GARIO_UPDATE,     1,
                              :GARIO_ERROR,      2,
                              :GARIO_COMPLETE,   3,
                              :GARIO_TypeCount,  4
 
       Access = enum :GA_ReadOnly, 0,
-                    :GA_Update, 1
+                    :GA_Update,   1
 
-      RWFlag = enum :GF_Read, 0,
+      RWFlag = enum :GF_Read,  0,
                     :GF_Write, 1
 
-      ColorInterp = enum :GCI_Undefined, 0,
+      ColorInterp = enum :GCI_Undefined,      0,
                          :GCI_GrayIndex,      1,
                          :GCI_PaletteIndex,   2,
                          :GCI_RedBand,        3,
@@ -57,9 +63,9 @@ module FFI
                          :GCI_YCbCr_YBand,    14,
                          :GCI_YCbCr_CbBand,   15,
                          :GCI_YCbCr_CrBand,   16,
-                         :GCI_Max, 16 # Seems wrong that this is also 16...
+                         :GCI_Max, 16
 
-      PaletteInterp = enum :GPI_Gray, 0,
+      PaletteInterp = enum :GPI_Gray,  0,
                            :GPI_RGB,   1,
                            :GPI_CMYK,  2,
                            :GPI_HLS,   3
@@ -116,10 +122,6 @@ module FFI
       # ----------------------------------------------------------------
       # functions
       # ----------------------------------------------------------------
-      # AsyncStatus
-      attach_function :GDALGetAsyncStatusTypeName, [AsyncStatusType], :string
-      attach_function :GDALGetAsyncStatusTypeByName, [:string], AsyncStatusType
-
       # ~~~~~~~~~~~~~~~~~~~
       # ColorInterpretation
       # ~~~~~~~~~~~~~~~~~~~
@@ -177,9 +179,6 @@ module FFI
       attach_function :GDALClose, [:GDALDatasetH], :void
       attach_function :GDALGetDatasetDriver, [:GDALDatasetH], :GDALDriverH
       attach_function :GDALGetFileList, [:GDALDatasetH], :pointer
-      attach_function :GDALGetInternalHandle, %i[GDALDatasetH string], :pointer
-      attach_function :GDALReferenceDataset, [:GDALDatasetH], :int
-      attach_function :GDALDereferenceDataset, [:GDALDatasetH], :int
 
       attach_function :GDALGetAccess, [:GDALDatasetH], :int
       attach_function :GDALFlushCache, [:GDALDatasetH], :void
@@ -248,6 +247,9 @@ module FFI
                         :pointer
                       ], FFI::CPL::Error::CPLErr
 
+      # ~~~~~~~~~~~~~~~~~~~
+      # GCPs
+      # ~~~~~~~~~~~~~~~~~~~
       attach_function :GDALInitGCPs, %i[int pointer], :void
       attach_function :GDALDeinitGCPs, %i[int pointer], :void
       attach_function :GDALDuplicateGCPs, %i[int pointer], :pointer
@@ -344,7 +346,7 @@ module FFI
                       :void
 
       # ----------------
-      # Raster functions
+      # Raster band functions
       # ----------------
       attach_function :GDALRasterBandCopyWholeRaster,
                       %i[
@@ -461,6 +463,7 @@ module FFI
                         GDALProgressFunc
                         pointer
                       ], FFI::CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALSetRasterStatistics,
                       %i[GDALRasterBandH double double double double],
                       FFI::CPL::Error::CPLErr
@@ -498,6 +501,7 @@ module FFI
                         GDALProgressFunc
                         pointer
                       ], FFI::CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALSetDefaultHistogram,
                       %i[
                         GDALRasterBandH
@@ -507,9 +511,6 @@ module FFI
                         pointer
                       ], FFI::CPL::Error::CPLErr
 
-      attach_function :GDALGetRandomRasterSample,
-                      %i[GDALRasterBandH int pointer],
-                      :int
       attach_function :GDALGetRasterSampleOverview,
                       %i[GDALRasterBandH int],
                       :GDALRasterBandH
@@ -523,6 +524,7 @@ module FFI
       attach_function :GDALSetDefaultRAT,
                       %i[GDALRasterBandH GDALRasterAttributeTableH],
                       FFI::CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALAddDerivedBandPixelFunc,
                       %i[string GDALDerivedPixelFunc],
                       FFI::CPL::Error::CPLErr
@@ -583,12 +585,15 @@ module FFI
       attach_function :GDALRATSetValueAsDouble,
                       %i[GDALRasterAttributeTableH int int double],
                       :void
+      # TODO: wrap
       attach_function :GDALRATValuesIOAsDouble,
                       [:GDALRasterAttributeTableH, RWFlag, :int, :int, :int, :pointer],
                       FFI::CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALRATValuesIOAsInteger,
                       [:GDALRasterAttributeTableH, RWFlag, :int, :int, :int, :pointer],
                       FFI::CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALRATValuesIOAsString,
                       [:GDALRasterAttributeTableH, RWFlag, :int, :int, :int, :pointer],
                       FFI::CPL::Error::CPLErr
@@ -643,12 +648,14 @@ module FFI
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # PaletteInterp functions
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # TODO: wrap
       attach_function :GDALGetPaletteInterpretationName, [PaletteInterp], :strptr
 
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       # General stuff
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      attach_function :GDALGetDataTypeSize, [DataType], :int
+      attach_function :GDALGetDataTypeSizeBits, [DataType], :int
+      attach_function :GDALGetDataTypeSizeBytes, [DataType], :int
       attach_function :GDALDataTypeIsComplex, [DataType], :bool
       attach_function :GDALGetDataTypeName, [DataType], :strptr
       attach_function :GDALGetDataTypeByName, [:string], DataType
@@ -668,17 +675,6 @@ module FFI
 
       attach_function :GDALPackedDMSToDec, %i[double], :double
       attach_function :GDALDecToPackedDMS, %i[double], :double
-
-      attach_function :GDALGeneralCmdLineProcessor, %i[int pointer int], :int
-      attach_function :GDALSwapWords,
-                      %i[pointer int int int],
-                      :void
-      attach_function :GDALCopyWords,
-                      %i[pointer int int pointer int int int int],
-                      :void
-      attach_function :GDALCopyBits,
-                      %i[pointer int int pointer int int int int],
-                      :void
     end
   end
 end

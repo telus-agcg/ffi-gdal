@@ -127,12 +127,6 @@ module FFI
                         :int
                       ],
                       CPL::Error::CPLErr
-      attach_function :GDALSerializeTransformer,
-                      %i[GDALTransformerFunc pointer],
-                      CPL::XMLNode.ptr
-      attach_function :GDALDeserializeTransformer,
-                      [CPL::XMLNode.ptr, :GDALTransformerFunc, :pointer],
-                      CPL::Error::CPLErr
       attach_function :GDALTransformGeolocations,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALRasterBandH),

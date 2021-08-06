@@ -44,35 +44,15 @@ module FFI
       # Functions
       #------------------------------------------------------------------------
       attach_function :GDALCreateWarpOptions, [], FFI::GDAL::WarpOptions.ptr
+      # TODO: use this
       attach_function :GDALDestroyWarpOptions, [FFI::GDAL::WarpOptions.ptr], :void
-      attach_function :GDALCloneWarpOptions, [FFI::GDAL::WarpOptions.ptr], FFI::GDAL::WarpOptions.ptr
-      attach_function :GDALSerializeWarpOptions,
-                      [FFI::GDAL::WarpOptions.ptr],
-                      FFI::CPL::XMLNode.ptr
-      attach_function :GDALDeserializeWarpOptions,
-                      [FFI::CPL::XMLNode.ptr],
-                      FFI::GDAL::WarpOptions.ptr
+      # TODO: wrap
+      attach_function :GDALCloneWarpOptions, [FFI::GDAL::WarpOptions.by_ref], FFI::GDAL::WarpOptions.ptr
 
       attach_function :GDALCreateWarpOperation,
-                      [FFI::GDAL::WarpOptions.ptr],
+                      [FFI::GDAL::WarpOptions.by_ref],
                       :GDALWarpOperationH
       attach_function :GDALDestroyWarpOperation, %i[GDALWarpOperationH], :void
-
-      attach_function :GDALWarpNoDataMasker,
-                      [:pointer, :int, GDAL::DataType, :int, :int, :int, :int, :pointer, :int, :pointer],
-                      CPL::Error::CPLErr
-      attach_function :GDALWarpDstAlphaMasker,
-                      [:pointer, :int, GDAL::DataType, :int, :int, :int, :int, :pointer, :int, :pointer],
-                      CPL::Error::CPLErr
-      attach_function :GDALWarpSrcAlphaMasker,
-                      [:pointer, :int, GDAL::DataType, :int, :int, :int, :int, :pointer, :int, :pointer],
-                      CPL::Error::CPLErr
-      attach_function :GDALWarpSrcMaskMasker,
-                      [:pointer, :int, GDAL::DataType, :int, :int, :int, :int, :pointer, :int, :pointer],
-                      CPL::Error::CPLErr
-      attach_function :GDALWarpCutlineMasker,
-                      [:pointer, :int, GDAL::DataType, :int, :int, :int, :int, :pointer, :int, :pointer],
-                      CPL::Error::CPLErr
 
       attach_function :GDALReprojectImage,
                       [
@@ -104,6 +84,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       CPL::Error::CPLErr
+      # TODO: wrap
       attach_function :GDALAutoCreateWarpedVRT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -114,6 +95,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::GDAL::GDAL.find_type(:GDALDatasetH)
+      # TODO: wrap
       attach_function :GDALCreateWarpedVRT,
                       [
                         FFI::GDAL::GDAL.find_type(:GDALDatasetH),
@@ -123,6 +105,7 @@ module FFI
                         FFI::GDAL::WarpOptions.ptr
                       ],
                       FFI::GDAL::GDAL.find_type(:GDALDatasetH)
+      # TODO: wrap
       attach_function :GDALInitializeWarpedVRT,
                       [FFI::GDAL::GDAL.find_type(:GDALDatasetH), FFI::GDAL::WarpOptions.ptr],
                       CPL::Error::CPLErr

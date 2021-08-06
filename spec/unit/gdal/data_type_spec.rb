@@ -3,18 +3,30 @@
 require 'gdal/data_type'
 
 RSpec.describe GDAL::DataType do
-  describe '.size' do
+  describe '.size_in_bits' do
     context 'with valid data type' do
       it 'returns the size' do
-        expect(described_class.size(:GDT_Byte)).to eq 8
+        expect(described_class.size_in_bits(:GDT_Byte)).to eq 8
       end
     end
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        expect do
-          described_class.size(:Bob)
-        end.to raise_exception(ArgumentError)
+        expect { described_class.size_in_bits(:Bob) }.to raise_exception(ArgumentError)
+      end
+    end
+  end
+
+  describe '.size_in_bytes' do
+    context 'with valid data type' do
+      it 'returns the size' do
+        expect(described_class.size_in_bytes(:GDT_Byte)).to eq 1
+      end
+    end
+
+    context 'with invalid data type' do
+      it 'raises an ArgumentError' do
+        expect { described_class.size_in_bytes(:Bob) }.to raise_exception(ArgumentError)
       end
     end
   end
@@ -34,9 +46,7 @@ RSpec.describe GDAL::DataType do
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        expect do
-          described_class.complex?(:Bob)
-        end.to raise_exception(ArgumentError)
+        expect { described_class.complex?(:Bob) }.to raise_exception(ArgumentError)
       end
     end
   end
@@ -50,9 +60,7 @@ RSpec.describe GDAL::DataType do
 
     context 'with invalid data type' do
       it 'raises an ArgumentError' do
-        expect do
-          described_class.name(:Bob)
-        end.to raise_exception(ArgumentError)
+        expect { described_class.name(:Bob) }.to raise_exception(ArgumentError)
       end
     end
   end

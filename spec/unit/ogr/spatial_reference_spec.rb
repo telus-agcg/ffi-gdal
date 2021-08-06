@@ -7,34 +7,6 @@ RSpec.describe OGR::SpatialReference do
     described_class.new.import_from_epsg(3819)
   end
 
-  describe '.projection_methods' do
-    context 'strip underscores' do
-      subject { described_class.projection_methods(strip_underscores: true) }
-
-      it 'returns an Array of Strings' do
-        expect(subject).to be_an Array
-        expect(subject.first).to be_a String
-      end
-
-      it 'has Strings with no underscores' do
-        expect(subject).to(satisfy { |v| !v.include?('_') })
-      end
-    end
-
-    context 'not strip underscores' do
-      subject { described_class.projection_methods(strip_underscores: false) }
-
-      it 'returns an Array of Strings' do
-        expect(subject).to be_an Array
-        expect(subject.first).to be_a String
-      end
-
-      it 'has Strings with underscores' do
-        expect(subject).to(satisfy { |v| !v.include?(' ') })
-      end
-    end
-  end
-
   describe '#copy_geog_cs_from' do
     let(:other_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
 

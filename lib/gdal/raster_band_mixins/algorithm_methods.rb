@@ -97,7 +97,7 @@ module GDAL
       # @param y_size [Integer]
       # @return [Integer] The checksum value.
       def checksum_image(x_offset, y_offset, x_size, y_size)
-        !!FFI::GDAL::Alg.GDALChecksumImage(
+        FFI::GDAL::Alg.GDALChecksumImage(
           @c_pointer,
           x_offset,
           y_offset,

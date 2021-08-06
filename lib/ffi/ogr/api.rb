@@ -34,6 +34,7 @@ module FFI
       attach_function :OGR_G_CreateFromWkt,
                       [:pointer, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer],
                       FFI::OGR::Core::Err
+      # TODO: wrap
       attach_function :OGR_G_CreateFromFgf,
                       [:string, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH), :pointer, :int, :pointer],
                       FFI::OGR::Core::Err
@@ -95,9 +96,11 @@ module FFI
       attach_function :OGR_G_CreateFromGMLTree,
                       [FFI::CPL::XMLNode.ptr],
                       :OGRGeometryH
+      # TODO: wrap
       attach_function :OGR_G_ExportToGMLTree,
                       %i[OGRGeometryH],
                       FFI::CPL::XMLNode.ptr
+      # TODO: wrap
       attach_function :OGR_G_ExportEnvelopeToGMLTree,
                       %i[OGRGeometryH],
                       FFI::CPL::XMLNode.ptr
@@ -232,6 +235,7 @@ module FFI
       attach_function :OGR_Fld_IsIgnored, %i[OGRFieldDefnH], :bool
       attach_function :OGR_Fld_SetIgnored, %i[OGRFieldDefnH bool], :void
 
+      # TODO: wrap
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :strptr
 
       # ~~~~~~~~~~~~~~~~
@@ -260,6 +264,7 @@ module FFI
       # Feature Definition-related
       # ~~~~~~~~~~~~~~~~
       attach_function :OGR_FD_Create, %i[string], :OGRFeatureDefnH
+      # TODO: wrap
       attach_function :OGR_FD_Destroy, %i[OGRFeatureDefnH], :void
       attach_function :OGR_FD_Release, %i[OGRFeatureDefnH], :void
       attach_function :OGR_FD_GetName, %i[OGRFeatureDefnH], :strptr
@@ -280,9 +285,6 @@ module FFI
       attach_function :OGR_FD_SetGeometryIgnored, %i[OGRFeatureDefnH bool], :void
       attach_function :OGR_FD_IsStyleIgnored, %i[OGRFeatureDefnH], :bool
       attach_function :OGR_FD_SetStyleIgnored, %i[OGRFeatureDefnH bool], :void
-      attach_function :OGR_FD_Reference, %i[OGRFeatureDefnH], :int
-      attach_function :OGR_FD_Dereference, %i[OGRFeatureDefnH], :int
-      attach_function :OGR_FD_GetReferenceCount, %i[OGRFeatureDefnH], :int
       attach_function :OGR_FD_GetGeomFieldCount, %i[OGRFeatureDefnH], :int
       attach_function :OGR_FD_GetGeomFieldDefn,
                       %i[OGRFeatureDefnH int],
@@ -323,7 +325,6 @@ module FFI
       attach_function :OGR_F_GetFieldIndex, %i[OGRFeatureH string], :int
       attach_function :OGR_F_IsFieldSet, %i[OGRFeatureH int], :bool
       attach_function :OGR_F_UnsetField, %i[OGRFeatureH int], :void
-      attach_function :OGR_F_GetRawFieldRef, %i[OGRFeatureH int], FFI::OGR::Field.ptr
 
       attach_function :OGR_F_GetFieldAsInteger, %i[OGRFeatureH int], :int
       attach_function :OGR_F_GetFieldAsDouble, %i[OGRFeatureH int], :double
@@ -362,6 +363,7 @@ module FFI
 
       attach_function :OGR_F_GetStyleString, %i[OGRFeatureH], :strptr
       attach_function :OGR_F_SetStyleString, %i[OGRFeatureH string], :void
+      # TODO: wrap
       attach_function :OGR_F_SetStyleStringDirectly, %i[OGRFeatureH string], :void
       attach_function :OGR_F_GetStyleTable, %i[OGRFeatureH], :OGRStyleTableH
       attach_function :OGR_F_SetStyleTableDirectly, %i[OGRFeatureH OGRStyleTableH], :void
@@ -413,15 +415,13 @@ module FFI
       attach_function :OGR_L_CommitTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
       attach_function :OGR_L_RollbackTransaction, %i[OGRLayerH], FFI::OGR::Core::Err
 
-      attach_function :OGR_L_Reference, %i[OGRLayerH], :int
-      attach_function :OGR_L_Dereference, %i[OGRLayerH], :int
-      attach_function :OGR_L_GetRefCount, %i[OGRLayerH], :int
       attach_function :OGR_L_SyncToDisk, %i[OGRLayerH], FFI::OGR::Core::Err
 
       attach_function :OGR_L_GetFeaturesRead, %i[OGRLayerH], CPL::Port.find_type(:GIntBig)
       attach_function :OGR_L_GetFIDColumn, %i[OGRLayerH], :strptr
       attach_function :OGR_L_GetGeometryColumn, %i[OGRLayerH], :strptr
       attach_function :OGR_L_GetStyleTable, %i[OGRLayerH], :OGRStyleTableH
+      # TODO: wrap
       attach_function :OGR_L_SetStyleTableDirectly, %i[OGRLayerH OGRStyleTableH], :void
       attach_function :OGR_L_SetStyleTable, %i[OGRLayerH OGRStyleTableH], :void
       attach_function :OGR_L_SetIgnoredFields, %i[OGRLayerH pointer], FFI::OGR::Core::Err
@@ -484,6 +484,7 @@ module FFI
 
       attach_function :OGR_DS_SyncToDisk, %i[OGRDataSourceH], FFI::OGR::Core::Err
       attach_function :OGR_DS_GetStyleTable, %i[OGRDataSourceH], :OGRStyleTableH
+      # TODO: wrap
       attach_function :OGR_DS_SetStyleTableDirectly,
                       %i[OGRDataSourceH OGRStyleTableH],
                       :void
@@ -504,6 +505,7 @@ module FFI
       # ~~~~~~~~~~~~~~~~
       # Style Manager-related
       # ~~~~~~~~~~~~~~~~
+      # TODO: wrap
       attach_function :OGR_SM_Create, %i[OGRStyleTableH], :OGRStyleMgrH
       attach_function :OGR_SM_Destroy, %i[OGRStyleTableH], :void
       attach_function :OGR_SM_InitFromFeature, %i[OGRStyleTableH OGRFeatureH], :strptr
@@ -551,17 +553,12 @@ module FFI
       # Main functions
       # ~~~~~~~~~~~~~~~~
       attach_function :OGROpen, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGROpenShared, %i[string bool OGRSFDriverH], :OGRDataSourceH
-      attach_function :OGRReleaseDataSource, %i[OGRDataSourceH], FFI::OGR::Core::Err
-      attach_function :OGRRegisterDriver, %i[OGRSFDriverH], :void
-      attach_function :OGRDeregisterDriver, %i[OGRSFDriverH], :void
       attach_function :OGRGetDriverCount, [], :int
       attach_function :OGRGetDriver, %i[int], :OGRSFDriverH
       attach_function :OGRGetDriverByName, %i[string], :OGRSFDriverH
-      attach_function :OGRGetOpenDSCount, [], :int
-      attach_function :OGRGetOpenDS, %i[int], :OGRDataSourceH
 
       attach_function :OGRRegisterAll, [], :void
+      # TODO: wrap
       attach_function :OGRCleanupAll, [], :void
     end
   end

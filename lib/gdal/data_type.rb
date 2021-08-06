@@ -7,8 +7,16 @@ module GDAL
     #
     # @param gdal_data_type [FFI::GDAL::GDAL::DataType]
     # @return [Integer]
-    def self.size(gdal_data_type)
-      FFI::GDAL::GDAL.GDALGetDataTypeSize(gdal_data_type)
+    def self.size_in_bits(gdal_data_type)
+      FFI::GDAL::GDAL.GDALGetDataTypeSizeBits(gdal_data_type)
+    end
+
+    # The size in bytes.
+    #
+    # @param gdal_data_type [FFI::GDAL::GDAL::DataType]
+    # @return [Integer]
+    def self.size_in_bytes(gdal_data_type)
+      FFI::GDAL::GDAL.GDALGetDataTypeSizeBytes(gdal_data_type)
     end
 
     # @param gdal_data_type [FFI::GDAL::GDAL::DataType]

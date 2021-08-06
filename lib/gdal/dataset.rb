@@ -96,6 +96,11 @@ module GDAL
     #   this Ruby object.
     attr_reader :c_pointer
 
+    # NOTE: If you plan on accessing the same dataset from different threads,
+    # either add your own Mutexes or use +shared_open: true+ so as to avoid
+    # corrupting the file. Also note that using +shared_open: true+ incurs a
+    # performance hit as the pointer to the dataset will be reference-counted.
+    #
     # @param path_or_pointer [String, FFI::Pointer] Path to the file that
     #   contains the dataset or a pointer to the dataset. If it's a path, it can
     #   be a local file or a URL.
@@ -444,17 +449,15 @@ module GDAL
     # Lets you pass in :GMF_ symbols that represent mask band flags and bitwise
     # ors them.
     #
-    # @param flags [Symbol]
+    # @param flags [Array<FFI::GDAL::GDAL::MaskFlag>]
     # @return [Integer]
     def parse_mask_flag_symbols(*flags)
       flags.reduce(0) do |result, flag|
-        result | case flag
-                 when :GMF_ALL_VALID then 0x01
-                 when :GMF_PER_DATASET then 0x02
-                 when :GMF_PER_ALPHA then 0x04
-                 when :GMF_NODATA then 0x08
-                 else 0
-                 end
+        if FFI::GDAL::GDAL::MaskFlag.symbols.include?(flag)
+          result | FFI::GDAL::GDAL::MaskFlag[flag]
+        else
+          result
+        end
       end
     end
 
@@ -463,7 +466,7 @@ module GDAL
     # @param y_buffer_size [Integer]
     # @return [Integer]
     def valid_min_buffer_size(buffer_data_type, x_buffer_size, y_buffer_size)
-      data_type_bytes = GDAL::DataType.size(buffer_data_type) / 8
+      data_type_bytes = GDAL::DataType.size_in_bytes(buffer_data_type)
 
       data_type_bytes * x_buffer_size * y_buffer_size
     end

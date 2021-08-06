@@ -7,7 +7,7 @@ module GDAL
     attr_reader :c_struct, :source_dataset, :destination_dataset, :cutline
 
     def initialize(options = {})
-      @c_struct = FFI::GDAL::WarpOptions.new
+      @c_struct = FFI::GDAL::Warper.GDALCreateWarpOptions
       @source_dataset = nil
       @destination_dataset = nil
 

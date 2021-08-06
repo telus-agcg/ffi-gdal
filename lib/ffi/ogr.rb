@@ -4,7 +4,6 @@ module FFI
   module OGR
     autoload :API, File.expand_path('ogr/api.rb', __dir__)
     autoload :Core, File.expand_path('ogr/core.rb', __dir__)
-    autoload :ContourWriterInfo, File.expand_path('ogr/contour_writer_info.rb', __dir__)
     autoload :Envelope, File.expand_path('ogr/envelope.rb', __dir__)
     autoload :Envelope3D, File.expand_path('ogr/envelope_3d.rb', __dir__)
     autoload :Featurestyle, File.expand_path('ogr/featurestyle.rb', __dir__)

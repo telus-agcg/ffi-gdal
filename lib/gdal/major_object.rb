@@ -7,11 +7,6 @@ module GDAL
   module MajorObject
     # @return [Array<String>]
     def metadata_domain_list
-      unless defined? FFI::GDAL::GDAL.GDALGetMetadataDomainList
-        warn "GDALGetMetadataDomainList is't defined. GDAL::MajorObject#metadata_domain_list disabled."
-        return []
-      end
-
       list_pointer = FFI::GDAL::GDAL.GDALGetMetadataDomainList(@c_pointer)
       return [] if list_pointer.null?
 
