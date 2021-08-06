@@ -323,7 +323,7 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
 
   describe '#difference' do
     context 'no difference' do
-      specify { expect(subject.difference(subject.clone)).to be_a OGR::GeometryCollection }
+      specify { expect(subject.difference(subject.clone)).to be_a OGR::Geometry::GeometryMethods }
     end
 
     context 'other is empty' do
@@ -344,7 +344,7 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
 
   describe '#symmetric_difference' do
     context 'no difference' do
-      specify { expect(subject.symmetric_difference(subject.clone)).to be_a OGR::GeometryCollection }
+      specify { expect(subject.symmetric_difference(subject.clone)).to be_a OGR::Geometry::GeometryMethods }
     end
 
     context 'other is empty' do
