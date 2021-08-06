@@ -134,9 +134,6 @@ module FFI
       attach_function :OSRRelease, %i[OGRSpatialReferenceH], :void
 
       attach_function :OSRValidate, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRFixupOrdering, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRFixup, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
-      attach_function :OSRStripCTParms, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
 
       attach_function :OSRImportFromEPSG, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
       attach_function :OSRImportFromEPSGA, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
@@ -393,15 +390,6 @@ module FFI
       attach_function :OCTTransformEx,
                       %i[OGRCoordinateTransformationH int pointer pointer pointer pointer],
                       :bool
-
-      # ~~~~~~~~~~~~~
-      # Parameters
-      # ~~~~~~~~~~~~~
-      attach_function :OPTGetProjectionMethods, %i[], :pointer
-      attach_function :OPTGetParameterList, %i[string pointer], :pointer
-      attach_function :OPTGetParameterInfo,
-                      %i[string string pointer pointer pointer],
-                      :int
     end
   end
 end

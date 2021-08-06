@@ -35,68 +35,10 @@ module OGR
 
     RADIAN_TO_RADIAN = 1.0
 
-    # @deprecated This was removed in GDAL 3.0.
-    # @return [Array<String>]
-    def self.projection_methods(strip_underscores: false)
-      methods_ptr_ptr = FFI::OGR::SRSAPI.OPTGetProjectionMethods
-      count = FFI::CPL::String.CSLCount(methods_ptr_ptr)
-
-      # For some reason #get_array_of_string leaves off the first 6.
-      pointer_array = methods_ptr_ptr.get_array_of_pointer(0, count)
-
-      list = pointer_array.map(&:read_string).sort
-
-      strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
-    end
-
-    # @deprecated This was removed in GDAL 3.0.
-    # @param projection_method [String] One of
-    #   OGR::SpatialReference.projection_methods.
-    # @return [Hash{parameter => Array<String>, user_visible_name => String}]
-    def self.parameter_list(projection_method)
-      name_ptr_ptr = GDAL._pointer_pointer(:string)
-      params_ptr_ptr = FFI::OGR::SRSAPI.OPTGetParameterList(projection_method, name_ptr_ptr)
-      count = FFI::CPL::String.CSLCount(params_ptr_ptr)
-
-      # For some reason #get_array_of_string leaves off the first 6.
-      pointer_array = params_ptr_ptr.get_array_of_pointer(0, count)
-      name = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
-
-      {
-        parameters: pointer_array.map(&:read_string).sort,
-        user_visible_name: name
-      }
-    end
-
-    # Fetch info about a single parameter of a projection method.
-    #
-    # @deprecated This was removed in GDAL 3.0.
-    # @param projection_method [String]
-    # @param parameter_name [String]
-    def self.parameter_info(projection_method, parameter_name)
-      name_ptr_ptr = GDAL._pointer_pointer(:string)
-      type_ptr_ptr = GDAL._pointer_pointer(:string)
-      default_value_ptr = FFI::MemoryPointer.new(:double)
-
-      result = FFI::OGR::SRSAPI.OPTGetParameterInfo(projection_method, parameter_name,
-                                                    name_ptr_ptr, type_ptr_ptr, default_value_ptr)
-
-      return {} unless result
-
-      name = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
-      type = GDAL._read_pointer_pointer_safely(name_ptr_ptr, :string)
-
-      {
-        type: type,
-        default_value: default_value_ptr.read_double,
-        user_visible_name: name
-      }
-    end
-
     # @param orientation [FFI::OGR::SRSAPI::AxisOrientation]
     # @return [String]
     def self.axis_enum_to_name(orientation)
-      FFI::OGR::SRSAPI::AxisEnumToName(orientation)
+      FFI::OGR::SRSAPI.OSRAxisEnumToName(orientation)
     end
 
     # Cleans up cached SRS-related memory.
@@ -210,29 +152,6 @@ module OGR
     def validate
       OGR::ErrorHandling.handle_ogr_err('Unable to validate') do
         FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
-      end
-    end
-
-    # @raise [OGR::Failure]
-    def fixup_ordering!
-      OGR::ErrorHandling.handle_ogr_err('Unable to fixup ordering') do
-        FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
-      end
-    end
-
-    # @raise [OGR::Failure]
-    def fixup!
-      OGR::ErrorHandling.handle_ogr_err('Unable to fixup') do
-        FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
-      end
-    end
-
-    # Strips all OGC coordinate transformation parameters.
-    #
-    # @raise [OGR::Failure]
-    def strip_ct_parameters!
-      OGR::ErrorHandling.handle_ogr_err('Unable to strip coordinate transformation parameters') do
-        FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
       end
     end
 
