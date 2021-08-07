@@ -1,6 +1,6 @@
 module OGR
   class NoneGeometry
-    include _HasPointer
+    include _HasAutoPointer[OGR::Geometry::AutoPointer]
     include OGR::Geometry::GeometryMethods
 
     GEOMETRY_TYPE: :wkbNone

@@ -2,6 +2,7 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
+require_relative 'geometry/auto_pointer'
 
 module OGR
   module Geometry
@@ -25,7 +26,7 @@ module OGR
 
         geometry_pointer.autorelease = false
 
-        geometry_pointer
+        OGR::Geometry::AutoPointer.new(geometry_pointer)
       end
 
       # Creates a new Geometry using the class of the geometry that the type
@@ -122,7 +123,7 @@ module OGR
       def create_from_gml(gml_data)
         geometry_pointer = FFI::OGR::API.OGR_G_CreateFromGML(gml_data)
 
-        _ = factory(geometry_pointer)
+        factory(geometry_pointer)
       end
 
       # @param json_data [String]

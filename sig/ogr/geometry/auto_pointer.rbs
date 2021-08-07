@@ -1,0 +1,7 @@
+module OGR
+  module Geometry
+    class AutoPointer < ::FFI::AutoPointer
+      def self.release: (FFI::Pointer c_pointer) -> void
+    end
+  end
+end

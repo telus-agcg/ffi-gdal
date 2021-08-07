@@ -16,7 +16,7 @@ module OGR
         | OGR::UnknownGeometry
     )
 
-    def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> FFI::Pointer
+    def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> OGR::Geometry::AutoPointer
 
     def self.create_from_wkt: (
       String wkt_data,
