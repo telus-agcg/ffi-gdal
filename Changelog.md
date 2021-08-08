@@ -89,7 +89,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   now required.
 - _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`.
   In GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
-  `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it's
+  `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it is
   null. Now these raise the same exception.
 - _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
 - _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::SimpleCurve` and
@@ -190,6 +190,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `OGR::SpatialReferenceMixins::Exporters#to_xml` now actually works.
 - All geometry classes now wrap an `OGR::Geometry::AutoPointer`, which ensures the wrapped pointer
   gets cleaned up.
+- `OGR::CoordinateTransformation` wraps an `OGR::CoordinateTransformation::AutoPointer`, which
+  ensures the wrapped pointer gets cleaned up.
 
 ### Removed
 

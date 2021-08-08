@@ -6,5 +6,6 @@ module FFI
 
     def autorelease=: (bool autorelease) -> bool
     def null?: -> bool
+    def read_array_of_type: (FFI::Type ffi_type, Symbol reader_method, Numeric length) -> Array[Float]
   end
 end

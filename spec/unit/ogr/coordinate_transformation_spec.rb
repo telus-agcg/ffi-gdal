@@ -14,26 +14,18 @@ RSpec.describe OGR::CoordinateTransformation do
 
   subject { described_class.new(source_srs, dest_srs) }
 
-  describe '.proj4_normalize' do
-    context 'OCTProj4Normalize not supported' do
-      it 'raises a OGR::UnsupportedOperation' do
-        expect { described_class.proj4_normalize('asdf') }.to raise_exception(OGR::UnsupportedOperation)
-      end
-    end
-  end
-
   describe '#initialize' do
     context 'source_srs is not an OGR::SpatialReference' do
-      it do
+      specify do
         expect { described_class.new(123, dest_srs) }
-          .to raise_exception FFI::GDAL::InvalidPointer
+          .to raise_exception NoMethodError
       end
     end
 
     context 'dest_srs is not an OGR::SpatialReference' do
-      it do
+      specify do
         expect { described_class.new(source_srs, 123) }
-          .to raise_exception FFI::GDAL::InvalidPointer
+          .to raise_exception NoMethodError
       end
     end
 

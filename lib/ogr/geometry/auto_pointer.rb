@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ffi'
+
 module OGR
   module Geometry
     class AutoPointer < ::FFI::AutoPointer

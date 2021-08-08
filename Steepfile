@@ -6,6 +6,7 @@ target :lib do
 
   check 'lib/ogr/circular_string*.rb'
   check 'lib/ogr/compound_curve*.rb'
+  check 'lib/ogr/coordinate_transformation.rb'
   check 'lib/ogr/curve*.rb'
   check 'lib/ogr/geometry/'
   check 'lib/ogr/geometry.rb'
