@@ -10,9 +10,7 @@ module OGR
     module GeometryMethods
       # @return [OGR::Geometry]
       def clone
-        new_geometry_ptr = FFI::OGR::API.OGR_G_Clone(@c_pointer)
-
-        OGR::Geometry.factory(new_geometry_ptr)
+        OGR::Geometry.new_borrowed(FFI::OGR::API.OGR_G_Clone(@c_pointer))
       end
 
       # Clears all information from the geometry.
@@ -230,7 +228,7 @@ module OGR
       # @param other_geometry [OGR::Geometry]
       # @return [OGR::Geometry, nil]
       def intersection(other_geometry)
-        OGR::Geometry.build_geometry do
+        OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_Intersection(@c_pointer, other_geometry.c_pointer)
         end
       end
@@ -238,7 +236,7 @@ module OGR
       # @param other_geometry [OGR::Geometry]
       # @return [OGR::Geometry, nil]
       def union(other_geometry)
-        OGR::Geometry.build_geometry do
+        OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_Union(@c_pointer, other_geometry.c_pointer)
         end
       end
@@ -253,20 +251,16 @@ module OGR
       # @return [OGR::Geometry, nil] Returns nil if the difference is empty, OR
       #   if there was an error (i.e. there's no way to distinguish).
       def difference(geometry)
-        new_geometry_ptr = FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
-        return if new_geometry_ptr.null?
-
-        OGR::Geometry.factory(new_geometry_ptr)
+        OGR::Geometry.build_owned_geometry do
+          FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
+        end
       end
       alias - difference
 
       # @param geometry [OGR::Geometry]
       # @return [OGR::Geometry, nil]
       def symmetric_difference(geometry)
-        new_geometry_ptr = FFI::OGR::API.OGR_G_SymDifference(@c_pointer, geometry.c_pointer)
-        return if new_geometry_ptr.null?
-
-        OGR::Geometry.factory(new_geometry_ptr)
+        OGR::Geometry.new_owned(FFI::OGR::API.OGR_G_SymDifference(@c_pointer, geometry.c_pointer))
       end
 
       # The shortest distance between the two geometries.
@@ -288,7 +282,7 @@ module OGR
       # @param preserve_topology [Boolean]
       # @return [OGR::Geometry]
       def simplify(distance_tolerance, preserve_topology: false)
-        OGR::Geometry.build_geometry do
+        OGR::Geometry.build_owned_geometry do
           if preserve_topology
             FFI::OGR::API.OGR_G_SimplifyPreserveTopology(@c_pointer, distance_tolerance)
           else
@@ -316,7 +310,7 @@ module OGR
       # @return [Self]
       # @raise [OGR::Failure]
       def buffer(distance, quad_segments = 30)
-        result = OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Buffer(@c_pointer, distance, quad_segments) }
+        result = OGR::Geometry.build_owned_geometry { FFI::OGR::API.OGR_G_Buffer(@c_pointer, distance, quad_segments) }
         raise OGR::Failure, 'Failure computing buffer' unless result
 
         result
@@ -325,7 +319,7 @@ module OGR
       # @return [OGR::Geometry]
       # @raise [OGR::Failure]
       def convex_hull
-        result = OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_ConvexHull(@c_pointer) }
+        result = OGR::Geometry.build_owned_geometry { FFI::OGR::API.OGR_G_ConvexHull(@c_pointer) }
         raise OGR::Failure, 'Failure computing convex hull' unless result
 
         result
@@ -460,7 +454,7 @@ module OGR
       #
       # @return [#to_line_string]
       def to_line_string
-        result = OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_ForceToLineString(clone.c_pointer)
         end
 
@@ -493,7 +487,7 @@ module OGR
       #
       # @return [#to_polygon]
       def to_polygon
-        result = OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_ForceToPolygon(clone.c_pointer)
         end
 
@@ -507,7 +501,7 @@ module OGR
       #
       # @return [#to_multi_point]
       def to_multi_point
-        result = OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiPoint(clone.c_pointer)
         end
 
@@ -521,7 +515,7 @@ module OGR
       #
       # @return [#to_multi_line_string]
       def to_multi_line_string
-        result = OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiLineString(clone.c_pointer)
         end
 
@@ -535,7 +529,7 @@ module OGR
       #
       # @return [#to_multi_polygon]
       def to_multi_polygon
-        result = OGR::Geometry.build_geometry do
+        result = OGR::Geometry.build_owned_geometry do
           FFI::OGR::API.OGR_G_ForceToMultiPolygon(clone.c_pointer)
         end
 
@@ -552,9 +546,9 @@ module OGR
         options_ptr = GDAL::Options.pointer(options)
         new_geometry_ptr = FFI::OGR::API.OGR_G_ForceTo(clone.c_pointer, geometry_type, options_ptr)
 
-        raise if new_geometry_ptr.null? || new_geometry_ptr == @c_pointer
+        raise 'New geometry pointer was null' if new_geometry_ptr.null?
 
-        OGR::Geometry.factory(new_geometry_ptr)
+        OGR::Geometry.new_owned(new_geometry_ptr)
       end
     end
   end

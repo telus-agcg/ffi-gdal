@@ -1,50 +1,59 @@
 # frozen_string_literal: true
 
+require 'ffi'
 require_relative '../ogr'
 
 module OGR
   class FieldDefinition
-    # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
+    class AutoPointer < ::FFI::AutoPointer
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
 
-      FFI::OGR::API.OGR_Fld_Destroy(pointer)
+        FFI::OGR::API.OGR_Fld_Destroy(pointer)
+      end
     end
 
-    # @return [FFI::Pointer] C pointer to the C FieldDefn.
+    # Use for instantiating an OGR::FieldDefinition from a borrowed pointer (one
+    # that shouldn't be freed).
+    #
+    # @param c_pointer [String, FFI::Pointer]
+    # @return [OGR::FieldDefinition]
+    def self.new_borrowed(c_pointer)
+      raise OGR::InvalidPointer if c_pointer.null?
+
+      c_pointer.autorelease = false
+
+      new(c_pointer)
+    end
+
+    # @param field_name [String]
+    # @param type [String] FFI::OGR::Core::FieldType
+    # @return [OGR::FieldDefinition]
+    def self.create(field_name, type)
+      pointer = FFI::OGR::API.OGR_Fld_Create(field_name, type)
+
+      raise OGR::InvalidFieldDefinition, "Unable to create #{name} from #{field_name}" if pointer.null?
+
+      new(OGR::FieldDefinition::AutoPointer.new(pointer))
+    end
+
+    # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer
 
-    # @param name_or_pointer [String, FFI::Pointer]
-    # @param type [FFI::OGR::FieldType]
-    def initialize(name_or_pointer, type)
-      pointer = if name_or_pointer.is_a? String
-                  FFI::OGR::API.OGR_Fld_Create(name_or_pointer, type)
-                else
-                  name_or_pointer
-                end
-
-      if !pointer.is_a?(FFI::Pointer) || pointer.null?
-        raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
-      end
-
-      @c_pointer = FFI::AutoPointer.new(pointer, FieldDefinition.method(:release))
-      @c_pointer.autorelease = false
-    end
-
-    def destroy!
-      FieldDefinition.release(@c_pointer)
-
-      @c_pointer = nil
+    # @param c_pointer [FFI::Pointer]
+    def initialize(c_pointer)
+      @c_pointer = c_pointer
     end
 
     # Set all defining attributes in one call.
     #
     # @param name [String]
     # @param type [FFI::OGR::FieldType]
-    # @param width [Integer]
-    # @param precision [Integer]
-    # @param justification [FFI::OGR::Justification]
-    def set(name, type, width, precision, justification)
+    # @param width [Integer] Defaults to 0.
+    # @param precision [Integer] Defaults to undefined.
+    # @param justification [FFI::OGR::Justification] Defaults to :OJUndefined.
+    def set(name, type, width: nil, precision: nil, justification: nil)
       FFI::OGR::API.OGR_Fld_Set(
         @c_pointer,
         name,
@@ -57,15 +66,12 @@ module OGR
 
     # @return [String]
     def name
-      name, ptr = FFI::OGR::API.OGR_Fld_GetNameRef(@c_pointer)
-      ptr.autorelease = false
-
-      name
+      FFI::OGR::API.OGR_Fld_GetNameRef(@c_pointer).freeze
     end
 
-    # @param new_value [String]
-    def name=(new_value)
-      FFI::OGR::API.OGR_Fld_SetName(@c_pointer, new_value)
+    # @param new_name [String]
+    def name=(new_name)
+      FFI::OGR::API.OGR_Fld_SetName(@c_pointer, new_name)
     end
 
     # @return [FFI::OGR::Justification]
@@ -73,9 +79,9 @@ module OGR
       FFI::OGR::API.OGR_Fld_GetJustify(@c_pointer)
     end
 
-    # @param new_value [FFI::OGR::Justification]
-    def justification=(new_value)
-      FFI::OGR::API.OGR_Fld_SetJustify(@c_pointer, new_value)
+    # @param new_justification [FFI::OGR::Justification]
+    def justification=(new_justification)
+      FFI::OGR::API.OGR_Fld_SetJustify(@c_pointer, new_justification)
     end
 
     # @return [Integer]

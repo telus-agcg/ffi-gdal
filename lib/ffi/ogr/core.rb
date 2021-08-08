@@ -57,21 +57,20 @@ module FFI
 
       WKBByteOrder = enum %i[wkbXDR wkbNDR]
 
-      FieldType = enum :OFTInteger,         0,
-                       :OFTIntegerList,     1,
-                       :OFTReal,            2,
-                       :OFTRealList,        3,
-                       :OFTString,          4,
-                       :OFTStringList,      5,
-                       :OFTWideString,      6,
-                       :OFTWideStringList,  7,
-                       :OFTBinary,          8,
-                       :OFTDate,            9,
-                       :OFTTime,            10,
-                       :OFTDateTime,        11,
-                       :OFTInteger64,       12,
-                       :OFTInteger64List,   13,
-                       :OFTMaxType,         13
+      FieldType = enum %i[OFTInteger
+                          OFTIntegerList
+                          OFTReal
+                          OFTRealList
+                          OFTString
+                          OFTStringList
+                          OFTWideString
+                          OFTWideStringList
+                          OFTBinary
+                          OFTDate
+                          OFTTime
+                          OFTDateTime
+                          OFTInteger64
+                          OFTInteger64List]
 
       # TODO: Add related methods
       FieldSubType = enum %i[OFSTNone OFSTBoolean OFSTInt16 OFSTFloat32 OFSTJSON OFSTUUID OFSTMaxSubType]

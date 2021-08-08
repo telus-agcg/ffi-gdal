@@ -22,7 +22,7 @@ module OGR
     # @raise [OGR::InvalidGeometry] if it's impossible to reassemble due to
     #   topological inconsistencies.
     def polygonize
-      OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Polygonize(@c_pointer) }
+      OGR::Geometry.build_owned_geometry { FFI::OGR::API.OGR_G_Polygonize(@c_pointer) }
     end
   end
 end

@@ -7,8 +7,7 @@ RSpec.describe OGR::Layer do
 
   describe '#spatial_filter' do
     context 'default' do
-      subject { layer.spatial_filter }
-      it { is_expected.to be_nil }
+      specify { expect { layer.spatial_filter }.to raise_exception FFI::GDAL::InvalidPointer }
     end
   end
 

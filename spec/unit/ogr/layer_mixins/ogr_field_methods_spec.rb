@@ -12,69 +12,69 @@ RSpec.describe OGR::Layer do
       end
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.create_field(OGR::FieldDefinition.new('test', :OFTInteger)) }
+        expect { subject.create_field(OGR::FieldDefinition.create('test', :OFTInteger)) }
           .to raise_exception OGR::UnsupportedOperation
       end
     end
 
     context 'creation is supported' do
       it 'can create an OFTInteger' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTInteger))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTInteger))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTIntegerList' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTIntegerList))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTIntegerList))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTReal' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTReal))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTReal))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTRealList' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTRealList))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTRealList))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTString' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTString))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTString))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTStringList' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTStringList))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTStringList))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTWideString' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTWideString))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTWideString))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTWideStringList' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTWideStringList))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTWideStringList))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTBinary' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTBinary))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTBinary))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTDate' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTDate))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTDate))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTTime' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTTime))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTTime))
         expect(subject.find_field_index('test field')).to be_zero
       end
 
       it 'can create an OFTDateTime' do
-        subject.create_field(OGR::FieldDefinition.new('test field', :OFTDateTime))
+        subject.create_field(OGR::FieldDefinition.create('test field', :OFTDateTime))
         expect(subject.find_field_index('test field')).to be_zero
       end
     end
@@ -94,7 +94,7 @@ RSpec.describe OGR::Layer do
     context 'delete is supported' do
       context 'field exists at index' do
         before do
-          fd = OGR::FieldDefinition.new('test field', :OFTInteger)
+          fd = OGR::FieldDefinition.create('test field', :OFTInteger)
           subject.create_field(fd)
         end
 
@@ -137,8 +137,8 @@ RSpec.describe OGR::Layer do
 
       context 'fields exist' do
         before do
-          fd0 = OGR::FieldDefinition.new('field0', :OFTInteger)
-          fd1 = OGR::FieldDefinition.new('field1', :OFTString)
+          fd0 = OGR::FieldDefinition.create('field0', :OFTInteger)
+          fd1 = OGR::FieldDefinition.create('field1', :OFTString)
           subject.create_field(fd0)
           subject.create_field(fd1)
         end
@@ -181,8 +181,8 @@ RSpec.describe OGR::Layer do
 
       context 'fields exist' do
         before do
-          fd0 = OGR::FieldDefinition.new('field0', :OFTInteger)
-          fd1 = OGR::FieldDefinition.new('field1', :OFTString)
+          fd0 = OGR::FieldDefinition.create('field0', :OFTInteger)
+          fd1 = OGR::FieldDefinition.create('field1', :OFTString)
           subject.create_field(fd0)
           subject.create_field(fd1)
         end
@@ -213,28 +213,29 @@ RSpec.describe OGR::Layer do
 
       it 'raises an OGR::UnsupportedOperation' do
         expect do
-          subject.alter_field_definition(123, OGR::FieldDefinition.new('blah', :OFTString), OGR::Layer::ALTER_ALL_FLAG)
+          subject.alter_field_definition(123, OGR::FieldDefinition.create('blah', :OFTString),
+                                         OGR::Layer::ALTER_ALL_FLAG)
         end.to raise_exception OGR::UnsupportedOperation
       end
     end
 
     context 'altering is supported' do
       let(:string_field_def) do
-        fd = OGR::FieldDefinition.new('StringField', :OFTString)
+        fd = OGR::FieldDefinition.create('StringField', :OFTString)
         fd.width = 16
 
         fd
       end
 
       let(:int_field_def) do
-        fd = OGR::FieldDefinition.new('IntField', :OFTInteger)
+        fd = OGR::FieldDefinition.create('IntField', :OFTInteger)
         fd.width = 4
 
         fd
       end
 
       let(:real_field_def) do
-        fd = OGR::FieldDefinition.new('RealField', :OFTReal)
+        fd = OGR::FieldDefinition.create('RealField', :OFTReal)
         fd.width = 8
 
         fd
@@ -376,7 +377,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'field with name exists' do
-      before { subject.create_field(OGR::FieldDefinition.new('meow', :OFTString)) }
+      before { subject.create_field(OGR::FieldDefinition.create('meow', :OFTString)) }
 
       it 'returns the index' do
         expect(subject.find_field_index('meow')).to be_zero
@@ -421,8 +422,8 @@ RSpec.describe OGR::Layer do
 
     context 'valid field names given' do
       before do
-        subject.create_field(OGR::FieldDefinition.new('meow', :OFTInteger))
-        subject.create_field(OGR::FieldDefinition.new('bobo', :OFTInteger))
+        subject.create_field(OGR::FieldDefinition.create('meow', :OFTInteger))
+        subject.create_field(OGR::FieldDefinition.create('bobo', :OFTInteger))
       end
 
       it 'returns nil' do

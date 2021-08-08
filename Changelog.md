@@ -31,6 +31,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `.new_from_coordinates` for `OGR::Point` and `OGR::Point25D`.
 - Added `OGR::Geometry#to_gml_ex` (well, changed `#to_gml` to wrap `OGR_G_ExportToGML` instead of
   `OGR_G_ExportToGMLEx`.
+- Added `OGR::FieldDefinition.new_borrowed` for instantiating from borrowed pointers.
 
 ### Changed
 
@@ -79,19 +80,33 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 #### OGR
 
+##### OGR::Driver
+
+- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
+
+##### OGR::DataSource
+
 - _BREAKING_: `OGR::DataSource#copy_data_source` now raises instead of returning `nil` on a failure
   to copy.
+
+##### OGR::SpatialReference
+
 - _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_utm`'s second param is
   now a keyword arg, `north:` that defaults to `true` (like GDAL's default).
 - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#set_towgs84`'s `z_distance` requires a
   value internally, but was defaulted to `nil`; changed the default value to `0.0`.
 - _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is
   now required.
+
+##### OGR::CoordinateTransformation
+
 - _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`.
   In GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it is
   null. Now these raise the same exception.
-- _BREAKING_: `OGR::Driver.create_data_source` raises on failure instead of returning `nil`.
+
+##### OGR::Geometry
+
 - _BREAKING_: Moved `OGR::Geometry#point_count` to `OGR::Geometry::SimpleCurve` and
   `SimpleCurve25D`.
 - _BREAKING_: Moved `OGR::Geometry#geometry_count` to `OGR::Geometry::Container`.
@@ -116,6 +131,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `OGR::MultiLineString`/`OGR::MultiLineString25D`.
 - `OGR::Geometry::GeometryMethods#to_multi_polygon` now raises or returns an
   `OGR::MultiPolygon`/`OGR::MultiPolygon25D`.
+
+##### OGR::FieldDefinition
+
+- _BREAKING_: `OGR::FieldDefinition#initialize` now only takes a pointer; creation of a new
+  FieldDefinition is done via `.create`.
+- _BREAKING_: `OGR::FieldDefinition#set` can now rely on OGR's built-in defaults for `width`,
+  `precision` and `justification`; these params are now named and default to `nil`.
 
 ### Fixed
 
@@ -158,6 +180,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#authority_name`
   - `OGR::StyleTool#param_as_string`
   - `OGR::StyleTool#style_string`
+- #28: Leveraged `FFI::AutoPointer` to ensure wrapped pointers get cleaned up; the following
+  definitely weren't:
+  - any `OGR` geometry
+  - `OGR::CoordinateTransformation`
 
 ### GDAL
 

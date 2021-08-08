@@ -23,7 +23,7 @@ module OGR
           FFI::OGR::Core::Err[ogrerr_ptr.read_int]
         end
 
-        OGR::Geometry.factory(new_geometry_ptr)
+        OGR::Geometry.new_owned(new_geometry_ptr)
       end
     end
   end

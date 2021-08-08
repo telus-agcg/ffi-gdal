@@ -3,23 +3,18 @@
 module OGR
   module LayerMixins
     module OGRQueryFilterMethods
-      # TODO: per the GDAL docs: "The returned pointer is to an internally owned
-      # object, and should not be altered or deleted by the caller."
-      #
       # @return [OGR::Geometry]
       def spatial_filter
-        filter_pointer = FFI::OGR::API.OGR_L_GetSpatialFilter(@c_pointer)
-        return nil if filter_pointer.null?
-
-        OGR::Geometry.factory(filter_pointer)
+        OGR::Geometry.new_borrowed(FFI::OGR::API.OGR_L_GetSpatialFilter(@c_pointer))
       end
 
-      # @param new_spatial_filter [OGR::Geometry, FFI::Pointer]
+      # @param geometry [OGR::Geometry]
       # @raise [FFI::GDAL::InvalidPointer]
-      def spatial_filter=(new_spatial_filter)
-        spatial_filter_ptr = GDAL._pointer(new_spatial_filter)
+      def spatial_filter=(geometry)
+        geometry_ptr = geometry.c_pointer
+        raise 'geometry cleanup must be handled by caller' unless geometry_ptr.autorelease?
 
-        FFI::OGR::API.OGR_L_SetSpatialFilter(@c_pointer, spatial_filter_ptr)
+        FFI::OGR::API.OGR_L_SetSpatialFilter(@c_pointer, geometry_ptr)
       end
 
       # Only feature which intersect the filter geometry will be returned.
@@ -30,7 +25,8 @@ module OGR
       #   region.
       # @raise [FFI::GDAL::InvalidPointer]
       def set_spatial_filter_ex(geometry_field_index, geometry)
-        geometry_ptr = GDAL._pointer(geometry)
+        geometry_ptr = geometry.c_pointer
+        raise 'geometry cleanup must be handled by caller' unless geometry_ptr.autorelease?
 
         FFI::OGR::API.OGR_L_SetSpatialFilterEx(
           @c_pointer, geometry_field_index, geometry_ptr

@@ -13,6 +13,20 @@ module FFI
         | :OGRERR_INVALID_HANDLE
       )
 
+      type ogr_field_type_symbol = (
+        :OFTInteger | :OFTIntegerList
+        | :OFTReal | :OFTRealList
+        | :OFTString | :OFTStringList
+        | :OFTWideString | :OFTWideStringList
+        | :OFTBinary
+        | :OFTDate
+        | :OFTTime
+        | :OFTDateTime
+        | :OFTInteger64 | :OFTInteger64List
+      )
+
+      type ogr_justification_symbol = (:OJUndefined | :OJLeft | :OJRight)
+
       type wkb_geometry_type_symbol = (
         :wkbUnknown | :wkbPoint | :wkbLineString | :wkbPolygon
         | :wkbMultiPoint | :wkbMultiLineString | :wkbMultiPolygon | :wkbGeometryCollection

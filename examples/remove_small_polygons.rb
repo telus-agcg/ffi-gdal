@@ -45,7 +45,7 @@ module Examples
       data_source = shp_driver.create_data_source(dir_path)
       layer = data_source.create_layer('sieve-filtered', geometry_type: :wkbMultiPolygon,
                                                          spatial_reference: srs)
-      zone_num_field_def = OGR::FieldDefinition.new 'ZONE', :OFTInteger
+      zone_num_field_def = OGR::FieldDefinition.create 'ZONE', :OFTInteger
       layer.create_field(zone_num_field_def)
       yield layer
 

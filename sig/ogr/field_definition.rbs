@@ -1,0 +1,29 @@
+module OGR
+  class FieldDefinition
+    class AutoPointer < ::FFI::AutoPointer
+      def self.release: (FFI::Pointer c_pointer) -> void
+    end
+
+    include _HasAutoPointer[OGR::FieldDefinition::AutoPointer]
+
+    def initialize: (String name) -> void | (FFI::Pointer c_pointer) -> void
+    def set: (
+      String field_name,
+      FFI::OGR::Core::ogr_field_type_symbol field_type,
+      ?width: Integer,
+      ?precision: Integer,
+      ?justification: FFI::OGR::Core::ogr_justification_symbol
+    ) -> void
+
+    def name: -> String
+    def name=: (String new_name) -> void
+    def justification: -> FFI::OGR::Core::ogr_justification_symbol
+    def justification=: (FFI::OGR::Core::ogr_justification_symbol new_justification) -> void
+    def precision: -> Integer
+    def precision=: (Integer new_precision) -> void
+    def type: -> FFI::OGR::Core::ogr_field_type_symbol
+    def type=: (FFI::OGR::Core::ogr_field_type_symbol new_type) -> void
+    def width: -> Integer
+    def width=: (Integer new_width) -> void
+  end
+end

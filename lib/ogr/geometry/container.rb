@@ -23,10 +23,8 @@ module OGR
       # @raise [FFI::GDAL::InvalidPointer]
       # @raise [GDAL::Error, OGR::UnsupportedGeometryType]
       def add_geometry(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(sub_geometry)
-
         OGR::ErrorHandling.handle_ogr_err("Unable to add geometry: #{sub_geometry}") do
-          FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry_ptr)
+          FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry.c_pointer)
         end
       end
 
@@ -60,16 +58,13 @@ module OGR
       # sub_geometry_index.
       #
       # @param sub_geometry_index [Integer]
-      # @return [OGR::Geometry]
+      # @return [OGR::Geometry, nil]
       def geometry_at(sub_geometry_index)
-        tmp_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
+        geometry_ref = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
 
-        return if tmp_ptr.null?
+        return if geometry_ref.null?
 
-        tmp_ptr.autorelease = false
-
-        # TODO: This clone doesn't seem necessary...
-        OGR::Geometry.factory(FFI::OGR::API.OGR_G_Clone(tmp_ptr))
+        OGR::Geometry.new_borrowed(geometry_ref)
       end
       alias geometry_ref geometry_at
     end

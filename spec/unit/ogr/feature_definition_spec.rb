@@ -9,7 +9,7 @@ RSpec.describe OGR::FeatureDefinition do
     fd
   end
 
-  let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
+  let(:field) { OGR::FieldDefinition.create('test field', :OFTString) }
 
   describe '#name' do
     it 'returns the name given to it' do
@@ -58,7 +58,7 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'param is a FieldDefinition' do
-      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
+      let(:field) { OGR::FieldDefinition.create('test field', :OFTString) }
 
       it 'adds the field' do
         subject.add_field_definition(field)
@@ -97,7 +97,7 @@ RSpec.describe OGR::FeatureDefinition do
     end
 
     context 'field with requested name exists' do
-      let(:field) { OGR::FieldDefinition.new('test field', :OFTString) }
+      let(:field) { OGR::FieldDefinition.create('test field', :OFTString) }
       before { subject.add_field_definition(field) }
 
       it "returns the FieldDefinition's index" do

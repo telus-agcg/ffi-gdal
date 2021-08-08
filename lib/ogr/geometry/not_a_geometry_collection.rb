@@ -18,7 +18,7 @@ module OGR
       # @return [OGR::Geometry]
       # @raise [OGR::Failure]
       def boundary
-        result = OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_Boundary(@c_pointer) }
+        result = OGR::Geometry.build_owned_geometry { FFI::OGR::API.OGR_G_Boundary(@c_pointer) }
 
         raise OGR::Failure, 'Failure computing boundary' unless result
 
