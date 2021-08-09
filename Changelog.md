@@ -139,6 +139,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - _BREAKING_: `OGR::FieldDefinition#set` can now rely on OGR's built-in defaults for `width`,
   `precision` and `justification`; these params are now named and default to `nil`.
 
+##### OGR::GeometryFieldDefinition
+
+- _BREAKING_: `OGR::GeometryFieldDefinition#initialize` now only takes a
+  pointer; creation of a new GeometryFieldDefinition is done via `.create`.
+
 ### Fixed
 
 - [DEV-12827] Fixed lots of double-free crashes resulting from misuse of `FFI::Pointer#autorelease`:

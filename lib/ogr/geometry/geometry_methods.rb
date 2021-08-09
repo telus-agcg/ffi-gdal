@@ -143,63 +143,59 @@ module OGR
         end
       end
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
       # @raise [FFI::GDAL::InvalidPointer]
-      def intersects?(geometry)
-        FFI::OGR::API.OGR_G_Intersects(@c_pointer, geometry.c_pointer)
+      def intersects?(other_geometry)
+        FFI::OGR::API.OGR_G_Intersects(@c_pointer, other_geometry.c_pointer)
       end
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
-      def equals?(geometry)
-        FFI::OGR::API.OGR_G_Equals(@c_pointer, geometry.c_pointer)
+      def equals?(other_geometry)
+        FFI::OGR::API.OGR_G_Equals(@c_pointer, other_geometry.c_pointer)
       end
       alias == equals?
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
       # @raise [FFI::GDAL::InvalidPointer]
-      def disjoint?(geometry)
-        FFI::OGR::API.OGR_G_Disjoint(@c_pointer, geometry.c_pointer)
+      def disjoint?(other_geometry)
+        FFI::OGR::API.OGR_G_Disjoint(@c_pointer, other_geometry.c_pointer)
       end
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
-      def touches?(geometry)
-        FFI::OGR::API.OGR_G_Touches(@c_pointer, geometry.c_pointer)
+      def touches?(other_geometry)
+        FFI::OGR::API.OGR_G_Touches(@c_pointer, other_geometry.c_pointer)
       end
 
-      # @param geometry [OGR::Geometry, FFI::Pointer]
-      # @return [Boolean]
-      # @raise [FFI::GDAL::InvalidPointer]
-      def crosses?(geometry)
-        geometry_ptr = GDAL._pointer(geometry)
-        FFI::OGR::API.OGR_G_Crosses(@c_pointer, geometry_ptr)
-      end
-
-      # @param geometry [OGR::Geometry, FFI::Pointer]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
       # @raise [FFI::GDAL::InvalidPointer]
-      def within?(geometry)
-        geometry_ptr = GDAL._pointer(geometry)
-        FFI::OGR::API.OGR_G_Within(@c_pointer, geometry_ptr)
+      def crosses?(other_geometry)
+        FFI::OGR::API.OGR_G_Crosses(@c_pointer, other_geometry.c_pointer)
       end
 
-      # @param geometry [OGR::Geometry, FFI::Pointer]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
       # @raise [FFI::GDAL::InvalidPointer]
-      def contains?(geometry)
-        geometry_ptr = GDAL._pointer(geometry)
-        FFI::OGR::API.OGR_G_Contains(@c_pointer, geometry_ptr)
+      def within?(other_geometry)
+        FFI::OGR::API.OGR_G_Within(@c_pointer, other_geometry.c_pointer)
       end
 
-      # @param geometry [OGR::Geometry, FFI::Pointer]
+      # @param other_geometry [OGR::Geometry]
       # @return [Boolean]
       # @raise [FFI::GDAL::InvalidPointer]
-      def overlaps?(geometry)
-        geometry_ptr = GDAL._pointer(geometry)
-        FFI::OGR::API.OGR_G_Overlaps(@c_pointer, geometry_ptr)
+      def contains?(other_geometry)
+        FFI::OGR::API.OGR_G_Contains(@c_pointer, other_geometry.c_pointer)
+      end
+
+      # @param other_geometry [OGR::Geometry]
+      # @return [Boolean]
+      # @raise [FFI::GDAL::InvalidPointer]
+      def overlaps?(other_geometry)
+        FFI::OGR::API.OGR_G_Overlaps(@c_pointer, other_geometry.c_pointer)
       end
 
       # @return [Boolean]
@@ -247,29 +243,29 @@ module OGR
         FFI::OGR::API.OGR_G_CloseRings(@c_pointer)
       end
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [OGR::Geometry, nil] Returns nil if the difference is empty, OR
       #   if there was an error (i.e. there's no way to distinguish).
-      def difference(geometry)
+      def difference(other_geometry)
         OGR::Geometry.build_owned_geometry do
-          FFI::OGR::API.OGR_G_Difference(@c_pointer, geometry.c_pointer)
+          FFI::OGR::API.OGR_G_Difference(@c_pointer, other_geometry.c_pointer)
         end
       end
       alias - difference
 
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [OGR::Geometry, nil]
-      def symmetric_difference(geometry)
-        OGR::Geometry.new_owned(FFI::OGR::API.OGR_G_SymDifference(@c_pointer, geometry.c_pointer))
+      def symmetric_difference(other_geometry)
+        OGR::Geometry.new_owned(FFI::OGR::API.OGR_G_SymDifference(@c_pointer, other_geometry.c_pointer))
       end
 
       # The shortest distance between the two geometries.
       #
-      # @param geometry [OGR::Geometry]
+      # @param other_geometry [OGR::Geometry]
       # @return [Float]
       # @raise [OGR::Failure] If an error occurs during calculation.
-      def distance_to(geometry)
-        result = FFI::OGR::API.OGR_G_Distance(@c_pointer, geometry.c_pointer)
+      def distance_to(other_geometry)
+        result = FFI::OGR::API.OGR_G_Distance(@c_pointer, other_geometry.c_pointer)
 
         raise OGR::Failure, 'Unable to calculate distance to other geometry' if result == -1
 
@@ -419,7 +415,7 @@ module OGR
         end
       end
 
-      # @param altitude_mode [String] Value to write in the +altitudeMode+
+      # @param altitude_mode [String, nil] Value to write in the +altitudeMode+
       #   element.
       # @return [String]
       def to_kml(altitude_mode = nil)
@@ -435,9 +431,9 @@ module OGR
         end
       end
 
-      # @param coordinate_precision [String] Maximum number of figures after
+      # @param coordinate_precision [String, nil] Maximum number of figures after
       #   decimal separate to write in coordinates.
-      # @param significant_figures [String] Maximum number of significant figures.
+      # @param significant_figures [String, nil] Maximum number of significant figures.
       # @return [String]
       def to_geo_json_ex(coordinate_precision: nil, significant_figures: nil)
         options_ptr = GDAL::Options.pointer({

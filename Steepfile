@@ -14,6 +14,7 @@ target :lib do
   check 'lib/ogr/geometry/'
   check 'lib/ogr/geometry.rb'
   check 'lib/ogr/geometry_collection*.rb'
+  check 'lib/ogr/geometry_field_definition.rb'
   check 'lib/ogr/line_string*.rb'
   check 'lib/ogr/linear_ring.rb'
   check 'lib/ogr/multi_curve*.rb'

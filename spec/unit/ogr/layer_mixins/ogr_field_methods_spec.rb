@@ -386,7 +386,7 @@ RSpec.describe OGR::Layer do
   end
 
   describe '#create_geometry_field' do
-    let(:geometry_field_def) { OGR::GeometryFieldDefinition.new('geofield0') }
+    let(:geometry_field_def) { OGR::GeometryFieldDefinition.create('geofield0', :wkbUnknown) }
 
     context 'creation not supported' do
       before do

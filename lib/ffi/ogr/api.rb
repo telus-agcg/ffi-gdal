@@ -4,6 +4,7 @@ require_relative '../../ext/ffi_library_function_checks'
 require_relative '../gdal'
 require_relative 'api/field_definition'
 require_relative 'api/geometry'
+require_relative 'api/geometry_field_definition'
 
 module FFI
   module OGR
@@ -18,7 +19,6 @@ module FFI
       typedef :pointer, :OGRFeatureDefnH
       typedef :pointer, :OGRFeatureH
       typedef :pointer, :OGRStyleTableH
-      typedef :pointer, :OGRGeomFieldDefnH
       typedef :pointer, :OGRLayerH
       typedef :pointer, :OGRDataSourceH
       typedef :pointer, :OGRSFDriverH
@@ -27,28 +27,6 @@ module FFI
 
       # wrap
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :strptr
-
-      # ~~~~~~~~~~~~~~~~
-      # Geometry Field-related
-      # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_GFld_Create,
-                      [:string, FFI::OGR::Core::WKBGeometryType],
-                      :OGRGeomFieldDefnH
-      attach_function :OGR_GFld_Destroy, %i[OGRGeomFieldDefnH], :void
-      attach_function :OGR_GFld_SetName, %i[OGRGeomFieldDefnH string], :void
-      attach_function :OGR_GFld_GetNameRef, %i[OGRGeomFieldDefnH], :strptr
-      attach_function :OGR_GFld_GetType, %i[OGRGeomFieldDefnH], FFI::OGR::Core::WKBGeometryType
-      attach_function :OGR_GFld_SetType,
-                      [:OGRGeomFieldDefnH, FFI::OGR::Core::WKBGeometryType],
-                      :void
-      attach_function :OGR_GFld_GetSpatialRef,
-                      %i[OGRGeomFieldDefnH],
-                      FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
-      attach_function :OGR_GFld_SetSpatialRef,
-                      [:OGRGeomFieldDefnH, FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)],
-                      :void
-      attach_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
-      attach_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
 
       # ~~~~~~~~~~~~~~~~
       # Feature Definition-related

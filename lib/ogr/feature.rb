@@ -293,15 +293,7 @@ module OGR
     #   +index+.
     def geometry_field_definition(index)
       # This returns an internal reference and should not be deleted or modified
-      gfd_ptr = FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@c_pointer, index)
-      gfd_ptr.autorelease = false
-
-      return nil if gfd_ptr.nil?
-
-      gfd = OGR::GeometryFieldDefinition.new(gfd_ptr)
-      gfd.read_only = true
-
-      gfd
+      OGR::GeometryFieldDefinition.new_borrowed(FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@c_pointer, index))
     end
 
     # @param name [String]

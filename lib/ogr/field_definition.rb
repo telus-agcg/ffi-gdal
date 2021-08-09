@@ -99,9 +99,9 @@ module OGR
       FFI::OGR::API.OGR_Fld_GetType(@c_pointer)
     end
 
-    # @param new_value [FFI::OGR::FieldType]
-    def type=(new_value)
-      FFI::OGR::API.OGR_Fld_SetType(@c_pointer, new_value)
+    # @param new_type [FFI::OGR::FieldType]
+    def type=(new_type)
+      FFI::OGR::API.OGR_Fld_SetType(@c_pointer, new_type)
     end
 
     # @return [Integer]

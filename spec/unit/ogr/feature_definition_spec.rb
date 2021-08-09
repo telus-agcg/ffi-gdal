@@ -203,7 +203,7 @@ RSpec.describe OGR::FeatureDefinition do
 
   describe '#add_geometry_field_definition + #geometry_field_definition' do
     let(:geometry_field_definition) do
-      OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
+      OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
     end
 
     it 'adds the geometry_field_definition' do
@@ -224,7 +224,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'geometry field definition exists at given index' do
       let(:geometry_field_definition) do
-        OGR::GeometryFieldDefinition.new('test1', :wkbPolygon)
+        OGR::GeometryFieldDefinition.create('test1', :wkbPolygon)
       end
 
       before { subject.add_geometry_field_definition(geometry_field_definition) }

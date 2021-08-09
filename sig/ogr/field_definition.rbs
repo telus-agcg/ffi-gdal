@@ -1,7 +1,7 @@
 module OGR
   class FieldDefinition
     class AutoPointer < ::FFI::AutoPointer
-      def self.release: (FFI::Pointer c_pointer) -> void
+      extend _AutoPointerRelease
     end
 
     include _HasAutoPointer[OGR::FieldDefinition::AutoPointer]
@@ -25,5 +25,7 @@ module OGR
     def type=: (FFI::OGR::Core::ogr_field_type_symbol new_type) -> void
     def width: -> Integer
     def width=: (Integer new_width) -> void
+    def ignored?: -> bool
+    def ignored=: (bool new_value) -> void
   end
 end

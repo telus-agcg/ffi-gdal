@@ -4,7 +4,7 @@ require 'ogr/geometry_field_definition'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::GeometryFieldDefinition do
-  subject(:geometry_field_definition) { described_class.new('test gfld') }
+  subject(:geometry_field_definition) { described_class.create('test gfld', :wkbUnknown) }
 
   describe '#name' do
     it 'returns the name' do

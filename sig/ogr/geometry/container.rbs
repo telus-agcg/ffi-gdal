@@ -1,8 +1,8 @@
 module OGR
   module Geometry
     module Container
-      def add_geometry: (OGR::Geometry::geometry_class | FFI::Pointer sub_geometry) -> void
-      def add_geometry_directly: (OGR::Geometry::geometry_class | FFI::Pointer sub_geometry) -> void
+      def add_geometry: (OGR::Geometry::geometry_class sub_geometry) -> void
+      def add_geometry_directly: (OGR::Geometry::geometry_class sub_geometry) -> void
       def remove_geometry: (Integer sub_geometry, ?delete: bool) -> void
       def geometry_at: (Integer sub_geometry_index) -> OGR::Geometry::geometry_class?
       alias geometry_ref geometry_at

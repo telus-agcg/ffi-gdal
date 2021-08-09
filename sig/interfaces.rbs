@@ -1,3 +1,7 @@
+interface _AutoPointerRelease
+  def release: (FFI::Pointer c_pointer) -> void
+end
+
 # TODO: Remove in favor of _HasAutoPointer
 interface _HasPointer
   def c_pointer: -> FFI::Pointer
@@ -5,6 +9,14 @@ end
 
 interface _HasAutoPointer[P]
   def c_pointer: -> P
+end
+
+interface _NewBorrowed[T]
+  def new_borrowed: (FFI::Pointer c_pointer) -> T
+end
+
+interface _NewOwned[T]
+  def new_owned: (FFI::Pointer c_pointer) -> T
 end
 
 interface _SpatialReference
