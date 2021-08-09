@@ -2,18 +2,19 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
+require_relative 'geometry/auto_pointer'
 
 module OGR
   module Geometry
     class << self
       # @return [OGR::Geometry, nil]
-      def build_geometry
+      def build_owned_geometry
         new_geometry_ptr = yield
         if new_geometry_ptr.nil? || new_geometry_ptr.null? || (defined?(@c_pointer) && new_geometry_ptr == @c_pointer)
           return
         end
 
-        factory(new_geometry_ptr)
+        new_owned(new_geometry_ptr)
       end
 
       # @param type [FFI::OGR::Core::WKBGeometryType]
@@ -23,10 +24,119 @@ module OGR
         geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometry(type)
         raise FFI::GDAL::InvalidPointer, "Unable to instantiate Geometry from type '#{type}'" if geometry_pointer.null?
 
-        geometry_pointer.autorelease = false
-
-        geometry_pointer
+        OGR::Geometry::AutoPointer.new(geometry_pointer)
       end
+
+      # Use for instantiating an OGR geometry from a moved pointer (one that
+      # should be freed).
+      #
+      # @param c_pointer [FFI::Pointer]
+      # @return [OGR::Point, OGR::Curve, OGR::Surface, OGR::GeometryCollection]
+      # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
+      def new_owned(c_pointer)
+        raise FFI::GDAL::InvalidPointer, "Can't instantiate Geometry from null pointer" if c_pointer.null?
+
+        c_pointer.autorelease = true
+
+        factory(OGR::Geometry::AutoPointer.new(c_pointer))
+      end
+
+      # Use for instantiating an OGR geometry from a borrowed pointer (one
+      # that shouldn't be freed).
+      #
+      # @param c_pointer [FFI::Pointer]
+      # @return [OGR::Point, OGR::Curve, OGR::Surface, OGR::GeometryCollection]
+      # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
+      def new_borrowed(c_pointer)
+        raise FFI::GDAL::InvalidPointer, "Can't instantiate Geometry from null pointer" if c_pointer.null?
+
+        c_pointer.autorelease = false
+
+        factory(c_pointer).freeze
+      end
+
+      # @param wkt_data [String]
+      # @param spatial_ref [OGR::SpatialReference]
+      # @return [OGR::Geometry]
+      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
+      def create_from_wkt(wkt_data, spatial_ref = nil)
+        wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
+        wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
+        wkt_pointer_pointer.write_pointer(wkt_data_pointer)
+
+        spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKT: '#{wkt_data}'") do
+          FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
+                                            spatial_ref_pointer, geometry_ptr_ptr)
+        end
+
+        new_owned(geometry_ptr_ptr.read_pointer)
+      end
+
+      # @param wkb_data [String] Binary string of WKB.
+      # @param spatial_ref [OGR::SpatialReference]
+      # @return [OGR::Geometry]
+      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
+      def create_from_wkb(wkb_data, spatial_ref = nil)
+        wkb_data_pointer = FFI::MemoryPointer.new(:char, wkb_data.length)
+        wkb_data_pointer.write_bytes(wkb_data)
+
+        spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
+        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
+        byte_count = wkb_data.length
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKB: '#{wkb_data}'") do
+          FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
+        end
+
+        new_owned(geometry_ptr_ptr.read_pointer)
+      end
+
+      # @param gml_data [String]
+      # @return [OGR::Geometry]
+      def create_from_gml(gml_data)
+        new_owned(FFI::OGR::API.OGR_G_CreateFromGML(gml_data))
+      end
+
+      # @param json_data [String]
+      # @return [OGR::Geometry]
+      def create_from_json(json_data)
+        new_owned(FFI::OGR::API.OGR_G_CreateGeometryFromJson(json_data))
+      end
+
+      # The human-readable string for the geometry type.
+      #
+      # @param type [FFI::OGR::WKBGeometryType]
+      # @return [String]
+      def type_to_name(type)
+        FFI::OGR::Core.OGRGeometryTypeToName(type).freeze
+      end
+
+      # Finds the most specific common geometry type from the two given types.
+      # Useful when trying to figure out what geometry type to report for an
+      # entire layer, when the layer uses multiple types.
+      #
+      # @param main [FFI::OGR::WKBGeometryType]
+      # @param extra [FFI::OGR::WKBGeometryType]
+      # @return [FFI::OGR::WKBGeometryType] Returns :wkbUnknown when there is
+      #   no type in common.
+      def merge_geometry_types(main, extra)
+        FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
+      end
+
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_wkt(c_pointer)
+        GDAL._cpl_read_and_free_string do |output_ptr|
+          OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+            FFI::OGR::API.OGR_G_ExportToWkt(c_pointer, output_ptr)
+          end
+        end
+      end
+
+      private
 
       # Creates a new Geometry using the class of the geometry that the type
       # represents.
@@ -77,91 +187,6 @@ module OGR
         klass.new(c_pointer: c_pointer)
       end
       # rubocop: enable Metrics/CyclomaticComplexity
-
-      # @param wkt_data [String]
-      # @param spatial_ref [OGR::SpatialReference]
-      # @return [OGR::Geometry]
-      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
-      def create_from_wkt(wkt_data, spatial_ref = nil)
-        wkt_data_pointer = FFI::MemoryPointer.from_string(wkt_data)
-        wkt_pointer_pointer = FFI::MemoryPointer.new(:pointer)
-        wkt_pointer_pointer.write_pointer(wkt_data_pointer)
-
-        spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
-        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
-
-        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKT: '#{wkt_data}'") do
-          FFI::OGR::API.OGR_G_CreateFromWkt(wkt_pointer_pointer,
-                                            spatial_ref_pointer, geometry_ptr_ptr)
-        end
-
-        factory(geometry_ptr_ptr.read_pointer)
-      end
-
-      # @param wkb_data [String] Binary string of WKB.
-      # @param spatial_ref [OGR::SpatialReference]
-      # @return [OGR::Geometry]
-      # @raise [OGR::NotEnoughData, OGR::UnsupportedGeometryType, OGR::CorruptData]
-      def create_from_wkb(wkb_data, spatial_ref = nil)
-        wkb_data_pointer = FFI::MemoryPointer.new(:char, wkb_data.length)
-        wkb_data_pointer.write_bytes(wkb_data)
-
-        spatial_ref_pointer = (GDAL._maybe_pointer(spatial_ref) if spatial_ref)
-        geometry_ptr_ptr = GDAL._pointer_pointer(:pointer)
-        byte_count = wkb_data.length
-
-        OGR::ErrorHandling.handle_ogr_err("Unable to create from WKB: '#{wkb_data}'") do
-          FFI::OGR::API.OGR_G_CreateFromWkb(wkb_data_pointer, spatial_ref_pointer, geometry_ptr_ptr, byte_count)
-        end
-
-        factory(geometry_ptr_ptr.read_pointer)
-      end
-
-      # @param gml_data [String]
-      # @return [OGR::Geometry]
-      def create_from_gml(gml_data)
-        geometry_pointer = FFI::OGR::API.OGR_G_CreateFromGML(gml_data)
-
-        _ = factory(geometry_pointer)
-      end
-
-      # @param json_data [String]
-      # @return [OGR::Geometry]
-      def create_from_json(json_data)
-        geometry_pointer = FFI::OGR::API.OGR_G_CreateGeometryFromJson(json_data)
-
-        factory(geometry_pointer)
-      end
-
-      # The human-readable string for the geometry type.
-      #
-      # @param type [FFI::OGR::WKBGeometryType]
-      # @return [String]
-      def type_to_name(type)
-        FFI::OGR::Core.OGRGeometryTypeToName(type).freeze
-      end
-
-      # Finds the most specific common geometry type from the two given types.
-      # Useful when trying to figure out what geometry type to report for an
-      # entire layer, when the layer uses multiple types.
-      #
-      # @param main [FFI::OGR::WKBGeometryType]
-      # @param extra [FFI::OGR::WKBGeometryType]
-      # @return [FFI::OGR::WKBGeometryType] Returns :wkbUnknown when there is
-      #   no type in common.
-      def merge_geometry_types(main, extra)
-        FFI::OGR::Core.OGRMergeGeometryTypes(main, extra)
-      end
-
-      # @return [String]
-      # @raise [OGR::Failure]
-      def to_wkt(c_pointer)
-        GDAL._cpl_read_and_free_string do |output_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
-            FFI::OGR::API.OGR_G_ExportToWkt(c_pointer, output_ptr)
-          end
-        end
-      end
     end
   end
 end

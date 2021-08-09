@@ -16,22 +16,25 @@ module OGR
         | OGR::UnknownGeometry
     )
 
-    def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> FFI::Pointer
+    extend _NewBorrowed[geometry_class]
+    extend _NewOwned[geometry_class]
+
+    def self.build_owned_geometry: { () -> FFI::Pointer } -> (geometry_class | nil)
+    def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> OGR::Geometry::AutoPointer
 
     def self.create_from_wkt: (
       String wkt_data,
       ?OGR::SpatialReference ?spatial_ref
-    ) -> OGR::Geometry::geometry_class
+    ) -> geometry_class
 
     def self.create_from_wkb: (
       String wkb_data,
       ?OGR::SpatialReference ?spatial_ref
-    ) -> OGR::Geometry::geometry_class
-
-    def self.build_geometry: { () -> FFI::Pointer } -> (OGR::Geometry::geometry_class | nil)
-    def self.factory: (FFI::Pointer c_pointer) -> OGR::Geometry::geometry_class
+    ) -> geometry_class
 
     def self.type_to_name: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> String
     def self.to_wkt: (FFI::Pointer geometry_handle) -> String
+
+    def self.factory: (FFI::Pointer c_pointer) -> geometry_class
   end
 end

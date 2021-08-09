@@ -46,6 +46,20 @@ module OGR
       FFI::OGR::SRSAPI.OSRCleanup
     end
 
+    # Use for instantiating an SpatialReference from a borrowed pointer (one
+    # that shouldn't be freed).
+    #
+    # @param c_pointer [FFI::Pointer]
+    # @return [OGR::Point, OGR::Curve, OGR::Surface, OGR::GeometryCollection]
+    # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
+    def self.new_borrowed(c_pointer)
+      raise FFI::GDAL::InvalidPointer, "Can't instantiate SRS from null pointer" if c_pointer.null?
+
+      c_pointer.autorelease = false
+
+      new(c_pointer).freeze
+    end
+
     # This static method will destroy a OGRSpatialReference. It is equivalent
     # to calling delete on the object, but it ensures that the deallocation is
     # properly executed within the OGR libraries heap on platforms where this

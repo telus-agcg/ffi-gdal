@@ -3,6 +3,8 @@
 module OGR
   module LayerMixins
     module OGRFieldMethods
+      CREATE_GEOM_FIELD = 'CreateGeomField'
+
       # Creates and writes a new field to the layer. This adds the field to the
       # internal FeatureDefinition; C API says not to update the FeatureDefinition
       # directly.
@@ -119,16 +121,16 @@ module OGR
       # @raise [OGR::Failure]
       # @raise [FFI::GDAL::InvalidPointer]
       def create_geometry_field(geometry_field_def, approx_ok: false)
-        unless test_capability('CreateGeomField')
+        unless test_capability(CREATE_GEOM_FIELD)
           raise OGR::UnsupportedOperation, 'This layer does not support geometry field creation'
         end
 
-        geometry_field_definition_ptr = GDAL._pointer(geometry_field_def)
+        geometry_field_definition = OGR::GeometryFieldDefinition.new_borrowed(geometry_field_def.c_pointer)
 
         OGR::ErrorHandling.handle_ogr_err('Unable to create geometry field') do
           FFI::OGR::API.OGR_L_CreateGeomField(
             @c_pointer,
-            geometry_field_definition_ptr,
+            geometry_field_definition.c_pointer,
             approx_ok
           )
         end

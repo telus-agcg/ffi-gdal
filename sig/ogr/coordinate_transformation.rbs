@@ -1,5 +1,53 @@
 module OGR
   class CoordinateTransformation
-    include _HasPointer
+    class AutoPointer < FFI::AutoPointer
+      extend _AutoPointerRelease
+    end
+
+    include _HasAutoPointer[OGR::CoordinateTransformation::AutoPointer]
+
+    def initialize: (OGR::SpatialReference source_srs, OGR::SpatialReference destination_srs) -> void
+
+    def transform: (Array[Float] x_vertices, Array[Float] y_vertices) -> [Array[Float], Array[Float]]
+    | (
+        Array[Float] x_vertices,
+        Array[Float] y_vertices,
+        Array[Float] z_vertices
+      ) -> [Array[Float], Array[Float], Array[Float]]
+
+    def transform_ex: (Array[Float] x_vertices, Array[Float] y_vertices) -> { points: [Array[Float], Array[Float]], successes: Array[bool] }
+    | (
+        Array[Float] x_vertices,
+        Array[Float] y_vertices,
+        Array[Float] z_vertices
+      ) -> { points: [Array[Float], Array[Float], Array[Float]], successes: Array[bool] }
+
+    private
+
+    def _transform_2d: (Array[Float] x_vertices, Array[Float] y_vertices) { (
+        Integer point_count,
+        FFI::MemoryPointer x_ptr,
+        FFI::MemoryPointer y_ptr,
+        ) -> bool
+      } -> [Array[Float], Array[Float]]
+
+    def _transform_3d: (Array[Float] x_vertices, Array[Float] y_vertices, Array[Float] z_vertices) { (
+        Integer point_count,
+        FFI::MemoryPointer x_ptr,
+        FFI::MemoryPointer y_ptr,
+        FFI::MemoryPointer z_ptr
+        ) -> bool
+    } -> [Array[Float], Array[Float], Array[Float]]
+
+    def init_transform_pointers_2d: (
+      Array[Float] x_vertices, 
+      Array[Float] y_vertices,
+     ) -> [FFI::MemoryPointer, FFI::MemoryPointer]
+
+    def init_transform_pointers_3d: (
+        Array[Float] x_vertices, 
+        Array[Float] y_vertices,
+        Array[Float] z_vertices
+      ) -> [FFI::MemoryPointer, FFI::MemoryPointer, FFI::MemoryPointer]
   end
 end

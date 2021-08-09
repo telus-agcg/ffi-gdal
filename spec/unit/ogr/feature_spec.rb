@@ -5,14 +5,14 @@ require 'ogr/feature'
 require 'ogr/field'
 
 RSpec.describe OGR::Feature do
-  let(:integer_field_def) { OGR::FieldDefinition.new('test integer field', :OFTInteger) }
-  let(:integer_list_field_def) { OGR::FieldDefinition.new('test integer list field', :OFTIntegerList) }
-  let(:real_field_def) { OGR::FieldDefinition.new('test real field', :OFTReal) }
-  let(:real_list_field_def) { OGR::FieldDefinition.new('test real list field', :OFTRealList) }
-  let(:string_field_def) { OGR::FieldDefinition.new('test string field', :OFTString) }
-  let(:string_list_field_def) { OGR::FieldDefinition.new('test string list field', :OFTStringList) }
-  let(:binary_field_def) { OGR::FieldDefinition.new('test binary field', :OFTBinary) }
-  let(:date_field_def) { OGR::FieldDefinition.new('test date field', :OFTDate) }
+  let(:integer_field_def) { OGR::FieldDefinition.create('test integer field', :OFTInteger) }
+  let(:integer_list_field_def) { OGR::FieldDefinition.create('test integer list field', :OFTIntegerList) }
+  let(:real_field_def) { OGR::FieldDefinition.create('test real field', :OFTReal) }
+  let(:real_list_field_def) { OGR::FieldDefinition.create('test real list field', :OFTRealList) }
+  let(:string_field_def) { OGR::FieldDefinition.create('test string field', :OFTString) }
+  let(:string_list_field_def) { OGR::FieldDefinition.create('test string list field', :OFTStringList) }
+  let(:binary_field_def) { OGR::FieldDefinition.create('test binary field', :OFTBinary) }
+  let(:date_field_def) { OGR::FieldDefinition.create('test date field', :OFTDate) }
 
   let(:feature_definition) do
     fd = OGR::FeatureDefinition.new('test FD')

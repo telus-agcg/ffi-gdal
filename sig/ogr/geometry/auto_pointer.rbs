@@ -1,0 +1,7 @@
+module OGR
+  module Geometry
+    class AutoPointer < ::FFI::AutoPointer
+      extend _AutoPointerRelease
+    end
+  end
+end

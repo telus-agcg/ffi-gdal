@@ -56,12 +56,7 @@ module OGR
     # @param index [Integer]
     # @return [OGR::FieldDefinition]
     def field_definition(index)
-      field_definition_ptr = FFI::OGR::API.OGR_FD_GetFieldDefn(@c_pointer, index)
-      field_definition_ptr.autorelease = false
-
-      return nil if field_definition_ptr.null?
-
-      OGR::FieldDefinition.new(field_definition_ptr, nil)
+      OGR::FieldDefinition.new_borrowed(FFI::OGR::API.OGR_FD_GetFieldDefn(@c_pointer, index))
     end
 
     # @param field_definition [OGR::FieldDefinition, FFI::Pointer]
@@ -129,11 +124,7 @@ module OGR
     # @param index [Integer]
     # @return [OGR::GeometryFieldDefinition]
     def geometry_field_definition(index)
-      geometry_field_definition_ptr = FFI::OGR::API.OGR_FD_GetGeomFieldDefn(@c_pointer, index)
-
-      return nil if geometry_field_definition_ptr.null?
-
-      OGR::GeometryFieldDefinition.new(geometry_field_definition_ptr)
+      OGR::GeometryFieldDefinition.new_borrowed(FFI::OGR::API.OGR_FD_GetGeomFieldDefn(@c_pointer, index))
     end
 
     # @param name [String]

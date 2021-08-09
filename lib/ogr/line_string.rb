@@ -24,7 +24,7 @@ module OGR
       )
       return nil if geometry_ptr.null?
 
-      new(geometry_ptr)
+      new(c_pointer: OGR::Geometry::AutoPointer.new(geometry_ptr))
     end
 
     def initialize(c_pointer: nil, spatial_reference: nil)

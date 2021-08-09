@@ -3,11 +3,11 @@
 require 'ogr/field_definition'
 
 RSpec.describe OGR::FieldDefinition do
-  subject(:field) { described_class.new('test field', :OFTInteger) }
+  subject(:field) { described_class.create('test field', :OFTInteger) }
 
   describe '#set' do
     before do
-      subject.set('new name', :OFTString, 5, 2, :OJRight)
+      subject.set('new name', :OFTString, width: 5, precision: 2, justification: :OJRight)
     end
 
     it 'sets the name' do

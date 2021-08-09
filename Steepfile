@@ -4,12 +4,17 @@
 target :lib do
   signature 'sig', 'sig-gems'
 
+  check 'lib/ffi/ogr/api/'
+
   check 'lib/ogr/circular_string*.rb'
   check 'lib/ogr/compound_curve*.rb'
+  check 'lib/ogr/coordinate_transformation.rb'
   check 'lib/ogr/curve*.rb'
+  check 'lib/ogr/field_definition.rb'
   check 'lib/ogr/geometry/'
   check 'lib/ogr/geometry.rb'
   check 'lib/ogr/geometry_collection*.rb'
+  check 'lib/ogr/geometry_field_definition.rb'
   check 'lib/ogr/line_string*.rb'
   check 'lib/ogr/linear_ring.rb'
   check 'lib/ogr/multi_curve*.rb'

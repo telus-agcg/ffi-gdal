@@ -19,29 +19,27 @@ module OGR
       # empty, the first added +geometry+ will be the exterior ring.  Subsequent
       # geometries added will be interior rings.
       #
-      # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @param sub_geometry [OGR::Geometry::GeometryMethods]
       # @raise [FFI::GDAL::InvalidPointer]
       # @raise [GDAL::Error, OGR::UnsupportedGeometryType]
       def add_geometry(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(sub_geometry)
-
         OGR::ErrorHandling.handle_ogr_err("Unable to add geometry: #{sub_geometry}") do
-          FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry_ptr)
+          FFI::OGR::API.OGR_G_AddGeometry(@c_pointer, sub_geometry.c_pointer)
         end
       end
 
-      # Takes ownership of sub_geometry and added it to self; thus sub_geometry
-      # is set to `autorelease: false` and it's up to you to release sub_geometry
-      # when self is released.
+      # Takes ownership of sub_geometry and added it to self, thus releasing
+      # should no longer be done in Ruby-land (the associated c_pointer gets
+      # set here to autorelease: false).
       #
-      # @param sub_geometry [OGR::Geometry, FFI::Pointer]
+      # @param sub_geometry [OGR::Geometry::GeometryMethods]
       # @raise [FFI::GDAL::InvalidPointer]
       # @raise [OGR::Failure]
       def add_geometry_directly(sub_geometry)
-        sub_geometry_ptr = GDAL._pointer(sub_geometry, autorelease: false)
+        sub_geometry.c_pointer.autorelease = false
 
         OGR::ErrorHandling.handle_ogr_err("Unable to add geometry directly: #{sub_geometry}") do
-          FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry_ptr)
+          FFI::OGR::API.OGR_G_AddGeometryDirectly(@c_pointer, sub_geometry.c_pointer)
         end
       end
 
@@ -60,16 +58,13 @@ module OGR
       # sub_geometry_index.
       #
       # @param sub_geometry_index [Integer]
-      # @return [OGR::Geometry]
+      # @return [OGR::Geometry, nil]
       def geometry_at(sub_geometry_index)
-        tmp_ptr = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
+        geometry_ref = FFI::OGR::API.OGR_G_GetGeometryRef(@c_pointer, sub_geometry_index)
 
-        return if tmp_ptr.null?
+        return if geometry_ref.null?
 
-        tmp_ptr.autorelease = false
-
-        # TODO: This clone doesn't seem necessary...
-        OGR::Geometry.factory(FFI::OGR::API.OGR_G_Clone(tmp_ptr))
+        OGR::Geometry.new_borrowed(geometry_ref)
       end
       alias geometry_ref geometry_at
     end

@@ -22,7 +22,7 @@ module OGR
 
     # @return [OGR::Geometry]
     def union_cascaded
-      OGR::Geometry.build_geometry { FFI::OGR::API.OGR_G_UnionCascaded(@c_pointer) }
+      OGR::Geometry.build_owned_geometry { FFI::OGR::API.OGR_G_UnionCascaded(@c_pointer) }
     end
   end
 end

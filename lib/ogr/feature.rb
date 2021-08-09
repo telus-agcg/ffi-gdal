@@ -194,12 +194,7 @@ module OGR
     # @return [OGR::FieldDefinition]
     def field_definition(index)
       # This returns an internal reference and should not be deleted or modified
-      field_pointer = FFI::OGR::API.OGR_F_GetFieldDefnRef(@c_pointer, index)
-      field_pointer.autorelease = false
-
-      return nil if field_pointer.null?
-
-      OGR::FieldDefinition.new(field_pointer, nil)
+      OGR::FieldDefinition.new_borrowed(FFI::OGR::API.OGR_F_GetFieldDefnRef(@c_pointer, index))
     end
 
     # @param name [String]
@@ -236,12 +231,7 @@ module OGR
     # @return [OGR::Geometry]
     def geometry
       # This returns an internal reference and should not be deleted or modified
-      geometry_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(@c_pointer)
-      geometry_ptr.autorelease = false
-
-      return nil if geometry_ptr.null?
-
-      OGR::Geometry.factory(geometry_ptr)
+      OGR::Geometry.new_borrowed(FFI::OGR::API.OGR_F_GetGeometryRef(@c_pointer))
     end
 
     # Sets the geometry of the feature by making a copy of +new_geometry+.
@@ -271,10 +261,7 @@ module OGR
     #
     # @return [OGR::Geometry]
     def steal_geometry
-      geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@c_pointer)
-      raise OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil? || geometry_ptr.null?
-
-      OGR::Geometry.factory(geometry_ptr)
+      OGR::Geometry.new_owned(FFI::OGR::API.OGR_F_StealGeometry(@c_pointer))
     end
 
     # @return [Integer]
@@ -306,15 +293,7 @@ module OGR
     #   +index+.
     def geometry_field_definition(index)
       # This returns an internal reference and should not be deleted or modified
-      gfd_ptr = FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@c_pointer, index)
-      gfd_ptr.autorelease = false
-
-      return nil if gfd_ptr.nil?
-
-      gfd = OGR::GeometryFieldDefinition.new(gfd_ptr)
-      gfd.read_only = true
-
-      gfd
+      OGR::GeometryFieldDefinition.new_borrowed(FFI::OGR::API.OGR_F_GetGeomFieldDefnRef(@c_pointer, index))
     end
 
     # @param name [String]
@@ -329,12 +308,7 @@ module OGR
     # @return [OGR::Geometry, nil] A read-only OGR::Geometry.
     def geometry_field(index)
       # This returns an internal reference and should not be deleted or modified
-      geometry_ptr = FFI::OGR::API.OGR_F_GetGeomFieldRef(@c_pointer, index)
-      geometry_ptr.autorelease = false
-
-      return nil if geometry_ptr.nil? || geometry_ptr.null?
-
-      OGR::Geometry.factory(geometry_ptr)
+      OGR::Geometry.new_borrowed(FFI::OGR::API.OGR_F_GetGeomFieldRef(@c_pointer, index))
     end
 
     # Sets the feature geometry of a specified geometry field by making a copy
@@ -345,7 +319,7 @@ module OGR
     # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def set_geometry_field(index, geometry)
-      geometry_ptr = GDAL._pointer(geometry)
+      geometry_ptr = geometry.c_pointer
 
       OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field at index #{index}") do
         FFI::OGR::API.OGR_F_SetGeomField(@c_pointer, index, geometry_ptr)
@@ -360,7 +334,8 @@ module OGR
     # @raise [OGR::Failure]
     # @raise [FFI::GDAL::InvalidPointer]
     def set_geometry_field_directly(index, geometry)
-      geometry_ptr = GDAL._pointer(geometry, autorelease: false)
+      geometry_ptr = geometry.c_pointer
+      geometry_ptr.autorelease = false
 
       OGR::ErrorHandling.handle_ogr_err("Unable to set geometry field directly at index #{index}") do
         FFI::OGR::API.OGR_F_SetGeomFieldDirectly(@c_pointer, index, geometry_ptr)

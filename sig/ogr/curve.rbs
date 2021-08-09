@@ -1,6 +1,6 @@
 module OGR
   class Curve
-    include _HasPointer
+    include _HasAutoPointer[OGR::Geometry::AutoPointer]
     include _SpatialReference
     include _ToWkt
 
