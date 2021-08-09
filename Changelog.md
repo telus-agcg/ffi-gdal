@@ -31,7 +31,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `.new_from_coordinates` for `OGR::Point` and `OGR::Point25D`.
 - Added `OGR::Geometry#to_gml_ex` (well, changed `#to_gml` to wrap `OGR_G_ExportToGML` instead of
   `OGR_G_ExportToGMLEx`.
-- Added `OGR::FieldDefinition.new_borrowed` for instantiating from borrowed pointers.
+- Added `.new_borrowed` for instantiating from borrowed pointers:
+  - `OGR::FieldDefinition`
+  - `OGR::GeometryFieldDefinition`
+  - `OGR::Geometry`
+  - `OGR::SpatialReference`
 
 ### Changed
 
@@ -141,8 +145,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ##### OGR::GeometryFieldDefinition
 
-- _BREAKING_: `OGR::GeometryFieldDefinition#initialize` now only takes a
-  pointer; creation of a new GeometryFieldDefinition is done via `.create`.
+- _BREAKING_: `OGR::GeometryFieldDefinition#initialize` now only takes a pointer; creation of a new
+  GeometryFieldDefinition is done via `.create`.
 
 ### Fixed
 

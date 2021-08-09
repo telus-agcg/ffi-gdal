@@ -194,9 +194,6 @@ module FFI
       attach_function :OGRBuildPolygonFromEdges,
                       %i[OGRGeometryH bool bool double pointer],
                       :OGRGeometryH
-      # end
-      # end
-      # end
     end
   end
 end

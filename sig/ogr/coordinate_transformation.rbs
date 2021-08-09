@@ -1,7 +1,7 @@
 module OGR
   class CoordinateTransformation
     class AutoPointer < FFI::AutoPointer
-      def self.release: (FFI::Pointer c_pointer) -> void
+      extend _AutoPointerRelease
     end
 
     include _HasAutoPointer[OGR::CoordinateTransformation::AutoPointer]
