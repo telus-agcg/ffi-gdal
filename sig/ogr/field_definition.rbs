@@ -27,5 +27,7 @@ module OGR
     def width=: (Integer new_width) -> void
     def ignored?: -> bool
     def ignored=: (bool new_value) -> void
+    def sub_type: -> FFI::OGR::Core::ogr_field_sub_type_symbol
+    def sub_type=: (FFI::OGR::Core::ogr_field_sub_type_symbol) -> void
   end
 end

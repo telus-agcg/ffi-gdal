@@ -114,4 +114,11 @@ RSpec.describe OGR::FieldDefinition do
       expect(subject).to be_ignored
     end
   end
+
+  describe '#sub_type= + #sub_type' do
+    it 'assigns the value' do
+      subject.sub_type = :OFSTBoolean
+      expect(subject.sub_type).to eq :OFSTBoolean
+    end
+  end
 end

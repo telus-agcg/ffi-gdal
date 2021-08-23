@@ -72,9 +72,7 @@ module FFI
                           OFTInteger64
                           OFTInteger64List]
 
-      # TODO: Add related methods
-      FieldSubType = enum %i[OFSTNone OFSTBoolean OFSTInt16 OFSTFloat32 OFSTJSON OFSTUUID OFSTMaxSubType]
-
+      FieldSubType = enum %i[OFSTNone OFSTBoolean OFSTInt16 OFSTFloat32 OFSTJSON OFSTUUID]
       Justification = enum %i[OJUndefined OJLeft OJRight]
       STClassId = enum %i[OGRSTCNone OGRSTCPen OGRSTCBrush OGRSTCSymbol OGRSTCLabel OGRSTCVector]
       STUnitId = enum %i[OGRSTUGround OGRSTUPixel OGRSTUPoints OGRSTUMM OGRSTUCM OGRSTUInches]

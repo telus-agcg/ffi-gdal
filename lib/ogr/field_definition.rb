@@ -123,5 +123,15 @@ module OGR
     def ignore=(new_value)
       FFI::OGR::API.OGR_Fld_SetIgnored(@c_pointer, new_value)
     end
+
+    # @return [FFI::OGR::FieldSubType]
+    def sub_type
+      FFI::OGR::API::OGR_Fld_GetSubType(@c_pointer)
+    end
+
+    # @param field_sub_type [FFI::OGR::FieldSubType]
+    def sub_type=(field_sub_type)
+      FFI::OGR::API::OGR_Fld_SetSubType(@c_pointer, field_sub_type)
+    end
   end
 end
