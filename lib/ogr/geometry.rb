@@ -136,6 +136,20 @@ module OGR
         end
       end
 
+      # Set flag to enable/disable returning non-linear geometries.
+      #
+      # @param flag [Boolean]
+      def non_linear_geometries_enabled=(flag)
+        FFI::OGR::API.OGRSetNonLinearGeometriesEnabledFlag(flag)
+      end
+      alias set_non_linear_geometries_enabled_flag non_linear_geometries_enabled=
+
+      # @return [Boolean] +true+ if non-linear geometries might be returned.
+      def non_linear_geometries_enabled?
+        FFI::OGR::API.OGRGetNonLinearGeometriesEnabledFlag
+      end
+      alias get_non_linear_geometries_enabled_flag non_linear_geometries_enabled?
+
       private
 
       # Creates a new Geometry using the class of the geometry that the type

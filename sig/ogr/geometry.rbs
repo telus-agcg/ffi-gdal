@@ -36,5 +36,8 @@ module OGR
     def self.to_wkt: (FFI::Pointer geometry_handle) -> String
 
     def self.factory: (FFI::Pointer c_pointer) -> geometry_class
+
+    def self.non_linear_geometries_enabled=: (bool flag) -> void
+    def self.non_linear_geometries_enabled?: -> bool
   end
 end

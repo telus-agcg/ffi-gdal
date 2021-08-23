@@ -200,6 +200,9 @@ module FFI
       attach_function :OGRBuildPolygonFromEdges,
                       %i[OGRGeometryH bool bool double pointer],
                       :OGRGeometryH
+
+      attach_function :OGRSetNonLinearGeometriesEnabledFlag, %i[bool], :void
+      attach_function :OGRGetNonLinearGeometriesEnabledFlag, [], :bool
     end
   end
 end
