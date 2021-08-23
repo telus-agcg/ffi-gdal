@@ -287,6 +287,16 @@ module OGR
         end
       end
 
+      # @param only_edges [bool] If +true+, will returns a `MULTILINESTRING`,
+      #   otherwise it will return a `GEOMETRYCOLLECTION` containing triangular
+      #   `POLYGON`s.
+      # @param snapping_tolerance [Float, nil]
+      def delaunay_triangulation(only_edges, snapping_tolerance: 0.0)
+        OGR::Geometry.build_owned_geometry do
+          FFI::OGR::API.OGR_G_DelaunayTriangulation(@c_pointer, snapping_tolerance, only_edges)
+        end
+      end
+
       # Modify the geometry so that it has no segments longer than +max_length+.
       #
       # @param max_length [Float]

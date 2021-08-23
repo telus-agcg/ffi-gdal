@@ -143,6 +143,7 @@ module FFI
 #---------------------------
       def self.OGR_G_Simplify: (FFI::Pointer geometry_ptr, FFI::floatable tolerance) -> FFI::Pointer
       def self.OGR_G_SimplifyPreserveTopology: (FFI::Pointer geometry_ptr, FFI::floatable tolerance) -> FFI::Pointer
+      def self.OGR_G_DelaunayTriangulation: (FFI::Pointer geometry_ptr, FFI::floatable tolerance, bool only_edges) -> FFI::Pointer
 
 #---------------------------
 # Type-specific

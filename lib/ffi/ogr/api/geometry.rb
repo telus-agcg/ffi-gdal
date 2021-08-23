@@ -112,6 +112,7 @@ module FFI
       attach_function :OGR_G_SimplifyPreserveTopology,
                       %i[OGRGeometryH double],
                       :OGRGeometryH
+      attach_function :OGR_G_DelaunayTriangulation, %i[OGRGeometryH double bool], :OGRGeometryH
       attach_function :OGR_G_Segmentize, %i[OGRGeometryH double], :void
       attach_function :OGR_G_Intersects, %i[OGRGeometryH OGRGeometryH], :bool
       attach_function :OGR_G_Equals, %i[OGRGeometryH OGRGeometryH], :bool
