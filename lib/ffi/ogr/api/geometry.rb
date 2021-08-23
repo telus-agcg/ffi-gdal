@@ -152,6 +152,7 @@ module FFI
       attach_function :OGR_G_Centroid,
                       %i[OGRGeometryH OGRGeometryH],
                       :int
+      attach_function :OGR_G_Value, %i[OGRGeometryH double], :OGRGeometryH
       attach_function :OGR_G_Empty, %i[OGRGeometryH], :void
       attach_function :OGR_G_IsEmpty, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsValid, %i[OGRGeometryH], :bool

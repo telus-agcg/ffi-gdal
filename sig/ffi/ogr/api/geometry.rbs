@@ -67,6 +67,7 @@ module FFI
       def self.OGR_G_GetY: (FFI::Pointer geometry_ptr, Integer index) -> Float
       def self.OGR_G_GetZ: (FFI::Pointer geometry_ptr, Integer index) -> Float
       def self.OGR_G_GetSpatialReference: (FFI::Pointer geometry_ptr) -> FFI::Pointer
+      def self.OGR_G_Value: (FFI::Pointer geometry_ptr, FFI::floatable distance) -> FFI::Pointer
 
       def self.OGR_G_RemoveGeometry: (
           FFI::Pointer self_handle,
