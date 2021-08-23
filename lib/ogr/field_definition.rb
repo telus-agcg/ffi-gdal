@@ -133,5 +133,15 @@ module OGR
     def sub_type=(field_sub_type)
       FFI::OGR::API::OGR_Fld_SetSubType(@c_pointer, field_sub_type)
     end
+
+    # @return [bool]
+    def nullable?
+      FFI::OGR::API::OGR_Fld_IsNullable(@c_pointer)
+    end
+
+    # @param is_nullable [bool]
+    def nullable=(is_nullable)
+      FFI::OGR::API::OGR_Fld_SetNullable(@c_pointer, is_nullable)
+    end
   end
 end
