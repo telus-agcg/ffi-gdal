@@ -58,6 +58,9 @@ module FFI
       attach_function :OGR_G_ExportToWkb,
                       [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
                       FFI::OGR::Core::Err
+      attach_function :OGR_G_ExportToIsoWkb,
+                      [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
+                      FFI::OGR::Core::Err
       attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
       attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err

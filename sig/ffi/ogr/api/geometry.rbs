@@ -111,6 +111,7 @@ module FFI
       def self.OGR_G_ExportToKML: (FFI::Pointer geometry_ptr, ?String ?altitude_mode) -> FFI::strptr
       def self.OGR_G_ExportToIsoWkt: (FFI::Pointer geometry_ptr, FFI::MemoryPointer options) -> :OGRERR_NONE
       def self.OGR_G_ExportToWkb: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_byte_order_symbol byte_order, FFI::Buffer destination) -> :OGRERR_NONE
+      def self.OGR_G_ExportToIsoWkb: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_byte_order_symbol byte_order, FFI::Buffer destination) -> :OGRERR_NONE
       def self.OGR_G_ExportToWkt: (FFI::Pointer geometry_ptr, FFI::MemoryPointer wkt_out) -> :OGRERR_NONE
 
 #---------------------------

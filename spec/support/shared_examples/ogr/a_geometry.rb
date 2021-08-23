@@ -450,6 +450,18 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
     end
   end
 
+  describe '#to_iso_wkb' do
+    it 'returns some binary String data' do
+      if subject.name == 'LINEARRING'
+        expect { subject.to_iso_wkb }.to raise_exception OGR::UnsupportedOperation
+      else
+        wkb = subject.to_iso_wkb
+        expect(wkb).to be_a String
+        expect(wkb).to_not be_empty
+      end
+    end
+  end
+
   describe '#to_wkt' do
     it 'returns some String data' do
       wkt = subject.to_wkt

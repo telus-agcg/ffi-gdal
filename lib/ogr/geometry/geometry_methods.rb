@@ -353,6 +353,19 @@ module OGR
         output.read_bytes(size)
       end
 
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_iso_wkb(byte_order = :wkbXDR)
+        size = wkb_size
+        output = FFI::Buffer.new_out(:uchar, size)
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
+          FFI::OGR::API.OGR_G_ExportToIsoWkb(@c_pointer, byte_order, output)
+        end
+
+        output.read_bytes(size)
+      end
+
       # @param wkt_data [String]
       # @raise [OGR::Failure]
       def import_from_wkt(wkt_data)
