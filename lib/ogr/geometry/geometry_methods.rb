@@ -106,6 +106,12 @@ module OGR
         FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref.c_pointer)
       end
 
+      # Swaps X and Y coordinates on self.
+      #
+      def swap_xy!
+        FFI::OGR::API.OGR_G_SwapXY(@c_pointer)
+      end
+
       # Transforms the coordinates of this geometry in its current spatial
       # reference system to a new spatial reference system.  Normally this means
       # reprojecting the vectors, but it could also include datum shifts, and

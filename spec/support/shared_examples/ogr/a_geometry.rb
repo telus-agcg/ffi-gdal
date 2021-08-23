@@ -115,6 +115,13 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
     end
   end
 
+  describe '#swap_xy!' do
+    it 'does not raise' do
+      pending 'Update to gdal >=2.3 in CI'
+      subject.swap_xy!
+    end
+  end
+
   describe '#dump_readable' do
     let(:output_file_path) { 'tmp/dump_readable_geometry_test' }
 

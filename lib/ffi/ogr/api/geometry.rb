@@ -188,6 +188,7 @@ module FFI
       attach_function :OGR_G_SetPoints,
                       %i[OGRGeometryH int pointer int pointer int pointer int],
                       :void
+      attach_function :OGR_G_SwapXY, %i[OGRGeometryH], :void
 
       attach_function :OGR_G_GetGeometryCount, %i[OGRGeometryH], :int
       attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH

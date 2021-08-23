@@ -79,6 +79,7 @@ module FFI
       def self.OGR_G_SetPoint: (FFI::Pointer geometry_ptr, Integer vertex_index, FFI::floatable x, FFI::floatable y, FFI::floatable z) -> void
       def self.OGR_G_SetPointCount: (FFI::Pointer geometry_ptr, Integer new_point_count) -> void
       def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_ptr, Integer vertex_index, FFI::floatable x, FFI::floatable y) -> void
+      def self.OGR_G_SwapXY: (FFI::Pointer geometry_ptr) -> void
       def self.OGR_G_WkbSize: (FFI::Pointer geometry_ptr) -> Integer
 
 #---------------------------
