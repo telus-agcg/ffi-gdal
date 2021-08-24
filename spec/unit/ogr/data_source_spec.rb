@@ -213,10 +213,4 @@ RSpec.describe OGR::DataSource do
       end
     end
   end
-
-  describe '#sync_to_disk' do
-    it do
-      expect(subject.sync_to_disk).to be_nil
-    end
-  end
 end
