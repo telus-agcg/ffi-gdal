@@ -5,6 +5,7 @@ require_relative '../gdal'
 require_relative 'api/field_definition'
 require_relative 'api/geometry'
 require_relative 'api/geometry_field_definition'
+require_relative 'api/feature_definition'
 
 module FFI
   module OGR
@@ -16,7 +17,6 @@ module FFI
       # Typedefs
       # -----------------------------------------------------------------------
       # TODO: Use the typedefs for creating pointers throughout the app.
-      typedef :pointer, :OGRFeatureDefnH
       typedef :pointer, :OGRFeatureH
       typedef :pointer, :OGRStyleTableH
       typedef :pointer, :OGRLayerH
@@ -24,49 +24,6 @@ module FFI
       typedef :pointer, :OGRSFDriverH
       typedef :pointer, :OGRStyleMgrH
       typedef :pointer, :OGRStyleToolH
-
-      # ~~~~~~~~~~~~~~~~
-      # Feature Definition-related
-      # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_FD_Create, %i[string], :OGRFeatureDefnH
-      # TODO: wrap
-      attach_function :OGR_FD_Destroy, %i[OGRFeatureDefnH], :void
-      attach_function :OGR_FD_Release, %i[OGRFeatureDefnH], :void
-      attach_function :OGR_FD_GetName, %i[OGRFeatureDefnH], :strptr
-      attach_function :OGR_FD_GetFieldCount, %i[OGRFeatureDefnH], :int
-      attach_function :OGR_FD_GetFieldDefn, %i[OGRFeatureDefnH int], :OGRFieldDefnH
-      attach_function :OGR_FD_GetFieldIndex, %i[OGRFeatureDefnH string], :int
-      attach_function :OGR_FD_AddFieldDefn,
-                      %i[OGRFeatureDefnH OGRFieldDefnH],
-                      :void
-      attach_function :OGR_FD_DeleteFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core::Err
-      attach_function :OGR_FD_GetGeomType, %i[OGRFeatureDefnH], FFI::OGR::Core::WKBGeometryType
-      attach_function :OGR_FD_SetGeomType,
-                      [:OGRFeatureDefnH, FFI::OGR::Core::WKBGeometryType],
-                      :void
-      attach_function :OGR_FD_IsGeometryIgnored, %i[OGRFeatureDefnH], :bool
-      attach_function :OGR_FD_SetGeometryIgnored, %i[OGRFeatureDefnH bool], :void
-      attach_function :OGR_FD_IsStyleIgnored, %i[OGRFeatureDefnH], :bool
-      attach_function :OGR_FD_SetStyleIgnored, %i[OGRFeatureDefnH bool], :void
-      attach_function :OGR_FD_GetGeomFieldCount, %i[OGRFeatureDefnH], :int
-      attach_function :OGR_FD_GetGeomFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      :OGRGeomFieldDefnH
-      attach_function :OGR_FD_GetGeomFieldIndex,
-                      %i[OGRFeatureDefnH string],
-                      :int
-      attach_function :OGR_FD_AddGeomFieldDefn,
-                      %i[OGRFeatureDefnH OGRGeomFieldDefnH],
-                      :void
-      attach_function :OGR_FD_DeleteGeomFieldDefn,
-                      %i[OGRFeatureDefnH int],
-                      FFI::OGR::Core::Err
-
-      attach_function :OGR_FD_IsSame,
-                      %i[OGRFeatureDefnH OGRFeatureDefnH],
-                      :bool
 
       # ~~~~~~~~~~~~~~~~
       # Feature-related

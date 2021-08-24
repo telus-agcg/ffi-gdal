@@ -1,0 +1,33 @@
+module FFI
+  module OGR
+    module API
+      extend FFI::Library
+
+      def self.OGR_FD_Release: (FFI::Pointer pointer) -> void
+      def self.OGR_FD_Create: (String name) -> FFI::Pointer
+      def self.OGR_FD_IsSame: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
+      def self.OGR_FD_GetName: (FFI::Pointer c_pointer) -> String
+
+      def self.OGR_FD_IsStyleIgnored: (FFI::Pointer c_pointer) -> bool
+      def self.OGR_FD_SetStyleIgnored: (FFI::Pointer c_pointer, bool ignore) -> void
+
+      def self.OGR_FD_GetFieldCount: (FFI::Pointer c_pointer) -> Integer
+      def self.OGR_FD_GetFieldIndex: (FFI::Pointer c_pointer, String field_name) -> Integer
+      def self.OGR_FD_GetFieldDefn: (FFI::Pointer c_pointer, Integer index) -> FFI::Pointer
+      def self.OGR_FD_AddFieldDefn: (FFI::Pointer c_pointer, FFI::Pointer field_definition_ptr) -> void
+      def self.OGR_FD_DeleteFieldDefn: (FFI::Pointer c_pointer, Integer index) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OGR_FD_GetGeomType: (FFI::Pointer c_pointer) -> FFI::OGR::Core::wkb_geometry_type_symbol
+      def self.OGR_FD_SetGeomType: (FFI::Pointer c_pointer, FFI::OGR::Core::wkb_geometry_type_symbol new_geometry_type) -> void
+
+      def self.OGR_FD_IsGeometryIgnored: (FFI::Pointer c_pointer) -> bool
+      def self.OGR_FD_SetGeometryIgnored: (FFI::Pointer c_pointer, bool ignore) -> void
+
+      def self.OGR_FD_GetGeomFieldCount: (FFI::Pointer c_pointer) -> Integer
+      def self.OGR_FD_GetGeomFieldDefn: (FFI::Pointer c_pointer, Integer index) -> FFI::Pointer
+      def self.OGR_FD_GetGeomFieldIndex: (FFI::Pointer c_pointer, String geometry_field_name) -> Integer
+      def self.OGR_FD_AddGeomFieldDefn: (FFI::Pointer c_pointer, FFI::Pointer geometry_field_definition_ptr) -> void
+      def self.OGR_FD_DeleteGeomFieldDefn: (FFI::Pointer c_pointer, Integer index) -> FFI::OGR::Core::ogr_err_symbol
+    end
+  end
+end

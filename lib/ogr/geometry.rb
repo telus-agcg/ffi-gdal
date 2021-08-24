@@ -3,10 +3,13 @@
 require_relative '../ogr'
 require_relative '../gdal'
 require_relative 'geometry/auto_pointer'
+require_relative 'new_borrowed'
 
 module OGR
   module Geometry
     class << self
+      include OGR::NewBorrowed
+
       # @return [OGR::Geometry]
       def build_owned_geometry
         new_geometry_ptr = yield
@@ -38,21 +41,7 @@ module OGR
 
         c_pointer.autorelease = true
 
-        factory(OGR::Geometry::AutoPointer.new(c_pointer))
-      end
-
-      # Use for instantiating an OGR geometry from a borrowed pointer (one
-      # that shouldn't be freed).
-      #
-      # @param c_pointer [FFI::Pointer]
-      # @return [OGR::Point, OGR::Curve, OGR::Surface, OGR::GeometryCollection]
-      # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
-      def new_borrowed(c_pointer)
-        raise FFI::GDAL::InvalidPointer, "Can't instantiate Geometry from null pointer" if c_pointer.null?
-
-        c_pointer.autorelease = false
-
-        factory(c_pointer).freeze
+        new(OGR::Geometry::AutoPointer.new(c_pointer))
       end
 
       # @param wkt_data [String]
@@ -159,7 +148,7 @@ module OGR
       # @return [OGR::Geometry]
       # @raise [RuntimeError]
       # rubocop: disable Metrics/CyclomaticComplexity
-      def factory(c_pointer)
+      def new(c_pointer)
         geom_type = FFI::OGR::API.OGR_G_GetGeometryType(c_pointer)
 
         klass = case geom_type

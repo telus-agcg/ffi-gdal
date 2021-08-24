@@ -15,7 +15,7 @@ RSpec.describe OGR::Feature do
   let(:date_field_def) { OGR::FieldDefinition.create('test date field', :OFTDate) }
 
   let(:feature_definition) do
-    fd = OGR::FeatureDefinition.new('test FD')
+    fd = OGR::FeatureDefinition.create('test FD')
 
     fd.add_field_definition(integer_field_def)        # 0
     fd.add_field_definition(integer_list_field_def)   # 1
@@ -34,7 +34,7 @@ RSpec.describe OGR::Feature do
   end
 
   let(:empty_feature_definition) do
-    OGR::FeatureDefinition.new('empty test FD')
+    OGR::FeatureDefinition.create('empty test FD')
   end
 
   describe '.new' do

@@ -5,15 +5,12 @@ module OGR
     module OGRFeatureMethods
       # The schema information for this layer.
       #
-      # @return [OGR::FeatureDefinition,nil]
+      # @return [OGR::FeatureDefinition]
+      # @raise [OGR::InvalidPointer]
       def definition
         feature_defn_pointer = FFI::OGR::API.OGR_L_GetLayerDefn(@c_pointer)
-        feature_defn_pointer.autorelease = false
 
-        return nil if feature_defn_pointer.null?
-
-        # This object should not be modified.
-        OGR::FeatureDefinition.new(feature_defn_pointer)
+        OGR::FeatureDefinition.new_borrowed(feature_defn_pointer)
       end
       alias feature_definition definition
 

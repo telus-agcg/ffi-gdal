@@ -136,6 +136,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `OGR::Geometry::GeometryMethods#to_multi_polygon` now raises or returns an
   `OGR::MultiPolygon`/`OGR::MultiPolygon25D`.
 
+##### OGR::FeatureDefinition
+
+- _BREAKING_: `OGR::FeatureDefinition#initialize` now only takes a pointer; creation of a new
+  FeatureDefinition is done via `.create`.
+
 ##### OGR::FieldDefinition
 
 - _BREAKING_: `OGR::FieldDefinition#initialize` now only takes a pointer; creation of a new

@@ -216,14 +216,12 @@ module OGR
       FFI::OGR::API.OGR_F_UnsetField(@c_pointer, index)
     end
 
-    # @return [OGR::FeatureDefinition,nil]
+    # @return [OGR::FeatureDefinition]
+    # @raise [OGR::InvalidPointer]
     def definition
       feature_defn_ptr = FFI::OGR::API.OGR_F_GetDefnRef(@c_pointer)
-      feature_defn_ptr.autorelease = false
 
-      return nil if feature_defn_ptr.null?
-
-      OGR::FeatureDefinition.new(feature_defn_ptr)
+      OGR::FeatureDefinition.new_borrowed(feature_defn_ptr)
     end
 
     # NOTE: Do not modify the Geometry that's returned here.

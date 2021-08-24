@@ -2,50 +2,42 @@
 
 require_relative '../gdal'
 require_relative '../ogr'
+require_relative 'new_borrowed'
 
 module OGR
   class FeatureDefinition
-    # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
+    class AutoPointer < ::FFI::AutoPointer
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
 
-      FFI::OGR::API.OGR_FD_Release(pointer)
+        FFI::OGR::API.OGR_FD_Release(pointer)
+      end
     end
+
+    # @param feature_name [String]
+    # @return [OGR::FeatureDefinition]
+    def self.create(feature_name)
+      pointer = FFI::OGR::API.OGR_FD_Create(feature_name)
+
+      raise OGR::InvalidFeatureDefinition, "Unable to create #{name} from #{feature_name}" if pointer.null?
+
+      new(OGR::FeatureDefinition::AutoPointer.new(pointer))
+    end
+
+    extend OGR::NewBorrowed
 
     # @return [FFI::Pointer] C pointer of the C FeatureDefn.
     attr_reader :c_pointer
 
-    # @param name_or_pointer [String, FFI::Pointer] When given a String, it will
-    #   create a new FeatureDefinition with that name. When given an
-    #   FFI::Pointer, the new object will simply wrap the C FeatureDefinition
-    #   at that address.
-    def initialize(name_or_pointer)
-      pointer = if name_or_pointer.is_a? String
-                  FFI::OGR::API.OGR_FD_Create(name_or_pointer)
-                else
-                  name_or_pointer
-                end
-
-      if !pointer.is_a?(FFI::Pointer) || pointer.null?
-        raise OGR::InvalidFeatureDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
-      end
-
-      @c_pointer = FFI::AutoPointer.new(pointer, FeatureDefinition.method(:release))
-      @c_pointer.autorelease = false
-    end
-
-    def release!
-      FeatureDefinition.release(@c_pointer)
-
-      @c_pointer = nil
+    # @param pointer [FFI::Pointer]
+    def initialize(pointer)
+      @c_pointer = pointer
     end
 
     # @return [String]
     def name
-      name, ptr = FFI::OGR::API.OGR_FD_GetName(@c_pointer)
-      ptr.autorelease = false
-
-      name
+      FFI::OGR::API.OGR_FD_GetName(@c_pointer).freeze
     end
 
     # @return [Integer]

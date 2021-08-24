@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'new_borrowed'
+
 module OGR
   class GeometryFieldDefinition
     class AutoPointer < ::FFI::AutoPointer
@@ -20,19 +22,7 @@ module OGR
       new(OGR::GeometryFieldDefinition::AutoPointer.new(pointer))
     end
 
-    # Use for instantiating an OGR::GeometryFieldDefinition from a borrowed
-    # pointer (one that shouldn't be freed).
-    #
-    # @param c_pointer [FFI::Pointer]
-    # @return [OGR::GeometryFieldDefinition]
-    # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
-    def self.new_borrowed(c_pointer)
-      raise FFI::GDAL::InvalidPointer, "Can't instantiate GeometryFieldDefinition from null pointer" if c_pointer.null?
-
-      c_pointer.autorelease = false
-
-      new(c_pointer).freeze
-    end
+    extend OGR::NewBorrowed
 
     # @return [OGR::GeometryFieldDefinition::AutoPointer, FFI::Pointer]
     attr_reader :c_pointer
