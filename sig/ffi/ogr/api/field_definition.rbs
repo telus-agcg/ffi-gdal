@@ -34,6 +34,10 @@ module FFI
 
       def self.OGR_GetFieldTypeName: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String
       def self.OGR_GetFieldSubTypeName: (FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type) -> String
+      def self.OGR_AreTypeSubTypeCompatible: (
+        FFI::OGR::Core::ogr_field_type_symbol field_type,
+        FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type
+      ) -> bool
     end
   end
 end

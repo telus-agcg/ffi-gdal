@@ -50,6 +50,13 @@ module OGR
       FFI::OGR::API.OGR_GetFieldSubTypeName(field_sub_type).freeze
     end
 
+    # @param field_type [FFI::OGR::Core::FieldType]
+    # @param field_sub_type [FFI::OGR::Core::FieldSubType]
+    # @return [Boolean]
+    def self.type_sub_type_compatible?(field_type, field_sub_type)
+      FFI::OGR::API.OGR_AreTypeSubTypeCompatible(field_type, field_sub_type)
+    end
+
     # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer
 

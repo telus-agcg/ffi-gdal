@@ -37,6 +37,22 @@ RSpec.describe OGR::FieldDefinition do
     end
   end
 
+  describe '.type_sub_type_compatible?' do
+    context 'compatible type and sub_type' do
+      specify do
+        expect(described_class.type_sub_type_compatible?(:OFTReal, :OFSTFloat32))
+          .to eq true
+      end
+    end
+
+    context 'incompatible type and sub_type' do
+      specify do
+        expect(described_class.type_sub_type_compatible?(:OFTDate, :OFSTBoolean))
+          .to eq false
+      end
+    end
+  end
+
   describe '#set' do
     before do
       subject.set('new name', :OFTString, width: 5, precision: 2, justification: :OJRight)

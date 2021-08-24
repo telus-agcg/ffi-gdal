@@ -8,6 +8,10 @@ module OGR
 
     def self.field_type_name: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String
     def self.field_sub_type_name: (FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type) -> String
+    def self.type_sub_type_compatible?: (
+      FFI::OGR::Core::ogr_field_type_symbol field_type,
+      FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type
+    ) -> bool
 
     def initialize: (String name) -> void | (FFI::Pointer c_pointer) -> void
     def set: (

@@ -38,6 +38,9 @@ module FFI
 
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :string
       attach_function :OGR_GetFieldSubTypeName, [FFI::OGR::Core::FieldSubType], :string
+      attach_function :OGR_AreTypeSubTypeCompatible,
+                      [FFI::OGR::Core::FieldType, FFI::OGR::Core::FieldSubType],
+                      :bool
     end
   end
 end
