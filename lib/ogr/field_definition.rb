@@ -134,7 +134,7 @@ module OGR
       FFI::OGR::API::OGR_Fld_SetSubType(@c_pointer, field_sub_type)
     end
 
-    # @return [bool]
+    # @return [Boolean]
     def nullable?
       FFI::OGR::API::OGR_Fld_IsNullable(@c_pointer)
     end
@@ -142,6 +142,13 @@ module OGR
     # @param is_nullable [bool]
     def nullable=(is_nullable)
       FFI::OGR::API::OGR_Fld_SetNullable(@c_pointer, is_nullable)
+    end
+
+    # Is the default value driver-specific?
+    #
+    # @return [Boolean]
+    def default_driver_specific?
+      FFI::OGR::API::OGR_Fld_IsDefaultDriverSpecific(@c_pointer)
     end
   end
 end

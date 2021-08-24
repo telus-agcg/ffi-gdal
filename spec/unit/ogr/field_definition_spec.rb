@@ -128,4 +128,8 @@ RSpec.describe OGR::FieldDefinition do
       expect(subject).to be_nullable
     end
   end
+
+  describe '#default_driver_specific?' do
+    specify { expect(subject).to_not be_default_driver_specific }
+  end
 end

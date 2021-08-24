@@ -33,6 +33,8 @@ module FFI
       attach_function :OGR_Fld_SetSubType, [:OGRFieldDefnH, FFI::OGR::Core::FieldSubType], :void
       attach_function :OGR_Fld_IsNullable, [:OGRFieldDefnH], :bool
       attach_function :OGR_Fld_SetNullable, %i[OGRFieldDefnH bool], :void
+
+      attach_function :OGR_Fld_IsDefaultDriverSpecific, %i[OGRFieldDefnH], :bool
     end
   end
 end
