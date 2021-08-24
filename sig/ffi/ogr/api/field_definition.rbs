@@ -31,6 +31,8 @@ module FFI
           Integer ?precision,
           FFI::OGR::Core::ogr_justification_symbol ?justification
       ) -> void
+
+      def self.OGR_GetFieldTypeName: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String
     end
   end
 end

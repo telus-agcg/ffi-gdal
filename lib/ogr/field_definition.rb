@@ -28,7 +28,7 @@ module OGR
     end
 
     # @param field_name [String]
-    # @param type [String] FFI::OGR::Core::FieldType
+    # @param type [FFI::OGR::Core::FieldType]
     # @return [OGR::FieldDefinition]
     def self.create(field_name, type)
       pointer = FFI::OGR::API.OGR_Fld_Create(field_name, type)
@@ -36,6 +36,12 @@ module OGR
       raise OGR::InvalidFieldDefinition, "Unable to create #{name} from #{field_name}" if pointer.null?
 
       new(OGR::FieldDefinition::AutoPointer.new(pointer))
+    end
+
+    # @param field_type  [FFI::OGR::Core::FieldType]
+    # @return [String]
+    def self.field_type_name(field_type)
+      FFI::OGR::API.OGR_GetFieldTypeName(field_type).freeze
     end
 
     # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.

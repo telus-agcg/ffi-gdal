@@ -5,6 +5,22 @@ require 'ogr/field_definition'
 RSpec.describe OGR::FieldDefinition do
   subject(:field) { described_class.create('test field', :OFTInteger) }
 
+  describe '.field_type_name' do
+    context 'valid field type' do
+      it 'returns a human-readable string' do
+        expect(described_class.field_type_name(:OFTInteger64List))
+          .to eq 'Integer64List'
+      end
+    end
+
+    context 'invalid field type' do
+      it 'returns a human-readable string' do
+        expect { described_class.field_type_name(:Pants) }
+          .to raise_exception ArgumentError
+      end
+    end
+  end
+
   describe '#set' do
     before do
       subject.set('new name', :OFTString, width: 5, precision: 2, justification: :OJRight)
