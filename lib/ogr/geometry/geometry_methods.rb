@@ -106,6 +106,12 @@ module OGR
         FFI::OGR::API.OGR_G_AssignSpatialReference(@c_pointer, new_spatial_ref.c_pointer)
       end
 
+      # Swaps X and Y coordinates on self.
+      #
+      def swap_xy!
+        FFI::OGR::API.OGR_G_SwapXY(@c_pointer)
+      end
+
       # Transforms the coordinates of this geometry in its current spatial
       # reference system to a new spatial reference system.  Normally this means
       # reprojecting the vectors, but it could also include datum shifts, and
@@ -287,6 +293,16 @@ module OGR
         end
       end
 
+      # @param only_edges [bool] If +true+, will returns a `MULTILINESTRING`,
+      #   otherwise it will return a `GEOMETRYCOLLECTION` containing triangular
+      #   `POLYGON`s.
+      # @param snapping_tolerance [Float, nil]
+      def delaunay_triangulation(only_edges, snapping_tolerance: 0.0)
+        OGR::Geometry.build_owned_geometry do
+          FFI::OGR::API.OGR_G_DelaunayTriangulation(@c_pointer, snapping_tolerance, only_edges)
+        end
+      end
+
       # Modify the geometry so that it has no segments longer than +max_length+.
       #
       # @param max_length [Float]
@@ -348,6 +364,19 @@ module OGR
 
         OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
           FFI::OGR::API.OGR_G_ExportToWkb(@c_pointer, byte_order, output)
+        end
+
+        output.read_bytes(size)
+      end
+
+      # @return [String]
+      # @raise [OGR::Failure]
+      def to_iso_wkb(byte_order = :wkbXDR)
+        size = wkb_size
+        output = FFI::Buffer.new_out(:uchar, size)
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to export geometry to WKB (using byte order #{byte_order})") do
+          FFI::OGR::API.OGR_G_ExportToIsoWkb(@c_pointer, byte_order, output)
         end
 
         output.read_bytes(size)

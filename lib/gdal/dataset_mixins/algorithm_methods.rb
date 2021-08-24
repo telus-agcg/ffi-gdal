@@ -29,9 +29,9 @@ module GDAL
         end
 
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-        geometries = geometries.is_a?(Array) ? geometries : [geometries]
-        burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
+        band_numbers = [band_numbers] unless band_numbers.is_a?(Array)
+        geometries = [geometries] unless geometries.is_a?(Array)
+        burn_values = [burn_values] unless burn_values.is_a?(Array)
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
         band_numbers_ptr.write_array_of_int(band_numbers)
@@ -75,13 +75,13 @@ module GDAL
       def rasterize_layers!(band_numbers, layers, burn_values,
         transformer: nil, transform_arg: nil, **options, &progress_block)
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+        band_numbers = [band_numbers] unless band_numbers.is_a?(Array)
         log "band numbers: #{band_numbers}"
 
-        layers = layers.is_a?(Array) ? layers : [layers]
+        layers = [layers] unless layers.is_a?(Array)
         log "layers: #{layers}"
 
-        burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
+        burn_values = [burn_values] unless burn_values.is_a?(Array)
         log "burn values: #{burn_values}"
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
@@ -125,7 +125,7 @@ module GDAL
         warp_options, band_numbers = 0, progress = nil)
         destination_dataset_ptr = destination_dataset.c_pointer
 
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+        band_numbers = [band_numbers] unless band_numbers.is_a?(Array)
         log "band numbers: #{band_numbers}"
 
         bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)

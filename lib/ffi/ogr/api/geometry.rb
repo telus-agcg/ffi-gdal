@@ -58,6 +58,9 @@ module FFI
       attach_function :OGR_G_ExportToWkb,
                       [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
                       FFI::OGR::Core::Err
+      attach_function :OGR_G_ExportToIsoWkb,
+                      [:OGRGeometryH, FFI::OGR::Core::WKBByteOrder, :buffer_out],
+                      FFI::OGR::Core::Err
       attach_function :OGR_G_WkbSize, %i[OGRGeometryH], :int
 
       attach_function :OGR_G_ImportFromWkt, %i[OGRGeometryH pointer], FFI::OGR::Core::Err
@@ -109,6 +112,7 @@ module FFI
       attach_function :OGR_G_SimplifyPreserveTopology,
                       %i[OGRGeometryH double],
                       :OGRGeometryH
+      attach_function :OGR_G_DelaunayTriangulation, %i[OGRGeometryH double bool], :OGRGeometryH
       attach_function :OGR_G_Segmentize, %i[OGRGeometryH double], :void
       attach_function :OGR_G_Intersects, %i[OGRGeometryH OGRGeometryH], :bool
       attach_function :OGR_G_Equals, %i[OGRGeometryH OGRGeometryH], :bool
@@ -148,6 +152,7 @@ module FFI
       attach_function :OGR_G_Centroid,
                       %i[OGRGeometryH OGRGeometryH],
                       :int
+      attach_function :OGR_G_Value, %i[OGRGeometryH double], :OGRGeometryH
       attach_function :OGR_G_Empty, %i[OGRGeometryH], :void
       attach_function :OGR_G_IsEmpty, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsValid, %i[OGRGeometryH], :bool
@@ -183,6 +188,7 @@ module FFI
       attach_function :OGR_G_SetPoints,
                       %i[OGRGeometryH int pointer int pointer int pointer int],
                       :void
+      attach_function :OGR_G_SwapXY, %i[OGRGeometryH], :void
 
       attach_function :OGR_G_GetGeometryCount, %i[OGRGeometryH], :int
       attach_function :OGR_G_GetGeometryRef, %i[OGRGeometryH int], :OGRGeometryH
@@ -194,6 +200,9 @@ module FFI
       attach_function :OGRBuildPolygonFromEdges,
                       %i[OGRGeometryH bool bool double pointer],
                       :OGRGeometryH
+
+      attach_function :OGRSetNonLinearGeometriesEnabledFlag, %i[bool], :void
+      attach_function :OGRGetNonLinearGeometriesEnabledFlag, [], :bool
     end
   end
 end

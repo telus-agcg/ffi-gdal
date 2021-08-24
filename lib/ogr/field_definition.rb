@@ -28,7 +28,7 @@ module OGR
     end
 
     # @param field_name [String]
-    # @param type [String] FFI::OGR::Core::FieldType
+    # @param type [FFI::OGR::Core::FieldType]
     # @return [OGR::FieldDefinition]
     def self.create(field_name, type)
       pointer = FFI::OGR::API.OGR_Fld_Create(field_name, type)
@@ -36,6 +36,25 @@ module OGR
       raise OGR::InvalidFieldDefinition, "Unable to create #{name} from #{field_name}" if pointer.null?
 
       new(OGR::FieldDefinition::AutoPointer.new(pointer))
+    end
+
+    # @param field_type [FFI::OGR::Core::FieldType]
+    # @return [String]
+    def self.field_type_name(field_type)
+      FFI::OGR::API.OGR_GetFieldTypeName(field_type).freeze
+    end
+
+    # @param field_type [FFI::OGR::Core::FieldSubType]
+    # @return [String]
+    def self.field_sub_type_name(field_sub_type)
+      FFI::OGR::API.OGR_GetFieldSubTypeName(field_sub_type).freeze
+    end
+
+    # @param field_type [FFI::OGR::Core::FieldType]
+    # @param field_sub_type [FFI::OGR::Core::FieldSubType]
+    # @return [Boolean]
+    def self.type_sub_type_compatible?(field_type, field_sub_type)
+      FFI::OGR::API.OGR_AreTypeSubTypeCompatible(field_type, field_sub_type)
     end
 
     # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.
@@ -122,6 +141,33 @@ module OGR
     # @param new_value [Boolean]
     def ignore=(new_value)
       FFI::OGR::API.OGR_Fld_SetIgnored(@c_pointer, new_value)
+    end
+
+    # @return [FFI::OGR::FieldSubType]
+    def sub_type
+      FFI::OGR::API::OGR_Fld_GetSubType(@c_pointer)
+    end
+
+    # @param field_sub_type [FFI::OGR::FieldSubType]
+    def sub_type=(field_sub_type)
+      FFI::OGR::API::OGR_Fld_SetSubType(@c_pointer, field_sub_type)
+    end
+
+    # @return [Boolean]
+    def nullable?
+      FFI::OGR::API::OGR_Fld_IsNullable(@c_pointer)
+    end
+
+    # @param is_nullable [bool]
+    def nullable=(is_nullable)
+      FFI::OGR::API::OGR_Fld_SetNullable(@c_pointer, is_nullable)
+    end
+
+    # Is the default value driver-specific?
+    #
+    # @return [Boolean]
+    def default_driver_specific?
+      FFI::OGR::API::OGR_Fld_IsDefaultDriverSpecific(@c_pointer)
     end
   end
 end

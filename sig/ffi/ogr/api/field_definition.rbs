@@ -17,6 +17,11 @@ module FFI
       def self.OGR_Fld_SetPrecision: (FFI::Pointer field_def_pointer, Integer precision) -> void
       def self.OGR_Fld_IsIgnored: (FFI::Pointer field_def_pointer) -> bool
       def self.OGR_Fld_SetIgnored: (FFI::Pointer field_def_pointer, bool ignore) -> void
+      def self.OGR_Fld_GetSubType: (FFI::Pointer field_def_pointer) -> FFI::OGR::Core::ogr_field_sub_type_symbol
+      def self.OGR_Fld_SetSubType: (FFI::Pointer field_def_pointer, FFI::OGR::Core::ogr_field_sub_type_symbol) -> void
+      def self.OGR_Fld_IsNullable: (FFI::Pointer field_def_pointer) -> bool
+      def self.OGR_Fld_SetNullable: (FFI::Pointer field_def_pointer, bool is_nullable) -> void
+      def self.OGR_Fld_IsDefaultDriverSpecific: (FFI::Pointer field_def_pointer) -> bool
 
       def self.OGR_Fld_Set: (
           FFI::Pointer field_def_pointer,
@@ -25,7 +30,14 @@ module FFI
           Integer ?width,
           Integer ?precision,
           FFI::OGR::Core::ogr_justification_symbol ?justification
-          ) -> void
+      ) -> void
+
+      def self.OGR_GetFieldTypeName: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String
+      def self.OGR_GetFieldSubTypeName: (FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type) -> String
+      def self.OGR_AreTypeSubTypeCompatible: (
+        FFI::OGR::Core::ogr_field_type_symbol field_type,
+        FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type
+      ) -> bool
     end
   end
 end

@@ -19,7 +19,7 @@ module OGR
     extend _NewBorrowed[geometry_class]
     extend _NewOwned[geometry_class]
 
-    def self.build_owned_geometry: { () -> FFI::Pointer } -> (geometry_class | nil)
+    def self.build_owned_geometry: { () -> FFI::Pointer } -> geometry_class
     def self.create: (FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> OGR::Geometry::AutoPointer
 
     def self.create_from_wkt: (
@@ -36,5 +36,8 @@ module OGR
     def self.to_wkt: (FFI::Pointer geometry_handle) -> String
 
     def self.factory: (FFI::Pointer c_pointer) -> geometry_class
+
+    def self.non_linear_geometries_enabled=: (bool flag) -> void
+    def self.non_linear_geometries_enabled?: -> bool
   end
 end

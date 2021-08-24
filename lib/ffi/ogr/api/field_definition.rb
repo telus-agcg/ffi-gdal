@@ -29,6 +29,18 @@ module FFI
                       :void
       attach_function :OGR_Fld_IsIgnored, %i[OGRFieldDefnH], :bool
       attach_function :OGR_Fld_SetIgnored, %i[OGRFieldDefnH bool], :void
+      attach_function :OGR_Fld_GetSubType, [:OGRFieldDefnH], FFI::OGR::Core::FieldSubType
+      attach_function :OGR_Fld_SetSubType, [:OGRFieldDefnH, FFI::OGR::Core::FieldSubType], :void
+      attach_function :OGR_Fld_IsNullable, [:OGRFieldDefnH], :bool
+      attach_function :OGR_Fld_SetNullable, %i[OGRFieldDefnH bool], :void
+
+      attach_function :OGR_Fld_IsDefaultDriverSpecific, %i[OGRFieldDefnH], :bool
+
+      attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :string
+      attach_function :OGR_GetFieldSubTypeName, [FFI::OGR::Core::FieldSubType], :string
+      attach_function :OGR_AreTypeSubTypeCompatible,
+                      [FFI::OGR::Core::FieldType, FFI::OGR::Core::FieldSubType],
+                      :bool
     end
   end
 end

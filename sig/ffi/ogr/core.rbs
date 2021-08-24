@@ -25,6 +25,10 @@ module FFI
         | :OFTInteger64 | :OFTInteger64List
       )
 
+      type ogr_field_sub_type_symbol = (
+        :OFSTNone | :OFSTBoolean | :OFSTInt16 | :OFSTFloat32 | :OFSTJSON | :OFSTUUID
+      )
+
       type ogr_justification_symbol = (:OJUndefined | :OJLeft | :OJRight)
 
       type wkb_geometry_type_symbol = (

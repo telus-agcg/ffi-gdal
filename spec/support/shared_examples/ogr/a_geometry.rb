@@ -115,6 +115,13 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
     end
   end
 
+  describe '#swap_xy!' do
+    it 'does not raise' do
+      pending 'Update to gdal >=2.3 in CI'
+      subject.swap_xy!
+    end
+  end
+
   describe '#dump_readable' do
     let(:output_file_path) { 'tmp/dump_readable_geometry_test' }
 
@@ -392,6 +399,22 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
     end
   end
 
+  describe '#delaunay_triangulation' do
+    context 'only_edges is true' do
+      it 'returns a new geometry' do
+        expect(subject.delaunay_triangulation(true)).to be_a OGR::Geometry::GeometryMethods
+        expect(subject.delaunay_triangulation(true, snapping_tolerance: 0.1)).to be_a OGR::Geometry::GeometryMethods
+      end
+    end
+
+    context 'only_edges is false' do
+      it 'returns a new geometry' do
+        expect(subject.delaunay_triangulation(false)).to be_a OGR::Geometry::GeometryMethods
+        expect(subject.delaunay_triangulation(false, snapping_tolerance: 1.0)).to be_a OGR::Geometry::GeometryMethods
+      end
+    end
+  end
+
   describe '#segmentize!' do
     it 'updates the geometry and returns self' do
       c_pointer_before = subject.c_pointer
@@ -444,6 +467,18 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
         expect { subject.to_wkb }.to raise_exception OGR::UnsupportedOperation
       else
         wkb = subject.to_wkb
+        expect(wkb).to be_a String
+        expect(wkb).to_not be_empty
+      end
+    end
+  end
+
+  describe '#to_iso_wkb' do
+    it 'returns some binary String data' do
+      if subject.name == 'LINEARRING'
+        expect { subject.to_iso_wkb }.to raise_exception OGR::UnsupportedOperation
+      else
+        wkb = subject.to_iso_wkb
         expect(wkb).to be_a String
         expect(wkb).to_not be_empty
       end

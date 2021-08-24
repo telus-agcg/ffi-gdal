@@ -25,9 +25,6 @@ module FFI
       typedef :pointer, :OGRStyleMgrH
       typedef :pointer, :OGRStyleToolH
 
-      # wrap
-      attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :strptr
-
       # ~~~~~~~~~~~~~~~~
       # Feature Definition-related
       # ~~~~~~~~~~~~~~~~

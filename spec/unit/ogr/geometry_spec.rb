@@ -706,4 +706,13 @@ RSpec.describe OGR::Geometry do
       expect(json2).to eq g2.to_geo_json_ex(coordinate_precision: '20')
     end
   end
+
+  describe '.non_linear_geometries_enabled=, .non_linear_geometries_enabled?' do
+    specify do
+      expect(described_class.non_linear_geometries_enabled?).to eq true
+      described_class.non_linear_geometries_enabled = false
+      expect(described_class.non_linear_geometries_enabled?).to eq false
+      described_class.non_linear_geometries_enabled = true
+    end
+  end
 end

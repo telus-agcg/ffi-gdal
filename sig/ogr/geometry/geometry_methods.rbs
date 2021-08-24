@@ -57,6 +57,7 @@ module OGR
       def to_iso_wkt: -> String
       def to_kml: (?String altitude_mode) -> String
       def to_wkb: (?FFI::OGR::Core::wkb_byte_order_symbol byte_order) -> String
+      def to_iso_wkb: (?FFI::OGR::Core::wkb_byte_order_symbol byte_order) -> String
       def wkb_size: -> Integer
 
       #---------------------------
@@ -94,7 +95,8 @@ module OGR
       def close_rings!: -> void
       def distance_to: (OGR::Geometry::geometry_class other_geometry) -> Float
       def segmentize!: (FFI::floatable max_length) -> self
-      def simplify: (FFI::floatable distance_tolerance, ?preserve_topology: bool) -> void
+      def simplify: (FFI::floatable distance_tolerance, ?preserve_topology: bool) -> OGR::Geometry::geometry_class
+      def delaunay_triangulation: (bool only_edges, ?snapping_tolerance: FFI::floatable) -> OGR::Geometry::geometry_class
       def transform!: (OGR::CoordinateTransformation coordinate_transformation) -> void
       def transform_to!: (OGR::SpatialReference new_spatial_reference) -> void
 

@@ -7,11 +7,11 @@ require_relative 'geometry/auto_pointer'
 module OGR
   module Geometry
     class << self
-      # @return [OGR::Geometry, nil]
+      # @return [OGR::Geometry]
       def build_owned_geometry
         new_geometry_ptr = yield
         if new_geometry_ptr.nil? || new_geometry_ptr.null? || (defined?(@c_pointer) && new_geometry_ptr == @c_pointer)
-          return
+          raise FFI::GDAL::InvalidPointer, '.build_owned_geometry expected a valid pointer'
         end
 
         new_owned(new_geometry_ptr)
@@ -135,6 +135,20 @@ module OGR
           end
         end
       end
+
+      # Set flag to enable/disable returning non-linear geometries.
+      #
+      # @param flag [Boolean]
+      def non_linear_geometries_enabled=(flag)
+        FFI::OGR::API.OGRSetNonLinearGeometriesEnabledFlag(flag)
+      end
+      alias set_non_linear_geometries_enabled_flag non_linear_geometries_enabled=
+
+      # @return [Boolean] +true+ if non-linear geometries might be returned.
+      def non_linear_geometries_enabled?
+        FFI::OGR::API.OGRGetNonLinearGeometriesEnabledFlag
+      end
+      alias get_non_linear_geometries_enabled_flag non_linear_geometries_enabled?
 
       private
 

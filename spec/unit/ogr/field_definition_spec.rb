@@ -5,6 +5,54 @@ require 'ogr/field_definition'
 RSpec.describe OGR::FieldDefinition do
   subject(:field) { described_class.create('test field', :OFTInteger) }
 
+  describe '.field_type_name' do
+    context 'valid field type' do
+      it 'returns a human-readable string' do
+        expect(described_class.field_type_name(:OFTInteger64List))
+          .to eq 'Integer64List'
+      end
+    end
+
+    context 'invalid field type' do
+      it 'returns a human-readable string' do
+        expect { described_class.field_type_name(:Pants) }
+          .to raise_exception ArgumentError
+      end
+    end
+  end
+
+  describe '.field_sub_type_name' do
+    context 'valid field sub_type' do
+      it 'returns a human-readable string' do
+        expect(described_class.field_sub_type_name(:OFSTFloat32))
+          .to eq 'Float32'
+      end
+    end
+
+    context 'invalid field sub_type' do
+      it 'returns a human-readable string' do
+        expect { described_class.field_sub_type_name(:Pants) }
+          .to raise_exception ArgumentError
+      end
+    end
+  end
+
+  describe '.type_sub_type_compatible?' do
+    context 'compatible type and sub_type' do
+      specify do
+        expect(described_class.type_sub_type_compatible?(:OFTReal, :OFSTFloat32))
+          .to eq true
+      end
+    end
+
+    context 'incompatible type and sub_type' do
+      specify do
+        expect(described_class.type_sub_type_compatible?(:OFTDate, :OFSTBoolean))
+          .to eq false
+      end
+    end
+  end
+
   describe '#set' do
     before do
       subject.set('new name', :OFTString, width: 5, precision: 2, justification: :OJRight)
@@ -113,5 +161,23 @@ RSpec.describe OGR::FieldDefinition do
       subject.ignore = true
       expect(subject).to be_ignored
     end
+  end
+
+  describe '#sub_type= + #sub_type' do
+    it 'assigns the value' do
+      subject.sub_type = :OFSTBoolean
+      expect(subject.sub_type).to eq :OFSTBoolean
+    end
+  end
+
+  describe '#nullable= + #nullable?' do
+    it 'assigns the value' do
+      subject.nullable = true
+      expect(subject).to be_nullable
+    end
+  end
+
+  describe '#default_driver_specific?' do
+    specify { expect(subject).to_not be_default_driver_specific }
   end
 end
