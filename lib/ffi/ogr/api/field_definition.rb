@@ -37,6 +37,7 @@ module FFI
       attach_function :OGR_Fld_IsDefaultDriverSpecific, %i[OGRFieldDefnH], :bool
 
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :string
+      attach_function :OGR_GetFieldSubTypeName, [FFI::OGR::Core::FieldSubType], :string
     end
   end
 end

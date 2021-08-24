@@ -38,10 +38,16 @@ module OGR
       new(OGR::FieldDefinition::AutoPointer.new(pointer))
     end
 
-    # @param field_type  [FFI::OGR::Core::FieldType]
+    # @param field_type [FFI::OGR::Core::FieldType]
     # @return [String]
     def self.field_type_name(field_type)
       FFI::OGR::API.OGR_GetFieldTypeName(field_type).freeze
+    end
+
+    # @param field_type [FFI::OGR::Core::FieldSubType]
+    # @return [String]
+    def self.field_sub_type_name(field_sub_type)
+      FFI::OGR::API.OGR_GetFieldSubTypeName(field_sub_type).freeze
     end
 
     # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.

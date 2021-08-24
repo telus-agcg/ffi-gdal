@@ -6,6 +6,9 @@ module OGR
 
     include _HasAutoPointer[OGR::FieldDefinition::AutoPointer]
 
+    def self.field_type_name: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String
+    def self.field_sub_type_name: (FFI::OGR::Core::ogr_field_sub_type_symbol field_sub_type) -> String
+
     def initialize: (String name) -> void | (FFI::Pointer c_pointer) -> void
     def set: (
       String field_name,

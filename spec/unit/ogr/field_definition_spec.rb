@@ -21,6 +21,22 @@ RSpec.describe OGR::FieldDefinition do
     end
   end
 
+  describe '.field_sub_type_name' do
+    context 'valid field sub_type' do
+      it 'returns a human-readable string' do
+        expect(described_class.field_sub_type_name(:OFSTFloat32))
+          .to eq 'Float32'
+      end
+    end
+
+    context 'invalid field sub_type' do
+      it 'returns a human-readable string' do
+        expect { described_class.field_sub_type_name(:Pants) }
+          .to raise_exception ArgumentError
+      end
+    end
+  end
+
   describe '#set' do
     before do
       subject.set('new name', :OFTString, width: 5, precision: 2, justification: :OJRight)
