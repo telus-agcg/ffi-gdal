@@ -28,6 +28,8 @@ module FFI
                       :void
       attach_function :OGR_GFld_IsIgnored, %i[OGRGeomFieldDefnH], :bool
       attach_function :OGR_GFld_SetIgnored, %i[OGRGeomFieldDefnH bool], :void
+      attach_function :OGR_GFld_IsNullable, [:OGRGeomFieldDefnH], :bool
+      attach_function :OGR_GFld_SetNullable, %i[OGRGeomFieldDefnH bool], :void
     end
   end
 end

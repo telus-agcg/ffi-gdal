@@ -18,5 +18,7 @@ module OGR
     def spatial_reference=: (OGR::SpatialReference new_spatial_reference) -> void
     def ignored?: -> bool
     def ignored=: (bool new_value) -> void
+    def nullable?: -> bool
+    def nullable=: (bool new_value) -> void
   end
 end

@@ -98,5 +98,15 @@ module OGR
     def ignore=(value)
       FFI::OGR::API.OGR_GFld_SetIgnored(@c_pointer, value)
     end
+
+    # @return [Boolean]
+    def nullable?
+      FFI::OGR::API::OGR_GFld_IsNullable(@c_pointer)
+    end
+
+    # @param is_nullable [bool]
+    def nullable=(is_nullable)
+      FFI::OGR::API::OGR_GFld_SetNullable(@c_pointer, is_nullable)
+    end
   end
 end
