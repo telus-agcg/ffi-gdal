@@ -5,7 +5,9 @@ module OGR
     end
 
     extend _NewBorrowed[instance]
+    include _HasPointer
 
     def initialize: (OGR::FeatureDefinition::AutoPointer | FFI::Pointer pointer) -> void
+    def name: -> String
   end
 end

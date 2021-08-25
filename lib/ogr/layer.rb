@@ -93,10 +93,9 @@ module OGR
 
     # @return [OGR::StyleTable, nil]
     def style_table
-      style_table_pointer = FFI::OGR::API.OGR_L_GetStyleTable(@c_pointer)
-      return nil if style_table_pointer.null?
-
-      OGR::StyleTable.new(style_table_pointer)
+      OGR::StyleTable.new_borrowed(FFI::OGR::API.OGR_L_GetStyleTable(@c_pointer))
+    rescue FFI::GDAL::InvalidPointer
+      nil
     end
 
     # @param new_style_table [OGR::StyleTable, FFI::pointer]

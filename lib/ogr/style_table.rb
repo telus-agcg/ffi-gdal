@@ -2,36 +2,36 @@
 
 require_relative '../gdal'
 require_relative '../ogr'
+require_relative 'new_borrowed'
 
 module OGR
   class StyleTable
-    # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
+    class AutoPointer < FFI::AutoPointer
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
 
-      FFI::OGR::API.OGR_STBL_Destroy(pointer)
+        FFI::OGR::API.OGR_STBL_Destroy(pointer)
+      end
     end
+
+    # @return [OGR::StyleTable]
+    def self.create
+      pointer = FFI::OGR::API.OGR_STBL_Create
+
+      raise OGR::StyleTable, "Unable to create #{name}" if pointer.null?
+
+      new(OGR::StyleTable::AutoPointer.new(pointer))
+    end
+
+    extend OGR::NewBorrowed
 
     # @return [FFI::Pointer] C pointer to the C style table.
     attr_reader :c_pointer
 
     # @param [FFI::Pointer] c_pointer
-    def initialize(c_pointer = nil)
-      @c_pointer = if c_pointer
-                     c_pointer
-                   else
-                     pointer = FFI::OGR::API.OGR_STBL_Create
-                     pointer.autorelease = false
-                     FFI::AutoPointer.new(pointer, StyleTable.method(:release))
-                   end
-
-      raise 'Unable to create StyleTable' if @c_pointer.null?
-    end
-
-    def destroy!
-      StyleTable.release(@c_pointer)
-
-      @c_pointer = nil
+    def initialize(c_pointer)
+      @c_pointer = c_pointer
     end
 
     # @param name [String] Name of the style.

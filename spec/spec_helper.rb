@@ -11,6 +11,7 @@ end
 
 $LOAD_PATH.unshift File.expand_path('lib', __dir__)
 require 'ffi-gdal'
+require 'ffi/gdal/gdal'
 
 Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 

@@ -12,7 +12,7 @@ RSpec.describe OGR::Layer do
   end
 
   describe '#create_feature' do
-    let(:feature) { OGR::Feature.new(subject.feature_definition) }
+    let(:feature) { OGR::Feature.create(subject.feature_definition) }
 
     context 'creation is not supported' do
       before { expect(subject).to receive(:test_capability).with('SequentialWrite').and_return(false) }
@@ -46,7 +46,7 @@ RSpec.describe OGR::Layer do
       end
 
       context 'has a feature' do
-        before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+        before { subject.create_feature(OGR::Feature.create(subject.feature_definition)) }
 
         it 'returns nil' do
           expect(subject.delete_feature(0)).to be_nil
@@ -78,7 +78,7 @@ RSpec.describe OGR::Layer do
       end
 
       context 'has a feature' do
-        before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
+        before { subject.create_feature(OGR::Feature.create(subject.feature_definition)) }
 
         it 'returns an OGR::Feature' do
           expect(subject.feature(0)).to be_a OGR::Feature
@@ -92,7 +92,7 @@ RSpec.describe OGR::Layer do
       before { expect(subject).to receive(:test_capability).with('RandomWrite').and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }
+        expect { subject.feature = OGR::Feature.create(subject.feature_definition) }
           .to raise_exception OGR::UnsupportedOperation
       end
     end
@@ -112,7 +112,7 @@ RSpec.describe OGR::Layer do
     end
 
     context 'has a feature' do
-      before { layer.create_feature(OGR::Feature.new(layer.feature_definition)) }
+      before { layer.create_feature(OGR::Feature.create(layer.feature_definition)) }
       subject { layer.next_feature }
       after { subject.destroy! }
 
@@ -132,11 +132,11 @@ RSpec.describe OGR::Layer do
 
     context 'features exist' do
       let!(:feature1) do
-        layer.create_feature(OGR::Feature.new(layer.feature_definition))
+        layer.create_feature(OGR::Feature.create(layer.feature_definition))
       end
 
       let!(:feature2) do
-        layer.create_feature(OGR::Feature.new(layer.feature_definition))
+        layer.create_feature(OGR::Feature.create(layer.feature_definition))
       end
 
       subject do

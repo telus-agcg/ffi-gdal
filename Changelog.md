@@ -241,6 +241,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
 
+#### OGR::Feature
+
+- Removed `#set_field_directly`
+- Removed `#set_geometry_field_directly`
+- Removed `#set_style_string_directly`
+- Removed `#set_style_table_directly`
+
 ## [1.0.0.beta11] - 2020-06-02
 
 ### Fixed

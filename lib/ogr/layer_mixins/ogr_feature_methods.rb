@@ -21,7 +21,7 @@ module OGR
       #   feature.set_field_integer(123)
       #   layer.create_feature(feature)
       #
-      # @param feature [OGR::Feature] [description]
+      # @param feature [OGR::Feature]
       # @raise [OGR::Failure]
       def create_feature(feature)
         unless test_capability('SequentialWrite')

@@ -13,6 +13,7 @@ target :lib do
         'lib/ogr/curve.rb',
         'lib/ogr/curve_polygon.rb',
         'lib/ogr/feature_definition.rb',
+        'lib/ogr/feature.rb',
         'lib/ogr/field_definition.rb',
         'lib/ogr/geometry/',
         'lib/ogr/geometry.rb',
