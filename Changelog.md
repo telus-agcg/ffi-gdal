@@ -141,6 +141,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - _BREAKING_: `OGR::FeatureDefinition#initialize` now only takes a pointer; creation of a new
   FeatureDefinition is done via `.create`.
 
+##### OGR::Feature
+
+- _BREAKING_: `OGR::Feature#initialize` now only takes a pointer; creation of a new Featureis done
+  via `.create`.
+
 ##### OGR::FieldDefinition
 
 - _BREAKING_: `OGR::FieldDefinition#initialize` now only takes a pointer; creation of a new

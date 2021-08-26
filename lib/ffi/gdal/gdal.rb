@@ -9,7 +9,7 @@ module FFI
   module GDAL
     module GDAL
       extend ::FFI::Library
-      @ffi_libs = FFI::GDAL.loaded_ffi_libs
+      @ffi_libs ||= FFI::GDAL.loaded_ffi_libs
 
       # ----------------------------------------------------------------
       # Enums
