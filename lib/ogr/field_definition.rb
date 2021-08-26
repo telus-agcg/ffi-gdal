@@ -2,6 +2,7 @@
 
 require 'ffi'
 require_relative '../ogr'
+require_relative 'new_borrowed'
 
 module OGR
   class FieldDefinition
@@ -12,19 +13,6 @@ module OGR
 
         FFI::OGR::API.OGR_Fld_Destroy(pointer)
       end
-    end
-
-    # Use for instantiating an OGR::FieldDefinition from a borrowed pointer (one
-    # that shouldn't be freed).
-    #
-    # @param c_pointer [String, FFI::Pointer]
-    # @return [OGR::FieldDefinition]
-    def self.new_borrowed(c_pointer)
-      raise OGR::InvalidPointer if c_pointer.null?
-
-      c_pointer.autorelease = false
-
-      new(c_pointer)
     end
 
     # @param field_name [String]
@@ -56,6 +44,8 @@ module OGR
     def self.type_sub_type_compatible?(field_type, field_sub_type)
       FFI::OGR::API.OGR_AreTypeSubTypeCompatible(field_type, field_sub_type)
     end
+
+    extend OGR::NewBorrowed
 
     # @return [FFI::Pointer, OGR::FieldDefinition::AutoPointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer

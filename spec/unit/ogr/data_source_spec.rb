@@ -181,7 +181,7 @@ RSpec.describe OGR::DataSource do
   describe '#style_table=' do
     context 'no style table associated' do
       let(:style_table) do
-        st = OGR::StyleTable.new
+        st = OGR::StyleTable.create
         st.add_style('test', '#123456')
         st
       end

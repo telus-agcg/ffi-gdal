@@ -1,0 +1,13 @@
+module OGR
+  class FeatureDefinition
+    class AutoPointer < ::FFI::AutoPointer
+      extend _AutoPointerRelease
+    end
+
+    extend _NewBorrowed[instance]
+    include _HasPointer
+
+    def initialize: (OGR::FeatureDefinition::AutoPointer | FFI::Pointer pointer) -> void
+    def name: -> String
+  end
+end

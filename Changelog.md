@@ -136,6 +136,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `OGR::Geometry::GeometryMethods#to_multi_polygon` now raises or returns an
   `OGR::MultiPolygon`/`OGR::MultiPolygon25D`.
 
+##### OGR::FeatureDefinition
+
+- _BREAKING_: `OGR::FeatureDefinition#initialize` now only takes a pointer; creation of a new
+  FeatureDefinition is done via `.create`.
+
+##### OGR::Feature
+
+- _BREAKING_: `OGR::Feature#initialize` now only takes a pointer; creation of a new Featureis done
+  via `.create`.
+
 ##### OGR::FieldDefinition
 
 - _BREAKING_: `OGR::FieldDefinition#initialize` now only takes a pointer; creation of a new
@@ -235,6 +245,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - [DEV-361] Move extension methods to ffi-gdal-extensions.
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
+
+#### OGR::Feature
+
+- Removed `#set_field_directly`
+- Removed `#set_geometry_field_directly`
+- Removed `#set_style_string_directly`
+- Removed `#set_style_table_directly`
 
 ## [1.0.0.beta11] - 2020-06-02
 

@@ -1,0 +1,6 @@
+module OGR
+  module InternalHelpers
+    def _format_time_zone_for_ogr: (String ?ruby_time_zone) -> Integer
+    def _format_time_zone_for_ruby: (Integer ogr_time_zone) -> String?
+  end
+end

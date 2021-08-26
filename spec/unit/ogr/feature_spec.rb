@@ -15,7 +15,7 @@ RSpec.describe OGR::Feature do
   let(:date_field_def) { OGR::FieldDefinition.create('test date field', :OFTDate) }
 
   let(:feature_definition) do
-    fd = OGR::FeatureDefinition.new('test FD')
+    fd = OGR::FeatureDefinition.create('test FD')
 
     fd.add_field_definition(integer_field_def)        # 0
     fd.add_field_definition(integer_list_field_def)   # 1
@@ -34,20 +34,18 @@ RSpec.describe OGR::Feature do
   end
 
   let(:empty_feature_definition) do
-    OGR::FeatureDefinition.new('empty test FD')
+    OGR::FeatureDefinition.create('empty test FD')
   end
 
-  describe '.new' do
+  describe '.create' do
     context 'param is not a FeatureDefinition or pointer to a FeatureDefinition' do
       it 'raises an OGR::InvalidFeature' do
-        expect do
-          described_class.new('not a pointer')
-        end.to raise_exception OGR::InvalidFeature
+        expect { described_class.create('not a pointer') }.to raise_exception NoMethodError
       end
     end
   end
 
-  subject(:feature) { described_class.new(feature_definition) }
+  subject(:feature) { described_class.create(feature_definition) }
 
   describe '#clone' do
     it 'returns a new Feature' do

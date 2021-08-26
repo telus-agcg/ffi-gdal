@@ -6,7 +6,7 @@ require_relative 'ogr/exceptions'
 require_relative 'ogr/error_handling'
 
 module OGR
-  include InternalHelpers
+  extend InternalHelpers
 
   FFI::OGR::API.OGRRegisterAll
 

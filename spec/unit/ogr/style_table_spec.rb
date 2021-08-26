@@ -3,6 +3,8 @@
 require 'ogr/style_table'
 
 RSpec.describe OGR::StyleTable do
+  subject { described_class.create }
+
   describe '#add_style + #find' do
     it '#add_style returns true' do
       expect(subject.add_style('test style', '#ffffff')).to eq true
@@ -28,7 +30,7 @@ RSpec.describe OGR::StyleTable do
 
     context 'with styles' do
       subject do
-        st = described_class.new
+        st = described_class.create
         st.add_style('test style', '12345')
         st
       end
@@ -71,7 +73,7 @@ RSpec.describe OGR::StyleTable do
 
   describe '#reset_style_string_reading' do
     subject do
-      st = described_class.new
+      st = described_class.create
       st.add_style('style1', '12345')
       st.add_style('style2', '67890')
       st

@@ -8,12 +8,14 @@ require_relative 'spatial_reference_mixins/importers'
 require_relative 'spatial_reference_mixins/morphers'
 require_relative 'spatial_reference_mixins/parameter_getter_setters'
 require_relative 'spatial_reference_mixins/type_checks'
+require_relative 'new_borrowed'
 
 module OGR
   # Represents a geographic coordinate system.  There are two primary types:
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    extend OGR::NewBorrowed
     include GDAL::Logger
     include SpatialReferenceMixins::CoordinateSystemGetterSetters
     include SpatialReferenceMixins::Exporters
@@ -44,20 +46,6 @@ module OGR
     # Cleans up cached SRS-related memory.
     def self.cleanup
       FFI::OGR::SRSAPI.OSRCleanup
-    end
-
-    # Use for instantiating an SpatialReference from a borrowed pointer (one
-    # that shouldn't be freed).
-    #
-    # @param c_pointer [FFI::Pointer]
-    # @return [OGR::Point, OGR::Curve, OGR::Surface, OGR::GeometryCollection]
-    # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
-    def self.new_borrowed(c_pointer)
-      raise FFI::GDAL::InvalidPointer, "Can't instantiate SRS from null pointer" if c_pointer.null?
-
-      c_pointer.autorelease = false
-
-      new(c_pointer).freeze
     end
 
     # This static method will destroy a OGRSpatialReference. It is equivalent

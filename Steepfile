@@ -5,11 +5,15 @@ target :lib do
   signature 'sig', 'sig-gems'
 
   check 'lib/ffi/ogr/api/',
-        'lib/ogr/circular_string*.rb',
-        'lib/ogr/compound_curve*.rb',
+        'lib/ogr/circular_string.rb',
+        'lib/ogr/circular_string_25d.rb',
+        'lib/ogr/compound_curve.rb',
+        'lib/ogr/compound_curve_25d.rb',
         'lib/ogr/coordinate_transformation.rb',
         'lib/ogr/curve.rb',
         'lib/ogr/curve_polygon.rb',
+        'lib/ogr/feature_definition.rb',
+        'lib/ogr/feature.rb',
         'lib/ogr/field_definition.rb',
         'lib/ogr/geometry/',
         'lib/ogr/geometry.rb',

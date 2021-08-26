@@ -4,10 +4,10 @@ module OGR
       extend _AutoPointerRelease
     end
 
+    extend _NewBorrowed[instance]
     include _HasAutoPointer[OGR::GeometryFieldDefinition::AutoPointer]
 
     def self.create: (String field_name, FFI::OGR::Core::wkb_geometry_type_symbol field_type) -> OGR::GeometryFieldDefinition
-    def self.new_borrowed: (FFI::Pointer geometry_field_def_pointer) -> OGR::GeometryFieldDefinition
 
     def initialize: (OGR::GeometryFieldDefinition::AutoPointer | FFI::Pointer c_pointer) -> void
     def name: -> String
@@ -18,5 +18,7 @@ module OGR
     def spatial_reference=: (OGR::SpatialReference new_spatial_reference) -> void
     def ignored?: -> bool
     def ignored=: (bool new_value) -> void
+    def nullable?: -> bool
+    def nullable=: (bool new_value) -> void
   end
 end

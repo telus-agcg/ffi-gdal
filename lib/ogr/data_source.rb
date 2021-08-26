@@ -209,26 +209,15 @@ module OGR
 
     # @return [OGR::StyleTable, nil]
     def style_table
-      style_table_ptr = FFI::OGR::API.OGR_DS_GetStyleTable(@c_pointer)
-      style_table_ptr.autorelease = false
-
-      return nil if style_table_ptr.null?
-
-      OGR::StyleTable.new(style_table_ptr)
+      OGR::StyleTable.new_borrowed(FFI::OGR::API.OGR_DS_GetStyleTable(@c_pointer))
+    rescue FFI::GDAL::InvalidPointer
+      nil
     end
 
-    # @param new_style_table [OGR::StyleTable, FFI::Pointer]
+    # @param new_style_table [OGR::StyleTable]
     # @raise [FFI::GDAL::InvalidPointer]
     def style_table=(new_style_table)
-      new_style_table_ptr = GDAL._pointer(new_style_table)
-
-      FFI::OGR::API.OGR_DS_SetStyleTable(@c_pointer, new_style_table_ptr)
-
-      if new_style_table.instance_of? OGR::StyleTable
-        new_style_table
-      else
-        OGR::StyleTable.new(new_style_table_ptr)
-      end
+      FFI::OGR::API.OGR_DS_SetStyleTable(@c_pointer, new_style_table.c_pointer)
     end
 
     # @param capability [String] Must be one of: ODsCCreateLayer,

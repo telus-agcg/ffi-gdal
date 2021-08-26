@@ -61,4 +61,11 @@ RSpec.describe OGR::GeometryFieldDefinition do
       end
     end
   end
+
+  describe '#nullable= + #nullable?' do
+    it 'assigns the value' do
+      subject.nullable = true
+      expect(subject).to be_nullable
+    end
+  end
 end

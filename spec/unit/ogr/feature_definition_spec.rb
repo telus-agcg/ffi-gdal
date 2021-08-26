@@ -4,7 +4,7 @@ require 'ogr/feature_definition'
 
 RSpec.describe OGR::FeatureDefinition do
   subject(:feature_definition) do
-    fd = described_class.new('spec feature definition')
+    fd = described_class.create('spec feature definition')
     fd.geometry_type = :wkbMultiPolygon
     fd
   end
@@ -109,7 +109,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#geometry_type' do
     context 'default' do
       subject(:feature_definition) do
-        described_class.new('spec feature definition')
+        described_class.create('spec feature definition')
       end
 
       it 'is :wkbUnknown' do
@@ -240,7 +240,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe '#same?' do
     context 'is the same as the other' do
       let(:other_feature_definition) do
-        df = described_class.new('spec feature definition')
+        df = described_class.create('spec feature definition')
         df.geometry_type = :wkbMultiPolygon
         df
       end
@@ -252,7 +252,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context 'not the same as the other' do
       let(:other_feature_definition) do
-        described_class.new('other feature definition')
+        described_class.create('other feature definition')
       end
 
       it 'returns false' do

@@ -89,7 +89,7 @@ RSpec.describe OGR::Layer do
 
     context 'one is set' do
       it 'returns an OGR::StyleTable' do
-        subject.style_table = OGR::StyleTable.new
+        subject.style_table = OGR::StyleTable.create
         expect(subject.style_table).to be_a OGR::StyleTable
       end
     end
