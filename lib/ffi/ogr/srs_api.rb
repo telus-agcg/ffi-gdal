@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ffi'
+require_relative '../gdal'
 require_relative '../../ext/ffi_library_function_checks'
 
 module FFI

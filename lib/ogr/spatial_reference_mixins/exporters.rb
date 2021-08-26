@@ -6,9 +6,9 @@ module OGR
       # @return [Hash]
       # @raise [OGR::NotEnoughData] If name, datum name, and units are not set.
       def to_erm
-        projection_name = FFI::MemoryPointer.new(:string)
-        datum_name = FFI::MemoryPointer.new(:string)
-        units = FFI::MemoryPointer.new(:string)
+        projection_name = FFI::MemoryPointer.new(:string, 32)
+        datum_name = FFI::MemoryPointer.new(:string, 32)
+        units = FFI::MemoryPointer.new(:string, 32)
 
         OGR::ErrorHandling.handle_ogr_err('Required parameters (name, datum name, units) are not defined') do
           FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name, datum_name, units)
