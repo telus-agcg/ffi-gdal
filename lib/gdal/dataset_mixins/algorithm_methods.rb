@@ -29,9 +29,9 @@ module GDAL
         end
 
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = Array([band_numbers])
-        geometries = Array([geometries])
-        burn_values = Array([burn_values])
+        band_numbers = Array(band_numbers)
+        geometries = Array(geometries)
+        burn_values = Array(burn_values)
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
         band_numbers_ptr.write_array_of_int(band_numbers)
@@ -75,13 +75,13 @@ module GDAL
       def rasterize_layers!(band_numbers, layers, burn_values,
         transformer: nil, transform_arg: nil, **options, &progress_block)
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = Array([band_numbers])
+        band_numbers = Array(band_numbers)
         log "band numbers: #{band_numbers}"
 
-        layers = Array([layers])
+        layers = Array(layers)
         log "layers: #{layers}"
 
-        burn_values = Array([burn_values])
+        burn_values = Array(burn_values)
         log "burn values: #{burn_values}"
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
@@ -125,7 +125,7 @@ module GDAL
         warp_options, band_numbers = 0, progress = nil)
         destination_dataset_ptr = destination_dataset.c_pointer
 
-        band_numbers = Array([band_numbers])
+        band_numbers = Array(band_numbers)
         log "band numbers: #{band_numbers}"
 
         bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
