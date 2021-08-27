@@ -489,7 +489,7 @@ module OGR
       # @raise [OGR::Failure]
       def set_transverse_mercator(center_lat, center_long, scale, false_easting, false_northing)
         msg = 'Unable to set transverse mercator: ' \
-          "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"
+              "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"
 
         OGR::ErrorHandling.handle_ogr_err(msg) do
           FFI::OGR::SRSAPI.OSRSetTM(
