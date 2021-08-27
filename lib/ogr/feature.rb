@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require 'date'
 require_relative '../ogr'
 require_relative '../gdal'
 
 module OGR
   class Feature
+    autoload :DateTimeConv, File.expand_path('feature/date_time_conv', __dir__ || '')
+
     # @param feature_definition [OGR::FeatureDefinition]
     # @return [OGR::FeatureDefinition]
     def self.create(feature_definition)
@@ -22,6 +23,13 @@ module OGR
     # @param c_pointer [FFI::Pointer]
     def initialize(c_pointer)
       @c_pointer = c_pointer
+    end
+
+    # @param flags [Array<FFI::OGR::API::ValidationFlag>, FFI::OGR::API::ValidationFlag]
+    #   Any of the :OGR_F_VAL_ symbols.
+    # @param emit_error [Boolean] Tell the call if it should emit a CPLErr.
+    def validate(flags, emit_error: true)
+      FFI::OGR::API.OGR_F_Validate(@c_pointer, flags, emit_error)
     end
 
     def destroy!
@@ -50,15 +58,35 @@ module OGR
     end
 
     # Overwrites the contents of this feature from the geometry and attributes
-    # of the +other_feature+.
+    # of the +source_feature+.
     #
-    # @param other_feature [OGR::Feature]
+    # @param source_feature [OGR::Feature]
     # @param be_forgiving [Boolean] +true+ if the operation should continue
     #   despite lacking output fields matching some of the source fields.
     # @raise [OGR::Failure]
-    def set_from!(other_feature, be_forgiving: false)
+    def set_from!(source_feature, be_forgiving: false)
       OGR::ErrorHandling.handle_ogr_err('Unable to set from other feature') do
-        FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature.c_pointer, be_forgiving)
+        FFI::OGR::API.OGR_F_SetFrom(@c_pointer, source_feature.c_pointer, be_forgiving)
+      end
+    end
+
+    # @param source_feature [OGR::Feature]
+    # @param map [Array<Integer>] Array of the indices of self's feature's
+    #   fields stored at the corresponding index of the source feature's fields. A
+    #   value of -1 should be used to ignore the source's field. The array should
+    #   not be NULL and be as long as the number of fields in the source feature.
+    # @param be_forgiving [Boolean] +true+ if the operation should continue
+    #   despite lacking output fields matching some of the source fields.
+    # @raise [OGR::Failure]
+    def set_from_with_map!(source_feature, map, be_forgiving: false)
+      map_ptr = FFI::MemoryPointer.new(:pointer, map.length + 1)
+
+      map.each do |index|
+        map_ptr.write_int(index)
+      end
+
+      OGR::ErrorHandling.handle_ogr_err('Unable to set from other feature') do
+        FFI::OGR::API.OGR_F_SetFromWithMap(@c_pointer, source_feature.c_pointer, be_forgiving, map_ptr)
       end
     end
 
@@ -80,6 +108,12 @@ module OGR
     # @param value [Integer]
     def set_field_integer(field_index, value)
       FFI::OGR::API.OGR_F_SetFieldInteger(@c_pointer, field_index, value)
+    end
+
+    # @param field_index [Integer]
+    # @param value [Integer]
+    def set_field_integer64(field_index, value)
+      FFI::OGR::API.OGR_F_SetFieldInteger64(@c_pointer, field_index, value)
     end
 
     # @param field_index [Integer]
@@ -108,6 +142,20 @@ module OGR
       values_ptr.write_array_of_int(values)
 
       FFI::OGR::API.OGR_F_SetFieldIntegerList(
+        @c_pointer,
+        field_index,
+        values.size,
+        values_ptr
+      )
+    end
+
+    # @param field_index [Integer]
+    # @param values [Array<Integer>]
+    def set_field_integer64_list(field_index, values)
+      values_ptr = FFI::MemoryPointer.new(:int64, values.size)
+      values_ptr.write_array_of_int64(values)
+
+      FFI::OGR::API.OGR_F_SetFieldInteger64List(
         @c_pointer,
         field_index,
         values.size,
@@ -167,6 +215,22 @@ module OGR
                                            time.min,
                                            time.sec,
                                            zone)
+    end
+
+    # @param field_index [Integer]
+    # @param value [Date, Time, DateTime]
+    def set_field_date_time_ex(field_index, value)
+      time = value.to_time
+      zone = OGR._format_time_zone_for_ogr(value.zone)
+
+      FFI::OGR::API.OGR_F_SetFieldDateTimeEx(@c_pointer, field_index,
+                                             time.year,
+                                             time.month,
+                                             time.day,
+                                             time.hour,
+                                             time.min,
+                                             time.sec.to_f + time.subsec,
+                                             zone)
     end
 
     # NOTE: The FieldDefinition that's returned here is frozen and cannot be
@@ -310,6 +374,12 @@ module OGR
     end
 
     # @param field_index [Integer]
+    # @return [Integer]
+    def field_as_integer64(field_index)
+      FFI::OGR::API.OGR_F_GetFieldAsInteger64(@c_pointer, field_index)
+    end
+
+    # @param field_index [Integer]
     # @return [Array<Integer>]
     def field_as_integer_list(field_index)
       list_size_ptr = FFI::MemoryPointer.new(:int)
@@ -320,6 +390,19 @@ module OGR
       return [] if list_ptr.null?
 
       list_ptr.read_array_of_int(list_size_ptr.read_int)
+    end
+
+    # @param field_index [Integer]
+    # @return [Array<Integer>]
+    def field_as_integer64_list(field_index)
+      list_size_ptr = FFI::MemoryPointer.new(:int)
+      #  This list is internal, and should not be modified, or freed. Its lifetime may be very brief.
+      list_ptr = FFI::OGR::API.OGR_F_GetFieldAsInteger64List(@c_pointer, field_index, list_size_ptr)
+      list_ptr.autorelease = false
+
+      return [] if list_ptr.null?
+
+      list_ptr.read_array_of_int64(list_size_ptr.read_int)
     end
 
     # @param field_index [Integer]
@@ -377,50 +460,57 @@ module OGR
       string.unpack('C*')
     end
 
+    # @param field_index [Integer]
+    # @return [DateTime]
+    # @raise [OGR::Error] if unable to convert the field to a DateTime.
     def field_as_date_time(field_index)
-      year_ptr = FFI::MemoryPointer.new(:int)
-      month_ptr = FFI::MemoryPointer.new(:int)
-      day_ptr = FFI::MemoryPointer.new(:int)
-      hour_ptr = FFI::MemoryPointer.new(:int)
-      minute_ptr = FFI::MemoryPointer.new(:int)
+      common_dt_pointers = DateTimeConv::Pointers.new
       second_ptr = FFI::MemoryPointer.new(:int)
-      time_zone_flag_ptr = FFI::MemoryPointer.new(:int)
 
       success = FFI::OGR::API.OGR_F_GetFieldAsDateTime(
         @c_pointer,
         field_index,
-        year_ptr,
-        month_ptr,
-        day_ptr,
-        hour_ptr,
-        minute_ptr,
+        common_dt_pointers.year,
+        common_dt_pointers.month,
+        common_dt_pointers.day,
+        common_dt_pointers.hour,
+        common_dt_pointers.minute,
         second_ptr,
-        time_zone_flag_ptr
+        common_dt_pointers.time_zone
       )
-      return nil unless success
+      raise OGR::Error, 'Unable to coerce Field to DateTime' unless success
 
-      formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
+      DateTimeConv::Values
+        .new
+        .from_pointers(common_dt_pointers)
+        .to_date_time(second_ptr.read_int)
+    end
 
-      if formatted_tz
-        DateTime.new(
-          year_ptr.read_int,
-          month_ptr.read_int,
-          day_ptr.read_int,
-          hour_ptr.read_int,
-          minute_ptr.read_int,
-          second_ptr.read_int,
-          formatted_tz
-        )
-      else
-        DateTime.new(
-          year_ptr.read_int,
-          month_ptr.read_int,
-          day_ptr.read_int,
-          hour_ptr.read_int,
-          minute_ptr.read_int,
-          second_ptr.read_int
-        )
-      end
+    # Similar to #field_as_date_time, but with millisecond accuracy.
+    #
+    # @param field_index [Integer]
+    # @return [DateTime]
+    def field_as_date_time_ex(field_index)
+      common_dt_pointers = DateTimeConv::Pointers.new
+      second_ptr = FFI::MemoryPointer.new(:float)
+
+      success = FFI::OGR::API.OGR_F_GetFieldAsDateTime(
+        @c_pointer,
+        field_index,
+        common_dt_pointers.year,
+        common_dt_pointers.month,
+        common_dt_pointers.day,
+        common_dt_pointers.hour,
+        common_dt_pointers.minute,
+        second_ptr,
+        common_dt_pointers.time_zone
+      )
+      raise OGR::Error, 'Unable to coerce Field to DateTime' unless success
+
+      DateTimeConv::Values
+        .new
+        .from_pointers(common_dt_pointers)
+        .to_date_time(second_ptr.read_float)
     end
 
     # @return [String]
@@ -445,6 +535,73 @@ module OGR
       new_style_table_ptr.autorelease = false
 
       FFI::OGR::API.OGR_F_SetStyleTable(@c_pointer, new_style_table_ptr)
+    end
+
+    # @param field_index [Integer]
+    # rubocop: disable Naming/AccessorMethodName
+    def set_field_null(field_index)
+      FFI::OGR::API.OGR_F_SetFieldNull(@c_pointer, field_index)
+    end
+    # rubocop: enable Naming/AccessorMethodName
+
+    # @param field_index [Integer]
+    # @return [Boolean]
+    def field_null?(field_index)
+      FFI::OGR::API.OGR_F_IsFieldNull(@c_pointer, field_index)
+    end
+
+    # @param field_index [Integer]
+    # @return [Boolean]
+    def field_set_and_not_null?(field_index)
+      FFI::OGR::API.OGR_F_IsFieldSetAndNotNull(@c_pointer, field_index)
+    end
+
+    # @return [String]
+    def native_data
+      FFI::OGR::API.OGR_F_GetNativeData(@c_pointer)
+    end
+
+    # @param data [String]
+    def native_data=(data)
+      FFI::OGR::API.OGR_F_SetNativeData(@c_pointer, data)
+    end
+
+    # @return [String]
+    def native_media_type
+      FFI::OGR::API.OGR_F_GetNativeMediaType(@c_pointer)
+    end
+
+    # The native media type is the identifier for the format of the native data.
+    # It follows the IANA RFC 2045 (see https://en.wikipedia.org/wiki/Media_type),
+    # e.g. 'application/vnd.geo+json' for JSON.
+    #
+    # @param mime_type [String]
+    def native_media_type=(mime_type)
+      FFI::OGR::API.OGR_F_SetNativeMediaType(@c_pointer, mime_type)
+    end
+
+    # Fill unset fields with default values that might be defined.
+    #
+    # @param non_nullable_only [Boolean] if we should fill only unset fields with a not-null constraint.
+    def fill_unset_with_default(non_nullable_only: false)
+      FFI::OGR::API.OGR_F_FillUnsetWithDefault(@c_pointer, non_nullable_only, FFI::Pointer::NULL)
+    end
+
+    private
+
+    # Lets you pass in :OGR_F_VAL_ symbols that represent mask band flags and bitwise
+    # ors them.
+    #
+    # @param flags [Array<FFI::OGR::API::ValidationFlag>]
+    # @return [Integer]
+    def parse_validation_flag_symbols(*flags)
+      flags.reduce(0) do |result, flag|
+        if FFI::OGR::API::ValidationFlag.symbols.include?(flag)
+          result | FFI::OGR::API::ValidationFlag[flag]
+        else
+          result
+        end
+      end
     end
   end
 end
