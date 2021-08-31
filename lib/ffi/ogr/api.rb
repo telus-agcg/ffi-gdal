@@ -9,6 +9,7 @@ require_relative 'api/feature_definition'
 require_relative 'api/style_table'
 require_relative 'api/feature'
 require_relative 'api/style_tool'
+require_relative 'api/style_manager'
 
 module FFI
   module OGR
@@ -23,7 +24,6 @@ module FFI
       typedef :pointer, :OGRLayerH
       typedef :pointer, :OGRDataSourceH
       typedef :pointer, :OGRSFDriverH
-      typedef :pointer, :OGRStyleMgrH
 
       # ~~~~~~~~~~~~~~~~
       # Layer-related
@@ -157,21 +157,6 @@ module FFI
                       %i[OGRSFDriverH OGRDataSourceH string pointer],
                       :OGRDataSourceH
       attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
-
-      # ~~~~~~~~~~~~~~~~
-      # Style Manager-related
-      # ~~~~~~~~~~~~~~~~
-      # TODO: wrap
-      attach_function :OGR_SM_Create, %i[OGRStyleTableH], :OGRStyleMgrH
-      attach_function :OGR_SM_Destroy, %i[OGRStyleTableH], :void
-      attach_function :OGR_SM_InitFromFeature, %i[OGRStyleTableH OGRFeatureH], :strptr
-      attach_function :OGR_SM_InitStyleString, %i[OGRStyleTableH string], :int
-      attach_function :OGR_SM_GetPartCount, %i[OGRStyleTableH string], :int
-      attach_function :OGR_SM_GetPart,
-                      %i[OGRStyleTableH int string],
-                      :OGRStyleToolH
-      attach_function :OGR_SM_AddPart, %i[OGRStyleTableH OGRStyleToolH], :int
-      attach_function :OGR_SM_AddStyle, %i[OGRStyleTableH string string], :int
 
       # ~~~~~~~~~~~~~~~~
       # Main functions

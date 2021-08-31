@@ -3,18 +3,20 @@ module FFI
     module API
       extend FFI::Library
 
-      def self.OGR_GFld_Create: (String field_name, FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> FFI::Pointer
-      def self.OGR_GFld_Destroy: (FFI::Pointer geometry_field_def_pointer) -> void
-      def self.OGR_GFld_SetName: (FFI::Pointer geometry_field_def_pointer, String new_name) -> void
-      def self.OGR_GFld_GetNameRef: (FFI::Pointer geometry_field_def_pointer) -> String
-      def self.OGR_GFld_GetType: (FFI::Pointer geometry_field_def_pointer) -> FFI::OGR::Core::ogr_field_type_symbol
-      def self.OGR_GFld_SetType: (FFI::Pointer geometry_field_def_pointer, FFI::OGR::Core::ogr_field_type_symbol field_type) -> void
-      def self.OGR_GFld_GetSpatialRef: (FFI::Pointer geometry_field_def_pointer) -> FFI::Pointer
-      def self.OGR_GFld_SetSpatialRef: (FFI::Pointer geometry_field_def_pointer, FFI::Pointer spatial_reference_pointer) -> void
-      def self.OGR_GFld_IsIgnored: (FFI::Pointer geometry_field_def_pointer) -> bool
-      def self.OGR_GFld_SetIgnored: (FFI::Pointer geometry_field_def_pointer, bool ignore) -> void
-      def self.OGR_GFld_IsNullable: (FFI::Pointer geometry_field_def_pointer) -> bool
-      def self.OGR_GFld_SetNullable: (FFI::Pointer geometry_field_def_pointer, bool is_nullable) -> void
+      type ogr_geom_field_defn_h = FFI::Pointer
+
+      def self.OGR_GFld_Create: (String field_name, FFI::OGR::Core::wkb_geometry_type_symbol geometry_type) -> ogr_geom_field_defn_h
+      def self.OGR_GFld_Destroy: (ogr_geom_field_defn_h c_pointer) -> void
+      def self.OGR_GFld_SetName: (ogr_geom_field_defn_h c_pointer, String new_name) -> void
+      def self.OGR_GFld_GetNameRef: (ogr_geom_field_defn_h c_pointer) -> String
+      def self.OGR_GFld_GetType: (ogr_geom_field_defn_h c_pointer) -> FFI::OGR::Core::ogr_field_type_symbol
+      def self.OGR_GFld_SetType: (ogr_geom_field_defn_h c_pointer, FFI::OGR::Core::ogr_field_type_symbol field_type) -> void
+      def self.OGR_GFld_GetSpatialRef: (ogr_geom_field_defn_h c_pointer) -> FFI::Pointer
+      def self.OGR_GFld_SetSpatialRef: (ogr_geom_field_defn_h c_pointer, FFI::Pointer spatial_reference_pointer) -> void
+      def self.OGR_GFld_IsIgnored: (ogr_geom_field_defn_h c_pointer) -> bool
+      def self.OGR_GFld_SetIgnored: (ogr_geom_field_defn_h c_pointer, bool ignore) -> void
+      def self.OGR_GFld_IsNullable: (ogr_geom_field_defn_h c_pointer) -> bool
+      def self.OGR_GFld_SetNullable: (ogr_geom_field_defn_h c_pointer, bool is_nullable) -> void
     end
   end
 end

@@ -56,4 +56,6 @@ module OGR
   autoload :Layer,                    ogr_require('ogr/layer')
   autoload :SpatialReference,         ogr_require('ogr/spatial_reference')
   autoload :StyleTable,               ogr_require('ogr/style_table')
+  autoload :StyleTool,                ogr_require('ogr/style_tool')
+  autoload :StyleManager,             ogr_require('ogr/style_manager')
 end

@@ -4,6 +4,7 @@ module OGR
       extend _AutoPointerRelease
     end
 
+    extend _NewBorrowed[instance]
     include _HasPointer
 
     def initialize: (OGR::StyleTool::AutoPointer | FFI::Pointer pointer) -> void

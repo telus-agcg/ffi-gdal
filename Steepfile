@@ -38,6 +38,7 @@ target :lib do
         'lib/ogr/point_25d.rb',
         'lib/ogr/polygon.rb',
         'lib/ogr/polygon_25d.rb',
+        'lib/ogr/style_manager.rb',
         'lib/ogr/style_tool.rb',
         'lib/ogr/unknown_geometry.rb'
 

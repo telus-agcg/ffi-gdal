@@ -36,6 +36,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `OGR::GeometryFieldDefinition`
   - `OGR::Geometry`
   - `OGR::SpatialReference`
+- Wrapped `StyleManager`.
 
 ### Changed
 
@@ -143,7 +144,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ##### OGR::Feature
 
-- _BREAKING_: `OGR::Feature#initialize` now only takes a pointer; creation of a new Featureis done
+- _BREAKING_: `OGR::Feature#initialize` now only takes a pointer; creation of a new Feature is done
   via `.create`.
 
 ##### OGR::FieldDefinition
@@ -157,6 +158,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - _BREAKING_: `OGR::GeometryFieldDefinition#initialize` now only takes a pointer; creation of a new
   GeometryFieldDefinition is done via `.create`.
+
+##### OGR::StyleTool
+
+- _BREAKING_: `OGR::StyleTool#initialize` now only takes a pointer; creation of
+  a new StyleTool is done via `.create`.
 
 ### Fixed
 

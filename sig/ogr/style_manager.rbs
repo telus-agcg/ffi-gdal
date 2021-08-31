@@ -1,0 +1,12 @@
+module OGR
+  class StyleManager
+    class AutoPointer < ::FFI::AutoPointer
+      extend _AutoPointerRelease
+    end
+
+    include _HasPointer
+
+    def initialize: (OGR::StyleManager::AutoPointer | FFI::OGR::API::ogr_style_mgr_h pointer) -> void
+  end
+end
+

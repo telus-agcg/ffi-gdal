@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../ogr'
+require_relative 'new_borrowed'
 
 module OGR
   class StyleTool
@@ -24,6 +25,8 @@ module OGR
 
       new(OGR::StyleTool::AutoPointer.new(pointer))
     end
+
+    extend OGR::NewBorrowed
 
     # @return [FFI::Pointer] C pointer to the C style tool.
     attr_reader :c_pointer

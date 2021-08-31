@@ -3,173 +3,205 @@ module FFI
     module API
       extend ::FFI::Library
 
-      def self.OGR_G_CreateGeometry: (Symbol geometry_type) -> FFI::Pointer
-      def self.OGR_G_CreateFromGML: (String gml) -> FFI::Pointer
-      def self.OGR_G_CreateGeometryFromJson: (String json) -> FFI::Pointer
+      type ogr_geometry_h = FFI::Pointer
+
+      def self.OGR_G_CreateGeometry: (Symbol geometry_type) -> ogr_geometry_h
+      def self.OGR_G_CreateFromGML: (String gml) -> ogr_geometry_h
+      def self.OGR_G_CreateGeometryFromJson: (String json) -> ogr_geometry_h
       def self.OGR_G_CreateFromWkb: (
           FFI::MemoryPointer data,
-          (FFI::Pointer | FFI::MemoryPointer | nil) spatial_ref_ptr,
+          (ogr_geometry_h | FFI::MemoryPointer | nil) spatial_ref_ptr,
           FFI::MemoryPointer geometry_out,
           Integer number_of_bytes
           ) -> (:OGRERR_NONE | :OGRERR_NOT_ENOUGH_DATA | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE | :OGRERR_CORRUPT_DATA)
 
       def self.OGR_G_CreateFromWkt: (
           FFI::MemoryPointer wkt,
-          (FFI::Pointer | FFI::MemoryPointer | nil) spatial_ref_ptr,
+          (ogr_geometry_h | FFI::MemoryPointer | nil) spatial_ref_ptr,
           FFI::MemoryPointer geometry_out,
           ) -> (:OGRERR_NONE | :OGRERR_NOT_ENOUGH_DATA | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE | :OGRERR_CORRUPT_DATA)
 
-      def self.OGR_G_DestroyGeometry: (FFI::Pointer geometry_ptr) -> void
-      def self.OGR_G_Clone: (FFI::Pointer geometry_ptr) -> FFI::Pointer
+      def self.OGR_G_DestroyGeometry: (ogr_geometry_h c_pointer) -> void
+      def self.OGR_G_Clone: (ogr_geometry_h c_pointer) -> ogr_geometry_h
 
       def self.OGRBuildPolygonFromEdges: (
-          FFI::Pointer lines_as_collection,
+          ogr_geometry_h lines_as_collection,
           bool best_effort,
           bool auto_close,
           FFI::floatable tolerance,
           FFI::Buffer ogr_err
-          ) -> FFI::Pointer
-      def self.OGR_G_DumpReadable: (FFI::Pointer geometry_ptr, FFI::Pointer file_handle, String ?prefix) -> void
+          ) -> ogr_geometry_h
+      def self.OGR_G_DumpReadable: (ogr_geometry_h c_pointer, FFI::Pointer file_handle, String ?prefix) -> void
       def self.OGR_G_GetGeometryRef: (
-          FFI::Pointer geometry_ptr,
+          ogr_geometry_h c_pointer,
           Integer sub_geometry_index
-          ) -> FFI::Pointer
+          ) -> ogr_geometry_h
       def self.OGRSetNonLinearGeometriesEnabledFlag: (bool flag) -> void
       def self.OGRGetNonLinearGeometriesEnabledFlag: -> bool
 
-#---------------------------
-# Read-only Attributes
-#---------------------------
-      def self.OGR_G_GetGeometryName: (FFI::Pointer geometry_ptr) -> String
-      def self.OGR_G_GetGeometryType: (FFI::Pointer geometry_ptr) -> FFI::OGR::Core::wkb_geometry_type_symbol
-      def self.OGR_G_GetGeometryCount: (FFI::Pointer geometry_ptr) -> Integer
+      #---------------------------
+      # Read-only Attributes
+      #---------------------------
+      def self.OGR_G_GetGeometryName: (ogr_geometry_h c_pointer) -> String
+      def self.OGR_G_GetGeometryType: (ogr_geometry_h c_pointer) -> FFI::OGR::Core::wkb_geometry_type_symbol
+      def self.OGR_G_GetGeometryCount: (ogr_geometry_h c_pointer) -> Integer
 
-#---------------------------
-# Getter/setters
-#---------------------------
+      #---------------------------
+      # Getter/setters
+      #---------------------------
       def self.OGR_G_AddGeometry: (
-          FFI::Pointer self_handle,
-          FFI::Pointer sub_geom_handle
-          ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
+          ogr_geometry_h c_pointer,
+          ogr_geometry_h sub_geom_handle
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
 
       def self.OGR_G_AddGeometryDirectly: (
-          FFI::Pointer self_handle,
-          FFI::Pointer sub_geom_handle
-          ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
+          ogr_geometry_h c_pointer,
+          ogr_geometry_h sub_geom_handle
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
 
-      def self.OGR_G_Empty: (FFI::Pointer geometry_ptr) -> void
-      def self.OGR_G_GetCoordinateDimension: (FFI::Pointer geometry_ptr) -> (2 | 3)
-      def self.OGR_G_GetDimension: (FFI::Pointer geometry_ptr) -> (0 | 1 | 2)
-      def self.OGR_G_GetEnvelope3D: (FFI::Pointer geometry_ptr, FFI::OGR::Envelope3D out_envelope) -> void
-      def self.OGR_G_GetEnvelope: (FFI::Pointer geometry_ptr, FFI::OGR::Envelope out_envelope) -> void
-      def self.OGR_G_GetPoint: ( FFI::Pointer geometry_ptr, Integer index, FFI::Buffer x_buffer, FFI::Buffer y_buffer, FFI::Buffer? z_buffer) -> void
-      def self.OGR_G_GetPointCount: (FFI::Pointer geometry_ptr) -> Integer
-      def self.OGR_G_GetPoints: ( FFI::Pointer geometry_ptr, FFI::Buffer? x_buffer, Integer x_stride, FFI::Buffer? y_buffer, Integer y_stride, FFI::Buffer? z_buffer, ?Integer z_stride) -> Integer
-      def self.OGR_G_GetX: (FFI::Pointer geometry_ptr, Integer index) -> Float
-      def self.OGR_G_GetY: (FFI::Pointer geometry_ptr, Integer index) -> Float
-      def self.OGR_G_GetZ: (FFI::Pointer geometry_ptr, Integer index) -> Float
-      def self.OGR_G_GetSpatialReference: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_Value: (FFI::Pointer geometry_ptr, FFI::floatable distance) -> FFI::Pointer
+      def self.OGR_G_Empty: (ogr_geometry_h c_pointer) -> void
+      def self.OGR_G_GetCoordinateDimension: (ogr_geometry_h c_pointer) -> (2 | 3)
+      def self.OGR_G_GetDimension: (ogr_geometry_h c_pointer) -> (0 | 1 | 2)
+      def self.OGR_G_GetEnvelope3D: (ogr_geometry_h c_pointer, FFI::OGR::Envelope3D out_envelope) -> void
+      def self.OGR_G_GetEnvelope: (ogr_geometry_h c_pointer, FFI::OGR::Envelope out_envelope) -> void
+      def self.OGR_G_GetPoint: (
+        ogr_geometry_h c_pointer,
+        Integer index,
+        FFI::Buffer x_buffer,
+        FFI::Buffer y_buffer,
+        FFI::Buffer? z_buffer
+      ) -> void
+
+      def self.OGR_G_GetPointCount: (ogr_geometry_h c_pointer) -> Integer
+      def self.OGR_G_GetPoints: (
+        ogr_geometry_h c_pointer,
+        FFI::Buffer? x_buffer,
+        Integer x_stride,
+        FFI::Buffer? y_buffer,
+        Integer y_stride,
+        FFI::Buffer? z_buffer,
+        ?Integer z_stride
+      ) -> Integer
+
+      def self.OGR_G_GetX: (ogr_geometry_h c_pointer, Integer index) -> Float
+      def self.OGR_G_GetY: (ogr_geometry_h c_pointer, Integer index) -> Float
+      def self.OGR_G_GetZ: (ogr_geometry_h c_pointer, Integer index) -> Float
+      def self.OGR_G_GetSpatialReference: (ogr_geometry_h c_pointer) -> FFI::Pointer
+      def self.OGR_G_Value: (ogr_geometry_h c_pointer, FFI::floatable distance) -> FFI::Pointer
 
       def self.OGR_G_RemoveGeometry: (
-          FFI::Pointer self_handle,
+          ogr_geometry_h c_pointer,
           Integer sub_geom_index,
           bool should_destroy
-          ) -> (:OGRERR_NONE | :OGRERR_FAILURE)
+      ) -> (:OGRERR_NONE | :OGRERR_FAILURE)
 
-      def self.OGR_G_SetCoordinateDimension: (FFI::Pointer geometry_ptr, (2 | 3) new_coord_count) -> void
-      def self.OGR_G_SetPoint: (FFI::Pointer geometry_ptr, Integer vertex_index, FFI::floatable x, FFI::floatable y, FFI::floatable z) -> void
-      def self.OGR_G_SetPointCount: (FFI::Pointer geometry_ptr, Integer new_point_count) -> void
-      def self.OGR_G_SetPoint_2D: (FFI::Pointer geometry_ptr, Integer vertex_index, FFI::floatable x, FFI::floatable y) -> void
-      def self.OGR_G_SwapXY: (FFI::Pointer geometry_ptr) -> void
-      def self.OGR_G_WkbSize: (FFI::Pointer geometry_ptr) -> Integer
+      def self.OGR_G_SetCoordinateDimension: (ogr_geometry_h c_pointer, (2 | 3) new_coord_count) -> void
+      def self.OGR_G_SetPoint: (ogr_geometry_h c_pointer, Integer vertex_index, FFI::floatable x, FFI::floatable y, FFI::floatable z) -> void
+      def self.OGR_G_SetPointCount: (ogr_geometry_h c_pointer, Integer new_point_count) -> void
+      def self.OGR_G_SetPoint_2D: (ogr_geometry_h c_pointer, Integer vertex_index, FFI::floatable x, FFI::floatable y) -> void
+      def self.OGR_G_SwapXY: (ogr_geometry_h c_pointer) -> void
+      def self.OGR_G_WkbSize: (ogr_geometry_h c_pointer) -> Integer
 
-#---------------------------
-# Mutate self
-#---------------------------
-      def self.OGR_G_AssignSpatialReference: (FFI::Pointer geometry_ptr, FFI::Pointer spatial_reference_ptr) -> void
-      def self.OGR_G_Buffer: (FFI::Pointer geometry_ptr, FFI::floatable distance, Integer quad_segments) -> FFI::Pointer
-      def self.OGR_G_CloseRings: (FFI::Pointer geometry_ptr) -> void
-      def self.OGR_G_Distance: (FFI::Pointer lhs, FFI::Pointer rhs) -> Float
-      def self.OGR_G_ImportFromWkb: (FFI::Pointer geometry_ptr, FFI::Pointer wkb, Integer wkb_size) -> Float
-      def self.OGR_G_ImportFromWkt: (FFI::Pointer geometry_ptr, FFI::Pointer wkt) -> Float
-      def self.OGR_G_Segmentize: (FFI::Pointer geometry_ptr, FFI::floatable max_length) -> void
-      def self.OGR_G_Transform: (FFI::Pointer geometry_ptr, FFI::Pointer coordinate_transformation_ptr) -> FFI::OGR::Core::ogr_err_symbol
-      def self.OGR_G_TransformTo: (FFI::Pointer geometry_ptr, FFI::Pointer spatial_reference_ptr) -> FFI::OGR::Core::ogr_err_symbol
+      #---------------------------
+      # Mutate self
+      #---------------------------
+      def self.OGR_G_AssignSpatialReference: (ogr_geometry_h c_pointer, FFI::Pointer spatial_reference_ptr) -> void
+      def self.OGR_G_Buffer: (ogr_geometry_h c_pointer, FFI::floatable distance, Integer quad_segments) -> ogr_geometry_h
+      def self.OGR_G_CloseRings: (ogr_geometry_h c_pointer) -> void
+      def self.OGR_G_Distance: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> Float
+      def self.OGR_G_ImportFromWkb: (ogr_geometry_h c_pointer, FFI::Pointer wkb, Integer wkb_size) -> Float
+      def self.OGR_G_ImportFromWkt: (ogr_geometry_h c_pointer, FFI::Pointer wkt) -> Float
+      def self.OGR_G_Segmentize: (ogr_geometry_h c_pointer, FFI::floatable max_length) -> void
+      def self.OGR_G_Transform: (ogr_geometry_h c_pointer, FFI::Pointer coordinate_transformation_ptr) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_G_TransformTo: (ogr_geometry_h c_pointer, FFI::Pointer spatial_reference_ptr) -> FFI::OGR::Core::ogr_err_symbol
 
-#---------------------------
-# Simple question-mark methods
-#---------------------------
-      def self.OGR_G_IsEmpty: (FFI::Pointer geometry_ptr) -> bool
-      def self.OGR_G_IsRing: (FFI::Pointer geometry_ptr) -> bool
-      def self.OGR_G_IsSimple: (FFI::Pointer geometry_ptr) -> bool
-      def self.OGR_G_IsValid: (FFI::Pointer geometry_ptr) -> bool
+      #---------------------------
+      # Simple question-mark methods
+      #---------------------------
+      def self.OGR_G_IsEmpty: (ogr_geometry_h c_pointer) -> bool
+      def self.OGR_G_IsRing: (ogr_geometry_h c_pointer) -> bool
+      def self.OGR_G_IsSimple: (ogr_geometry_h c_pointer) -> bool
+      def self.OGR_G_IsValid: (ogr_geometry_h c_pointer) -> bool
 
-#---------------------------
-# Exporters
-#---------------------------
-      def self.OGR_G_ExportToGML: (FFI::Pointer geometry_ptr) -> FFI::strptr
-      def self.OGR_G_ExportToGMLEx: (FFI::Pointer geometry_ptr, FFI::MemoryPointer options) -> FFI::strptr
-      def self.OGR_G_ExportToJson: (FFI::Pointer geometry_ptr) -> FFI::strptr
-      def self.OGR_G_ExportToJsonEx: (FFI::Pointer geometry_ptr, FFI::MemoryPointer options) -> FFI::strptr
-      def self.OGR_G_ExportToKML: (FFI::Pointer geometry_ptr, ?String ?altitude_mode) -> FFI::strptr
-      def self.OGR_G_ExportToIsoWkt: (FFI::Pointer geometry_ptr, FFI::MemoryPointer options) -> :OGRERR_NONE
-      def self.OGR_G_ExportToWkb: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_byte_order_symbol byte_order, FFI::Buffer destination) -> :OGRERR_NONE
-      def self.OGR_G_ExportToIsoWkb: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_byte_order_symbol byte_order, FFI::Buffer destination) -> :OGRERR_NONE
-      def self.OGR_G_ExportToWkt: (FFI::Pointer geometry_ptr, FFI::MemoryPointer wkt_out) -> :OGRERR_NONE
+      #---------------------------
+      # Exporters
+      #---------------------------
+      def self.OGR_G_ExportToGML: (ogr_geometry_h c_pointer) -> FFI::strptr
+      def self.OGR_G_ExportToGMLEx: (ogr_geometry_h c_pointer, FFI::MemoryPointer options) -> FFI::strptr
+      def self.OGR_G_ExportToJson: (ogr_geometry_h c_pointer) -> FFI::strptr
+      def self.OGR_G_ExportToJsonEx: (ogr_geometry_h c_pointer, FFI::MemoryPointer options) -> FFI::strptr
+      def self.OGR_G_ExportToKML: (ogr_geometry_h c_pointer, ?String ?altitude_mode) -> FFI::strptr
+      def self.OGR_G_ExportToIsoWkt: (ogr_geometry_h c_pointer, FFI::MemoryPointer options) -> :OGRERR_NONE
+      def self.OGR_G_ExportToWkt: (ogr_geometry_h c_pointer, FFI::MemoryPointer wkt_out) -> :OGRERR_NONE
 
-#---------------------------
-# Description geometries
-#---------------------------
-      def self.OGR_G_Boundary: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_Centroid: (FFI::Pointer geometry_ptr, FFI::Pointer out_geom) -> (:OGRERR_NONE | :OGRERR_FAILURE)
-      def self.OGR_G_ConvexHull: (FFI::Pointer geometry_ptr) -> FFI::Pointer
+      def self.OGR_G_ExportToWkb: (
+        ogr_geometry_h c_pointer,
+        FFI::OGR::Core::wkb_byte_order_symbol byte_order,
+        FFI::Buffer destination
+      ) -> :OGRERR_NONE
 
-#---------------------------
-# Boolean-ops
-#---------------------------
-      def self.OGR_G_Contains: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Crosses: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Disjoint: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Equals: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Intersects: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Overlaps: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Touches: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
-      def self.OGR_G_Within: (FFI::Pointer lhs, FFI::Pointer rhs) -> bool
+      def self.OGR_G_ExportToIsoWkb: (
+        ogr_geometry_h c_pointer,
+        FFI::OGR::Core::wkb_byte_order_symbol byte_order,
+        FFI::Buffer destination
+      ) -> :OGRERR_NONE
 
-      def self.OGR_G_Difference: (FFI::Pointer lhs, FFI::Pointer rhs) -> FFI::Pointer
-      def self.OGR_G_Intersection: (FFI::Pointer lhs, FFI::Pointer rhs) -> FFI::Pointer
-      def self.OGR_G_SymDifference: (FFI::Pointer lhs, FFI::Pointer rhs) -> FFI::Pointer
-      def self.OGR_G_Union: (FFI::Pointer lhs, FFI::Pointer rhs) -> FFI::Pointer
+      #---------------------------
+      # Description geometries
+      #---------------------------
+      def self.OGR_G_Boundary: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_Centroid: (ogr_geometry_h c_pointer, ogr_geometry_h out_geom) -> (:OGRERR_NONE | :OGRERR_FAILURE)
+      def self.OGR_G_ConvexHull: (ogr_geometry_h c_pointer) -> ogr_geometry_h
 
-#---------------------------
-# Algorithms
-#---------------------------
-      def self.OGR_G_Simplify: (FFI::Pointer geometry_ptr, FFI::floatable tolerance) -> FFI::Pointer
-      def self.OGR_G_SimplifyPreserveTopology: (FFI::Pointer geometry_ptr, FFI::floatable tolerance) -> FFI::Pointer
-      def self.OGR_G_DelaunayTriangulation: (FFI::Pointer geometry_ptr, FFI::floatable tolerance, bool only_edges) -> FFI::Pointer
+      #---------------------------
+      # Boolean-ops
+      #---------------------------
+      def self.OGR_G_Contains: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Crosses: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Disjoint: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Equals: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Intersects: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Overlaps: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Touches: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
+      def self.OGR_G_Within: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> bool
 
-#---------------------------
-# Type-specific
-#---------------------------
-      def self.OGR_G_Area: (FFI::Pointer geometry_ptr) -> Float
-      def self.OGR_G_AddPoint: (FFI::Pointer geometry_ptr, FFI::floatable x, FFI::floatable y, FFI::floatable m) -> void
-      def self.OGR_G_AddPoint_2D: (FFI::Pointer geometry_ptr, FFI::floatable x, FFI::floatable y) -> void
-      def self.OGR_G_FlattenTo2D: (FFI::Pointer geometry_ptr) -> void
-      def self.OGR_G_Length: (FFI::Pointer geometry_ptr) -> Float
-      def self.OGR_G_PointOnSurface: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_Polygonize: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_UnionCascaded: (FFI::Pointer geometry_ptr) -> FFI::Pointer
+      def self.OGR_G_Difference: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> ogr_geometry_h
+      def self.OGR_G_Intersection: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> ogr_geometry_h
+      def self.OGR_G_SymDifference: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> ogr_geometry_h
+      def self.OGR_G_Union: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> ogr_geometry_h
 
-#---------------------------
-# Geometry-type casters
-#---------------------------
-      def self.OGR_G_ForceToLineString: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_ForceToMultiLineString: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_ForceToMultiPoint: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_ForceToMultiPolygon: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_ForceToPolygon: (FFI::Pointer geometry_ptr) -> FFI::Pointer
-      def self.OGR_G_ForceTo: (FFI::Pointer geometry_ptr, FFI::OGR::Core::wkb_geometry_type_symbol geometry_type, FFI::Pointer options) -> FFI::Pointer
+      #---------------------------
+      # Algorithms
+      #---------------------------
+      def self.OGR_G_Simplify: (ogr_geometry_h c_pointer, FFI::floatable tolerance) -> ogr_geometry_h
+      def self.OGR_G_SimplifyPreserveTopology: (ogr_geometry_h c_pointer, FFI::floatable tolerance) -> ogr_geometry_h
+      def self.OGR_G_DelaunayTriangulation: (ogr_geometry_h c_pointer, FFI::floatable tolerance, bool only_edges) -> ogr_geometry_h
+
+      #---------------------------
+      # Type-specific
+      #---------------------------
+      def self.OGR_G_Area: (ogr_geometry_h c_pointer) -> Float
+      def self.OGR_G_AddPoint: (ogr_geometry_h c_pointer, FFI::floatable x, FFI::floatable y, FFI::floatable m) -> void
+      def self.OGR_G_AddPoint_2D: (ogr_geometry_h c_pointer, FFI::floatable x, FFI::floatable y) -> void
+      def self.OGR_G_FlattenTo2D: (ogr_geometry_h c_pointer) -> void
+      def self.OGR_G_Length: (ogr_geometry_h c_pointer) -> Float
+      def self.OGR_G_PointOnSurface: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_Polygonize: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_UnionCascaded: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+
+      #---------------------------
+      # Geometry-type casters
+      #---------------------------
+      def self.OGR_G_ForceToLineString: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_ForceToMultiLineString: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_ForceToMultiPoint: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_ForceToMultiPolygon: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_ForceToPolygon: (ogr_geometry_h c_pointer) -> ogr_geometry_h
+      def self.OGR_G_ForceTo: (
+        ogr_geometry_h c_pointer,
+        FFI::OGR::Core::wkb_geometry_type_symbol geometry_type,
+        FFI::Pointer options
+      ) -> ogr_geometry_h
     end
   end
 end
