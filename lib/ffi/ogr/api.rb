@@ -51,7 +51,7 @@ module FFI
       attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
       attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
       attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
-      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
+      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int64
 
       attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
       attach_function :OGR_L_GetExtentEx,
