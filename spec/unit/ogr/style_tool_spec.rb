@@ -12,7 +12,7 @@ RSpec.describe OGR::StyleTool do
       it 'does not raise an exception' do
         supported_classes.each do |supported_class|
           expect do
-            described_class.new(supported_class)
+            described_class.create(supported_class)
           end.to_not raise_exception
         end
       end
@@ -26,14 +26,14 @@ RSpec.describe OGR::StyleTool do
       it 'raises an exception' do
         supported_classes.each do |supported_class|
           expect do
-            described_class.new(supported_class)
+            described_class.create(supported_class)
           end.to raise_exception OGR::CreateFailure
         end
       end
     end
   end
 
-  subject(:pen_tool) { described_class.new(:OGRSTCPen) }
+  subject(:pen_tool) { described_class.create(:OGRSTCPen) }
 
   describe '#style_string' do
     context 'default style string' do

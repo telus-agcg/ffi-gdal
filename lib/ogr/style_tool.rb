@@ -4,34 +4,38 @@ require_relative '../ogr'
 
 module OGR
   class StyleTool
-    # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
+    class AutoPointer < ::FFI::AutoPointer
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
 
-      FFI::OGR::API.OGR_ST_Destroy(pointer)
+        FFI::OGR::API.OGR_ST_Destroy(pointer)
+      end
     end
-
-    # @return [FFI::Pointer] C pointer to the C style tool.
-    attr_reader :c_pointer
 
     # @param style_tool_class [FFI::OGR::Core::STClassId] Must be one of :OGRSTCPen,
     #   :OGRSTCBrush, :OGRSTCSymbol, :OGRSTCLabel.
-    def initialize(style_tool_class)
+    def self.create(style_tool_class)
       pointer = FFI::OGR::API.OGR_ST_Create(style_tool_class)
 
       if !pointer || pointer.null?
         raise OGR::CreateFailure, "Unable to create StyleTool using class #{style_tool_class}"
       end
 
-      @c_pointer = FFI::AutoPointer.new(pointer, StyleTool.method(:release))
+      new(OGR::StyleTool::AutoPointer.new(pointer))
     end
 
-    # @return [String, nil]
-    def style_string
-      style, ptr = FFI::OGR::API.OGR_ST_GetStyleString(@c_pointer)
-      ptr.autorelease = false
+    # @return [FFI::Pointer] C pointer to the C style tool.
+    attr_reader :c_pointer
 
-      style
+    # @param pointer [FFI::Pointer]
+    def initialize(pointer)
+      @c_pointer = pointer
+    end
+
+    # @return [String]
+    def style_string
+      FFI::OGR::API.OGR_ST_GetStyleString(@c_pointer).freeze
     end
 
     # @return [FFI::OGR::Core::STClassId]
@@ -53,10 +57,10 @@ module OGR
     # @param param_number [Integer]
     # @return [Float, nil]
     def param_as_double(param_number)
-      value_is_null_ptr = FFI::MemoryPointer.new(:int)
+      value_is_null_ptr = FFI::MemoryPointer.new(:bool)
       value = FFI::OGR::API.OGR_ST_GetParamDbl(@c_pointer, param_number, value_is_null_ptr)
 
-      value_is_null_ptr.read_int.to_bool ? nil : value
+      value_is_null_ptr.read(:bool) ? nil : value
     end
     alias param_as_float param_as_double
 
@@ -70,10 +74,10 @@ module OGR
     # @param param_number [Integer]
     # @return [Integer, nil]
     def param_as_number(param_number)
-      value_is_null_ptr = FFI::MemoryPointer.new(:int)
+      value_is_null_ptr = FFI::MemoryPointer.new(:bool)
       value = FFI::OGR::API.OGR_ST_GetParamNum(@c_pointer, param_number, value_is_null_ptr)
 
-      value_is_null_ptr.read_int.to_bool ? nil : value
+      value_is_null_ptr.read(:bool) ? nil : value
     end
     alias param_as_integer param_as_number
 
@@ -87,11 +91,10 @@ module OGR
     # @param param_number [Integer]
     # @return [String, nil]
     def param_as_string(param_number)
-      value_is_null_ptr = FFI::MemoryPointer.new(:int)
-      value, ptr = FFI::OGR::API.OGR_ST_GetParamStr(@c_pointer, param_number, value_is_null_ptr)
-      ptr.autorelease = false
+      value_is_null_ptr = FFI::MemoryPointer.new(:bool)
+      output = FFI::OGR::API.OGR_ST_GetParamStr(@c_pointer, param_number, value_is_null_ptr).freeze
 
-      value_is_null_ptr.read_int.to_bool ? nil : value
+      value_is_null_ptr.read(:bool) ? nil : output
     end
 
     # @param param_number [Integer]

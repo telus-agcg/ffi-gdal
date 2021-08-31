@@ -1,0 +1,11 @@
+module OGR
+  class StyleTool
+    class AutoPointer < ::FFI::AutoPointer
+      extend _AutoPointerRelease
+    end
+
+    include _HasPointer
+
+    def initialize: (OGR::StyleTool::AutoPointer | FFI::Pointer pointer) -> void
+  end
+end

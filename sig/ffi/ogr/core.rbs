@@ -70,6 +70,69 @@ module FFI
 
       type wkb_byte_order_symbol = (:wkbXDR | :wkbNDR)
 
+      type st_class_id_symbol = (:OGRSTCNone | :OGRSTCPen | :OGRSTCBrush | :OGRSTCSymbol | :OGRSTCLabel | :OGRSTCVector)
+      type st_unit_id_symbol = (:OGRSTUGround | :OGRSTUPixel | :OGRSTUPoints | :OGRSTUMM | :OGRSTUCM | :OGRSTUInches)
+      type st_pen_param_symbol = (
+          :OGRSTPenColor
+          | :OGRSTPenWidth
+          | :OGRSTPenPattern
+          | :OGRSTPenId
+          | :OGRSTPenPerOffset
+          | :OGRSTPenPerCap
+          | :OGRSTPenPerJoin
+          | :OGRSTPenPerPriority
+      )
+
+      type st_brush_param_symbol = (
+        :OGRSTBrushFColor
+        | :OGRSTBrushBColor
+        | :OGRSTBrushId
+        | :OGRSTBrushAngle
+        | :OGRSTBrushSize
+        | :OGRSTBrushDx
+        | :OGRSTBrushDy
+        | :OGRSTBrushPriority
+      )
+
+      type st_symbol_param_symbol = (
+        :OGRSTSymbolId
+        | :OGRSTSymbolAngle
+        | :OGRSTSymbolColor
+        | :OGRSTSymbolSize
+        | :OGRSTSymbolDx
+        | :OGRSTSymbolDy
+        | :OGRSTSymbolStep
+        | :OGRSTSymbolPerp
+        | :OGRSTSymbolOffset
+        | :OGRSTSymbolPriority
+        | :OGRSTSymbolFontName
+        | :OGRSTSymbolOColor
+      )
+
+      type st_label_param_symbol = (
+        :OGRSTLabelFontName
+        | :OGRSTLabelSize
+        | :OGRSTLabelTextString
+        | :OGRSTLabelAngle
+        | :OGRSTLabelFColor
+        | :OGRSTLabelBColor
+        | :OGRSTLabelPlacement
+        | :OGRSTLabelAnchor
+        | :OGRSTLabelDx
+        | :OGRSTLabelDy
+        | :OGRSTLabelPerp
+        | :OGRSTLabelBold
+        | :OGRSTLabelItalic
+        | :OGRSTLabelUnderline
+        | :OGRSTLabelPriority
+        | :OGRSTLabelStrikeout
+        | :OGRSTLabelStretch
+        | :OGRSTLabelAdjHor
+        | :OGRSTLabelAdjVert
+        | :OGRSTLabelHColor
+        | :OGRSTLabelOColor
+      )
+
       def self.OGRGeometryTypeToName: (wkb_geometry_type_symbol geometry_type) -> String
       def self.OGRMergeGeometryTypes: (wkb_geometry_type_symbol lhs, wkb_geometry_type_symbol rhs) -> wkb_geometry_type_symbol
     end

@@ -8,6 +8,7 @@ require_relative 'api/geometry_field_definition'
 require_relative 'api/feature_definition'
 require_relative 'api/style_table'
 require_relative 'api/feature'
+require_relative 'api/style_tool'
 
 module FFI
   module OGR
@@ -23,7 +24,6 @@ module FFI
       typedef :pointer, :OGRDataSourceH
       typedef :pointer, :OGRSFDriverH
       typedef :pointer, :OGRStyleMgrH
-      typedef :pointer, :OGRStyleToolH
 
       # ~~~~~~~~~~~~~~~~
       # Layer-related
@@ -172,25 +172,6 @@ module FFI
                       :OGRStyleToolH
       attach_function :OGR_SM_AddPart, %i[OGRStyleTableH OGRStyleToolH], :int
       attach_function :OGR_SM_AddStyle, %i[OGRStyleTableH string string], :int
-
-      # ~~~~~~~~~~~~~~~~
-      # Style Tool-related
-      # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_ST_Create, [FFI::OGR::Core::STClassId], :OGRStyleToolH
-      attach_function :OGR_ST_Destroy, %i[OGRStyleToolH], :void
-      attach_function :OGR_ST_GetType, %i[OGRStyleToolH], FFI::OGR::Core::STClassId
-      attach_function :OGR_ST_GetUnit, %i[OGRStyleToolH], FFI::OGR::Core::STUnitId
-      attach_function :OGR_ST_SetUnit, [:OGRStyleToolH, FFI::OGR::Core::STUnitId, :double], :void
-      attach_function :OGR_ST_GetParamStr, %i[OGRStyleToolH int pointer], :strptr
-      attach_function :OGR_ST_GetParamNum, %i[OGRStyleToolH int pointer], :int
-      attach_function :OGR_ST_GetParamDbl, %i[OGRStyleToolH int pointer], :double
-      attach_function :OGR_ST_SetParamStr, %i[OGRStyleToolH int string], :void
-      attach_function :OGR_ST_SetParamNum, %i[OGRStyleToolH int int], :void
-      attach_function :OGR_ST_SetParamDbl, %i[OGRStyleToolH int double], :void
-      attach_function :OGR_ST_GetStyleString, %i[OGRStyleToolH], :strptr
-      attach_function :OGR_ST_GetRGBFromString,
-                      %i[OGRStyleToolH string pointer pointer pointer pointer],
-                      :bool
 
       # ~~~~~~~~~~~~~~~~
       # Main functions

@@ -1,0 +1,93 @@
+module FFI
+  module OGR
+    module API
+      extend FFI::Library
+
+      def self.OGR_ST_Create: (FFI::OGR::Core::st_class_id_symbol style_tool_class) -> FFI::Pointer
+      def self.OGR_ST_Destroy: (FFI::Pointer c_pointer) -> void
+      def self.OGR_ST_GetType: (FFI::Pointer c_pointer) -> FFI::OGR::Core::st_class_id_symbol
+      def self.OGR_ST_GetUnit: (FFI::Pointer c_pointer) -> FFI::OGR::Core::st_unit_id_symbol
+      def self.OGR_ST_SetUnit: (
+        FFI::Pointer c_pointer,
+        FFI::OGR::Core::st_unit_id_symbol,
+        Float ground_to_paper_scale_factor
+      ) -> void
+      def self.OGR_ST_GetStyleString: (FFI::Pointer c_pointer) -> String
+
+      def self.OGR_ST_GetParamStr: (
+        FFI::Pointer c_pointer,
+        (
+          FFI::OGR::Core::st_pen_param_symbol
+          | FFI::OGR::Core::st_brush_param_symbol
+          | FFI::OGR::Core::st_symbol_param_symbol
+          | FFI::OGR::Core::st_label_param_symbol
+        ) param,
+        FFI::Pointer value_is_null_ptr
+      ) -> String
+
+      def self.OGR_ST_GetParamDbl: (
+          FFI::Pointer c_pointer,
+          (
+           FFI::OGR::Core::st_pen_param_symbol
+           | FFI::OGR::Core::st_brush_param_symbol
+           | FFI::OGR::Core::st_symbol_param_symbol
+           | FFI::OGR::Core::st_label_param_symbol
+          ) param,
+          FFI::Pointer value_is_null_ptr
+      ) -> Float
+
+      def self.OGR_ST_GetParamNum: (
+          FFI::Pointer c_pointer,
+          (
+           FFI::OGR::Core::st_pen_param_symbol
+           | FFI::OGR::Core::st_brush_param_symbol
+           | FFI::OGR::Core::st_symbol_param_symbol
+           | FFI::OGR::Core::st_label_param_symbol
+          ) param,
+          FFI::Pointer value_is_null_ptr
+      ) -> Integer
+
+      def self.OGR_ST_SetParamStr: (
+          FFI::Pointer c_pointer,
+          (
+           FFI::OGR::Core::st_pen_param_symbol
+           | FFI::OGR::Core::st_brush_param_symbol
+           | FFI::OGR::Core::st_symbol_param_symbol
+           | FFI::OGR::Core::st_label_param_symbol
+          ) param,
+          String value
+      ) -> void
+
+      def self.OGR_ST_SetParamDbl: (
+          FFI::Pointer c_pointer,
+          (
+           FFI::OGR::Core::st_pen_param_symbol
+           | FFI::OGR::Core::st_brush_param_symbol
+           | FFI::OGR::Core::st_symbol_param_symbol
+           | FFI::OGR::Core::st_label_param_symbol
+          ) param,
+          Float value
+      ) -> void
+
+      def self.OGR_ST_SetParamNum: (
+          FFI::Pointer c_pointer,
+          (
+           FFI::OGR::Core::st_pen_param_symbol
+           | FFI::OGR::Core::st_brush_param_symbol
+           | FFI::OGR::Core::st_symbol_param_symbol
+           | FFI::OGR::Core::st_label_param_symbol
+          ) param,
+          Integer value
+      ) -> void
+
+      def self.OGR_ST_GetRGBFromString: (
+          FFI::Pointer c_pointer,
+          String color_to_parse,
+          FFI::Pointer red_value,
+          FFI::Pointer green_value,
+          FFI::Pointer blue_value,
+          ?FFI::Pointer alpha_value,
+      ) -> bool
+    end
+  end
+end
