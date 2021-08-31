@@ -34,6 +34,9 @@ module FFI
       attach_function :OGR_Fld_IsNullable, [:OGRFieldDefnH], :bool
       attach_function :OGR_Fld_SetNullable, %i[OGRFieldDefnH bool], :void
 
+      attach_function :OGR_Fld_SetDefault, %i[OGRFieldDefnH string], :void
+      attach_function :OGR_Fld_GetDefault, %i[OGRFieldDefnH], :string
+
       attach_function :OGR_Fld_IsDefaultDriverSpecific, %i[OGRFieldDefnH], :bool
 
       attach_function :OGR_GetFieldTypeName, [FFI::OGR::Core::FieldType], :string

@@ -180,4 +180,20 @@ RSpec.describe OGR::FieldDefinition do
   describe '#default_driver_specific?' do
     specify { expect(subject).to_not be_default_driver_specific }
   end
+
+  describe '#default, #default=' do
+    context 'default not set' do
+      specify { expect(subject.default).to be_nil }
+    end
+
+    context 'default set' do
+      before do
+        subject.default = 'meow'
+      end
+
+      specify do
+        expect(subject.default).to eq 'meow'
+      end
+    end
+  end
 end
