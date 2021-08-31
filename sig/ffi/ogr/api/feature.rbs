@@ -3,21 +3,49 @@ module FFI
     module API
       extend FFI::Library
 
-      def self.OGR_F_Destroy: (FFI::Pointer c_pointer) -> void
+      ValidationFlag: FFI::Enum
+
+      type validation_flag_symbol = (
+        :OGR_F_VAL_NULL
+        | :OGR_F_VAL_GEOM_TYPE
+        | :OGR_F_VAL_WIDTH
+        | :OGR_F_VAL_ALLOW_NULL_WHEN_DEFAULT
+        | :OGR_F_VAL_ALLOW_DIFFERENT_GEOM_DIM
+        | :OGR_F_VAL_ALL
+      )
+
       def self.OGR_F_Create: (FFI::Pointer feature_definition_ptr) -> FFI::Pointer
+      def self.OGR_F_Destroy: (FFI::Pointer c_pointer) -> void
       def self.OGR_F_Clone: (FFI::Pointer c_pointer) -> FFI::Pointer
+      def self.OGR_F_Validate: (FFI::Pointer c_pointer, Integer flags, bool emit_error) -> bool
       def self.OGR_F_DumpReadable: (FFI::Pointer c_pointer, FFI::Pointer out_ptr) -> void
+
       def self.OGR_F_SetFrom: (FFI::Pointer c_pointer, FFI::Pointer other_pointer, bool forgiving) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_F_SetFromWithMap: (
+        FFI::Pointer c_pointer,
+        FFI::Pointer other_pointer,
+        bool forgiving,
+        FFI::MemoryPointer map
+      ) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_F_GetFieldCount: (FFI::Pointer c_pointer) -> Integer
+
+      def self.OGR_F_SetFieldNull: (FFI::Pointer c_pointer, Integer field_index) -> void
       def self.OGR_F_SetFieldString: (FFI::Pointer c_pointer, Integer field_index, String value) -> void
       def self.OGR_F_SetFieldInteger: (FFI::Pointer c_pointer, Integer field_index, Integer value) -> void
+      def self.OGR_F_SetFieldInteger64: (FFI::Pointer c_pointer, Integer field_index, Integer value) -> void
       def self.OGR_F_SetFieldDouble: (FFI::Pointer c_pointer, Integer field_index, Float value) -> void
       def self.OGR_F_SetFieldStringList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer values) -> void
       def self.OGR_F_SetFieldIntegerList: (
-        FFI::Pointer c_pointer,
-        Integer field_index,
-        Integer value_count,
-        FFI::MemoryPointer values
+          FFI::Pointer c_pointer,
+          Integer field_index,
+          Integer value_count,
+          FFI::MemoryPointer values
+      ) -> void
+      def self.OGR_F_SetFieldInteger64List: (
+          FFI::Pointer c_pointer,
+          Integer field_index,
+          Integer value_count,
+          FFI::MemoryPointer values
       ) -> void
       def self.OGR_F_SetFieldDoubleList: (
         FFI::Pointer c_pointer,
@@ -46,8 +74,21 @@ module FFI
         Integer tz_flag
       ) -> void
 
+      def self.OGR_F_SetFieldDateTimeEx: (
+        FFI::Pointer c_pointer,
+        Integer field_index,
+        Integer year,
+        Integer month,
+        Integer day,
+        Integer hour,
+        Integer minute,
+        Float second,
+        Integer tz_flag
+      ) -> void
+
       def self.OGR_F_GetFieldDefnRef: (FFI::Pointer c_pointer, Integer field_index) -> FFI::Pointer
       def self.OGR_F_GetFieldIndex: (FFI::Pointer c_pointer, String field_name) -> Integer
+      def self.OGR_F_GetRawFieldRef: (FFI::Pointer c_pointer, Integer field_index) -> FFI::Pointer
       def self.OGR_F_IsFieldSet: (FFI::Pointer c_pointer, Integer field_index) -> bool
       def self.OGR_F_UnsetField: (FFI::Pointer c_pointer, Integer field_index) -> void
       def self.OGR_F_GetDefnRef: (FFI::Pointer c_pointer) -> FFI::Pointer
@@ -64,7 +105,9 @@ module FFI
       def self.OGR_F_Equal: (FFI::Pointer c_pointer, FFI::Pointer other_pointer) -> bool
 
       def self.OGR_F_GetFieldAsInteger: (FFI::Pointer c_pointer, Integer field_index) -> Integer
+      def self.OGR_F_GetFieldAsInteger64: (FFI::Pointer c_pointer, Integer field_index) -> Integer
       def self.OGR_F_GetFieldAsIntegerList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsInteger64List: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
 
       def self.OGR_F_GetFieldAsDouble: (FFI::Pointer c_pointer, Integer field_index) -> Float
       def self.OGR_F_GetFieldAsDoubleList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
@@ -88,6 +131,14 @@ module FFI
       def self.OGR_F_SetStyleString: (FFI::Pointer c_pointer, String style_string) -> void
       def self.OGR_F_GetStyleTable: (FFI::Pointer c_pointer) -> FFI::Pointer
       def self.OGR_F_SetStyleTable: (FFI::Pointer c_pointer, FFI::Pointer style_table_ptr) -> void
+      def self.OGR_F_GetNativeData: (FFI::Pointer c_pointer) -> String
+      def self.OGR_F_SetNativeData: (FFI::Pointer c_pointer, String data) -> void
+      def self.OGR_F_GetNativeMediaType: (FFI::Pointer c_pointer) -> String
+      def self.OGR_F_SetNativeMediaType: (FFI::Pointer c_pointer, String data) -> void
+      def self.OGR_F_FillUnsetWithDefault: (FFI::Pointer c_pointer, bool not_nullable_only, FFI::Pointer options) -> void
+
+      def self.OGR_F_IsFieldNull: (FFI::Pointer c_pointer, Integer field_index) -> bool
+      def self.OGR_F_IsFieldSetAndNotNull: (FFI::Pointer c_pointer, Integer field_index) -> bool
     end
   end
 end

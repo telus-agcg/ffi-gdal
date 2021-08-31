@@ -1,13 +1,9 @@
 module OGR
   class Feature
-    class AutoPointer < ::FFI::AutoPointer
-      extend _AutoPointerRelease
-    end
-
     include _HasPointer
 
     def self.create: (OGR::FeatureDefinition feature_definition) -> instance
-    def initialize: (OGR::Feature::AutoPointer | FFI::Pointer pointer) -> void
+    def initialize: (FFI::Pointer pointer) -> void
     def clone: -> instance
     def set_from!: (OGR::Feature other_feature, ?be_forgiving: bool) -> void
     def field_count: -> Integer

@@ -6,6 +6,20 @@ require_relative '../gdal'
 
 module OGR
   class Field
+    # Use for instantiating a self from a borrowed pointer (one that shouldn't
+    # be freed).
+    #
+    # @param c_pointer [String, FFI::Pointer]
+    # @return [self.class]
+    # @raise [FFI::GDAL::InvalidPointer] if +c_pointer+ is null.
+    def self.new_borrowed(c_pointer)
+      raise FFI::GDAL::InvalidPointer if c_pointer.null?
+
+      c_pointer.autorelease = false
+
+      new(FFI::OGR::Field.new(c_pointer)).freeze
+    end
+
     # @return [FFI::OGR::Point]
     attr_reader :c_struct
 
@@ -206,7 +220,7 @@ module OGR
       date[:day] = new_date.day
       date[:hour] = new_date.hour
       date[:minute] = new_date.send(:min)
-      date[:second] = new_date.send(:sec) + (new_date.to_time.usec / 1_000_000.to_f)
+      date[:second] = new_date.send(:sec) + new_date.to_time.subsec
       date[:tz_flag] = zone
 
       @c_struct[:date] = date
