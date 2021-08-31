@@ -10,12 +10,7 @@ module FFI
 
       typedef :pointer, :OGRFeatureDefnH
 
-      # ~~~~~~~~~~~~~~~~
-      # Feature Definition-related
-      # ~~~~~~~~~~~~~~~~
       attach_function :OGR_FD_Create, %i[string], :OGRFeatureDefnH
-      # TODO: wrap
-      attach_function :OGR_FD_Destroy, %i[OGRFeatureDefnH], :void
       attach_function :OGR_FD_Release, %i[OGRFeatureDefnH], :void
       attach_function :OGR_FD_GetName, %i[OGRFeatureDefnH], :string
       attach_function :OGR_FD_GetFieldCount, %i[OGRFeatureDefnH], :int
