@@ -5,7 +5,7 @@ module FFI
 
       type ogr_style_tool_h = FFI::Pointer
 
-      def self.OGR_ST_Create: (FFI::OGR::Core::st_class_id_symbol style_tool_class) -> FFI::Pointer
+      def self.OGR_ST_Create: (FFI::OGR::Core::st_class_id_symbol style_tool_class) -> ogr_style_tool_h
       def self.OGR_ST_Destroy: (ogr_style_tool_h c_pointer) -> void
       def self.OGR_ST_GetType: (ogr_style_tool_h c_pointer) -> FFI::OGR::Core::st_class_id_symbol
       def self.OGR_ST_GetUnit: (ogr_style_tool_h c_pointer) -> FFI::OGR::Core::st_unit_id_symbol

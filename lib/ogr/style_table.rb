@@ -19,7 +19,7 @@ module OGR
     def self.create
       pointer = FFI::OGR::API.OGR_STBL_Create
 
-      raise OGR::StyleTable, "Unable to create #{name}" if pointer.null?
+      raise OGR::InvalidStyleTable, "Unable to create #{name}" if pointer.null?
 
       new(OGR::StyleTable::AutoPointer.new(pointer))
     end

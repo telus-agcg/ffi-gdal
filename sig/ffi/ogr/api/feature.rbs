@@ -131,8 +131,8 @@ module FFI
 
       def self.OGR_F_GetStyleString: (ogr_feature_h c_pointer) -> String
       def self.OGR_F_SetStyleString: (ogr_feature_h c_pointer, String style_string) -> void
-      def self.OGR_F_GetStyleTable: (ogr_feature_h c_pointer) -> FFI::Pointer
-      def self.OGR_F_SetStyleTable: (ogr_feature_h c_pointer, FFI::Pointer style_table_ptr) -> void
+      def self.OGR_F_GetStyleTable: (ogr_feature_h c_pointer) -> FFI::OGR::API::ogr_style_table_h
+      def self.OGR_F_SetStyleTable: (ogr_feature_h c_pointer, FFI::OGR::API::ogr_style_table_h style_table_ptr) -> void
       def self.OGR_F_GetNativeData: (ogr_feature_h c_pointer) -> String
       def self.OGR_F_SetNativeData: (ogr_feature_h c_pointer, String data) -> void
       def self.OGR_F_GetNativeMediaType: (ogr_feature_h c_pointer) -> String
