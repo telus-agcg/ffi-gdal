@@ -153,6 +153,16 @@ module OGR
       FFI::OGR::API::OGR_Fld_SetNullable(@c_pointer, is_nullable)
     end
 
+    # @return [String, nil]
+    def default
+      FFI::OGR::API::OGR_Fld_GetDefault(@c_pointer).freeze
+    end
+
+    # @return [String, nil]
+    def default=(new_default)
+      FFI::OGR::API::OGR_Fld_SetDefault(@c_pointer, new_default)
+    end
+
     # Is the default value driver-specific?
     #
     # @return [Boolean]

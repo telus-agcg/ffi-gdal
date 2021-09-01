@@ -1,0 +1,19 @@
+module FFI
+  module OGR
+    module API
+      extend FFI::Library
+
+      type ogr_style_table_h = FFI::Pointer
+
+      def self.OGR_STBL_Create: -> ogr_style_table_h
+      def self.OGR_STBL_Destroy: (ogr_style_table_h c_pointer) -> void
+      def self.OGR_STBL_AddStyle: (ogr_style_table_h c_pointer, String style_name, String style_string) -> bool
+      def self.OGR_STBL_SaveStyleTable: (ogr_style_table_h c_pointer, String file_name) -> bool
+      def self.OGR_STBL_LoadStyleTable: (ogr_style_table_h c_pointer, String file_name) -> bool
+      def self.OGR_STBL_Find: (ogr_style_table_h c_pointer, String style_name) -> String?
+      def self.OGR_STBL_ResetStyleStringReading: (ogr_style_table_h c_pointer) -> void
+      def self.OGR_STBL_GetNextStyle: (ogr_style_table_h c_pointer) -> String?
+      def self.OGR_STBL_GetLastStyleName: (ogr_style_table_h c_pointer) -> String?
+    end
+  end
+end

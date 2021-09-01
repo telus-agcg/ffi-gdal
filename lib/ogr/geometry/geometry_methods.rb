@@ -25,22 +25,35 @@ module OGR
         FFI::OGR::API.OGR_G_GetDimension(@c_pointer)
       end
 
-      # The dimension of coordinates in this geometry (i.e. 2d vs 3d).
-      #
-      # @return [Integer] 2 or 3, but 0 in the case of an empty point.
+      # @return [Integer] 2 for XY, 3 for XYZ and XYM, and 4 for XYZM data.
       def coordinate_dimension
-        FFI::OGR::API.OGR_G_GetCoordinateDimension(@c_pointer)
+        FFI::OGR::API.OGR_G_CoordinateDimension(@c_pointer)
       end
 
       # @param new_coordinate_dimension [Integer]
-      # @raise [OGR::Failure] if +new_coordinate_dimension+ isn't 2 or 3.
+      # @raise [OGR::Failure] if +new_coordinate_dimension+ isn't 2, 3 or 4.
       def coordinate_dimension=(new_coordinate_dimension)
-        unless [2, 3].include?(new_coordinate_dimension)
-          raise OGR::Failure, "Can't set coordinate to #{new_coordinate_dimension}; must be 2 or 3."
+        unless [2, 3, 4].include?(new_coordinate_dimension)
+          raise OGR::Failure, "Can't set coordinate to #{new_coordinate_dimension}; must be 2, 3, or 4."
         end
 
         FFI::OGR::API.OGR_G_SetCoordinateDimension(@c_pointer, new_coordinate_dimension)
       end
+
+      # Does this geometry have a Z coordinate?
+      #
+      # @return [Boolean]
+      def is_3d?
+        FFI::OGR::API.OGR_G_Is3D(@c_pointer)
+      end
+
+      # Does this geometry have an M coordinate?
+      #
+      # @return [Boolean]
+      def measured?
+        FFI::OGR::API.OGR_G_IsMeasured(@c_pointer)
+      end
+      alias is_measured? measured?
 
       # @return [OGR::Envelope]
       def envelope
@@ -270,8 +283,22 @@ module OGR
       # @param other_geometry [OGR::Geometry]
       # @return [Float]
       # @raise [OGR::Failure] If an error occurs during calculation.
-      def distance_to(other_geometry)
+      def distance(other_geometry)
         result = FFI::OGR::API.OGR_G_Distance(@c_pointer, other_geometry.c_pointer)
+
+        raise OGR::Failure, 'Unable to calculate distance to other geometry' if result == -1
+
+        result
+      end
+      alias distance_to distance
+
+      # The shortest distance between the two geometries.
+      #
+      # @param other_geometry [OGR::Geometry]
+      # @return [Float]
+      # @raise [OGR::Failure] If an error occurs during calculation.
+      def distance3d(other_geometry)
+        result = FFI::OGR::API.OGR_G_Distance3D(@c_pointer, other_geometry.c_pointer)
 
         raise OGR::Failure, 'Unable to calculate distance to other geometry' if result == -1
 

@@ -58,9 +58,18 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
       end
     end
 
-    context 'setting to not 2 or 3' do
+    context 'setting to 4' do
+      it 'is allowed for any geometry' do
+        pending 'Wrapping M-geometry types'
+
+        subject.coordinate_dimension = 4
+        expect(subject.coordinate_dimension).to eq(4)
+      end
+    end
+
+    context 'setting to not 2, 3 or 4' do
       it 'raises a OGR::Failure' do
-        expect { subject.coordinate_dimension = 4 }.to raise_exception OGR::Failure
+        expect { subject.coordinate_dimension = 5 }.to raise_exception OGR::Failure
       end
     end
   end
@@ -370,18 +379,18 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
     end
   end
 
-  describe '#distance_to' do
+  describe '#distance' do
     context 'self' do
-      specify { expect(subject.distance_to(subject.clone)).to be_zero }
+      specify { expect(subject.distance(subject.clone)).to be_zero }
     end
 
     context 'other geometry is empty' do
-      specify { expect(subject.distance_to(described_class.new)).to be_zero }
+      specify { expect(subject.distance(described_class.new)).to be_zero }
     end
 
     context 'other geometry is valid' do
       let(:other) { OGR::Point.new_from_coordinates(180, 180) }
-      specify { expect(subject.distance_to(other)).to be > 0 }
+      specify { expect(subject.distance(other)).to be > 0 }
     end
   end
 

@@ -156,7 +156,7 @@ module GDAL
       value = FFI::GDAL::GDAL.GDALGetRasterNoDataValue(@c_pointer, associated)
       value = nil if value.to_d == -10_000_000_000.0.to_d
 
-      { value: value, is_associated: associated.read_bytes(1).to_bool }
+      { value: value, is_associated: associated.read(:bool) }
     end
 
     # Sets the no data value for this band.  Do nothing if attempting to set to nil, because removing a no data value
@@ -351,7 +351,7 @@ module GDAL
       success = FFI::MemoryPointer.new(:bool)
       result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, success)
 
-      raise GDAL::Error, 'GDALGetRasterScale failed' unless success.read_bytes(1).to_bool
+      raise GDAL::Error, 'GDALGetRasterScale failed' unless success.read(:bool)
 
       result
     end
@@ -380,7 +380,7 @@ module GDAL
       success = FFI::MemoryPointer.new(:bool)
       result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, success)
 
-      raise GDAL::Error, 'GDALGetRasterOffset failed' unless success.read_bytes(1).to_bool
+      raise GDAL::Error, 'GDALGetRasterOffset failed' unless success.read(:bool)
 
       result
     end
@@ -734,7 +734,7 @@ module GDAL
       is_tight = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL::GDAL.GDALGetRasterMinimum(@c_pointer, is_tight)
 
-      { value: value, is_tight: is_tight.read_bytes(1).to_bool }
+      { value: value, is_tight: is_tight.read(:bool) }
     end
 
     # The maximum value in the band, not counting NODATA values. For file
@@ -747,7 +747,7 @@ module GDAL
       is_tight = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL::GDAL.GDALGetRasterMaximum(@c_pointer, is_tight)
 
-      { value: value, is_tight: is_tight.read_bytes(1).to_bool }
+      { value: value, is_tight: is_tight.read(:bool) }
     end
 
     private

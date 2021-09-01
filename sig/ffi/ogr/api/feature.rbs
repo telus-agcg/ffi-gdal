@@ -5,6 +5,8 @@ module FFI
 
       ValidationFlag: FFI::Enum
 
+      type ogr_feature_h = FFI::Pointer
+
       type validation_flag_symbol = (
         :OGR_F_VAL_NULL
         | :OGR_F_VAL_GEOM_TYPE
@@ -14,56 +16,56 @@ module FFI
         | :OGR_F_VAL_ALL
       )
 
-      def self.OGR_F_Create: (FFI::Pointer feature_definition_ptr) -> FFI::Pointer
-      def self.OGR_F_Destroy: (FFI::Pointer c_pointer) -> void
-      def self.OGR_F_Clone: (FFI::Pointer c_pointer) -> FFI::Pointer
-      def self.OGR_F_Validate: (FFI::Pointer c_pointer, Integer flags, bool emit_error) -> bool
-      def self.OGR_F_DumpReadable: (FFI::Pointer c_pointer, FFI::Pointer out_ptr) -> void
+      def self.OGR_F_Create: (FFI::OGR::API::ogr_feature_defn_h feature_definition_ptr) -> ogr_feature_h
+      def self.OGR_F_Destroy: (ogr_feature_h c_pointer) -> void
+      def self.OGR_F_Clone: (ogr_feature_h c_pointer) -> ogr_feature_h
+      def self.OGR_F_Validate: (ogr_feature_h c_pointer, Integer flags, bool emit_error) -> bool
+      def self.OGR_F_DumpReadable: (ogr_feature_h c_pointer, FFI::Pointer out_ptr) -> void
 
-      def self.OGR_F_SetFrom: (FFI::Pointer c_pointer, FFI::Pointer other_pointer, bool forgiving) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_F_SetFrom: (ogr_feature_h c_pointer, ogr_feature_h other_pointer, bool forgiving) -> FFI::OGR::Core::ogr_err_symbol
       def self.OGR_F_SetFromWithMap: (
-        FFI::Pointer c_pointer,
-        FFI::Pointer other_pointer,
+        ogr_feature_h c_pointer,
+        ogr_feature_h other_pointer,
         bool forgiving,
         FFI::MemoryPointer map
       ) -> FFI::OGR::Core::ogr_err_symbol
-      def self.OGR_F_GetFieldCount: (FFI::Pointer c_pointer) -> Integer
+      def self.OGR_F_GetFieldCount: (ogr_feature_h c_pointer) -> Integer
 
-      def self.OGR_F_SetFieldNull: (FFI::Pointer c_pointer, Integer field_index) -> void
-      def self.OGR_F_SetFieldString: (FFI::Pointer c_pointer, Integer field_index, String value) -> void
-      def self.OGR_F_SetFieldInteger: (FFI::Pointer c_pointer, Integer field_index, Integer value) -> void
-      def self.OGR_F_SetFieldInteger64: (FFI::Pointer c_pointer, Integer field_index, Integer value) -> void
-      def self.OGR_F_SetFieldDouble: (FFI::Pointer c_pointer, Integer field_index, Float value) -> void
-      def self.OGR_F_SetFieldStringList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer values) -> void
+      def self.OGR_F_SetFieldNull: (ogr_feature_h c_pointer, Integer field_index) -> void
+      def self.OGR_F_SetFieldString: (ogr_feature_h c_pointer, Integer field_index, String value) -> void
+      def self.OGR_F_SetFieldInteger: (ogr_feature_h c_pointer, Integer field_index, Integer value) -> void
+      def self.OGR_F_SetFieldInteger64: (ogr_feature_h c_pointer, Integer field_index, Integer value) -> void
+      def self.OGR_F_SetFieldDouble: (ogr_feature_h c_pointer, Integer field_index, Float value) -> void
+      def self.OGR_F_SetFieldStringList: (ogr_feature_h c_pointer, Integer field_index, FFI::MemoryPointer values) -> void
       def self.OGR_F_SetFieldIntegerList: (
-          FFI::Pointer c_pointer,
+          ogr_feature_h c_pointer,
           Integer field_index,
           Integer value_count,
           FFI::MemoryPointer values
       ) -> void
       def self.OGR_F_SetFieldInteger64List: (
-          FFI::Pointer c_pointer,
+          ogr_feature_h c_pointer,
           Integer field_index,
           Integer value_count,
           FFI::MemoryPointer values
       ) -> void
       def self.OGR_F_SetFieldDoubleList: (
-        FFI::Pointer c_pointer,
+        ogr_feature_h c_pointer,
         Integer field_index,
         Integer value_count,
         FFI::MemoryPointer values
       ) -> void
 
-      def self.OGR_F_SetFieldRaw: (FFI::Pointer c_pointer, Integer field_index, FFI::Pointer field_pointer) -> void
+      def self.OGR_F_SetFieldRaw: (ogr_feature_h c_pointer, Integer field_index, FFI::Pointer field_pointer) -> void
       def self.OGR_F_SetFieldBinary: (
-        FFI::Pointer c_pointer,
+        ogr_feature_h c_pointer,
         Integer field_index,
         Integer byte_count,
         FFI::MemoryPointer data
       ) -> void
 
       def self.OGR_F_SetFieldDateTime: (
-        FFI::Pointer c_pointer,
+        ogr_feature_h c_pointer,
         Integer field_index,
         Integer year,
         Integer month,
@@ -75,7 +77,7 @@ module FFI
       ) -> void
 
       def self.OGR_F_SetFieldDateTimeEx: (
-        FFI::Pointer c_pointer,
+        ogr_feature_h c_pointer,
         Integer field_index,
         Integer year,
         Integer month,
@@ -86,37 +88,37 @@ module FFI
         Integer tz_flag
       ) -> void
 
-      def self.OGR_F_GetFieldDefnRef: (FFI::Pointer c_pointer, Integer field_index) -> FFI::Pointer
-      def self.OGR_F_GetFieldIndex: (FFI::Pointer c_pointer, String field_name) -> Integer
-      def self.OGR_F_GetRawFieldRef: (FFI::Pointer c_pointer, Integer field_index) -> FFI::Pointer
-      def self.OGR_F_IsFieldSet: (FFI::Pointer c_pointer, Integer field_index) -> bool
-      def self.OGR_F_UnsetField: (FFI::Pointer c_pointer, Integer field_index) -> void
-      def self.OGR_F_GetDefnRef: (FFI::Pointer c_pointer) -> FFI::Pointer
-      def self.OGR_F_GetGeometryRef: (FFI::Pointer c_pointer) -> FFI::Pointer
-      def self.OGR_F_SetGeometry: (FFI::Pointer c_pointer, FFI::Pointer geometry_ptr) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
-      def self.OGR_F_StealGeometry: (FFI::Pointer c_pointer) -> FFI::Pointer
-      def self.OGR_F_GetFID: (FFI::Pointer c_pointer) -> Integer
-      def self.OGR_F_SetFID: (FFI::Pointer c_pointer, Integer new_feature_identifier) -> FFI::OGR::Core::ogr_err_symbol
-      def self.OGR_F_GetGeomFieldCount: (FFI::Pointer c_pointer) -> Integer
-      def self.OGR_F_GetGeomFieldDefnRef: (FFI::Pointer c_pointer, Integer geometry_field_index) -> FFI::Pointer
-      def self.OGR_F_GetGeomFieldIndex: (FFI::Pointer c_pointer, String geometry_field_name) -> Integer
-      def self.OGR_F_GetGeomFieldRef: (FFI::Pointer c_pointer, Integer geometry_field_index) -> FFI::Pointer
-      def self.OGR_F_SetGeomField: (FFI::Pointer, Integer geometry_field_index, FFI::Pointer geometry_ptr) -> void
-      def self.OGR_F_Equal: (FFI::Pointer c_pointer, FFI::Pointer other_pointer) -> bool
+      def self.OGR_F_GetFieldDefnRef: (ogr_feature_h c_pointer, Integer field_index) -> FFI::OGR::API::ogr_field_defn_h
+      def self.OGR_F_GetFieldIndex: (ogr_feature_h c_pointer, String field_name) -> Integer
+      def self.OGR_F_GetRawFieldRef: (ogr_feature_h c_pointer, Integer field_index) -> FFI::Pointer
+      def self.OGR_F_IsFieldSet: (ogr_feature_h c_pointer, Integer field_index) -> bool
+      def self.OGR_F_UnsetField: (ogr_feature_h c_pointer, Integer field_index) -> void
+      def self.OGR_F_GetDefnRef: (ogr_feature_h c_pointer) -> FFI::OGR::API::ogr_feature_defn_h
+      def self.OGR_F_GetGeometryRef: (ogr_feature_h c_pointer) -> FFI::OGR::API::ogr_geometry_h
+      def self.OGR_F_SetGeometry: (ogr_feature_h c_pointer, FFI::OGR::API::ogr_geometry_h geometry_ptr) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
+      def self.OGR_F_StealGeometry: (ogr_feature_h c_pointer) -> FFI::OGR::API::ogr_geometry_h
+      def self.OGR_F_GetFID: (ogr_feature_h c_pointer) -> Integer
+      def self.OGR_F_SetFID: (ogr_feature_h c_pointer, Integer new_feature_identifier) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OGR_F_GetGeomFieldCount: (ogr_feature_h c_pointer) -> Integer
+      def self.OGR_F_GetGeomFieldDefnRef: (ogr_feature_h c_pointer, Integer geometry_field_index) -> FFI::OGR::API::ogr_geom_field_defn_h
+      def self.OGR_F_GetGeomFieldIndex: (ogr_feature_h c_pointer, String geometry_field_name) -> Integer
+      def self.OGR_F_GetGeomFieldRef: (ogr_feature_h c_pointer, Integer geometry_field_index) -> FFI::OGR::API::ogr_geometry_h
+      def self.OGR_F_SetGeomField: (ogr_feature_h c_pointer, Integer geometry_field_index, FFI::OGR::API::ogr_geometry_h geometry_ptr) -> void
+      def self.OGR_F_Equal: (ogr_feature_h c_pointer, ogr_feature_h other_pointer) -> bool
 
-      def self.OGR_F_GetFieldAsInteger: (FFI::Pointer c_pointer, Integer field_index) -> Integer
-      def self.OGR_F_GetFieldAsInteger64: (FFI::Pointer c_pointer, Integer field_index) -> Integer
-      def self.OGR_F_GetFieldAsIntegerList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
-      def self.OGR_F_GetFieldAsInteger64List: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsInteger: (ogr_feature_h c_pointer, Integer field_index) -> Integer
+      def self.OGR_F_GetFieldAsInteger64: (ogr_feature_h c_pointer, Integer field_index) -> Integer
+      def self.OGR_F_GetFieldAsIntegerList: (ogr_feature_h c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsInteger64List: (ogr_feature_h c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
 
-      def self.OGR_F_GetFieldAsDouble: (FFI::Pointer c_pointer, Integer field_index) -> Float
-      def self.OGR_F_GetFieldAsDoubleList: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsDouble: (ogr_feature_h c_pointer, Integer field_index) -> Float
+      def self.OGR_F_GetFieldAsDoubleList: (ogr_feature_h c_pointer, Integer field_index, FFI::MemoryPointer count_in_list) -> FFI::Pointer
 
-      def self.OGR_F_GetFieldAsString: (FFI::Pointer c_pointer, Integer field_index) -> String
-      def self.OGR_F_GetFieldAsStringList: (FFI::Pointer c_pointer, Integer field_index) -> FFI::Pointer
-      def self.OGR_F_GetFieldAsBinary: (FFI::Pointer c_pointer, Integer field_index, FFI::MemoryPointer byte_count) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsString: (ogr_feature_h c_pointer, Integer field_index) -> String
+      def self.OGR_F_GetFieldAsStringList: (ogr_feature_h c_pointer, Integer field_index) -> FFI::Pointer
+      def self.OGR_F_GetFieldAsBinary: (ogr_feature_h c_pointer, Integer field_index, FFI::MemoryPointer byte_count) -> FFI::Pointer
       def self.OGR_F_GetFieldAsDateTime: (
-        FFI::Pointer c_pointer,
+        ogr_feature_h c_pointer,
         Integer field_index,
         FFI::MemoryPointer year,
         FFI::MemoryPointer month,
@@ -127,18 +129,18 @@ module FFI
         FFI::MemoryPointer tz_flag
       ) -> bool
 
-      def self.OGR_F_GetStyleString: (FFI::Pointer c_pointer) -> String
-      def self.OGR_F_SetStyleString: (FFI::Pointer c_pointer, String style_string) -> void
-      def self.OGR_F_GetStyleTable: (FFI::Pointer c_pointer) -> FFI::Pointer
-      def self.OGR_F_SetStyleTable: (FFI::Pointer c_pointer, FFI::Pointer style_table_ptr) -> void
-      def self.OGR_F_GetNativeData: (FFI::Pointer c_pointer) -> String
-      def self.OGR_F_SetNativeData: (FFI::Pointer c_pointer, String data) -> void
-      def self.OGR_F_GetNativeMediaType: (FFI::Pointer c_pointer) -> String
-      def self.OGR_F_SetNativeMediaType: (FFI::Pointer c_pointer, String data) -> void
-      def self.OGR_F_FillUnsetWithDefault: (FFI::Pointer c_pointer, bool not_nullable_only, FFI::Pointer options) -> void
+      def self.OGR_F_GetStyleString: (ogr_feature_h c_pointer) -> String
+      def self.OGR_F_SetStyleString: (ogr_feature_h c_pointer, String style_string) -> void
+      def self.OGR_F_GetStyleTable: (ogr_feature_h c_pointer) -> FFI::OGR::API::ogr_style_table_h
+      def self.OGR_F_SetStyleTable: (ogr_feature_h c_pointer, FFI::OGR::API::ogr_style_table_h style_table_ptr) -> void
+      def self.OGR_F_GetNativeData: (ogr_feature_h c_pointer) -> String
+      def self.OGR_F_SetNativeData: (ogr_feature_h c_pointer, String data) -> void
+      def self.OGR_F_GetNativeMediaType: (ogr_feature_h c_pointer) -> String
+      def self.OGR_F_SetNativeMediaType: (ogr_feature_h c_pointer, String data) -> void
+      def self.OGR_F_FillUnsetWithDefault: (ogr_feature_h c_pointer, bool not_nullable_only, FFI::Pointer options) -> void
 
-      def self.OGR_F_IsFieldNull: (FFI::Pointer c_pointer, Integer field_index) -> bool
-      def self.OGR_F_IsFieldSetAndNotNull: (FFI::Pointer c_pointer, Integer field_index) -> bool
+      def self.OGR_F_IsFieldNull: (ogr_feature_h c_pointer, Integer field_index) -> bool
+      def self.OGR_F_IsFieldSetAndNotNull: (ogr_feature_h c_pointer, Integer field_index) -> bool
     end
   end
 end

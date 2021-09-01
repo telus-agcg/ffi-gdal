@@ -12,8 +12,8 @@ module OGR
       #---------------------------
       # Getter/setters
       #---------------------------
-      def coordinate_dimension: -> (2 | 3)
-      def coordinate_dimension=: (2 | 3 new_coordinate_dimension) -> void
+      def coordinate_dimension: -> (2 | 3 | 4)
+      def coordinate_dimension=: ((2 | 3 | 4) new_coordinate_dimension) -> void
       def dimension: -> (0 | 1 | 2)
       def dump_readable: (?String ?file_path, ?prefix: String?) -> void
       def empty!: -> void

@@ -1,11 +1,37 @@
 module FFI
   class Pointer < FFI::AbstractMemory
+    include _Inspect
+
     def initialize:
       (instance pointer)                     -> void
     | (FFI::Type type_name, Integer address) -> void
 
     def autorelease=: (bool autorelease) -> bool
+    def free: -> self
     def null?: -> bool
-    def read_array_of_type: (FFI::Type ffi_type, Symbol reader_method, Numeric length) -> Array[Float]
+
+    def read: ((FFI::Type | FFI::Type::builtin_symbol) ffi_type) -> (bool | Float | Integer | String | FFI::Pointer)
+    def read_string: (?Integer ?len) -> String
+    def read_string_length: (Integer len) -> String
+    def read_string_to_null: -> String
+
+    def read_array_of_type: (
+      (FFI::Type | FFI::Type::builtin_symbol) ffi_type,
+      Symbol reader_method,
+      Numeric length
+    ) -> Array[Float]
+
+    def write: (FFI::Type::builtin_symbol ffi_type, (bool | Float | Integer | String | FFI::Pointer) value) -> void
+    def write_string: (String str, ?Integer ?len) -> self
+    def write_string_length: (String str, Integer len) -> self
+
+    def write_array_of_type: (
+      (FFI::Type | FFI::Type::builtin_symbol) ffi_type,
+      Symbol writer_method,
+      Array[(bool | Float | Integer | String | FFI::Pointer)] values
+    ) -> void
+
+    def slice: (Integer offset, Integer length) -> FFI::Pointer
+    def type_size: -> Integer
   end
 end

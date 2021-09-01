@@ -8,6 +8,8 @@ require_relative 'api/geometry_field_definition'
 require_relative 'api/feature_definition'
 require_relative 'api/style_table'
 require_relative 'api/feature'
+require_relative 'api/style_tool'
+require_relative 'api/style_manager'
 
 module FFI
   module OGR
@@ -22,8 +24,6 @@ module FFI
       typedef :pointer, :OGRLayerH
       typedef :pointer, :OGRDataSourceH
       typedef :pointer, :OGRSFDriverH
-      typedef :pointer, :OGRStyleMgrH
-      typedef :pointer, :OGRStyleToolH
 
       # ~~~~~~~~~~~~~~~~
       # Layer-related
@@ -51,7 +51,7 @@ module FFI
       attach_function :OGR_L_GetLayerDefn, %i[OGRLayerH], :OGRFeatureDefnH
       attach_function :OGR_L_GetSpatialRef, %i[OGRLayerH], FFI::OGR::SRSAPI.find_type(:OGRSpatialReferenceH)
       attach_function :OGR_L_FindFieldIndex, %i[OGRLayerH string bool], :int
-      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int
+      attach_function :OGR_L_GetFeatureCount, %i[OGRLayerH bool], :int64
 
       attach_function :OGR_L_GetExtent, [:OGRLayerH, FFI::OGR::Envelope.ptr, :bool], FFI::OGR::Core::Err
       attach_function :OGR_L_GetExtentEx,
@@ -157,40 +157,6 @@ module FFI
                       %i[OGRSFDriverH OGRDataSourceH string pointer],
                       :OGRDataSourceH
       attach_function :OGR_Dr_DeleteDataSource, %i[OGRSFDriverH string], FFI::OGR::Core::Err
-
-      # ~~~~~~~~~~~~~~~~
-      # Style Manager-related
-      # ~~~~~~~~~~~~~~~~
-      # TODO: wrap
-      attach_function :OGR_SM_Create, %i[OGRStyleTableH], :OGRStyleMgrH
-      attach_function :OGR_SM_Destroy, %i[OGRStyleTableH], :void
-      attach_function :OGR_SM_InitFromFeature, %i[OGRStyleTableH OGRFeatureH], :strptr
-      attach_function :OGR_SM_InitStyleString, %i[OGRStyleTableH string], :int
-      attach_function :OGR_SM_GetPartCount, %i[OGRStyleTableH string], :int
-      attach_function :OGR_SM_GetPart,
-                      %i[OGRStyleTableH int string],
-                      :OGRStyleToolH
-      attach_function :OGR_SM_AddPart, %i[OGRStyleTableH OGRStyleToolH], :int
-      attach_function :OGR_SM_AddStyle, %i[OGRStyleTableH string string], :int
-
-      # ~~~~~~~~~~~~~~~~
-      # Style Tool-related
-      # ~~~~~~~~~~~~~~~~
-      attach_function :OGR_ST_Create, [FFI::OGR::Core::STClassId], :OGRStyleToolH
-      attach_function :OGR_ST_Destroy, %i[OGRStyleToolH], :void
-      attach_function :OGR_ST_GetType, %i[OGRStyleToolH], FFI::OGR::Core::STClassId
-      attach_function :OGR_ST_GetUnit, %i[OGRStyleToolH], FFI::OGR::Core::STUnitId
-      attach_function :OGR_ST_SetUnit, [:OGRStyleToolH, FFI::OGR::Core::STUnitId, :double], :void
-      attach_function :OGR_ST_GetParamStr, %i[OGRStyleToolH int pointer], :strptr
-      attach_function :OGR_ST_GetParamNum, %i[OGRStyleToolH int pointer], :int
-      attach_function :OGR_ST_GetParamDbl, %i[OGRStyleToolH int pointer], :double
-      attach_function :OGR_ST_SetParamStr, %i[OGRStyleToolH int string], :void
-      attach_function :OGR_ST_SetParamNum, %i[OGRStyleToolH int int], :void
-      attach_function :OGR_ST_SetParamDbl, %i[OGRStyleToolH int double], :void
-      attach_function :OGR_ST_GetStyleString, %i[OGRStyleToolH], :strptr
-      attach_function :OGR_ST_GetRGBFromString,
-                      %i[OGRStyleToolH string pointer pointer pointer pointer],
-                      :bool
 
       # ~~~~~~~~~~~~~~~~
       # Main functions

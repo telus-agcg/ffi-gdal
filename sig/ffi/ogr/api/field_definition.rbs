@@ -3,28 +3,34 @@ module FFI
     module API
       extend FFI::Library
 
-      def self.OGR_Fld_Create: (String field_name, FFI::OGR::Core::ogr_field_type_symbol field_type) -> FFI::Pointer
-      def self.OGR_Fld_Destroy: (FFI::Pointer field_def_pointer) -> void
-      def self.OGR_Fld_SetName: (FFI::Pointer field_def_pointer, String new_name) -> void
-      def self.OGR_Fld_GetNameRef: (FFI::Pointer field_def_pointer) -> String
-      def self.OGR_Fld_GetType: (FFI::Pointer field_def_pointer) -> FFI::OGR::Core::ogr_field_type_symbol
-      def self.OGR_Fld_SetType: (FFI::Pointer field_def_pointer, FFI::OGR::Core::ogr_field_type_symbol field_type) -> void
-      def self.OGR_Fld_GetJustify: (FFI::Pointer field_def_pointer) -> FFI::OGR::Core::ogr_justification_symbol
-      def self.OGR_Fld_SetJustify: (FFI::Pointer field_def_pointer, FFI::OGR::Core::ogr_justification_symbol justification) -> void
-      def self.OGR_Fld_GetWidth: (FFI::Pointer field_def_pointer) -> Integer
-      def self.OGR_Fld_SetWidth: (FFI::Pointer field_def_pointer, Integer width) -> void
-      def self.OGR_Fld_GetPrecision: (FFI::Pointer field_def_pointer) -> Integer
-      def self.OGR_Fld_SetPrecision: (FFI::Pointer field_def_pointer, Integer precision) -> void
-      def self.OGR_Fld_IsIgnored: (FFI::Pointer field_def_pointer) -> bool
-      def self.OGR_Fld_SetIgnored: (FFI::Pointer field_def_pointer, bool ignore) -> void
-      def self.OGR_Fld_GetSubType: (FFI::Pointer field_def_pointer) -> FFI::OGR::Core::ogr_field_sub_type_symbol
-      def self.OGR_Fld_SetSubType: (FFI::Pointer field_def_pointer, FFI::OGR::Core::ogr_field_sub_type_symbol) -> void
-      def self.OGR_Fld_IsNullable: (FFI::Pointer field_def_pointer) -> bool
-      def self.OGR_Fld_SetNullable: (FFI::Pointer field_def_pointer, bool is_nullable) -> void
-      def self.OGR_Fld_IsDefaultDriverSpecific: (FFI::Pointer field_def_pointer) -> bool
+      type ogr_field_defn_h = FFI::Pointer
+
+      def self.OGR_Fld_Create: (String field_name, FFI::OGR::Core::ogr_field_type_symbol field_type) -> ogr_field_defn_h
+      def self.OGR_Fld_Destroy: (ogr_field_defn_h c_pointer) -> void
+      def self.OGR_Fld_SetName: (ogr_field_defn_h c_pointer, String new_name) -> void
+      def self.OGR_Fld_GetNameRef: (ogr_field_defn_h c_pointer) -> String
+      def self.OGR_Fld_GetType: (ogr_field_defn_h c_pointer) -> FFI::OGR::Core::ogr_field_type_symbol
+      def self.OGR_Fld_SetType: (ogr_field_defn_h c_pointer, FFI::OGR::Core::ogr_field_type_symbol field_type) -> void
+      def self.OGR_Fld_GetJustify: (ogr_field_defn_h c_pointer) -> FFI::OGR::Core::ogr_justification_symbol
+      def self.OGR_Fld_SetJustify: (ogr_field_defn_h c_pointer, FFI::OGR::Core::ogr_justification_symbol justification) -> void
+      def self.OGR_Fld_GetWidth: (ogr_field_defn_h c_pointer) -> Integer
+      def self.OGR_Fld_SetWidth: (ogr_field_defn_h c_pointer, Integer width) -> void
+      def self.OGR_Fld_GetPrecision: (ogr_field_defn_h c_pointer) -> Integer
+      def self.OGR_Fld_SetPrecision: (ogr_field_defn_h c_pointer, Integer precision) -> void
+      def self.OGR_Fld_IsIgnored: (ogr_field_defn_h c_pointer) -> bool
+      def self.OGR_Fld_SetIgnored: (ogr_field_defn_h c_pointer, bool ignore) -> void
+      def self.OGR_Fld_GetSubType: (ogr_field_defn_h c_pointer) -> FFI::OGR::Core::ogr_field_sub_type_symbol
+      def self.OGR_Fld_SetSubType: (ogr_field_defn_h c_pointer, FFI::OGR::Core::ogr_field_sub_type_symbol) -> void
+      def self.OGR_Fld_IsNullable: (ogr_field_defn_h c_pointer) -> bool
+      def self.OGR_Fld_SetNullable: (ogr_field_defn_h c_pointer, bool is_nullable) -> void
+
+      def self.OGR_Fld_GetDefault: (ogr_field_defn_h c_pointer) -> String?
+      def self.OGR_Fld_SetDefault: (ogr_field_defn_h c_pointer, String default) -> void
+
+      def self.OGR_Fld_IsDefaultDriverSpecific: (ogr_field_defn_h c_pointer) -> bool
 
       def self.OGR_Fld_Set: (
-          FFI::Pointer field_def_pointer,
+          ogr_field_defn_h c_pointer,
           String field_name,
           FFI::OGR::Core::ogr_field_type_symbol field_type,
           Integer ?width,
