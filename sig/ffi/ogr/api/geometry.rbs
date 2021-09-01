@@ -60,7 +60,7 @@ module FFI
       ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_GEOMETRY_TYPE)
 
       def self.OGR_G_Empty: (ogr_geometry_h c_pointer) -> void
-      def self.OGR_G_GetCoordinateDimension: (ogr_geometry_h c_pointer) -> (2 | 3)
+      def self.OGR_G_CoordinateDimension: (ogr_geometry_h c_pointer) -> (2 | 3 | 4)
       def self.OGR_G_GetDimension: (ogr_geometry_h c_pointer) -> (0 | 1 | 2)
       def self.OGR_G_GetEnvelope3D: (ogr_geometry_h c_pointer, FFI::OGR::Envelope3D out_envelope) -> void
       def self.OGR_G_GetEnvelope: (ogr_geometry_h c_pointer, FFI::OGR::Envelope out_envelope) -> void
@@ -87,7 +87,7 @@ module FFI
       def self.OGR_G_GetY: (ogr_geometry_h c_pointer, Integer index) -> Float
       def self.OGR_G_GetZ: (ogr_geometry_h c_pointer, Integer index) -> Float
       def self.OGR_G_GetSpatialReference: (ogr_geometry_h c_pointer) -> FFI::Pointer
-      def self.OGR_G_Value: (ogr_geometry_h c_pointer, FFI::floatable distance) -> FFI::Pointer
+      def self.OGR_G_Value: (ogr_geometry_h c_pointer, FFI::floatable distance) -> ogr_geometry_h
 
       def self.OGR_G_RemoveGeometry: (
           ogr_geometry_h c_pointer,
@@ -95,7 +95,7 @@ module FFI
           bool should_destroy
       ) -> (:OGRERR_NONE | :OGRERR_FAILURE)
 
-      def self.OGR_G_SetCoordinateDimension: (ogr_geometry_h c_pointer, (2 | 3) new_coord_count) -> void
+      def self.OGR_G_SetCoordinateDimension: (ogr_geometry_h c_pointer, (2 | 3 | 4) new_coord_count) -> void
       def self.OGR_G_SetPoint: (ogr_geometry_h c_pointer, Integer vertex_index, FFI::floatable x, FFI::floatable y, FFI::floatable z) -> void
       def self.OGR_G_SetPointCount: (ogr_geometry_h c_pointer, Integer new_point_count) -> void
       def self.OGR_G_SetPoint_2D: (ogr_geometry_h c_pointer, Integer vertex_index, FFI::floatable x, FFI::floatable y) -> void
@@ -109,6 +109,7 @@ module FFI
       def self.OGR_G_Buffer: (ogr_geometry_h c_pointer, FFI::floatable distance, Integer quad_segments) -> ogr_geometry_h
       def self.OGR_G_CloseRings: (ogr_geometry_h c_pointer) -> void
       def self.OGR_G_Distance: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> Float
+      def self.OGR_G_Distance3D: (ogr_geometry_h lhs, ogr_geometry_h rhs) -> Float
       def self.OGR_G_ImportFromWkb: (ogr_geometry_h c_pointer, FFI::Pointer wkb, Integer wkb_size) -> Float
       def self.OGR_G_ImportFromWkt: (ogr_geometry_h c_pointer, FFI::Pointer wkt) -> Float
       def self.OGR_G_Segmentize: (ogr_geometry_h c_pointer, FFI::floatable max_length) -> void
@@ -122,6 +123,8 @@ module FFI
       def self.OGR_G_IsRing: (ogr_geometry_h c_pointer) -> bool
       def self.OGR_G_IsSimple: (ogr_geometry_h c_pointer) -> bool
       def self.OGR_G_IsValid: (ogr_geometry_h c_pointer) -> bool
+      def self.OGR_G_Is3D: (ogr_geometry_h c_pointer) -> bool
+      def self.OGR_G_IsMeasured: (ogr_geometry_h c_pointer) -> bool
 
       #---------------------------
       # Exporters

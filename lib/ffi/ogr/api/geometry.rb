@@ -42,7 +42,7 @@ module FFI
                       :OGRGeometryH
 
       attach_function :OGR_G_GetDimension, %i[OGRGeometryH], :int
-      attach_function :OGR_G_GetCoordinateDimension, %i[OGRGeometryH], :int
+      attach_function :OGR_G_CoordinateDimension, %i[OGRGeometryH], :int
       attach_function :OGR_G_SetCoordinateDimension, %i[OGRGeometryH int], :void
       attach_function :OGR_G_Clone, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_GetEnvelope,
@@ -143,6 +143,9 @@ module FFI
       attach_function :OGR_G_Distance,
                       %i[OGRGeometryH OGRGeometryH],
                       :double
+      attach_function :OGR_G_Distance3D,
+                      %i[OGRGeometryH OGRGeometryH],
+                      :double
       attach_function :OGR_G_Length,
                       %i[OGRGeometryH],
                       :double
@@ -154,10 +157,13 @@ module FFI
                       :int
       attach_function :OGR_G_Value, %i[OGRGeometryH double], :OGRGeometryH
       attach_function :OGR_G_Empty, %i[OGRGeometryH], :void
+
       attach_function :OGR_G_IsEmpty, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsValid, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsSimple, %i[OGRGeometryH], :bool
       attach_function :OGR_G_IsRing, %i[OGRGeometryH], :bool
+      attach_function :OGR_G_Is3D, %i[OGRGeometryH], :bool
+      attach_function :OGR_G_IsMeasured, %i[OGRGeometryH], :bool
 
       attach_function :OGR_G_Polygonize, %i[OGRGeometryH], :OGRGeometryH
       attach_function :OGR_G_GetPointCount, %i[OGRGeometryH], :int
