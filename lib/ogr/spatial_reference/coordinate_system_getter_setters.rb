@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module CoordinateSystemGetterSetters
       # Set the user-visible LOCAL_CS name.
       #

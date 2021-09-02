@@ -2,12 +2,6 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
-require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
-require_relative 'spatial_reference_mixins/exporters'
-require_relative 'spatial_reference_mixins/importers'
-require_relative 'spatial_reference_mixins/morphers'
-require_relative 'spatial_reference_mixins/parameter_getter_setters'
-require_relative 'spatial_reference_mixins/type_checks'
 require_relative 'new_borrowed'
 
 module OGR
@@ -15,6 +9,19 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    autoload :CoordinateSystemGetterSetters,
+             File.expand_path('spatial_reference/coordinate_system_getter_setters', __dir__ || '')
+    autoload :Exporters,
+             File.expand_path('spatial_reference/exporters', __dir__ || '')
+    autoload :Importers,
+             File.expand_path('spatial_reference/importers', __dir__ || '')
+    autoload :Morphers,
+             File.expand_path('spatial_reference/morphers', __dir__ || '')
+    autoload :ParameterGetterSetters,
+             File.expand_path('spatial_reference/parameter_getter_setters', __dir__ || '')
+    autoload :TypeChecks,
+             File.expand_path('spatial_reference/type_checks', __dir__ || '')
+
     class AutoPointer < ::FFI::AutoPointer
       # @param pointer [FFI::Pointer]
       def self.release(pointer)
@@ -61,12 +68,12 @@ module OGR
 
     extend OGR::NewBorrowed
     include GDAL::Logger
-    include SpatialReferenceMixins::CoordinateSystemGetterSetters
-    include SpatialReferenceMixins::Exporters
-    include SpatialReferenceMixins::Importers
-    include SpatialReferenceMixins::Morphers
-    include SpatialReferenceMixins::ParameterGetterSetters
-    include SpatialReferenceMixins::TypeChecks
+    include SpatialReference::CoordinateSystemGetterSetters
+    include SpatialReference::Exporters
+    include SpatialReference::Importers
+    include SpatialReference::Morphers
+    include SpatialReference::ParameterGetterSetters
+    include SpatialReference::TypeChecks
 
     # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
     FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
