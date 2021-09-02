@@ -1,0 +1,14 @@
+module FFI
+  module OGR
+    module API
+      extend FFI::Library
+
+      type ogr_layer_h = FFI::Pointer
+
+      def self.OGR_L_GetName: (ogr_layer_h c_pointer) -> String
+      def self.OGR_L_GetGeomType: (ogr_layer_h c_pointer) -> FFI::OGR::Core::wkb_geometry_type_symbol
+      def self.OGR_L_SyncToDisk: (ogr_layer_h c_pointer) -> FFI::OGR::Core::wkb_geometry_type_symbol
+      def self.OGR_L_TestCapability: (ogr_layer_h c_pointer, String capability) -> bool
+    end
+  end
+end

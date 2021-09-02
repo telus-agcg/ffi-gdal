@@ -32,15 +32,17 @@ module OGR
 
     # @return [String]
     def name
-      name, ptr = FFI::OGR::API.OGR_L_GetName(@c_pointer)
-      ptr.autorelease = false
-
-      name
+      FFI::OGR::API.OGR_L_GetName(@c_pointer).freeze
     end
 
-    # @return [Boolean]
+    # @return [Symbol] One of OGRwkbGeometryType.
+    def geometry_type
+      FFI::OGR::API.OGR_L_GetGeomType(@c_pointer)
+    end
+
     # TODO: This seems to occasionally lead to: 28352 illegal hardware
     #   instruction, and sometimes full crashes.
+    # @raise [::NoMemoryError, OGR::CorruptData, OGR::Failure, OGR::InvalidHandle]
     def sync_to_disk
       OGR::ErrorHandling.handle_ogr_err('Unable to sync layer to disk') do
         FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
@@ -84,11 +86,6 @@ module OGR
       return nil if envelope.null?
 
       OGR::Envelope.new(envelope)
-    end
-
-    # @return [Symbol] One of OGRwkbGeometryType.
-    def geometry_type
-      FFI::OGR::API.OGR_L_GetGeomType(@c_pointer)
     end
 
     # @return [OGR::StyleTable, nil]
