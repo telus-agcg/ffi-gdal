@@ -101,9 +101,7 @@ module OGR
         spatial_ref_ptr = FFI::OGR::API.OGR_G_GetSpatialReference(@c_pointer)
         return if spatial_ref_ptr.null?
 
-        spatial_ref_ptr.autorelease = false
-
-        OGR::SpatialReference.new(spatial_ref_ptr).freeze
+        OGR::SpatialReference.new_borrowed(spatial_ref_ptr)
       end
 
       # Assigns a spatial reference to this geometry.  Any existing spatial

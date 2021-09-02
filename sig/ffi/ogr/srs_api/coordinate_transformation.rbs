@@ -1,0 +1,33 @@
+module FFI
+  module OGR
+    module SRSAPI
+      extend ::FFI::Library
+
+      type ogr_coordinate_transformation_h = FFI::Pointer
+
+      def self.OCTNewCoordinateTransformation: (
+        FFI::OGR::SRSAPI::ogr_spatial_reference_h source_srs,
+        FFI::OGR::SRSAPI::ogr_spatial_reference_h destination_srs,
+      ) -> FFI::Pointer
+
+      def self.OCTDestroyCoordinateTransformation: (ogr_coordinate_transformation_h c_pointer) -> void
+
+      def self.OCTTransform: (
+        ogr_coordinate_transformation_h c_pointer,
+        Integer point_count,
+        FFI::MemoryPointer x_vertices,
+        FFI::MemoryPointer y_vertices,
+        FFI::MemoryPointer ?z_vertices,
+      ) -> bool
+
+      def self.OCTTransformEx: (
+          ogr_coordinate_transformation_h c_pointer,
+          Integer point_count,
+          FFI::MemoryPointer x_vertices,
+          FFI::MemoryPointer y_vertices,
+          FFI::MemoryPointer ?z_vertices,
+          FFI::MemoryPointer success_array,
+      ) -> bool
+    end
+  end
+end

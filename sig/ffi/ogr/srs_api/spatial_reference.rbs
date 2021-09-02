@@ -1,0 +1,20 @@
+module FFI
+  module OGR
+    module SRSAPI
+      extend ::FFI::Library
+
+      type ogr_spatial_reference_h = FFI::Pointer
+
+      def self.OSRNewSpatialReference: (ogr_spatial_reference_h c_pointer) -> FFI::Pointer
+      def self.OSRRelease: (ogr_spatial_reference_h c_pointer) -> void
+      def self.OSRCleanup: -> void
+      def self.OSRClone: (ogr_spatial_reference_h c_pointer) -> ogr_spatial_reference_h
+      def self.OSRCloneGeogCS: (ogr_spatial_reference_h c_pointer) -> ogr_spatial_reference_h
+      def self.OSRCopyGeogCSFrom: (ogr_spatial_reference_h c_pointer, ogr_spatial_reference_h other_c_pointer) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRValidate: (ogr_spatial_reference_h c_pointer) -> (:OGRERR_NONE | :OGRERR_CORRUPT_DATA | :OGRERR_UNSUPPORTED_SRS)
+      def self.OSRAutoIdentifyEPSG: (ogr_spatial_reference_h c_pointer) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS)
+      def self.OSREPSGTreatsAsLatLong: (ogr_spatial_reference_h c_pointer) -> bool
+      def self.OSREPSGTreatsAsNorthingEasting: (ogr_spatial_reference_h c_pointer) -> bool
+    end
+  end
+end

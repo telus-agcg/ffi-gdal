@@ -15,19 +15,19 @@ module OGR
       end
     end
 
-    # @return [OGR::CoordinateTransformation::AutoPointer] C pointer that
-    #   represents the CoordinateTransformation.
-    attr_reader :c_pointer
-
+    # Input spatial reference system objects are assigned by copy (calling clone() method)
+    # and no ownership transfer occurs. This will honor the axis order
+    # advertised by the source and target SRS, as well as their "data axis to
+    # SRS axis mapping". To have a behavior similar to GDAL < 3.0, the
+    # OGR_CT_FORCE_TRADITIONAL_GIS_ORDER configuration option can be set to YES.
+    #
     # @param source_srs [OGR::SpatialReference]
     # @param destination_srs [OGR::SpatialReference]
     # @raise [FFI::GDAL::InvalidPointer]
-    def initialize(source_srs, destination_srs)
+    def self.create(source_srs, destination_srs)
       source_ptr = source_srs.c_pointer
       destination_ptr = destination_srs.c_pointer
 
-      # Input spatial reference system objects are assigned by copy (calling clone() method)
-      # and no ownership transfer occurs.
       # NOTE: In GDAL 3, this will cause the GDAL error handler to raise a
       # GDAL::Error; in < 3, this just returns a null pointer, then gets handled
       # by the null-pointer check below.
@@ -35,7 +35,16 @@ module OGR
 
       raise GDAL::Error, 'Unable to create coordinate transformation' if pointer.null?
 
-      @c_pointer = OGR::CoordinateTransformation::AutoPointer.new(pointer)
+      new(OGR::CoordinateTransformation::AutoPointer.new(pointer))
+    end
+
+    # @return [OGR::CoordinateTransformation::AutoPointer, FFI::Pointer] C pointer that
+    #   represents the CoordinateTransformation.
+    attr_reader :c_pointer
+
+    # @param pointer [OGR::CoordinateTransformation::AutoPointer, FFI::Pointer]
+    def initialize(pointer)
+      @c_pointer = pointer
     end
 
     # Transforms points in the +#source_coordinate_system+ space to points in the

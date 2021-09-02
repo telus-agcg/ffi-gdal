@@ -64,10 +64,10 @@ module OGR
     #
     # @return [OGR::SpatialReference]
     def spatial_reference
-      spatial_ref_pointer = FFI::OGR::API.OGR_L_GetSpatialRef(@c_pointer)
-      return nil if spatial_ref_pointer.null?
+      pointer = FFI::OGR::API.OGR_L_GetSpatialRef(@c_pointer)
+      return if pointer.null?
 
-      OGR::SpatialReference.new(spatial_ref_pointer)
+      OGR::SpatialReference.new_borrowed(pointer)
     end
 
     # @return [OGR::Envelope]

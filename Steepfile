@@ -27,6 +27,8 @@ target :lib do
         'lib/ogr/point*.rb',
         'lib/ogr/polygon.rb',
         'lib/ogr/polygon*.rb',
+        # 'lib/ogr/spatial_reference_mixins/*.rb',
+        'lib/ogr/spatial_reference.rb',
         'lib/ogr/style_*.rb',
         'lib/ogr/unknown_geometry.rb'
 

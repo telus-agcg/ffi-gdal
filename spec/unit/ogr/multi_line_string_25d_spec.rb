@@ -6,7 +6,7 @@ RSpec.describe OGR::MultiLineString25D do
   subject do
     g = described_class.new
     g.add_geometry(child_geometry)
-    g.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+    g.spatial_reference = OGR::SpatialReference.create.import_from_epsg(4326)
     g
   end
 

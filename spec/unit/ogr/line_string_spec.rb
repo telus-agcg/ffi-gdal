@@ -4,7 +4,7 @@ require 'ogr/geometry'
 
 RSpec.describe OGR::LineString do
   let(:open_line_string) do
-    g = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
+    g = described_class.new(spatial_reference: OGR::SpatialReference.create.import_from_epsg(4326))
     g.add_point(0, 0)
     g.add_point(0, 10)
     g.add_point(10, 10)
@@ -13,7 +13,7 @@ RSpec.describe OGR::LineString do
   end
 
   let(:closed_line_string) do
-    g = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
+    g = described_class.new(spatial_reference: OGR::SpatialReference.create.import_from_epsg(4326))
     g.add_point(0, 0)
     g.add_point(0, 10)
     g.add_point(10, 10)

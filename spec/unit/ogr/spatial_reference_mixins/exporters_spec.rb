@@ -3,9 +3,11 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
+  subject { described_class.create }
+
   describe '#to_erm' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns a Hash' do
         expect(subject.to_erm).to eq(projection_name: 'GEODETIC', datum_name: 'WGS72DOD', units: 'METERS')
@@ -21,7 +23,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_mapinfo' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns the string' do
         expect(subject.to_mapinfo).to start_with 'Earth Projection'
@@ -37,7 +39,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_pci' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns a Hash' do
         expect(subject.to_pci).to eq(
@@ -61,7 +63,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_proj4' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns a PROJ4 String' do
         expect(subject.to_proj4.strip)
@@ -78,7 +80,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_wkt' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns a well-known text String' do
         expect(subject.to_wkt).to start_with 'GEOGCS["WGS 72",DATUM["'
@@ -94,7 +96,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_pretty_wkt' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns a formatted well-known text String' do
         expect(subject.to_wkt).to start_with %(GEOGCS["WGS 72",DATUM[")
@@ -110,7 +112,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_xml' do
     context 'known projection' do
-      subject { described_class.new.import_from_epsg(4322) }
+      subject { described_class.create.import_from_epsg(4322) }
 
       it 'returns an XML string' do
         expect(subject.to_xml).to start_with '<gml:GeographicCRS gml:id="ogrcrs1">'

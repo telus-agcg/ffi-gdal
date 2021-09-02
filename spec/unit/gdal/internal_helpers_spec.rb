@@ -11,7 +11,7 @@ RSpec.describe GDAL::InternalHelpers do
 
   describe '._pointer' do
     context 'variable is a kind of the klass that was passed in' do
-      let(:variable) { OGR::SpatialReference.new }
+      let(:variable) { OGR::SpatialReference.create }
 
       it "returns the variable's pointer with autorelease = true" do
         expect(variable.c_pointer).to receive(:autorelease=).with(true)
@@ -37,7 +37,7 @@ RSpec.describe GDAL::InternalHelpers do
 
   describe '._maybe_pointer' do
     context 'variable is a kind of the klass that was passed in' do
-      let(:variable) { OGR::SpatialReference.new }
+      let(:variable) { OGR::SpatialReference.create }
 
       it "returns the variable's pointer with autorelease = true" do
         expect(variable.c_pointer).to receive(:autorelease=).with(true)

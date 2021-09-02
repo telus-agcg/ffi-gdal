@@ -5,7 +5,7 @@ require 'ogr/geometry'
 RSpec.describe OGR::CircularString do
   subject do
     cs = OGR::Geometry.create_from_wkt('CIRCULARSTRING (0 0, 1 1, 42 42)')
-    cs.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+    cs.spatial_reference = OGR::SpatialReference.create.import_from_epsg(4326)
     cs
   end
 

@@ -427,10 +427,9 @@ module OGR
     # @param field_index [Integer]
     # @return [String]
     def field_as_string(field_index)
-      field, ptr = FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, field_index)
-      ptr.autorelease = false
+      field_string = FFI::OGR::API.OGR_F_GetFieldAsString(@c_pointer, field_index)
 
-      field.force_encoding(Encoding::UTF_8)
+      field_string.force_encoding(Encoding::UTF_8).freeze
     end
 
     # @param field_index [Integer]

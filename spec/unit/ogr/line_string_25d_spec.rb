@@ -5,7 +5,7 @@ require 'ogr'
 RSpec.describe OGR::LineString25D do
   subject do
     g = OGR::Geometry.create_from_wkt(wkt)
-    g.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+    g.spatial_reference = OGR::SpatialReference.create.import_from_epsg(4326)
     g
   end
 

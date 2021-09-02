@@ -3,8 +3,8 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
-  subject(:wgs84) { OGR::SpatialReference.new.import_from_epsg(3857) }
-  let(:empty_subject) { OGR::SpatialReference.new }
+  subject(:wgs84) { OGR::SpatialReference.create.import_from_epsg(3857) }
+  let(:empty_subject) { OGR::SpatialReference.create }
 
   describe '#set_local_cs' do
     it 'sets the LOCAL_CS' do
@@ -46,7 +46,7 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#set_towgs84 + #towgs84' do
     subject do
-      s = OGR::SpatialReference.new.import_from_epsg(4326)
+      s = OGR::SpatialReference.create.import_from_epsg(4326)
       s.set_towgs84(x_distance: 10, y_distance: 10, x_rotation: 1235.4, scaling_factor: 3)
       s
     end

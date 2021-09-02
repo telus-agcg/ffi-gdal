@@ -164,7 +164,7 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
 
     context 'has one assigned' do
       it 'returns a spatial reference' do
-        subject.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326)
+        subject.spatial_reference = OGR::SpatialReference.create.import_from_epsg(4326)
         expect(subject.spatial_reference).to be_a OGR::SpatialReference
       end
     end
@@ -172,21 +172,21 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
 
   describe '#transform!' do
     it 'assigns the new spatial reference' do
-      ct = OGR::CoordinateTransformation.new(subject.spatial_reference,
-                                             OGR::SpatialReference.new.import_from_epsg(3857))
+      ct = OGR::CoordinateTransformation.create(subject.spatial_reference,
+                                             OGR::SpatialReference.create.import_from_epsg(3857))
       expect { subject.transform!(ct) }.to(change { subject.to_wkt })
     end
   end
 
   describe '#transform_to!' do
     it 'transforms the points into the new spatial reference' do
-      expect { subject.transform_to!(OGR::SpatialReference.new.import_from_epsg(3857)) }
+      expect { subject.transform_to!(OGR::SpatialReference.create.import_from_epsg(3857)) }
         .to(change { subject.to_wkt })
     end
 
     it 'sets the new spatial reference' do
       original = subject.spatial_reference.authority_code
-      sr3857 = OGR::SpatialReference.new.import_from_epsg(3857)
+      sr3857 = OGR::SpatialReference.create.import_from_epsg(3857)
 
       expect { subject.transform_to!(sr3857.clone) }
         .to(change { subject.spatial_reference.authority_code }.from(original).to(sr3857.authority_code))
