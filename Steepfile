@@ -14,8 +14,8 @@ target :lib do
         'lib/ogr/curve*.rb',
         'lib/ogr/feature*.rb',
         'lib/ogr/field_definition.rb',
-        'lib/ogr/geometry/',
         'lib/ogr/geometry.rb',
+        'lib/ogr/geometry/',
         'lib/ogr/geometry_collection*.rb',
         'lib/ogr/geometry_field_definition.rb',
         # 'lib/ogr/layer.rb',
@@ -25,10 +25,10 @@ target :lib do
         'lib/ogr/multi_*.rb',
         'lib/ogr/none_geometry.rb',
         'lib/ogr/point*.rb',
-        'lib/ogr/polygon.rb',
         'lib/ogr/polygon*.rb',
-        # 'lib/ogr/spatial_reference/*.rb',
+        'lib/ogr/polygon.rb',
         'lib/ogr/spatial_reference.rb',
+        'lib/ogr/spatial_reference/coordinate_system_getter_setters.rb',
         'lib/ogr/style_*.rb',
         'lib/ogr/unknown_geometry.rb'
 

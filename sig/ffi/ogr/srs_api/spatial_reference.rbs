@@ -15,6 +15,152 @@ module FFI
       def self.OSRAutoIdentifyEPSG: (ogr_spatial_reference_h c_pointer) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS)
       def self.OSREPSGTreatsAsLatLong: (ogr_spatial_reference_h c_pointer) -> bool
       def self.OSREPSGTreatsAsNorthingEasting: (ogr_spatial_reference_h c_pointer) -> bool
+
+      #--------------------
+      # CoordinateSystemGetterSetters
+      #--------------------
+      def self.OSRSetLocalCS: (ogr_spatial_reference_h c_pointer, String local_cs_name) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRSetProjCS: (ogr_spatial_reference_h c_pointer, String projcs_name) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRSetGeocCS: (ogr_spatial_reference_h c_pointer, String geoccs_name) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRSetWellKnownGeogCS: (ogr_spatial_reference_h c_pointer, String geogcs_name) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRSetFromUserInput: (ogr_spatial_reference_h c_pointer, String definition) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRGetTOWGS84: (ogr_spatial_reference_h c_pointer, FFI::MemoryPointer coefficient_array, Integer coefficient_count) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRSetTOWGS84: (
+        ogr_spatial_reference_h c_pointer,
+        Float x_child_in_meters,
+        Float y_child_in_meters,
+        Float z_child_in_meters,
+        ?Float ?x_rotation_in_arc_seconds,
+        ?Float ?y_rotation_in_arc_seconds,
+        ?Float ?z_rotation_in_arc_seconds,
+        ?Float ?scaling_factor_in_ppm,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRSetCompoundCS: (
+          ogr_spatial_reference_h c_pointer,
+          String compound_cs_name,
+          FFI::Pointer horizontal_spatial_ref,
+          FFI::Pointer vertical_spatial_ref,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRSetGeogCS: (
+        ogr_spatial_reference_h c_pointer,
+        String geog_name,
+        String datum_name,
+        String spheroid_name,
+        Float semi_major,
+        Float spheroid_inverse_flattening,
+        ?String ?prime_meridian_name,
+        ?Float ?prime_meridian_offset,
+        ?String ?angular_units,
+        ?Float ?convert_to_radians
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRSetVertCS: (
+        ogr_spatial_reference_h c_pointer,
+        String vert_cs_name,
+        String vert_datum_name,
+        ?Integer ?vert_datum_type
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetSemiMajor: (
+          ogr_spatial_reference_h c_pointer,
+          FFI::MemoryPointer ogr_err_pointer
+      ) -> Float
+
+      def self.OSRGetSemiMinor: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer ogr_err_pointer
+      ) -> Float
+
+      def self.OSRGetInvFlattening: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer ogr_err_pointer
+      ) -> Float
+
+      def self.OSRSetAuthority: (
+        ogr_spatial_reference_h c_pointer,
+        String target_key,
+        String authority_name,
+        Integer authority_code
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetAuthorityCode: (
+          ogr_spatial_reference_h c_pointer,
+          String target_key
+      ) -> String
+
+      def self.OSRGetAuthorityName: (
+        ogr_spatial_reference_h c_pointer,
+        String target_key
+      ) -> String
+
+      def self.OSRSetProjection: (
+        ogr_spatial_reference_h c_pointer,
+        String projection_name
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRSetProjParm: (
+        ogr_spatial_reference_h c_pointer,
+        String parameter_name,
+        Float parameter_value
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetProjParm: (
+        ogr_spatial_reference_h c_pointer,
+        String parameter_name,
+        FFI::MemoryPointer default_value_out_pointer,
+        FFI::MemoryPointer ogr_err_out_pointer
+      ) -> Float
+
+      def self.OSRSetNormProjParm: (
+        ogr_spatial_reference_h c_pointer,
+        String parameter_name,
+        Float parameter_value
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetNormProjParm: (
+          ogr_spatial_reference_h c_pointer,
+          String parameter_name,
+          Float ?default_value,
+          FFI::MemoryPointer ogr_err_ptr
+      ) -> Float
+
+      def self.OSRSetUTM: (
+        ogr_spatial_reference_h c_pointer,
+        Integer utm_zone,
+        bool is_northern_hemisphere
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetUTMZone: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer is_northern_hemisphere
+      ) -> Integer
+
+      def self.OSRSetStatePlaneWithUnits: (
+        ogr_spatial_reference_h c_pointer,
+        Integer zone,
+        bool ?use_nad83,
+        String ?override_unit_name,
+        Float ?override_unit_conversion_factor
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRGetAxis: (
+        ogr_spatial_reference_h c_pointer,
+        ("PROJCS" | "GEOGCS") target_key,
+        (0 | 1 | 2) axis,
+        FFI::MemoryPointer orientation_out
+      ) -> String
+
+      def self.OSRSetTM: (
+        ogr_spatial_reference_h c_pointer,
+        Float center_latitude,
+        Float center_longitude,
+        Float scale,
+        Float false_easting,
+        Float false_northing
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
     end
   end
 end

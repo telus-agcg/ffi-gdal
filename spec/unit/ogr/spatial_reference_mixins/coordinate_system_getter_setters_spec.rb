@@ -76,8 +76,8 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#set_utm + #utm_zone' do
     it 'sets and gets the UTM zone' do
-      subject.set_utm(10)
-      expect(subject.utm_zone).to eq 10
+      subject.set_utm(10, northern_hemisphere: true)
+      expect(subject.utm_zone(northern_hemisphere: true)).to eq 10
     end
   end
 

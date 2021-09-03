@@ -72,8 +72,8 @@ module FFI
       attach_function :OSRSetAuthority,
                       %i[OGRSpatialReferenceH string string int],
                       FFI::OGR::Core::Err
-      attach_function :OSRGetAuthorityCode, %i[OGRSpatialReferenceH string], :strptr
-      attach_function :OSRGetAuthorityName, %i[OGRSpatialReferenceH string], :strptr
+      attach_function :OSRGetAuthorityCode, %i[OGRSpatialReferenceH string], :string
+      attach_function :OSRGetAuthorityName, %i[OGRSpatialReferenceH string], :string
       attach_function :OSRSetProjection, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetProjParm, %i[OGRSpatialReferenceH string double], FFI::OGR::Core::Err
       attach_function :OSRGetProjParm,
@@ -111,9 +111,8 @@ module FFI
       attach_function :OSRSetGeocCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetGeogCS,
                       %i[OGRSpatialReferenceH
-                         string string string
-                         double double string
-                         double string double],
+                         string string string double double
+                         string double string double],
                       FFI::OGR::Core::Err
       attach_function :OSRSetWellKnownGeogCS, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRSetFromUserInput, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err

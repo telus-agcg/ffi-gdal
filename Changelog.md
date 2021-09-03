@@ -104,6 +104,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   now required.
 - _BREAKING_: `OGR::SpatialReference#initialize` now only takes a pointer; creation of a new
   SpatialReference is done via `.create`.
+- _BREAKING_: Methods in `OGR::SpatialReference::CoordinateSystemGetterSetters`
+    now take named-params for optional params.
 
 ##### OGR::CoordinateTransformation
 
