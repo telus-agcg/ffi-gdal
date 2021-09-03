@@ -43,6 +43,9 @@ module FFI
       attach_function :OSRExportToPCI,
                       %i[OGRSpatialReferenceH pointer pointer pointer],
                       FFI::OGR::Core::Err
+      attach_function :OSRExportToPanorama,
+                      %i[OGRSpatialReferenceH pointer pointer pointer pointer pointer],
+                      FFI::OGR::Core::Err
       attach_function :OSRExportToUSGS,
                       %i[OGRSpatialReferenceH pointer pointer pointer pointer],
                       FFI::OGR::Core::Err

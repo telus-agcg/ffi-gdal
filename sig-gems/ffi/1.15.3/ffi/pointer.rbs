@@ -2,6 +2,9 @@ module FFI
   class Pointer < FFI::AbstractMemory
     include _Inspect
 
+    SIZE: Integer
+    NULL: FFI::Pointer
+
     def initialize:
       (instance pointer)                     -> void
     | (FFI::Type type_name, Integer address) -> void

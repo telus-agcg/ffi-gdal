@@ -11,8 +11,8 @@ module FFI
       def self.OGR_SM_InitFromFeature: (ogr_style_mgr_h c_pointer, FFI::OGR::API::ogr_feature_h) -> String
       def self.OGR_SM_InitStyleString: (ogr_style_mgr_h c_pointer, String style_string) -> bool
 
-      def self.OGR_SM_GetPartCount: (ogr_style_mgr_h c_pointer, String style_string) -> int
-      def self.OGR_SM_GetPart: (ogr_style_mgr_h c_pointer, Integer part_id, String style_string) -> FFI::OGR::API::ogr_style_tool_h
+      def self.OGR_SM_GetPartCount: (ogr_style_mgr_h c_pointer, FFI::Pointer style_string_pointer) -> int
+      def self.OGR_SM_GetPart: (ogr_style_mgr_h c_pointer, Integer part_id, FFI::Pointer style_string_pointer) -> FFI::OGR::API::ogr_style_tool_h
 
       def self.OGR_SM_AddPart: (ogr_style_mgr_h c_pointer, FFI::OGR::API::ogr_style_tool_h style_tool_ptr) -> bool
       def self.OGR_SM_AddStyle: (ogr_style_mgr_h c_pointer, String style_name, String style_string) -> bool

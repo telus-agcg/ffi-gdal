@@ -161,6 +161,66 @@ module FFI
         Float false_northing
       ) -> FFI::OGR::Core::ogr_err_symbol
 
+      #--------------------
+      # Exporters
+      #--------------------
+      def self.OSRExportToWkt: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer wkt_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPrettyWkt: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer wkt_out,
+        bool should_simplify
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToProj4: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer proj4_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPCI: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer pci_out,
+        FFI::MemoryPointer units_out,
+        FFI::MemoryPointer projection_params_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToUSGS: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_system_out,
+        FFI::Buffer zone_out,
+        FFI::MemoryPointer projection_params_out,
+        FFI::Buffer datum_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToXML: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer xml_out,
+        FFI::Pointer ?dialect,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPanorama: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_system_code_out,
+        FFI::Buffer datum_out,
+        FFI::Buffer spheroid_code_out,
+        FFI::Buffer zone_out,
+        FFI::MemoryPointer projection_params_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToERM: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_name_out,
+        FFI::Buffer datum_name_out,
+        FFI::Buffer units_name_out,
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS | :OGR_FAILURE)
+
+      def self.OSRExportToMICoordSys: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer mapinfo_coordsys_out,
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS | :OGR_FAILURE)
     end
   end
 end
