@@ -39,6 +39,7 @@ module OGR
       def new_owned(c_pointer)
         raise FFI::GDAL::InvalidPointer, "Can't instantiate Geometry from null pointer" if c_pointer.null?
 
+        # TODO: this doesn't seem right...
         c_pointer.autorelease = true
 
         new(OGR::Geometry::AutoPointer.new(c_pointer))

@@ -3,6 +3,8 @@
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
+  subject { described_class.create }
+
   describe '#import_from_epsg' do
     context 'valid code' do
       it "updates self's info" do

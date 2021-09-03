@@ -6,7 +6,9 @@ module OGR
 
     include _HasAutoPointer[OGR::CoordinateTransformation::AutoPointer]
 
-    def initialize: (OGR::SpatialReference source_srs, OGR::SpatialReference destination_srs) -> void
+    def self.create: (OGR::SpatialReference source_srs, OGR::SpatialReference destination_srs) -> void
+
+    def initialize: ((OGR::CoordinateTransformation::AutoPointer | FFI::Pointer) pointer) -> void
 
     def transform: (Array[Float] x_vertices, Array[Float] y_vertices) -> [Array[Float], Array[Float]]
     | (

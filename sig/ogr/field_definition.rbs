@@ -4,7 +4,7 @@ module OGR
       extend _AutoPointerRelease
     end
 
-    extend _NewBorrowed[instance]
+    extend _NewBorrowed[OGR::FieldDefinition]
     include _HasAutoPointer[OGR::FieldDefinition::AutoPointer]
 
     def self.field_type_name: (FFI::OGR::Core::ogr_field_type_symbol field_type) -> String

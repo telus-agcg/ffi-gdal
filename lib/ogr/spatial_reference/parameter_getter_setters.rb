@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module ParameterGetterSetters
       # @param name [String] The case-insensitive tree node to look for.
       # @param child [Integer] The child of the node to fetch.

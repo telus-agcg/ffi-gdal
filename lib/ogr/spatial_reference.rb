@@ -2,12 +2,6 @@
 
 require_relative '../ogr'
 require_relative '../gdal'
-require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
-require_relative 'spatial_reference_mixins/exporters'
-require_relative 'spatial_reference_mixins/importers'
-require_relative 'spatial_reference_mixins/morphers'
-require_relative 'spatial_reference_mixins/parameter_getter_setters'
-require_relative 'spatial_reference_mixins/type_checks'
 require_relative 'new_borrowed'
 
 module OGR
@@ -15,58 +9,79 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    autoload :CoordinateSystemGetterSetters,
+             File.expand_path('spatial_reference/coordinate_system_getter_setters', __dir__ || '')
+    autoload :Exporters,
+             File.expand_path('spatial_reference/exporters', __dir__ || '')
+    autoload :Importers,
+             File.expand_path('spatial_reference/importers', __dir__ || '')
+    autoload :Morphers,
+             File.expand_path('spatial_reference/morphers', __dir__ || '')
+    autoload :ParameterGetterSetters,
+             File.expand_path('spatial_reference/parameter_getter_setters', __dir__ || '')
+    autoload :TypeChecks,
+             File.expand_path('spatial_reference/type_checks', __dir__ || '')
+
+    class AutoPointer < ::FFI::AutoPointer
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::OGR::SRSAPI.OSRRelease(pointer)
+      end
+    end
+
+    # @param srs_wkt [String, nil] An optional string argument which if passed
+    #   should be a WKT representation of an SRS. Passing this is equivalent to
+    #   not passing it, and then calling #import_from_wkt with the WKT string.
+    # @return [OGR::SpatialReference]
+    def self.create(srs_wkt = nil)
+      wkt_pointer = if srs_wkt
+                      FFI::MemoryPointer.from_string(srs_wkt)
+                    else
+                      FFI::Pointer::NULL
+                    end
+
+      pointer = FFI::OGR::SRSAPI.OSRNewSpatialReference(wkt_pointer)
+
+      raise OGR::CreateFailure, 'Unable to create SpatialReference' if pointer.null?
+
+      new(OGR::SpatialReference::AutoPointer.new(pointer))
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.new_owned(pointer)
+      new(OGR::SpatialReference::AutoPointer.new(pointer))
+    end
+
+    # @param orientation [FFI::OGR::SRSAPI::AxisOrientation]
+    # @return [String]
+    def self.axis_enum_to_name(orientation)
+      FFI::OGR::SRSAPI.OSRAxisEnumToName(orientation).freeze
+    end
+
+    # This will attempt to cleanup any cache spatial reference related
+    # information, such as cached tables of coordinate systems.
+    def self.cleanup
+      FFI::OGR::SRSAPI.OSRCleanup
+    end
+
     extend OGR::NewBorrowed
     include GDAL::Logger
-    include SpatialReferenceMixins::CoordinateSystemGetterSetters
-    include SpatialReferenceMixins::Exporters
-    include SpatialReferenceMixins::Importers
-    include SpatialReferenceMixins::Morphers
-    include SpatialReferenceMixins::ParameterGetterSetters
-    include SpatialReferenceMixins::TypeChecks
+    include SpatialReference::CoordinateSystemGetterSetters
+    include SpatialReference::Exporters
+    include SpatialReference::Importers
+    include SpatialReference::Morphers
+    include SpatialReference::ParameterGetterSetters
+    include SpatialReference::TypeChecks
 
     # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
     FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
       const_set(obj.ruby_name, obj.value)
     end
 
-    METER_TO_METER = 1.0
-
     FFI::OGR::SRSAPI::SRS_UA.constants.each do |_name, obj|
       const_set(obj.ruby_name, obj.value)
-    end
-
-    RADIAN_TO_RADIAN = 1.0
-
-    # @param orientation [FFI::OGR::SRSAPI::AxisOrientation]
-    # @return [String]
-    def self.axis_enum_to_name(orientation)
-      FFI::OGR::SRSAPI.OSRAxisEnumToName(orientation)
-    end
-
-    # Cleans up cached SRS-related memory.
-    def self.cleanup
-      FFI::OGR::SRSAPI.OSRCleanup
-    end
-
-    # This static method will destroy a OGRSpatialReference. It is equivalent
-    # to calling delete on the object, but it ensures that the deallocation is
-    # properly executed within the OGR libraries heap on platforms where this
-    # can matter (win32).
-    #
-    # @param pointer [FFI::Pointer]
-    def self.destroy(pointer)
-      return unless pointer && !pointer.null?
-
-      FFI::OGR::SRSAPI.OSRDestroySpatialReference(pointer)
-    end
-
-    # Decrements the reference count by one, and destroy if zero.
-    #
-    # @param pointer [FFI::Pointer]
-    def self.release(pointer)
-      return unless pointer && !pointer.null?
-
-      FFI::OGR::SRSAPI.OSRRelease(pointer)
     end
 
     # @return [FFI::Pointer] C pointer to the C Spatial Reference.
@@ -81,61 +96,23 @@ module OGR
     # If a OGR::SpatialReference is given, this clones that object so it can
     # have it's own object (relevant for cleaning up when garbage collecting).
     #
-    # @param spatial_reference_or_wkt [OGR::SpatialReference, FFI::Pointer, String]
-    def initialize(spatial_reference_or_wkt = nil)
-      pointer =
-        case spatial_reference_or_wkt.class.name
-        when 'OGR::SpatialReference'
-          # This is basically getting a reference to the SpatialReference that
-          # was passed in, thus when this SpatialReference gets garbage-collected,
-          # it shouldn't release anything.
-          ptr = spatial_reference_or_wkt.c_pointer
-          ptr.autorelease = false
-        when 'String', 'NilClass'
-          # FWIW, the docs say:
-          # Note that newly created objects are given a reference count of one.
-          #
-          # ...which implies that we should use Release here instead of Destroy.
-          ptr = FFI::OGR::SRSAPI.OSRNewSpatialReference(spatial_reference_or_wkt)
-          ptr.autorelease = false
-
-          # We're instantiating a new SR, so we can use .destroy.
-          FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
-        when 'FFI::AutoPointer', 'FFI::Pointer', 'FFI::MemoryPointer'
-          # If we got a pointer, we don't know who owns the data, so don't
-          # touch anything about autorelease/AutoPointer.
-          spatial_reference_or_wkt
-        else
-          log "Dunno what to do with #{spatial_reference_or_wkt.inspect}"
-        end
-
-      raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
-
+    # @param pointer [OGR::SpatialReference::AutoPointer, FFI::Pointer]
+    def initialize(pointer)
       @c_pointer = pointer
-    end
-
-    def destroy!
-      SpatialReference.destroy(@c_pointer)
-
-      @c_pointer = nil
     end
 
     # Uses the C-API to clone this spatial reference object.
     #
     # @return [OGR::SpatialReference]
     def clone
-      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRClone(@c_pointer)
-
-      SpatialReference.new(new_spatial_ref_ptr)
+      SpatialReference.new_owned(FFI::OGR::SRSAPI.OSRClone(@c_pointer))
     end
 
     # Makes a duplicate of the GEOGCS node of this spatial reference.
     #
     # @return [OGR::SpatialReference]
     def clone_geog_cs
-      new_spatial_ref_ptr = FFI::OGR::SRSAPI.OSRCloneGeogCS(@c_pointer)
-
-      SpatialReference.new(new_spatial_ref_ptr)
+      SpatialReference.new_owned(FFI::OGR::SRSAPI.OSRCloneGeogCS(@c_pointer))
     end
 
     # @param other_spatial_ref [OGR::SpatialReference] The SpatialReference to
@@ -143,13 +120,16 @@ module OGR
     # @raise [FFI::GDAL::InvalidPointer]
     # @raise [OGR::Failure]
     def copy_geog_cs_from(other_spatial_ref)
-      other_spatial_ref_ptr = GDAL._pointer(other_spatial_ref)
-
       OGR::ErrorHandling.handle_ogr_err('Unable to copy GEOGCS') do
-        FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
+        FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref.c_pointer)
       end
     end
 
+    # Validate CRS imported with #import_from_wkt or when modified with
+    # direct-node manipulations. Otherwise the CRS should be always valid. This
+    # method attempts to verify that the spatial reference system is well-formed,
+    # and consists of known tokens. The validation is not comprehensive.
+    #
     # @raise [OGR::Failure]
     def validate
       OGR::ErrorHandling.handle_ogr_err('Unable to validate') do
@@ -176,11 +156,6 @@ module OGR
     #   having northing/easting coordinate ordering.
     def epsg_treats_as_northing_easting?
       FFI::OGR::SRSAPI.OSREPSGTreatsAsNorthingEasting(@c_pointer)
-    end
-
-    # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.
-    def create_coordinate_transformation(destination_spatial_ref)
-      OGR::CoordinateTransformation.new(@c_pointer, destination_spatial_ref)
     end
   end
 end

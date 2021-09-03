@@ -4,7 +4,7 @@ module OGR
       extend _AutoPointerRelease
     end
 
-    extend _NewBorrowed[instance]
+    extend _NewBorrowed[OGR::GeometryFieldDefinition]
     include _HasAutoPointer[OGR::GeometryFieldDefinition::AutoPointer]
 
     def self.create: (String field_name, FFI::OGR::Core::wkb_geometry_type_symbol field_type) -> OGR::GeometryFieldDefinition

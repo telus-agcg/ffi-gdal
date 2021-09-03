@@ -1,0 +1,21 @@
+module FFI
+  module OGR
+    module SRSAPI
+      extend ::FFI::Library
+
+      AxisOrientation: FFI::Enum
+
+      type ogr_axis_orientation_symbol = (
+        :OAO_Other
+        | :OAO_North
+        | :OAO_South
+        | :OAO_East
+        | :OAO_West
+        | :OAO_Up
+        | :OAO_Down
+      )
+
+      def self.OSRAxisEnumToName: (ogr_axis_orientation_symbol orientation) -> String
+    end
+  end
+end

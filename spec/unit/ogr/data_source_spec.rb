@@ -112,7 +112,7 @@ RSpec.describe OGR::DataSource do
       end
 
       context 'spatial reference is passed in' do
-        let(:spatial_reference) { OGR::SpatialReference.new.import_from_epsg(4326) }
+        let(:spatial_reference) { OGR::SpatialReference.create.import_from_epsg(4326) }
 
         it 'adds a new OGR::Layer to @layers' do
           expect do

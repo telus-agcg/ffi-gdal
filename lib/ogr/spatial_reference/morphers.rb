@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module Morphers
       # Converts, in place, to ESRI WKT format.
       #

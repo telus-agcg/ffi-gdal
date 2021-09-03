@@ -1,9 +1,11 @@
 module OGR
   class SpatialReference
-    extend _NewBorrowed[instance]
+    extend _NewOwned[OGR::SpatialReference]
+    extend _NewBorrowed[OGR::SpatialReference]
     include _HasPointer
 
     def initialize: (OGR::SpatialReference | String | nil | FFI::AutoPointer | FFI::Pointer | FFI::MemoryPointer) -> void
     def linear_units: -> { unit_name: String, value: Float }?
+    def clone: -> OGR::SpatialReference
   end
 end

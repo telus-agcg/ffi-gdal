@@ -3,8 +3,8 @@
 require 'ogr/coordinate_transformation'
 
 RSpec.describe OGR::CoordinateTransformation do
-  let(:source_srs) { OGR::SpatialReference.new.import_from_epsg(3857) }
-  let(:dest_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
+  let(:source_srs) { OGR::SpatialReference.create.import_from_epsg(3857) }
+  let(:dest_srs) { OGR::SpatialReference.create.import_from_epsg(4326) }
 
   # From https://epsg.io/3857
   let(:epsg4326_y_bounds) { [-85.06, 85.06] }
@@ -12,26 +12,26 @@ RSpec.describe OGR::CoordinateTransformation do
   let(:epsg3857_y_bounds) { [-20_048_966.10, 20_048_966.10] }
   let(:epsg3857_x_bounds) { [-20_026_376.39, 20_026_376.39] }
 
-  subject { described_class.new(source_srs, dest_srs) }
+  subject { described_class.create(source_srs, dest_srs) }
 
-  describe '#initialize' do
+  describe '.create' do
     context 'source_srs is not an OGR::SpatialReference' do
       specify do
-        expect { described_class.new(123, dest_srs) }
+        expect { described_class.create(123, dest_srs) }
           .to raise_exception NoMethodError
       end
     end
 
     context 'dest_srs is not an OGR::SpatialReference' do
       specify do
-        expect { described_class.new(source_srs, 123) }
+        expect { described_class.create(source_srs, 123) }
           .to raise_exception NoMethodError
       end
     end
 
     context 'source_srs and dest_srs are valid OGR::SpatialReference objects' do
       it 'creates a new object with @c_pointer set' do
-        instance = described_class.new(source_srs, dest_srs)
+        instance = described_class.create(source_srs, dest_srs)
         expect(instance).to be_a described_class
         expect(instance.c_pointer).to be_a FFI::Pointer
       end

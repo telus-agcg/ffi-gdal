@@ -41,7 +41,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
 
   describe '#spatial_reference= + #spatial_reference' do
     it 'assigns the new SpatialReference' do
-      new_spatial_reference = OGR::SpatialReference.new.import_from_epsg 4326
+      new_spatial_reference = OGR::SpatialReference.create.import_from_epsg 4326
       subject.spatial_reference = new_spatial_reference
       expect(subject.spatial_reference.authority_code.to_i).to eq 4326
     end

@@ -21,7 +21,7 @@ RSpec.describe GDAL::Dataset do
       dataset = GDAL::Driver.by_name('GTiff').create_dataset(output_file, dest_width, dest_height,
                                                              data_type: subject.raster_band(1).data_type)
       dataset.geo_transform = subject.geo_transform.dup
-      dataset.projection = OGR::SpatialReference.new.import_from_epsg(3857).to_wkt
+      dataset.projection = OGR::SpatialReference.create.import_from_epsg(3857).to_wkt
       dataset
     end
 
@@ -37,11 +37,11 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#create_and_reproject_image' do
-    let(:output_projection) { OGR::SpatialReference.new.import_from_epsg(3857).to_wkt }
+    let(:output_projection) { OGR::SpatialReference.create.import_from_epsg(3857).to_wkt }
 
     it 'creates a valid dataset' do
       subject.create_and_reproject_image(output_file, :GRA_NearestNeighbor,
-                                         OGR::SpatialReference.new.import_from_epsg(3857).to_wkt,
+                                         OGR::SpatialReference.create.import_from_epsg(3857).to_wkt,
                                          GDAL::Driver.by_name('GTiff'))
 
       dest_dataset = GDAL::Dataset.open(output_file, 'r')

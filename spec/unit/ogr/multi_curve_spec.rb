@@ -4,7 +4,7 @@ require 'ogr/geometry'
 
 RSpec.describe OGR::MultiCurve do
   subject do
-    g = described_class.new(spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326))
+    g = described_class.new(spatial_reference: OGR::SpatialReference.create.import_from_epsg(4326))
     g.add_geometry(child_geometry)
     g.close_rings!
     g

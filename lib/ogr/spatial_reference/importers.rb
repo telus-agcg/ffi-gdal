@@ -3,7 +3,7 @@
 require_relative '../error_handling'
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module Importers
       # @param code [Integer]
       # @return [OGR::SpatialReference] `self`, but updated with the EPSG code.

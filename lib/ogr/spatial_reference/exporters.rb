@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module Exporters
       # @return [Hash]
       # @raise [OGR::NotEnoughData] If name, datum name, and units are not set.

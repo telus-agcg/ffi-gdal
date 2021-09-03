@@ -43,7 +43,7 @@ module FFI
       attach_function :OGR_F_GetFieldAsInteger, %i[OGRFeatureH int], :int
       attach_function :OGR_F_GetFieldAsInteger64, %i[OGRFeatureH int], :int64
       attach_function :OGR_F_GetFieldAsDouble, %i[OGRFeatureH int], :double
-      attach_function :OGR_F_GetFieldAsString, %i[OGRFeatureH int], :strptr
+      attach_function :OGR_F_GetFieldAsString, %i[OGRFeatureH int], :string
       attach_function :OGR_F_GetFieldAsIntegerList, %i[OGRFeatureH int pointer], :pointer
       attach_function :OGR_F_GetFieldAsInteger64List, %i[OGRFeatureH int pointer], :pointer
       attach_function :OGR_F_GetFieldAsDoubleList, %i[OGRFeatureH int pointer], :pointer

@@ -102,9 +102,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   value internally, but was defaulted to `nil`; changed the default value to `0.0`.
 - _BREAKING_: `OGR::SpatialReferenceMixins::CoordinateSystemGetterSetters#axis`'s `target_key` is
   now required.
+- _BREAKING_: `OGR::SpatialReference#initialize` now only takes a pointer; creation of a new
+  SpatialReference is done via `.create`.
+- _BREAKING_: Methods in `OGR::SpatialReference::CoordinateSystemGetterSetters`
+    now take named-params for optional params.
 
 ##### OGR::CoordinateTransformation
 
+- _BREAKING_: `OGR::CoordinateTransformation#initialize` now only takes a pointer; creation of a new
+    CoordinateTransformation is done via `.create`.
 - _BREAKING_: `OGR::CoordinateTransformation.new` raises a `GDAL:Error` instead of `OGR::Failure`.
   In GDAL 3, the GDAL error handler kicks in when bad data is used to instantiate the
   `CoordinateTranformation`. In < 3, the Ruby code checks the returned pointer and raises if it is

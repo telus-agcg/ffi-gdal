@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module CoordinateSystemGetterSetters
       # Set the user-visible LOCAL_CS name.
       #
@@ -93,40 +93,49 @@ module OGR
       # @raise [OGR::Failure]
       # @raise [FFI::GDAL::InvalidPointer]
       def set_compound_cs(name, horizontal_spatial_ref, vertical_spatial_ref)
-        horizontal_spatial_ref_ptr = GDAL._pointer(horizontal_spatial_ref)
-        vertical_spatial_ref_ptr = GDAL._pointer(vertical_spatial_ref)
-
         OGR::ErrorHandling.handle_ogr_err("Unable to set compound CS '#{name}'") do
           FFI::OGR::SRSAPI.OSRSetCompoundCS(
             @c_pointer,
             name,
-            horizontal_spatial_ref_ptr,
-            vertical_spatial_ref_ptr
+            horizontal_spatial_ref.c_pointer,
+            vertical_spatial_ref.c_pointer
           )
         end
       end
 
-      # Set the user-visible GEOGCS name.
+      # Set the geographic coordinate system.
       #
-      # @param [String] geog_name
-      # @param [String] datum_name
-      # @param [String] spheroid_name
-      # @param [Float] semi_major
-      # @param [Float] spheroid_inverse_flattening
-      # @param [String] prime_meridian
-      # @param [Double] offset
-      # @param [String] angular_unit_label
-      # @param [Float] transform_to_radians
+      # @param geog_name [String] User-visible name for the geographic
+      #   coordinate system (not to serve as a key).
+      # @param datum_name [String] key name for this datum. The OpenGIS
+      #   specification lists some known values, and otherwise EPSG datum names
+      #   with a standard transformation are considered legal keys.
+      # @param spheroid_name [String] user-visible spheroid name (not to serve as a key).
+      # @param semi_major [Float] the semi major axis of the spheroid.
+      # @param spheroid_inverse_flattening [Float] the inverse flattening for the
+      #   spheroid. This can be computed from the semi minor axis as
+      #   1/f = 1.0 / (1.0 - semiminor/semimajor).
+      # @param prime_meridian_name [String] The name of the prime meridian (not
+      #   to serve as a key) If this is nil a default value of "Greenwich" will
+      #   be used.
+      # @param prime_meridian_offset [Float] the longitude of Greenwich relative to this prime
+      #   meridian. Always in Degrees
+      # @param angular_units_name [String] the angular units name (see
+      #   OGR::SpatialReference for some standard names). If nil, a value of
+      #   "degrees" will be assumed.
+      # @param convert_to_radians [Float] value to multiply angular units by to
+      #   transform them to radians. A value of SRS_UA_DEGREE_CONV will be used
+      #   if angular_units_name is nil.
       # @raise [OGR::Failure]
       def set_geog_cs(geog_name, datum_name, spheroid_name, semi_major, spheroid_inverse_flattening,
-        prime_meridian, offset, angular_unit_label, transform_to_radians)
-        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS '#{name}'") do
+        prime_meridian_name: nil, prime_meridian_offset: nil, angular_units_name: nil, convert_to_radians: nil)
+        OGR::ErrorHandling.handle_ogr_err("Unable to set GEOGCS '#{geog_name}'") do
           FFI::OGR::SRSAPI.OSRSetGeogCS(
             @c_pointer,
             geog_name, datum_name, spheroid_name,
             semi_major, spheroid_inverse_flattening,
-            prime_meridian, offset,
-            angular_unit_label, transform_to_radians
+            prime_meridian_name, prime_meridian_offset,
+            angular_units_name, convert_to_radians
           )
         end
       end
@@ -185,6 +194,7 @@ module OGR
 
         ogr_err == :OGRERR_FAILURE ? wgs84_value : value
       end
+      alias inv_flattening spheroid_inverse_flattening
 
       # @param target_key [String] The partial or complete path to the node to
       #   set an authority on ("PROJCS", "GEOGCS|UNIT").
@@ -202,26 +212,29 @@ module OGR
         end
       end
 
-      # @param target_key [String] The partial or complete path to the node to get
-      #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
+      # Get the authority code for a node. This method is used to query an
+      # AUTHORITY[] node from within the WKT tree, and fetch the code value.
+      # While in theory values may be non-numeric, for the EPSG authority all
+      # code values should be integral.
+      #
+      # @param target_key [String, nil] The partial or complete path to the node to get
+      #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT"). Leave empty to
       #   search at the root element.
       # @return [String, nil]
       def authority_code(target_key = nil)
-        code, ptr = FFI::OGR::SRSAPI.OSRGetAuthorityCode(@c_pointer, target_key)
-        ptr.autorelease = false
-
-        code
+        FFI::OGR::SRSAPI.OSRGetAuthorityCode(@c_pointer, target_key).freeze
       end
 
-      # @param target_key [String] The partial or complete path to the node to get
+      # Get the authority name for a node. This method is used to query an
+      # AUTHORITY[] node from within the WKT tree, and fetch the authority name
+      # value. The most common authority is "EPSG".
+      #
+      # @param target_key [String, nil] The partial or complete path to the node to get
       #   an authority from ("PROJCS", "GEOCS", "GEOCS|UNIT").  Leave empty to
       #   search at the root element.
       # @return [String, nil]
       def authority_name(target_key = nil)
-        name, ptr = FFI::OGR::SRSAPI.OSRGetAuthorityName(@c_pointer, target_key)
-        ptr.autorelease = false
-
-        name
+        FFI::OGR::SRSAPI.OSRGetAuthorityName(@c_pointer, target_key).freeze
       end
 
       # @param projection_name [String]
@@ -246,8 +259,8 @@ module OGR
       # @param default_value [Float] The value to return if the parameter
       #   doesn't exist.
       # @raise [OGR::Failure]
-      def projection_parameter(name, default_value = 0.0)
-        value = default_value
+      def projection_parameter(name, default_value: nil)
+        value = nil
 
         OGR::ErrorHandling.handle_ogr_err("Unable to get projection parameter '#{name}'") do
           ogr_err_ptr = FFI::MemoryPointer.new(:int)
@@ -274,45 +287,56 @@ module OGR
       #   set of SRS_PP codes in ogr_srs_api.h.
       # @param default_value [Float] The value to return if the parameter
       #   doesn't exist.
-      def normalized_projection_parameter(name, default_value = 0.0)
-        FFI::OGR::SRSAPI.OSRGetNormProjParm(@c_pointer, name, default_value, nil)
+      # @raise [OGR::Failure]
+      def normalized_projection_parameter(name, default_value: nil)
+        value = nil
+
+        OGR::ErrorHandling.handle_ogr_err("Unable to get projection parameter '#{name}'") do
+          ogr_err_ptr = FFI::MemoryPointer.new(:int)
+          FFI::OGR::SRSAPI.OSRGetNormProjParm(@c_pointer, name, default_value, ogr_err_ptr)
+          ogr_err_int = ogr_err_ptr.null? ? 0 : ogr_err_ptr.read_int
+          FFI::OGR::Core::Err[ogr_err_int]
+        end
+
+        value
       end
 
       # @param zone [Integer]
-      # @param north [Boolean] True for northern hemisphere, false for southern.
+      # @param northern_hemisphere [Boolean] True for northern hemisphere, false for southern.
       # @raise [OGR::Failure]
-      def set_utm(zone, north: true)
-        OGR::ErrorHandling.handle_ogr_err("Unable to set UTM to zome #{zone} (north: #{north})") do
-          FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, north)
+      def set_utm(zone, northern_hemisphere:)
+        msg = "Unable to set UTM to zome #{zone} (northern_hemisphere: #{northern_hemisphere})"
+
+        OGR::ErrorHandling.handle_ogr_err(msg) do
+          FFI::OGR::SRSAPI.OSRSetUTM(@c_pointer, zone, northern_hemisphere)
         end
       end
 
-      # @param hemisphere [Symbol] :north or :south.
+      # @param is_northern_hemisphere [Boolean]
       # @return [Integer] The zone, or 0 if this isn't a UTM definition.
-      def utm_zone(hemisphere = :north)
-        north =
-          case hemisphere
-          when :north then 1
-          when :south then 0
-          else raise "Unknown hemisphere type #{hemisphere}. Please choose :north or :south."
-          end
+      def utm_zone(northern_hemisphere:)
         north_ptr = FFI::MemoryPointer.new(:bool)
-        north_ptr.write_bytes(north.to_s)
+        north_ptr.write(:bool, northern_hemisphere)
 
         FFI::OGR::SRSAPI.OSRGetUTMZone(@c_pointer, north_ptr)
       end
 
       # @param zone [Integer] State plane zone number (USGS numbering scheme).
-      # @param nad83 [Boolean] Use NAD83 zone definition or not.
+      # @param use_nad83 [Boolean] Use NAD83 zone definition or not.
+      # @param override_unit_name [String, nil] Linear u nit name to apply
+      #   overriding the legal definition for this zone.
+      # @param override_unit_conversion_factor [Float, nil] Linear unit
+      #   conversion factor to apply overriding the legal definition for this
+      #   zone.
       # @raise [OGR::Failure]
-      def set_state_plane(zone, override_unit_label = nil, override_unit_transform = 0.0, nad83: true)
+      def set_state_plane(zone, use_nad83: nil, override_unit_name: nil, override_unit_conversion_factor: nil)
         OGR::ErrorHandling.handle_ogr_err("Unable to set state plane to zone #{zone}") do
           FFI::OGR::SRSAPI.OSRSetStatePlaneWithUnits(
             @c_pointer,
             zone,
-            nad83,
-            override_unit_label,
-            override_unit_transform
+            use_nad83,
+            override_unit_name,
+            override_unit_conversion_factor
           )
         end
       end
@@ -326,160 +350,7 @@ module OGR
         name = FFI::OGR::SRSAPI.OSRGetAxis(@c_pointer, target_key, axis_number, axis_orientation_ptr)
         ao_value = axis_orientation_ptr.read_int
 
-        { name: name, orientation: FFI::OGR::SRSAPI::AxisOrientation[ao_value] }
-      end
-
-      def set_albers_conic_equal_area
-        raise NotImplementedError
-      end
-      alias set_acea set_albers_conic_equal_area
-
-      def set_ae
-        raise NotImplementedError
-      end
-
-      def set_bonne
-        raise NotImplementedError
-      end
-
-      def set_cea
-        raise NotImplementedError
-      end
-
-      def set_cs
-        raise NotImplementedError
-      end
-
-      def set_ec
-        raise NotImplementedError
-      end
-
-      def set_eckert
-        raise NotImplementedError
-      end
-
-      def set_eckert_iv
-        raise NotImplementedError
-      end
-
-      def set_eckert_vi
-        raise NotImplementedError
-      end
-
-      def set_equirectangular
-        raise NotImplementedError
-      end
-
-      def set_equirectangular2
-        raise NotImplementedError
-      end
-
-      def set_gc
-        raise NotImplementedError
-      end
-
-      def set_gh
-        raise NotImplementedError
-      end
-
-      def set_igh
-        raise NotImplementedError
-      end
-
-      def set_geos
-        raise NotImplementedError
-      end
-
-      def set_gauss_schreiber_transverse_mercator
-        raise NotImplementedError
-      end
-
-      def set_gnomonic
-        raise NotImplementedError
-      end
-
-      def set_om
-        raise NotImplementedError
-      end
-
-      def set_hom
-        raise NotImplementedError
-      end
-
-      def set_hom_2_pno
-        raise NotImplementedError
-      end
-
-      def set_iwm_polyconic
-        raise NotImplementedError
-      end
-
-      def set_krovak
-        raise NotImplementedError
-      end
-
-      def set_laea
-        raise NotImplementedError
-      end
-
-      def set_lcc
-        raise NotImplementedError
-      end
-
-      def set_lcc_1sp
-        raise NotImplementedError
-      end
-
-      def set_lccb
-        raise NotImplementedError
-      end
-
-      def set_mc
-        raise NotImplementedError
-      end
-
-      def set_mercator
-        raise NotImplementedError
-      end
-
-      def set_mollweide
-        raise NotImplementedError
-      end
-
-      def set_nzmg
-        raise NotImplementedError
-      end
-
-      def set_os
-        raise NotImplementedError
-      end
-
-      def set_orthographic
-        raise NotImplementedError
-      end
-
-      def set_polyconic
-        raise NotImplementedError
-      end
-
-      def set_ps
-        raise NotImplementedError
-      end
-
-      def set_robinson
-        raise NotImplementedError
-      end
-
-      def set_sinusoidal
-        raise NotImplementedError
-      end
-
-      def set_stereographic
-        raise NotImplementedError
-      end
-
-      def set_soc
-        raise NotImplementedError
+        { name: name.freeze, orientation: FFI::OGR::SRSAPI::AxisOrientation[ao_value] }
       end
 
       # @param center_lat [Float]
@@ -502,30 +373,6 @@ module OGR
         end
       end
       alias set_tm set_transverse_mercator
-
-      def set_tm_variant
-        raise NotImplementedError
-      end
-
-      def set_tmg
-        raise NotImplementedError
-      end
-
-      def set_tmso
-        raise NotImplementedError
-      end
-
-      def set_vdg
-        raise NotImplementedError
-      end
-
-      def set_wagner
-        raise NotImplementedError
-      end
-
-      def set_qsc
-        raise NotImplementedError
-      end
     end
   end
 end

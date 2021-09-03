@@ -441,7 +441,7 @@ module GDAL
 
       return nil if projection.empty?
 
-      @spatial_reference = OGR::SpatialReference.new(projection)
+      @spatial_reference = OGR::SpatialReference.create(projection)
     end
 
     private

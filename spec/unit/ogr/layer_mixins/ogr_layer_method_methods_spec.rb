@@ -9,7 +9,7 @@ RSpec.describe OGR::Layer do
     let(:other_layer) do
       data_source.create_layer 'other layer',
                                geometry_type: :wkbMultiPoint,
-                               spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326)
+                               spatial_reference: OGR::SpatialReference.create.import_from_epsg(4326)
     end
 
     it 'does not die' do

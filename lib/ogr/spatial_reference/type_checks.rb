@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module OGR
-  module SpatialReferenceMixins
+  class SpatialReference
     module TypeChecks
       # @return [Boolean] True if the root node is a GEOGCS node.
       def geographic?
