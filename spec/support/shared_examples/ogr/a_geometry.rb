@@ -173,7 +173,7 @@ RSpec.shared_examples 'a geometry' do |expected_type_to_name|
   describe '#transform!' do
     it 'assigns the new spatial reference' do
       ct = OGR::CoordinateTransformation.create(subject.spatial_reference,
-                                             OGR::SpatialReference.create.import_from_epsg(3857))
+                                                OGR::SpatialReference.create.import_from_epsg(3857))
       expect { subject.transform!(ct) }.to(change { subject.to_wkt })
     end
   end
