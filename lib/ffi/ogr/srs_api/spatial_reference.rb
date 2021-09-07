@@ -18,6 +18,9 @@ module FFI
 
       attach_function :OSRValidate, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
 
+      #------------------
+      # Importers
+      #------------------
       attach_function :OSRImportFromEPSG, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
       attach_function :OSRImportFromEPSGA, %i[OGRSpatialReferenceH int], FFI::OGR::Core::Err
       attach_function :OSRImportFromWkt, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
@@ -31,12 +34,16 @@ module FFI
                       %i[OGRSpatialReferenceH long long pointer long],
                       FFI::OGR::Core::Err
       attach_function :OSRImportFromXML, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
+      attach_function :OSRImportFromDict, %i[OGRSpatialReferenceH string string], FFI::OGR::Core::Err
       attach_function :OSRImportFromMICoordSys, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
       attach_function :OSRImportFromERM,
                       %i[OGRSpatialReferenceH string string string],
                       FFI::OGR::Core::Err
       attach_function :OSRImportFromUrl, %i[OGRSpatialReferenceH string], FFI::OGR::Core::Err
 
+      #------------------
+      # Exporters
+      #------------------
       attach_function :OSRExportToWkt, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
       attach_function :OSRExportToPrettyWkt, %i[OGRSpatialReferenceH pointer bool], FFI::OGR::Core::Err
       attach_function :OSRExportToProj4, %i[OGRSpatialReferenceH pointer], FFI::OGR::Core::Err
@@ -54,9 +61,16 @@ module FFI
       attach_function :OSRExportToERM,
                       %i[OGRSpatialReferenceH buffer_out buffer_out buffer_out],
                       FFI::OGR::Core::Err
+
+      #------------------
+      # Morphers
+      #------------------
       attach_function :OSRMorphToESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
       attach_function :OSRMorphFromESRI, %i[OGRSpatialReferenceH], FFI::OGR::Core::Err
 
+      #------------------
+      #
+      #------------------
       attach_function :OSRSetAttrValue, %i[OGRSpatialReferenceH string string], FFI::OGR::Core::Err
       attach_function :OSRGetAttrValue, %i[OGRSpatialReferenceH string int], :string
       attach_function :OSRSetAngularUnits, %i[OGRSpatialReferenceH string double], FFI::OGR::Core::Err

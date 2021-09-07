@@ -119,7 +119,7 @@ module FFI
     def write_int32: (Integer value) -> self
     def write_int64: (Integer value) -> self
     def write_int8: (Integer value) -> self
-    def write_pointer: (nil | FFI::Pointer | Integer | _ToPtr value) -> self
+    def write_pointer: (nil | FFI::Pointer | FFI::Buffer | Integer | _ToPtr value) -> self
     def write_uint16: (Integer offset) -> self
     def write_uint32: (Integer offset) -> self
     def write_uint64: (Integer offset) -> self
