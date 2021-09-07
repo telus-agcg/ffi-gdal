@@ -43,7 +43,7 @@ RSpec.describe OGR::SpatialReference do
 
       it 'returns a Hash' do
         expect(subject.to_pci).to eq(
-          projection: 'LONG/LAT    D001',
+          projection_name: 'LONG/LAT    D001',
           units: 'DEGREE',
           projection_parameters: []
         )
@@ -53,7 +53,7 @@ RSpec.describe OGR::SpatialReference do
     context 'empty SRS' do
       it 'returns default values' do
         expect(subject.to_pci).to eq(
-          projection: 'LONG/LAT    E012',
+          projection_name: 'LONG/LAT    E012',
           units: 'DEGREE',
           projection_parameters: []
         )

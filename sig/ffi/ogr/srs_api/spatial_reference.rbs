@@ -161,6 +161,128 @@ module FFI
         Float false_northing
       ) -> FFI::OGR::Core::ogr_err_symbol
 
+      #--------------------
+      # Exporters
+      #--------------------
+      def self.OSRExportToWkt: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer wkt_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPrettyWkt: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer wkt_out,
+        bool should_simplify
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToProj4: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer proj4_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPCI: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer pci_out,
+        FFI::MemoryPointer units_out,
+        FFI::MemoryPointer projection_params_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToUSGS: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_system_out,
+        FFI::Buffer zone_out,
+        FFI::MemoryPointer projection_params_out,
+        FFI::Buffer datum_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToXML: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer xml_out,
+        FFI::Pointer ?dialect,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToPanorama: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_system_code_out,
+        FFI::Buffer datum_out,
+        FFI::Buffer spheroid_code_out,
+        FFI::Buffer zone_out,
+        FFI::MemoryPointer projection_params_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRExportToERM: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::Buffer projection_name_out,
+        FFI::Buffer datum_name_out,
+        FFI::Buffer units_name_out,
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS | :OGR_FAILURE)
+
+      def self.OSRExportToMICoordSys: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer mapinfo_coordsys_out,
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      #--------------------
+      # Importers
+      #--------------------
+      def self.OSRImportFromEPSG: (ogr_spatial_reference_h c_pointer, Integer code) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRImportFromEPSGA: (ogr_spatial_reference_h c_pointer, Integer code) -> FFI::OGR::Core::ogr_err_symbol
+      def self.OSRImportFromWkt: (ogr_spatial_reference_h c_pointer, FFI::Buffer wkt_in) -> (:OGRERR_NONE | :OGRERR_CORRUPT_DATA)
+      def self.OSRImportFromProj4: (ogr_spatial_reference_h c_pointer, String proj4_string) -> (:OGRERR_NONE | :OGRERR_CORRUPT_DATA)
+      def self.OSRImportFromESRI: (ogr_spatial_reference_h c_pointer, FFI::MemoryPointer string_array) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromPCI: (
+        ogr_spatial_reference_h c_pointer,
+        String projection_string,
+        ("DEGREE" | "METER") ?units,
+        FFI::MemoryPointer ?prj_params
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromUSGS: (
+        ogr_spatial_reference_h c_pointer,
+        Integer projection_system_code,
+        Integer zone,
+        FFI::MemoryPointer ?prj_params,
+        Integer datum
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromPanorama: (
+        ogr_spatial_reference_h c_pointer,
+        Integer projection_system_code,
+        Integer datum,
+        Integer spheroid,
+        FFI::MemoryPointer ?prj_params
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromXML: (ogr_spatial_reference_h c_pointer, String xml) -> (:OGRERR_NONE | :OGRERR_CORRUPT_DATA)
+
+      def self.OSRImportFromDict: (
+        ogr_spatial_reference_h c_pointer,
+        String dictionary_file_path,
+        String dictionary_lookup_code
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromOzi: (
+        ogr_spatial_reference_h c_pointer,
+        FFI::MemoryPointer map_file_lines
+      ) -> FFI::OGR::Core::ogr_err_symbol
+
+      def self.OSRImportFromMICoordSys: (
+        ogr_spatial_reference_h c_pointer,
+        String map_info_coordsys
+      ) -> (:OGRERR_NONE | :OGRERR_FAILURE | :OGRERR_UNSUPPORTED_OPERATION)
+
+      def self.OSRImportFromERM: (
+        ogr_spatial_reference_h c_pointer,
+        String projection_name,
+        String datum_name,
+        ("FEET" | "METERS") linear_units
+      ) -> (:OGRERR_NONE | :OGRERR_UNSUPPORTED_SRS)
+
+      def self.OSRImportFromUrl: (
+        ogr_spatial_reference_h c_pointer,
+        String url,
+      ) -> FFI::OGR::Core::ogr_err_symbol
     end
   end
 end

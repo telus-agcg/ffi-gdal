@@ -29,6 +29,8 @@ target :lib do
         'lib/ogr/polygon.rb',
         'lib/ogr/spatial_reference.rb',
         'lib/ogr/spatial_reference/coordinate_system_getter_setters.rb',
+        'lib/ogr/spatial_reference/exporters.rb',
+        'lib/ogr/spatial_reference/importers.rb',
         'lib/ogr/style_*.rb',
         'lib/ogr/unknown_geometry.rb'
 
