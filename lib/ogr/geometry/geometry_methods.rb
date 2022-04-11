@@ -85,12 +85,18 @@ module OGR
 
       # Dump as WKT to the given +file_path+; dumps to STDOUT if none is given.
       #
-      # @param file_path [String] The text file to write to.
+      # @param file_path [String, nil] The text file to write to.
       # @param prefix [String] The prefix to put on each line of output.
       def dump_readable(file_path = nil, prefix: nil)
-        file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+        file_ptr = FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false)
+
+        if file_ptr.null?
+          output = file_path || 'STDOUT'
+          raise FFI::GDAL::InvalidPointer, "Unable to open for write: '#{output}'"
+        end
+
         FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file_ptr, prefix)
-        FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
+        FFI::CPL::Conv.CPLCloseShared(file_ptr)
       end
 
       # NOTE: The returned object may be shared with many geometries, and should
