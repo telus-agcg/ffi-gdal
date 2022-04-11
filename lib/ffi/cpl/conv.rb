@@ -11,13 +11,6 @@ module FFI
       ffi_lib [FFI::CURRENT_PROCESS, FFI::GDAL.gdal_library_path]
 
       #---------
-      # Config
-      #---------
-      attach_function :CPLGetConfigOption, %i[string string], :strptr
-      attach_function :CPLSetConfigOption, %i[string string], :void
-      attach_function :CPLSetThreadLocalConfigOption, %i[string string], :void
-
-      #---------
       # Files
       #---------
       # User is responsible to free that buffer after usage with CPLFree() function.
