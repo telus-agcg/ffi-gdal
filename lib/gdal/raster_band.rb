@@ -153,7 +153,7 @@ module GDAL
     def no_data_value
       associated = FFI::MemoryPointer.new(:bool)
       value = FFI::GDAL::GDAL.GDALGetRasterNoDataValue(@c_pointer, associated)
-      value = nil if value.to_d == -10_000_000_000.0.to_d
+      value = nil if value.to_d == BigDecimal('-10_000_000_000.0')
 
       { value: value, is_associated: associated.read_bytes(1).to_bool }
     end

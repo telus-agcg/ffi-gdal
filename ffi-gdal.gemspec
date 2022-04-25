@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
 
+  spec.metadata['rubygems_mfa_required'] = 'true'
   spec.require_paths = %w[lib]
   spec.required_ruby_version = '>= 2.6'
 
@@ -27,6 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'climate_control'
   spec.add_development_dependency 'fakefs'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.0'

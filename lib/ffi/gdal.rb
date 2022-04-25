@@ -37,7 +37,7 @@ module FFI
       lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
 
       if ENV['GDAL_LIBRARY_PATH']
-        result = Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)].compact
+        result = Dir[File.join(ENV.fetch('GDAL_LIBRARY_PATH', nil), lib_file_name)].compact
 
         if (f = result.first)
           return f
@@ -55,7 +55,7 @@ module FFI
 
     # @return [Array<String>] List of paths to search for libs in.
     def self.search_paths
-      return [ENV['GDAL_LIBRARY_PATH']] if ENV['GDAL_LIBRARY_PATH']
+      return [ENV.fetch('GDAL_LIBRARY_PATH', nil)] if ENV['GDAL_LIBRARY_PATH']
 
       @search_paths ||= begin
         paths = ENV['PATH'].split(File::PATH_SEPARATOR)

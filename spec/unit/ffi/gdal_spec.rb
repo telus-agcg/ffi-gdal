@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
+require 'climate_control'
 require 'fakefs/safe'
 
 RSpec.describe FFI::GDAL do
   describe '.find_lib' do
     context 'ENV["GDAL_LIBRARY_PATH"] is set' do
-      before do
-        allow(ENV).to receive(:[]).with('GDAL_LIBRARY_PATH').and_return '/pants'
-      end
+      around { |example| ClimateControl.modify(GDAL_LIBRARY_PATH: '/pants') { example.run } }
 
       it 'returns GDAL_LIBRARY_PATH + libgdal file name' do
         expect(Dir).to receive(:[]).with(%r{/pants/stuff\.+}).and_return ['/pants/stuff.dylib']
@@ -33,9 +32,7 @@ RSpec.describe FFI::GDAL do
 
   describe '.search_paths' do
     context 'ENV["GDAL_LIBRARY_PATH"] is set' do
-      before do
-        allow(ENV).to receive(:[]).with('GDAL_LIBRARY_PATH').and_return '/pants'
-      end
+      around { |example| ClimateControl.modify(GDAL_LIBRARY_PATH: '/pants') { example.run } }
 
       it 'returns GDAL_LIBRARY_PATH' do
         expect(described_class.search_paths).to include %r{\A/pants\z}
