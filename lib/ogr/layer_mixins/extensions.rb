@@ -112,7 +112,7 @@ module OGR
       #   encountered that the method doesn't know how to extract point values
       #   from.
       def point_values(with_attributes = {})
-        return [[]] if feature_count.zero?
+        return [] if feature_count.zero?
 
         field_indices = with_attributes.keys.map { |field_name| find_field_index(field_name) }
         values = Array.new(feature_count) { Array.new(2 + with_attributes.size) }

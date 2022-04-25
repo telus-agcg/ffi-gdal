@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta13 / 2022-04-20
+
+### Bug Fixes
+
+* [DEV-20247] Fix return value for `OGR::LayerMixins::Extensions#point_values` when no features are found.
+
 ## 1.0.0.beta12 / 2021-06-07
 
 ### Removed
