@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'uri'
 require 'json'
 require_relative '../gdal'
 require_relative '../ogr'
@@ -41,14 +40,12 @@ module OGR
     def initialize(path_or_pointer, access_flag)
       @c_pointer =
         if path_or_pointer.is_a?(String)
-          uri = URI.parse(path_or_pointer)
-          file_path = uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          FFI::OGR::API.OGROpen(file_path, OGR._boolean_access_flag(access_flag), nil)
+          FFI::OGR::API.OGROpen(path_or_pointer, OGR._boolean_access_flag(access_flag), nil)
         else
           path_or_pointer
         end
 
-      raise OGR::OpenFailure, file_path if @c_pointer.null?
+      raise OGR::OpenFailure, path_or_pointer if @c_pointer.null?
 
       @layers = []
     end

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'uri'
 require_relative '../gdal'
 require_relative '../ogr'
 require_relative 'major_object'
@@ -60,17 +59,10 @@ module GDAL
     def initialize(path_or_pointer, access_flag, shared_open = true)
       @c_pointer =
         if path_or_pointer.is_a? String
-          file_path = begin
-            uri = URI.parse(path_or_pointer)
-            uri.scheme.nil? ? ::File.expand_path(path_or_pointer) : path_or_pointer
-          rescue URI::InvalidURIError
-            path_or_pointer
-          end
-
           if shared_open
-            FFI::GDAL::GDAL.GDALOpenShared(file_path, ACCESS_FLAGS[access_flag])
+            FFI::GDAL::GDAL.GDALOpenShared(path_or_pointer, ACCESS_FLAGS[access_flag])
           else
-            FFI::GDAL::GDAL.GDALOpen(file_path, ACCESS_FLAGS[access_flag])
+            FFI::GDAL::GDAL.GDALOpen(path_or_pointer, ACCESS_FLAGS[access_flag])
           end
         else
           path_or_pointer
