@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta14 / 2022-05-06
+
+### Bug Fixes
+
+* [DEV-34133] Don't URI.parse path in `GDAL::Dataset#initialize` and `OGR::DataSource#initialize`.
+
 ## 1.0.0.beta13 / 2022-04-20
 
 ### Bug Fixes
