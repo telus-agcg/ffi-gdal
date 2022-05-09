@@ -156,11 +156,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
 
+## 1.0.0.beta14 / 2022-05-06
+
+### Bug Fixes
+
+- [DEV-34133] Don't URI.parse path in `GDAL::Dataset#initialize` and `OGR::DataSource#initialize`.
+
 ## 1.0.0.beta13 / 2022-04-20
 
 ### Bug Fixes
 
-* [DEV-20247] Fix return value for `OGR::LayerMixins::Extensions#point_values` when no features are found.
+- [DEV-20247] Fix return value for `OGR::LayerMixins::Extensions#point_values` when no features are found.
 
 ## 1.0.0.beta12 / 2021-06-07
 
