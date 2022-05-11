@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta15 / 2022-05-12
+
+### Improvements
+
+* [DEV-20059] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` has a minimum spacing between breakpoints.
+
 ## 1.0.0.beta14 / 2022-05-06
 
 ### Bug Fixes
