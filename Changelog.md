@@ -156,6 +156,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removed attach_function to CPLURLGetValue and CPLURLAddKVP as they are not in GDAL 2.
 - `GDAL::MajorObject#description=`
 
+## 1.0.0.beta15 / 2022-05-12
+
+### Improvements
+
+* [DEV-20059] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` has a minimum spacing between breakpoints.
+
 ## 1.0.0.beta14 / 2022-05-06
 
 ### Bug Fixes
