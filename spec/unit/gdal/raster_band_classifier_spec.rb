@@ -107,6 +107,22 @@ RSpec.describe GDAL::RasterBandClassifier do
     end
   end
 
+  describe '#ensure_min_gap' do
+    let(:break_values) do
+      [29_491.177616329518, 34_999.999999999985, 34_999.99999999999, 35_000.0, 35_000.01582852495, 36_499.9508667737]
+    end
+
+    let(:expected_values) do
+      [29_438.61973121367, 34_947.44211488414, 34_982.48598113636, 35_017.52984738857, 35_052.57371364079,
+       36_552.508751889545]
+    end
+
+    it 'ensures breakpoints have a gap between them of 0.5% of the total range' do
+      subject.send(:ensure_min_gap, break_values)
+      expect(break_values).to eq expected_values
+    end
+  end
+
   describe '#classify!' do
     before do
       ranges = subject.equal_count_ranges(10)

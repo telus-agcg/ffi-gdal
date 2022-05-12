@@ -19,6 +19,8 @@ module GDAL
   #
   # @param ranges [Array<Hash{range => Range, map_to => Number}>]
   class RasterBandClassifier
+    MIN_GAP_PERCENTAGE = 0.005
+
     include GDAL::Logger
 
     attr_reader :ranges
@@ -64,14 +66,16 @@ module GDAL
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
-      break_values = Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq
+      break_values = [*Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq,
+                      sorted_and_masked_pixels.max]
+      ensure_min_gap(break_values)
       log "Break values: #{break_values}"
 
-      return if break_values.uniq.size != range_count
+      return if break_values.uniq.size - 1 != range_count
 
       breakpoint_calculator = lambda do |range_number|
         min = break_values[range_number]
-        max = break_values[range_number + 1] || sorted_and_masked_pixels.max
+        max = break_values[range_number + 1]
 
         range_for_type(min, max)
       end
@@ -128,6 +132,23 @@ module GDAL
         pixels[mask]
       else
         pixels
+      end
+    end
+
+    # @param break_values [Array<Numeric>]
+    def ensure_min_gap(break_values)
+      min_gap = (break_values.last - break_values.first) * MIN_GAP_PERCENTAGE
+
+      (1...break_values.size).each do |index|
+        left, right = break_values[index - 1, 2]
+        diff = right - left
+        adjustment = (min_gap / 2) - (diff / 2)
+
+        next unless diff < min_gap
+
+        log "Index #{index} diff #{diff} smaller than min_gap #{min_gap}, adjusting by #{adjustment}"
+        break_values.fill(0...index) { |x| break_values[x] - adjustment }
+        break_values.fill(index..) { |x| break_values[x] + adjustment }
       end
     end
 
