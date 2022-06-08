@@ -60,9 +60,7 @@ module FFI
       @search_paths ||= begin
         paths = ENV['PATH'].split(File::PATH_SEPARATOR)
 
-        unless FFI::Platform.windows?
-          paths += %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib}/**]
-        end
+        paths += %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib}/**] unless FFI::Platform.windows?
 
         paths
       end

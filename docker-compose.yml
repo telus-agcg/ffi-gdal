@@ -1,0 +1,24 @@
+---
+version: "3"
+
+services:
+  gdal2:
+    build:
+      context: .
+      args:
+        GDAL_VERSION: "2.4.4"
+      dockerfile: Dockerfile.gdal2
+    volumes:
+      - .:/usr/src/ffi-gdal
+      - gem_cache:/gems
+
+  gdal3:
+    build:
+      context: .
+      dockerfile: Dockerfile.gdal3
+    volumes:
+      - .:/usr/src/ffi-gdal
+      - gem_cache:/gems
+
+volumes:
+  gem_cache:

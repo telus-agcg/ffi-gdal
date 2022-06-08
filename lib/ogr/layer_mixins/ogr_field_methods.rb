@@ -137,7 +137,7 @@ module OGR
       #
       # @param field_names [Array<String>]
       # @raise [OGR::Failure]
-      def set_ignored_fields(*field_names) # rubocop:disable Naming/AccessorMethodName
+      def set_ignored_fields(*field_names)
         return false if field_names.empty?
 
         fields_ptr = GDAL._string_array_to_pointer(field_names)

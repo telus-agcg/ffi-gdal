@@ -57,3 +57,20 @@ additional functionality, not provided in this core, GDAL-wrapper library.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+### Docker
+
+There are a couple `Dockerfile`s that allow doing development/testing against
+GDAL 2.4 and 3.x.
+
+...for GDAL2:
+
+```sh
+docker-compose run gdal2 bundle exec rake spec
+```
+
+...for GDAL3:
+
+```sh
+docker-compose run gdal3 bundle exec rake spec
+```
