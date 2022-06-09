@@ -6,20 +6,25 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+      - name: Cache Docker layers
+        uses: actions/cache@v2
         with:
-          bundler-cache: true
-      - name: Install dependencies
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build gdal2 image
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgdal-dev
-          bundle install --jobs 4 --retry 3
-      - name: Run tests
-        run: bundle exec rake spec
+          docker compose version
+          docker compose build gdal2
+      - name: Run specs
+        run: docker compose run --rm gdal2 bundle exec rspec spec --format RSpec::Github::Formatter --format progress
 
   static_analysis:
     name: Rubocop
@@ -29,7 +34,6 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
           bundler-cache: true
       - name: Install dependencies
         run: bundle install --jobs 4 --retry 3

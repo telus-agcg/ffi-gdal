@@ -62,8 +62,6 @@ RSpec.describe 'Driver Info', type: :integration do
     context 'valid options for the driver' do
       let(:options) do
         {
-          'COMPRESS' => 'JPEG',
-          'JPEG_QUALITY' => 90,
           'INTERLEAVE' => 'BAND'
         }
       end
