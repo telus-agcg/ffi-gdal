@@ -2,6 +2,12 @@
 
 Format for this file derived from [http://keepachangelog.com](http://keepachangelog.com).
 
+## 1.0.0.beta16 / 2022-06-09
+
+### Bug Fixes
+
+* [DEV-34269] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` returns a range when only one is requested.
+
 ## 1.0.0.beta15 / 2022-05-12
 
 ### Improvements
