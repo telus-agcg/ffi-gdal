@@ -28,42 +28,7 @@ module FFI
 
     # @return [String]
     def self.gdal_library_path
-      @gdal_library_path ||= find_lib('{lib,}gdal*')
-    end
-
-    # @param [String] lib Name of the library file to find.
-    # @return [String] Path to the library file.
-    def self.find_lib(lib)
-      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
-
-      if ENV['GDAL_LIBRARY_PATH']
-        result = Dir[File.join(ENV.fetch('GDAL_LIBRARY_PATH', nil), lib_file_name)].compact
-
-        if (f = result.first)
-          return f
-        end
-
-        raise "library '#{lib}' not found"
-      end
-
-      search_paths.map do |search_path|
-        Dir.glob(search_path).map do |path|
-          Dir.glob(File.join(path, lib_file_name))
-        end
-      end.flatten.uniq.first
-    end
-
-    # @return [Array<String>] List of paths to search for libs in.
-    def self.search_paths
-      return [ENV.fetch('GDAL_LIBRARY_PATH', nil)] if ENV['GDAL_LIBRARY_PATH']
-
-      @search_paths ||= begin
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR)
-
-        paths += %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib}/**] unless FFI::Platform.windows?
-
-        paths
-      end
+      @gdal_library_path ||= ENV.fetch('GDAL_LIBRARY_PATH', 'gdal')
     end
 
     # @return [Array<String>] Related files that contain C constants.
