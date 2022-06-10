@@ -71,7 +71,7 @@ module GDAL
       ensure_min_gap(break_values)
       log "Break values: #{break_values}"
 
-      return if break_values.uniq.size - 1 != range_count
+      return if range_count != 1 && break_values.uniq.size - 1 != range_count
 
       breakpoint_calculator = lambda do |range_number|
         min = break_values[range_number]

@@ -97,6 +97,15 @@ RSpec.describe GDAL::RasterBandClassifier do
       it { is_expected.to be_nil }
     end
 
+    context 'all same value' do
+      let(:band_narray) { Numo::Int8.new(3, 5).fill(1) }
+      before { allow(raster_band).to receive(:to_nna).and_return(band_narray) }
+
+      it 'returns a single range when 1 is requested' do
+        expect(subject.equal_count_ranges(1)).to eq [{ range: 1..1, map_to: 1 }]
+      end
+    end
+
     context 'all nodata pixels' do
       let(:band_narray) { Numo::Int8.new(3, 5).fill(0) }
       before { allow(raster_band).to receive(:to_nna).and_return(band_narray) }
