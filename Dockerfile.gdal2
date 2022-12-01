@@ -21,6 +21,7 @@ RUN apt-get update -yqq \
   curl \
   libgeos-dev \
   libproj-dev \
+  librttopo-dev \
   && rm -rf /var/lib/apt/lists/* \
   && curl -sSf -L -O "https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/${GDAL_TARBALL}" \
   && curl -sSf -L -O "https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/${GDAL_TARBALL}.md5" \
@@ -104,7 +105,7 @@ RUN bundle install
 
 #------------
 # Copy over the rest of the lib
-COPY . /usr/src/ffi-gdal/
+COPY . .
 
 CMD ["bundle", "exec", "rake", "spec"]
 # vim:ft=dockerfile

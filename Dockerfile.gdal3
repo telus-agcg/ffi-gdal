@@ -51,6 +51,7 @@ FROM ruby_builder as dev_builder
 RUN apt-get update -yqq \
   && apt-get install -yqq --no-install-recommends \
   git \
+  librttopo-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
