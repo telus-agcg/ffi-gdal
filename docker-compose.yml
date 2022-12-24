@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.gdal2
     volumes:
       - .:/usr/src/ffi-gdal
-      - gem_cache:/gems
+      - gem_cache2:/gems
 
   gdal3:
     build:
@@ -18,7 +18,8 @@ services:
       dockerfile: Dockerfile.gdal3
     volumes:
       - .:/usr/src/ffi-gdal
-      - gem_cache:/gems
+      - gem_cache3:/gems
 
 volumes:
-  gem_cache:
+  gem_cache2:
+  gem_cache3:

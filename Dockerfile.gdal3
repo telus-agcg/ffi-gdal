@@ -67,8 +67,7 @@ RUN bundle install
 
 #------------
 # Copy over the rest of the lib
-COPY . /usr/src/ffi-gdal/
+COPY . .
 
-CMD ["bundle", "exec", "rake", "spec"]
+CMD ["tail", "-f", "/dev/null"]
 # vim:ft=dockerfile
-

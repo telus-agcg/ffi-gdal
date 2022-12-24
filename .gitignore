@@ -38,3 +38,5 @@ tmp/*
 valgrind_output.log
 vendor/bundle
 vendor/sigs
+
+.odo

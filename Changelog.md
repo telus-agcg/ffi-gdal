@@ -14,6 +14,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added exception messages for `OGR` methods that raised using `OGR::ErrorHandling`.
 - Added alias for `OGR::SpatialReferenceMixins::Exporters#to_gml` to `to_xml`.
 - Wrapped `OGR_G_ExportToIsoWkt` and `OGR_G_ExportToJsonEx`.
+- Merged `ffi-gdal-extensions` gem back to `ffi-gdal`.
 
 ### Changed
 
@@ -160,13 +161,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Bug Fixes
 
-* [DEV-34269] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` returns a range when only one is requested.
+- [DEV-34269] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` returns a range when only one is requested.
 
 ## 1.0.0.beta15 / 2022-05-12
 
 ### Improvements
 
-* [DEV-20059] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` has a minimum spacing between breakpoints.
+- [DEV-20059] Ensure `GDAL::RasterBandClassifier#equal_count_ranges` has a minimum spacing between breakpoints.
 
 ## 1.0.0.beta14 / 2022-05-06
 
