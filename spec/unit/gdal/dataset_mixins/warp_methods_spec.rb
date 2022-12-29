@@ -10,7 +10,7 @@ RSpec.describe GDAL::Dataset do
   let(:output_dir) { Dir.mktmpdir(File.basename(__FILE__, '.rb')) }
   let(:output_file) { File.join(output_dir, 'reprojected_image.tif') }
 
-  after { FileUtils.rm_rf(output_dir) if Dir.exist?(output_dir) }
+  after { FileUtils.rm_rf(output_dir) }
 
   subject { described_class.open(source_file_path, 'r', shared: false) }
 

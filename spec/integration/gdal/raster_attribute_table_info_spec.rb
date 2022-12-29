@@ -218,7 +218,7 @@ RSpec.describe 'Raster Attribute Table Info', type: :integration do
 
   describe '#dump_readable' do
     let(:output_path) { File.expand_path('tmp/raster_attribute_table_info') }
-    after { File.unlink(output_path) if File.exist?(output_path) }
+    after { FileUtils.rm_f(output_path) }
 
     it 'writes to the file' do
       subject.dump_readable(output_path)

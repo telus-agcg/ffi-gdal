@@ -117,7 +117,7 @@ RSpec.configure do |config|
   config.include IntegrationHelp, type: :integration
 
   config.before do
-    ::FFI::GDAL::GDAL.GDALAllRegister
+    FFI::GDAL::GDAL.GDALAllRegister
     Dir[File.join('tmp', '*')].each { |f| FileUtils.rm_f(f) }
   end
 

@@ -204,7 +204,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
   describe '#build_overviews' do
     let(:ovr_file) { "#{tmp_tiff}.ovr" }
-    after { File.unlink(ovr_file) if File.exist?(ovr_file) }
+    after { FileUtils.rm_f(ovr_file) }
 
     context 'nearest neighbor resampling' do
       it 'creates an .ovr file with the same base name as the dataset file' do

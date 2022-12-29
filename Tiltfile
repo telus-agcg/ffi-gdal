@@ -52,6 +52,12 @@ for gdal_version in ['gdal2', 'gdal3']:
              icon_name='install_desktop',
              text='bundle install'
              )
+  cmd_button(gdal_version + ":bundle update",
+             argv=['docker', 'compose', 'run', gdal_version, 'bin/bundle', 'update'],
+             resource=gdal_version,
+             icon_name='refresh',
+             text='bundle update'
+             )
   cmd_button(gdal_version + ":rake spec",
              argv=['docker', 'compose', 'run', gdal_version, 'bin/rake', 'spec'],
              resource=gdal_version,
@@ -64,11 +70,17 @@ for gdal_version in ['gdal2', 'gdal3']:
              icon_name='search_check',
              text='rubocop'
              )
-  cmd_button(gdal_version + ":rubocop fix",
+  cmd_button(gdal_version + ":rubocop fix (safe)",
              argv=['docker', 'compose', 'run', gdal_version, 'bin/rubocop', '-a'],
              resource=gdal_version,
-             icon_name='amend',
+             icon_name='done_outline',
              text='rubocop -a'
+             )
+  cmd_button(gdal_version + ":rubocop fix (all)",
+             argv=['docker', 'compose', 'run', gdal_version, 'bin/rubocop', '-A'],
+             resource=gdal_version,
+             icon_name='done_all',
+             text='rubocop -A'
              )
 
 docker_compose("docker-compose.yml")
