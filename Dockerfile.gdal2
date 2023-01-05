@@ -45,7 +45,6 @@ RUN apt-get update -yqq \
   --without-fme \
   --without-freexl \
   --without-gif \
-  --without-gif \
   --without-gnm \
   --without-grass \
   --without-grib \
