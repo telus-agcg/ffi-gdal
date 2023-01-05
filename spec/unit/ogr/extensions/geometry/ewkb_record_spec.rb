@@ -44,7 +44,7 @@ RSpec.describe OGR::Geometry::EWKBRecord do
         expect(subject).to be_a described_class
         expect(subject.endianness.value).to eq 1
 
-        expect(subject.wkb_type.value).to eq(0x2000_0000 | subject.geometry_type)
+        expect(subject.wkb_type.value).to eq(subject.geometry_type | 0x2000_0000)
         expect(subject.geometry_type).to eq 1
         expect(subject.has_z?).to eq false
         expect(subject.has_m?).to eq false
@@ -63,7 +63,7 @@ RSpec.describe OGR::Geometry::EWKBRecord do
         expect(subject).to be_a described_class
         expect(subject.endianness.value).to eq 1
 
-        expect(subject.wkb_type.value).to eq(0x8000_0000 | subject.geometry_type)
+        expect(subject.wkb_type.value).to eq(subject.geometry_type | 0x8000_0000)
         expect(subject.has_z?).to eq true
         expect(subject.has_m?).to eq false
         expect(subject.has_srid?).to eq false
