@@ -51,6 +51,7 @@ FROM ruby_builder as dev_builder
 RUN apt-get update -yqq \
   && apt-get install -yqq --no-install-recommends \
   git \
+  librttopo-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -66,8 +67,7 @@ RUN bundle install
 
 #------------
 # Copy over the rest of the lib
-COPY . /usr/src/ffi-gdal/
+COPY . .
 
-CMD ["bundle", "exec", "rake", "spec"]
+CMD ["tail", "-f", "/dev/null"]
 # vim:ft=dockerfile
-

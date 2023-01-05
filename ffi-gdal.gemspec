@@ -21,10 +21,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = %w[lib]
   spec.required_ruby_version = '>= 2.6'
 
+  spec.add_dependency 'bindata', '~> 2.0'
   spec.add_dependency 'ffi'
   spec.add_dependency 'log_switch', '~> 1.0.0'
   spec.add_dependency 'multi_xml'
   spec.add_dependency 'narray', '~> 0.6.0'
+  spec.add_dependency 'numo-narray'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'byebug'

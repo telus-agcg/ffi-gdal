@@ -20,7 +20,7 @@ module GDAL
       # @param warp_options [GDAL::WarpOptions] Warp options, normally empty.
       def reproject_image(destination_dataset, resample_algorithm, destination_projection: nil,
         warp_memory_limit: 0.0, max_error: 0.0, progress_function: nil, progress_arg: nil, warp_options: nil)
-        warp_options_struct = warp_options ? warp_options.c_struct : nil
+        warp_options_struct = warp_options&.c_struct
 
         FFI::GDAL::Warper.GDALReprojectImage(
           @c_pointer,                           # hSrcDS
@@ -62,7 +62,7 @@ module GDAL
         progress_function: nil, progress_arg: nil,
         warp_options: nil)
         creation_options_ptr = GDAL::Options.pointer(creation_options)
-        warp_options_struct = warp_options ? warp_options.c_struct : nil
+        warp_options_struct = warp_options&.c_struct
 
         FFI::GDAL::Warper.GDALCreateAndReprojectImage(
           @c_pointer,                           # hSrcDS

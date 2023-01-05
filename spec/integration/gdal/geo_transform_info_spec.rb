@@ -203,7 +203,7 @@ RSpec.describe 'GeoTransform Info', type: :integration do
   end
 
   describe '#to_world_file' do
-    after { File.unlink('tmp/meow') if File.exist?('tmp/meow') }
+    after { FileUtils.rm_f('tmp/meow') }
 
     it 'writes out to a file with the given extension' do
       subject.to_world_file('tmp/meow', 'wld')

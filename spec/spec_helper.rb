@@ -117,8 +117,8 @@ RSpec.configure do |config|
   config.include IntegrationHelp, type: :integration
 
   config.before do
-    ::FFI::GDAL::GDAL.GDALAllRegister
-    Dir[File.join('tmp', '*')].each { |f| File.unlink(f) if File.exist?(f) }
+    FFI::GDAL::GDAL.GDALAllRegister
+    Dir[File.join('tmp', '*')].each { |f| FileUtils.rm_f(f) }
   end
 
   config.after(:example, type: :integration) do
