@@ -13,7 +13,7 @@ module OGR
       # Methods to extend OGR::Geometry with.
       module ClassMethods
         # @param ewkb_data [String] Binary EWKB string.
-        # @param [OGR::Geometry]
+        # @return [OGR::Geometry]
         def create_from_ewkb(ewkb_data)
           e = EWKBRecord.read(ewkb_data)
 

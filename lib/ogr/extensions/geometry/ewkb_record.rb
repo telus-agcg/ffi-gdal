@@ -12,7 +12,7 @@ module OGR
     # converting to and from EWKB.
     #
     # @see http://trac.osgeo.org/postgis/browser/trunk/doc/ZMSgeoms.txt
-    # @see {{OGR::Geometry::EWKBRecord}}
+    # @see OGR::Geometry::EWKBRecord
     class EWKBRecord < BinData::Record
       uint8 :endianness, assert: -> { [0, 1].include?(value) }
 

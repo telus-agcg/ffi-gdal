@@ -8,7 +8,7 @@ module OGR
     module Extensions
       # Enumerates through all associated features. Beware: it calls
       # {#reset_reading} both before and after it's called. If you're using
-      # {OGR::Layer#next_feature} for iterating through features somewhere in
+      # {OGR::LayerMixins::OGRFeatureMethods#next_feature} for iterating through features somewhere in
       # your code, this will reset that reading.
       #
       # @return [Enumerator]
