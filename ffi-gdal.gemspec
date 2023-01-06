@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Steve Loveless']
   spec.email         = %w[steve@agrian.com]
   spec.summary       = 'FFI wrapper for GDAL/OGR.'
-  spec.homepage      = 'http://github.com/agrian-inc/ffi-gdal'
+  spec.homepage      = 'https://github.com/agrian-inc/ffi-gdal'
   spec.license       = 'MIT'
 
   spec.files         = Dir.chdir(File.expand_path(__dir__)) do
