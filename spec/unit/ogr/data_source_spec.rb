@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/data_source'
 require 'ogr/spatial_reference'
 
@@ -21,8 +20,8 @@ RSpec.describe OGR::DataSource do
         allow(described_class).to receive(:new).and_return data_source
 
         expect(data_source).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }.
-          to yield_with_args(data_source)
+        expect { |b| described_class.open('blarg', 'r', &b) }
+          .to yield_with_args(data_source)
       end
     end
   end
@@ -77,7 +76,7 @@ RSpec.describe OGR::DataSource do
   describe '#create_layer' do
     context 'cannot create layer' do
       before do
-        expect(subject).to receive(:can_create_layer?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateLayer').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -90,7 +89,7 @@ RSpec.describe OGR::DataSource do
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('unknown layer')
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that is the given geometry type' do
@@ -103,7 +102,7 @@ RSpec.describe OGR::DataSource do
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('polygon layer', geometry_type: :wkbPolygon)
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that is the given geometry type' do
@@ -113,12 +112,12 @@ RSpec.describe OGR::DataSource do
       end
 
       context 'spatial reference is passed in' do
-        let(:spatial_reference) { OGR::SpatialReference.new_from_epsg(4326) }
+        let(:spatial_reference) { OGR::SpatialReference.new.import_from_epsg(4326) }
 
         it 'adds a new OGR::Layer to @layers' do
           expect do
             data_source.create_layer('polygon layer', spatial_reference: spatial_reference)
-          end.to change { data_source.layers.size }.by 1
+          end.to change { data_source.layer_count }.by 1
         end
 
         it 'has a layer that uses that spatial reference' do
@@ -135,7 +134,7 @@ RSpec.describe OGR::DataSource do
     it 'adds a new OGR::Layer to @layers' do
       expect do
         subject.copy_layer(unknown_layer, 'meow layer')
-      end.to change { subject.layers.size }.by 1
+      end.to change { subject.layer_count }.by 1
     end
 
     it 'makes a copy of the layer' do
@@ -147,7 +146,7 @@ RSpec.describe OGR::DataSource do
   describe '#delete_layer' do
     context 'deleting not supported' do
       before do
-        expect(subject).to receive(:can_delete_layer?).and_return false
+        expect(subject).to receive(:test_capability).with('DeleteLayer').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -167,7 +166,7 @@ RSpec.describe OGR::DataSource do
       context '1 layer' do
         before { data_source.create_layer 'unknown layer' }
         subject { data_source.delete_layer(0) }
-        it { is_expected.to eq true }
+        it { is_expected.to eq nil }
       end
     end
   end
@@ -216,8 +215,8 @@ RSpec.describe OGR::DataSource do
   end
 
   describe '#sync_to_disk' do
-    it 'returns true' do
-      expect(subject.sync_to_disk).to eq true
+    it do
+      expect(subject.sync_to_disk).to be_nil
     end
   end
 end

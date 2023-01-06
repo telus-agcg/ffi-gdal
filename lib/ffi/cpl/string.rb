@@ -17,22 +17,22 @@ module FFI
       # Enums
       #------------------------------------------------------------------------
       ValueType = enum :CPL_VALUE_STRING,
-        :CPL_VALUE_REAL,
-        :CPL_VALUE_INTEGER
+                       :CPL_VALUE_REAL,
+                       :CPL_VALUE_INTEGER
 
       #------------------------------------------------------------------------
       # Functions
       #------------------------------------------------------------------------
       attach_function :CSLAddString, %i[pointer string], :pointer
       attach_function :CSLCount, %i[pointer], :int
-      attach_function :CSLGetField, %i[pointer int], :string
+      attach_function :CSLGetField, %i[pointer int], :strptr
       attach_function :CSLDestroy, %i[pointer], :void
       attach_function :CSLDuplicate, %i[pointer], :pointer
       attach_function :CSLMerge, %i[pointer pointer], :pointer
       attach_function :CSLTokenizeString, %i[string], :pointer
       attach_function :CSLTokenizeStringComplex,
-        %i[string string int int],
-        :pointer
+                      %i[string string int int],
+                      :pointer
       attach_function :CSLTokenizeString2, %i[string string int], :pointer
       attach_function :CSLPrint, %i[pointer pointer], :int
       attach_function :CSLLoad, %i[string], :pointer
@@ -48,19 +48,19 @@ module FFI
       attach_function :CSLTestBoolean, %i[string], :int
       attach_function :CSLFetchBoolean, %i[pointer string int], :int
 
-      attach_function :CPLParseNameValue, %i[string pointer], :string
-      attach_function :CSLFetchNameValue, %i[pointer string], :string
-      attach_function :CSLFetchNameValueDef, %i[pointer string string], :string
+      attach_function :CPLParseNameValue, %i[string pointer], :strptr
+      attach_function :CSLFetchNameValue, %i[pointer string], :strptr
+      attach_function :CSLFetchNameValueDef, %i[pointer string string], :strptr
       attach_function :CSLFetchNameValueMultiple, %i[pointer string], :pointer
       attach_function :CSLAddNameValue, %i[pointer string string], :pointer
       attach_function :CSLSetNameValue, %i[pointer string string], :pointer
       attach_function :CSLSetNameValueSeparator, %i[pointer string], :void
 
-      attach_function :CPLEscapeString, %i[string int int], :string
-      attach_function :CPLUnescapeString, %i[string pointer int], :string
-      attach_function :CPLBinaryToHex, %i[int pointer], :string
+      attach_function :CPLEscapeString, %i[string int int], :strptr
+      attach_function :CPLUnescapeString, %i[string pointer int], :strptr
+      attach_function :CPLBinaryToHex, %i[int pointer], :strptr
       attach_function :CPLHexToBinary, %i[string pointer], :pointer
-      attach_function :CPLBase64Encode, %i[int pointer], :string
+      attach_function :CPLBase64Encode, %i[int pointer], :strptr
       attach_function :CPLBase64DecodeInPlace, %i[pointer], :int
 
       attach_function :CPLGetValueType, %i[string], ValueType
@@ -74,16 +74,13 @@ module FFI
       attach_function :CPLEncodingCharSize, %i[string], :int
 
       attach_function :CPLClearRecodeWarningFlags, [], :void
-      attach_function :CPLRecode, %i[string string string], :string
-      attach_function :CPLRecodeFromWChar, %i[string string string], :string
-      attach_function :CPLRecodeToWChar, %i[string string string], :string
+      attach_function :CPLRecode, %i[string string string], :strptr
+      attach_function :CPLRecodeFromWChar, %i[string string string], :strptr
+      attach_function :CPLRecodeToWChar, %i[string string string], :strptr
 
-      attach_function :CPLIsUTF8, %i[string int], :int
-      attach_function :CPLForceToASCII, %i[string int char], :string
+      attach_function :CPLIsUTF8, %i[string int], :bool
+      attach_function :CPLForceToASCII, %i[string int char], :strptr
       attach_function :CPLStrlenUTF8, %i[string], :int
-
-      attach_function :CPLURLGetValue, %i[string string], :CPLString
-      attach_function :CPLURLAddKVP, %i[string string string], :CPLString
     end
   end
 end

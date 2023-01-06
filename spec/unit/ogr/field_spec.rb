@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/field'
 
 RSpec.describe OGR::Field do
@@ -32,8 +31,8 @@ RSpec.describe OGR::Field do
   describe '#integer64= + #integer64' do
     context 'valid int64' do
       it 'sets the value' do
-        subject.integer64 = 2**32 + 1
-        expect(subject.integer64).to eq 2**32 + 1
+        subject.integer64 = (2**32) + 1
+        expect(subject.integer64).to eq (2**32) + 1
       end
     end
   end
@@ -100,8 +99,8 @@ RSpec.describe OGR::Field do
   describe '#integer64_list= + #integer64_list' do
     context 'valid int64 array' do
       it 'sets the value' do
-        subject.integer64_list = [2**32 + 1, 2**32 + 2]
-        expect(subject.integer64_list).to eq [2**32 + 1, 2**32 + 2]
+        subject.integer64_list = [(2**32) + 1, (2**32) + 2]
+        expect(subject.integer64_list).to eq [(2**32) + 1, (2**32) + 2]
       end
     end
   end
@@ -184,7 +183,7 @@ RSpec.describe OGR::Field do
 
   describe '#date= + #date' do
     context 'valid date' do
-      let(:now) { DateTime.now } # rubocop:disable Style/DateTime
+      let(:now) { DateTime.now }
 
       it 'sets the date' do
         subject.date = now

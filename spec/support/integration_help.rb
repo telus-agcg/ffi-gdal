@@ -10,7 +10,7 @@ module IntegrationHelp
 
   def cleanup_test_files
     test_files.each do |f|
-      FileUtils.rm(f) if File.exist?(f)
+      FileUtils.rm_f(f)
     end
   end
 
@@ -22,6 +22,7 @@ module IntegrationHelp
     tmp_path = File.expand_path(relative_tmp_path, __dir__)
 
     return tmp_path if test_files.include?(tmp_path)
+
     FileUtils.cp(original_path, tmp_path)
     test_files << tmp_path
 

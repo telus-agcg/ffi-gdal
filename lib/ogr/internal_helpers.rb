@@ -28,7 +28,7 @@ module OGR
       #
       # This converts the OGR integer into something usable by Ruby's DateTime.
       #
-      # @param time_zone [Fixnum]
+      # @param time_zone [Integer]
       def _format_time_zone_for_ruby(time_zone)
         case time_zone
         when 0 then nil
@@ -47,7 +47,7 @@ module OGR
       #
       # @param time_zone [String]
       def _format_time_zone_for_ogr(time_zone)
-        if time_zone =~ /(00:00|GMT)\z/
+        if /(00:00|GMT)\z/.match?(time_zone)
           100
         elsif time_zone
           1

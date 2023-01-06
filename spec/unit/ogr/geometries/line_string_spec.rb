@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::LineString do
@@ -30,18 +29,6 @@ RSpec.describe OGR::LineString do
 
   it_behaves_like 'a line string' do
     let(:geometry) { open_line_string }
-  end
-
-  describe '#closed' do
-    context 'geometry is closed' do
-      subject { closed_line_string }
-      it { is_expected.to be_closed }
-    end
-
-    context 'geometry is not closed' do
-      subject { open_line_string }
-      it { is_expected.to_not be_closed }
-    end
   end
 
   describe '#name' do

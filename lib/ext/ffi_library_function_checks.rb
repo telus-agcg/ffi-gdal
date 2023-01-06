@@ -14,9 +14,9 @@ module FFI
     rescue FFI::NotFoundError
       @unsupported_gdal_functions ||= []
 
-      if $VERBOSE || ENV['VERBOSE']
+      if $VERBOSE || ENV.fetch('VERBOSE', nil)
         warn "ffi-gdal warning: function '#{args.first}' is not available in this " \
-          "build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
+             "build of GDAL/OGR (v#{FFI::GDAL.GDALVersionInfo('RELEASE_NAME')})"
       end
 
       @unsupported_gdal_functions << args.first

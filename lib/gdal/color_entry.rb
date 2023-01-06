@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'color_entry_mixins/extensions'
-
 module GDAL
   class ColorEntry
-    include ColorEntryMixins::Extensions
-
     # @return [FFI::GDAL::ColorEntry]
     attr_reader :c_struct
 
@@ -14,7 +10,7 @@ module GDAL
       @c_struct = color_entry || FFI::GDAL::ColorEntry.new
     end
 
-    # @return [FFI::MemoryPointer] Pointer to the C struct.
+    # @return [FFI::Pointer] Pointer to the C struct.
     def c_pointer
       @c_struct.pointer
     end

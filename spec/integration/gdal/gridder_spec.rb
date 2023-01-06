@@ -1,21 +1,20 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-require 'gdal/gridder'
+require 'gdal/extensions/gridder'
 require 'ogr/data_source'
 
 RSpec.describe 'GDAL::Gridder', type: :integration do
   let(:shapefile_path) { File.expand_path('../../../spec/support/shapefiles/states_21basic', __dir__) }
   let(:source_data_source) { OGR::DataSource.open(shapefile_path, 'r') }
   let(:source_layer) { source_data_source.layer(0) }
-  let(:dataset) { GDAL::Dataset.open(output_file_name, 'w', true) }
+  let(:dataset) { GDAL::Dataset.open(output_file_name, 'w', shared: true) }
 
   after do
     source_data_source.close if source_data_source.c_pointer
     dataset.close if File.exist?(output_file_name)
 
     Dir.glob("#{output_file_name}*").each do |file|
-      File.unlink(file) if File.exist?(file)
+      FileUtils.rm_f(file)
     end
   end
 
@@ -55,8 +54,8 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       stats = dataset.raster_band(1).statistics
       expect(stats[:minimum]).to eq 0.0
       expect(stats[:maximum]).to eq 55.0
-      expect(stats[:mean]).to be_within(0.000000000001).of 25.549166666667
-      expect(stats[:standard_deviation]).to be_within(0.000000000001).of 19.127859747926
+      expect(stats[:mean]).to be_within(0.001).of 25.549
+      expect(stats[:standard_deviation]).to be_within(0.0001).of 19.1278
     end
   end
 

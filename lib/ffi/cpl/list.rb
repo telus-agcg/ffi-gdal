@@ -6,7 +6,7 @@ module FFI
   module CPL
     class List < ::FFI::Struct
       layout :data, :pointer,
-        :next, List.ptr
+             :next, List.ptr
 
       module ListFunctions
         def self.included(base)

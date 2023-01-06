@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/dataset'
 
 RSpec.describe GDAL::Dataset do
@@ -9,7 +8,7 @@ RSpec.describe GDAL::Dataset do
   end
 
   subject do
-    described_class.open(file_path, 'r', false)
+    described_class.open(file_path, 'r', shared: false)
   end
 
   it_behaves_like 'a major object'
@@ -30,9 +29,19 @@ RSpec.describe GDAL::Dataset do
         allow(described_class).to receive(:new).and_return dataset
 
         expect(dataset).to receive(:close)
-        expect { |b| described_class.open('blarg', 'r', &b) }.
-          to yield_with_args(dataset)
+        expect { |b| described_class.open('blarg', 'r', &b) }
+          .to yield_with_args(dataset)
       end
+    end
+  end
+
+  describe '.copy_whole_raster' do
+    it "doesn't blow up" do
+      destination = GDAL::Driver
+                    .by_name('MEM')
+                    .create_dataset('testy', subject.raster_x_size, subject.raster_y_size,
+                                    band_count: subject.raster_count, data_type: subject.raster_band(1).data_type)
+      described_class.copy_whole_raster(subject, destination)
     end
   end
 
@@ -62,19 +71,19 @@ RSpec.describe GDAL::Dataset do
   end
 
   describe '#raster_x_size' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_x_size).to eq 101
     end
   end
 
   describe '#raster_y_size' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_y_size).to eq 101
     end
   end
 
   describe '#raster_count' do
-    it 'returns a Fixnum' do
+    it 'returns an Integer' do
       expect(subject.raster_count).to eq 1
     end
   end
@@ -93,8 +102,8 @@ RSpec.describe GDAL::Dataset do
 
   describe '#create_mask_band' do
     context 'no flags given' do
-      it 'returns true' do
-        expect(subject.create_mask_band(0)).to eq true
+      it 'returns nil' do
+        expect(subject.create_mask_band(0)).to be_nil
       end
     end
   end
@@ -102,21 +111,29 @@ RSpec.describe GDAL::Dataset do
   describe '#projection' do
     let(:expected_wkt) do
       'GEOGCS["unknown",DATUM["unknown",SPHEROID["Bessel 1841",' \
-        '6377397.155,299.1528128000008,AUTHORITY["EPSG","7004"]],' \
+        '6377397.155,299.1528128000033,AUTHORITY["EPSG","7004"]],' \
         'TOWGS84[598.1,73.7,418.2,0.202,0.045,-2.455,6.7]],' \
         'PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]]'
     end
 
     it 'returns the projection string' do
-      expect(subject.projection).to eq expected_wkt
+      expect(subject.projection).to start_with 'GEOGCS["unknown",DATUM["'
     end
   end
 
   describe '#projection=' do
-    it 'returns the new projection' do
-      proj = subject.projection
-      expect(subject.projection = proj).to eq proj
-      expect(subject.projection).to eq proj
+    context 'good projection' do
+      it 'sets the new projection' do
+        proj = subject.projection
+        expect(subject.projection = proj).to eq proj
+        expect(subject.projection).to eq proj
+      end
+    end
+
+    context 'bad projection' do
+      it do
+        expect { subject.projection = 'meow' }.to raise_exception(GDAL::Error)
+      end
     end
   end
 

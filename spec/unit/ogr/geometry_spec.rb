@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::Geometry do
@@ -517,7 +516,7 @@ RSpec.describe OGR::Geometry do
       # LINESTRING(3 4 19,12 13 20)
       let(:wkb) do
         hex = '01ea030000020000000000000000000840000000000000104000000000000' \
-          '03340000000000000284000000000000037400000000000003440'
+              '03340000000000000284000000000000037400000000000003440'
         [hex].pack('H*')
       end
 
@@ -528,8 +527,8 @@ RSpec.describe OGR::Geometry do
       # 'POLYGON((1 1,2 1,3 0,1 1))'
       let(:wkb) do
         hex = '01030000000100000004000000000000000000f03f000000000000f03f0000' \
-          '000000000040000000000000f03f00000000000008400000000000000000000000' \
-          '000000f03f000000000000f03f'
+              '000000000040000000000000f03f00000000000008400000000000000000000000' \
+              '000000f03f000000000000f03f'
         [hex].pack('H*')
       end
 
@@ -540,9 +539,9 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         # 'POLYGON((1 1 1,2 1 1,2 0 1,1 1 1))'
         hex = '01eb0300000100000004000000000000000000f03f000000000000f03f0000' \
-          '00000000f03f0000000000000040000000000000f03f000000000000f03f000000' \
-          '00000000400000000000000000000000000000f03f000000000000f03f00000000' \
-          '0000f03f000000000000f03f'
+              '00000000f03f0000000000000040000000000000f03f000000000000f03f000000' \
+              '00000000400000000000000000000000000000f03f000000000000f03f00000000' \
+              '0000f03f000000000000f03f'
         [hex].pack('H*')
       end
       it { is_expected.to be_a OGR::Polygon25D }
@@ -552,7 +551,7 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         # 'MULTIPOINT((0 0),(1 1))'
         hex = '01040000000200000001010000000000000000000000000000000000000001' \
-          '01000000000000000000f03f000000000000f03f'
+              '01000000000000000000f03f000000000000f03f'
         [hex].pack('H*')
       end
       it { is_expected.to be_a OGR::MultiPoint }
@@ -562,8 +561,8 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         # 'MULTIPOINT((0 0 0),(1 1 1))'
         hex = '01ec0300000200000001e90300000000000000000000000000000000000000' \
-          '0000000000000001e9030000000000000000f03f000000000000f03f0000000000' \
-          '00f03f'
+              '0000000000000001e9030000000000000000f03f000000000000f03f0000000000' \
+              '00f03f'
         [hex].pack('H*')
       end
       it { is_expected.to be_a OGR::MultiPoint25D }
@@ -573,9 +572,9 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         # 'MULTILINESTRING((1 1,2 2, 3 3),(10 10,20 20,30 30))'
         hex = '010500000002000000010200000003000000000000000000f03f0000000000' \
-          '00f03f000000000000004000000000000000400000000000000840000000000000' \
-          '084001020000000300000000000000000024400000000000002440000000000000' \
-          '344000000000000034400000000000003e400000000000003e40'
+              '00f03f000000000000004000000000000000400000000000000840000000000000' \
+              '084001020000000300000000000000000024400000000000002440000000000000' \
+              '344000000000000034400000000000003e400000000000003e40'
         [hex].pack('H*')
       end
       it { is_expected.to be_a OGR::MultiLineString }
@@ -585,10 +584,10 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         # MULTILINESTRING((3 4 19,100 20 40),(5 5 5,6 6 6,7 7 7))
         hex = '01ed0300000200000001ea0300000200000000000000000008400000000000' \
-          '001040000000000000334000000000000059400000000000003440000000000000' \
-          '444001ea0300000300000000000000000014400000000000001440000000000000' \
-          '14400000000000001840000000000000184000000000000018400000000000001c' \
-          '400000000000001c400000000000001c40'
+              '001040000000000000334000000000000059400000000000003440000000000000' \
+              '444001ea0300000300000000000000000014400000000000001440000000000000' \
+              '14400000000000001840000000000000184000000000000018400000000000001c' \
+              '400000000000001c400000000000001c40'
         [hex].pack('H*')
       end
       it { is_expected.to be_a OGR::MultiLineString25D }
@@ -598,10 +597,10 @@ RSpec.describe OGR::Geometry do
       # 'MULTIPOLYGON(((1 1,2 1,2 0,1 1)),((100 100,20 20,30 30,100 100)))'
       let(:wkb) do
         hex = '01060000000200000001030000000100000004000000000000000000f03f00' \
-          '0000000000f03f0000000000000040000000000000f03f00000000000000400000' \
-          '000000000000000000000000f03f000000000000f03f0103000000010000000400' \
-          '000000000000000059400000000000005940000000000000344000000000000034' \
-          '400000000000003e400000000000003e4000000000000059400000000000005940'
+              '0000000000f03f0000000000000040000000000000f03f00000000000000400000' \
+              '000000000000000000000000f03f000000000000f03f0103000000010000000400' \
+              '000000000000000059400000000000005940000000000000344000000000000034' \
+              '400000000000003e400000000000003e4000000000000059400000000000005940'
         [hex].pack('H*')
       end
 
@@ -612,12 +611,12 @@ RSpec.describe OGR::Geometry do
       # 'MULTIPOLYGON(((1 1 1,2 1 2,2 0 3,1 1 1)),((100 100 100,20 20 20,30 30 30,100 100 100)))'
       let(:wkb) do
         hex = '01ee0300000200000001eb0300000100000004000000000000000000f03f00' \
-          '0000000000f03f000000000000f03f0000000000000040000000000000f03f0000' \
-          '000000000040000000000000004000000000000000000000000000000840000000' \
-          '000000f03f000000000000f03f000000000000f03f01eb03000001000000040000' \
-          '000000000000005940000000000000594000000000000059400000000000003440' \
-          '000000000000344000000000000034400000000000003e400000000000003e4000' \
-          '00000000003e40000000000000594000000000000059400000000000005940'
+              '0000000000f03f000000000000f03f0000000000000040000000000000f03f0000' \
+              '000000000040000000000000004000000000000000000000000000000840000000' \
+              '000000f03f000000000000f03f000000000000f03f01eb03000001000000040000' \
+              '000000000000005940000000000000594000000000000059400000000000003440' \
+              '000000000000344000000000000034400000000000003e400000000000003e4000' \
+              '00000000003e40000000000000594000000000000059400000000000005940'
         [hex].pack('H*')
       end
 
@@ -678,34 +677,34 @@ RSpec.describe OGR::Geometry do
     end
   end
 
-  describe '#utm_zone' do
-    let(:geom) { OGR::Geometry.create_from_wkt(wkt) }
+  describe '#to_geo_json_ex' do
+    subject { OGR::Geometry.create_from_wkt(wkt) }
 
     let(:wkt) do
-      'LINESTRING(100 100, 20 20, 30 30, 100 100)'
+      'LINESTRING(100.01234567890123456789 100.01234567890123456789, ' \
+        '20.01234567890123456789 20.01234567890123456789, ' \
+        '30.01234567890123456789 30.01234567890123456789, ' \
+        '100.01234567890123456789 100.01234567890123456789)'
     end
 
-    context 'no spatial_reference' do
-      subject { geom.utm_zone }
-      it { is_expected.to be_nil }
-    end
+    it 'lets you configure precision' do
+      json1 = subject.to_geo_json_ex
+      json2 = subject.to_geo_json_ex(coordinate_precision: '20')
 
-    context 'SRID is 4326' do
-      subject { geom.utm_zone }
-      before { geom.spatial_reference = OGR::SpatialReference.new_from_epsg(4326) }
-      it { is_expected.to eq(36) }
-    end
+      g1 = OGR::Geometry.create_from_json(json1)
+      g2 = OGR::Geometry.create_from_json(json2)
 
-    context 'SRID is not 4326' do
-      before { geom.spatial_reference = OGR::SpatialReference.new_from_epsg(3857) }
+      # these compare because they both use default precision
+      expect(json1).to eq g1.to_geo_json_ex
 
-      it 'transforms to 4326 then figures out the zone' do
-        duped_subject = geom.dup
-        expect(geom).to receive(:dup).and_return(duped_subject)
-        expect(duped_subject).to receive(:transform_to!).and_call_original
+      # these DON'T compare because the LHS has more precision than the RHS
+      expect(json2).to_not eq g2.to_geo_json_ex
 
-        geom.utm_zone
-      end
+      # these DON'T compare because the RHS has more precision than the LHS
+      expect(json1).to_not eq g1.to_geo_json_ex(coordinate_precision: '20')
+
+      # these both compare because they both use extra precision
+      expect(json2).to eq g2.to_geo_json_ex(coordinate_precision: '20')
     end
   end
 end

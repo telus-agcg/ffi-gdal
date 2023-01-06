@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/data_type'
 
 RSpec.describe GDAL::DataType do

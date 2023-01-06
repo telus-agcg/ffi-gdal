@@ -8,27 +8,35 @@ module GDAL
         FFI::GDAL::Alg::GeoLocTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyGeoLocTransformer(pointer)
+      end
+
       # @return [FFI::Pointer] C pointer to the C geolocation transformer.
       attr_reader :c_pointer
 
       # @param base_dataset [GDAL::Dataset]
       # @param geolocation_info [Array<String>]
       # @param reversed [Boolean]
-      def intialize(base_dataset, geolocation_info, reversed = false)
+      def intialize(base_dataset, geolocation_info, reversed: false)
         base_dataset_ptr = GDAL._pointer(GDAL::Dataset, base_dataset)
         geolocation_info_ptr = GDAL._string_array_to_pointer(geolocation_info)
 
-        @c_pointer = FFI::GDAL::Alg.CreateGeoLocTransformer(
+        pointer = FFI::GDAL::Alg.CreateGeoLocTransformer(
           base_dataset_ptr,
           geolocation_info_ptr,
           reversed
         )
+
+        @c_pointer = FFI::AutoPointer.new(pointer, GeolocationTransformer.method(:release))
       end
 
       def destroy!
-        return unless @c_pointer
+        GeolocationTransformer.release(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyGeoLocTransformer(@c_pointer)
         @c_pointer = nil
       end
 

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -83,8 +82,8 @@ RSpec.describe 'Raster Attribute Table Info', type: :integration do
   describe '#create_column' do
     context 'valid params, dataset not opened in write mode' do
       it 'raises a GDAL::NoWriteAccess' do
-        expect { subject.create_column('things', :GFT_String, :GFU_Name) }.
-          to raise_exception GDAL::NoWriteAccess
+        expect { subject.create_column('things', :GFT_String, :GFU_Name) }
+          .to raise_exception GDAL::NoWriteAccess
       end
     end
 
@@ -219,7 +218,7 @@ RSpec.describe 'Raster Attribute Table Info', type: :integration do
 
   describe '#dump_readable' do
     let(:output_path) { File.expand_path('tmp/raster_attribute_table_info') }
-    after { File.unlink(output_path) if File.exist?(output_path) }
+    after { FileUtils.rm_f(output_path) }
 
     it 'writes to the file' do
       subject.dump_readable(output_path)

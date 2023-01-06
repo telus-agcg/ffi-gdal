@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'bigdecimal'
+require 'bigdecimal/util'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -27,14 +28,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#x_size' do
     it 'is a non-zero Integer' do
       expect(subject.x_size).to be_a Integer
-      expect(subject.x_size).to be > 0
+      expect(subject.x_size).to be_positive
     end
   end
 
   describe '#y_size' do
     it 'is a non-zero Integer' do
       expect(subject.y_size).to be_a Integer
-      expect(subject.y_size).to be > 0
+      expect(subject.y_size).to be_positive
     end
   end
 
@@ -45,7 +46,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#number' do
     it 'is a non-zero Integer' do
       expect(subject.number).to be_a Integer
-      expect(subject.number).to be > 0
+      expect(subject.number).to be_positive
     end
   end
 
@@ -121,7 +122,7 @@ RSpec.describe 'Raster Band Info', type: :integration do
   end
 
   describe '#overview_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.overview_count).to be_a Integer
     end
   end
@@ -162,13 +163,14 @@ RSpec.describe 'Raster Band Info', type: :integration do
   describe '#statistics' do
     it 'returns a Hash with populated values' do
       expect(subject.statistics).to be_a Hash
-      expect(%i[minimum maximum mean standard_deviation]).
-        to eq subject.statistics.keys
+      expect(%i[minimum maximum mean standard_deviation])
+        .to eq subject.statistics.keys
     end
 
     it 'has a :minimum that ranges between 0.0/-32768.0 and 255.0' do
       min = subject.statistics[:minimum]
-      unless min == -32_768.0
+
+      unless min.to_d == BigDecimal('-32_768.0')
         expect(subject.statistics[:minimum]).to(satisfy { |v| v >= 0 || v == -32_768 })
         expect(subject.statistics[:minimum]).to be <= 255.0
       end
@@ -176,46 +178,28 @@ RSpec.describe 'Raster Band Info', type: :integration do
   end
 
   describe '#scale' do
-    it 'returns a Hash with populated values' do
-      expect(subject.scale).to be_a Hash
-      expect(%i[value is_meaningful]).to eq subject.scale.keys
-    end
-
-    it 'has a :value that is a Float' do
-      expect(subject.scale[:value]).to be_a Float
-    end
-
-    it 'has a :is_meaningful that is false (since the examples are geotiffs)' do
-      expect(subject.scale[:is_meaningful]).to eq false
+    it 'returns a Float' do
+      expect(subject.scale).to be_a Float
     end
   end
 
   describe '#scale=' do
     it 'does nothing (because the file formats dont support it)' do
       subject.scale = 0.1
-      expect(subject.scale[:value]).to eq 0.1
+      expect(subject.scale).to eq 0.1
     end
   end
 
   describe '#offset' do
-    it 'returns a Hash with populated values' do
-      expect(subject.offset).to be_a Hash
-      expect(%i[value is_meaningful]).to eq subject.offset.keys
-    end
-
-    it 'has a :value that is a Float' do
-      expect(subject.offset[:value]).to be_a Float
-    end
-
-    it 'has a :is_meaningful that is false (since the examples are geotiffs)' do
-      expect(subject.offset[:is_meaningful]).to eq false
+    it 'returns a Float' do
+      expect(subject.offset).to be_a Float
     end
   end
 
   describe '#offset=' do
     it 'does nothing (because the file formats dont support it)' do
       subject.offset = 0.1
-      expect(subject.offset[:value]).to eq 0.1
+      expect(subject.offset).to eq 0.1
     end
   end
 
@@ -254,15 +238,15 @@ RSpec.describe 'Raster Band Info', type: :integration do
       expect(histogram[:maximum]).to be_a Float if histogram
     end
 
-    it 'has :buckets as a Fixnum' do
+    it 'has :buckets as an Integer' do
       expect(histogram[:buckets]).to be_a Integer if histogram
     end
 
-    it 'has :totals as an Array of 0 or 256 Fixnums' do
+    it 'has :totals as an Array of 0 or 256 Integers' do
       if histogram
         expect(histogram[:totals]).to be_an Array
         expect(histogram[:totals].size).to eq(256).or eq(0)
-        expect(histogram[:totals].all? { |t| t.class == Integer }).to eq true
+        expect(histogram[:totals].all? { |t| t.instance_of?(Integer) }).to eq true
       end
     end
   end

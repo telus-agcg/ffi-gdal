@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
@@ -30,15 +29,15 @@ RSpec.describe OGR::Layer do
 
   describe '#set_spatial_filter_rectangle' do
     it 'does not die' do
-      expect { subject.set_spatial_filter_rectangle(0, 0, 1000, 1000) }.
-        to_not raise_exception
+      expect { subject.set_spatial_filter_rectangle(0, 0, 1000, 1000) }
+        .to_not raise_exception
     end
   end
 
   describe '#set_spatial_filter_rectangle_ex' do
     it 'does not die' do
-      expect { subject.set_spatial_filter_rectangle_ex(0, 0, 0, 1000, 1000) }.
-        to_not raise_exception
+      expect { subject.set_spatial_filter_rectangle_ex(0, 0, 0, 1000, 1000) }
+        .to_not raise_exception
     end
   end
 end

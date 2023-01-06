@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -8,7 +7,7 @@ RSpec.describe 'Driver Info', type: :integration do
   # Without this before block, tests fail--seemingly due to too many instances
   # of the same driver open. Seems like there might be a better solution than
   # this here, but I'm not sure what it is yet.
-  before { ::FFI::GDAL::GDAL.GDALAllRegister }
+  before { FFI::GDAL::GDAL.GDALAllRegister }
   let(:tmp_source_tiff) { make_temp_test_file(original_source_tiff) }
 
   let(:original_source_tiff) do
@@ -23,7 +22,7 @@ RSpec.describe 'Driver Info', type: :integration do
   describe '.count' do
     it 'is a non-zero Integer' do
       expect(GDAL::Driver.count).to be_a Integer
-      expect(GDAL::Driver.count).to be > 0
+      expect(GDAL::Driver.count).to be_positive
     end
   end
 
@@ -48,7 +47,7 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe '#help_topic' do
     it 'is http://gdal.org/frmt_gtiff.html' do
-      expect(subject.help_topic).to eq 'http://gdal.org/frmt_gtiff.html'
+      expect(subject.help_topic).to match %r{http://gdal.org/\S+gtiff.html}
     end
   end
 
@@ -63,8 +62,6 @@ RSpec.describe 'Driver Info', type: :integration do
     context 'valid options for the driver' do
       let(:options) do
         {
-          'COMPRESS' => 'JPEG',
-          'JPEG_QUALITY' => 90,
           'INTERLEAVE' => 'BAND'
         }
       end
@@ -87,7 +84,7 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe '#copy_dataset_files' do
     let(:dest_tiff) { File.expand_path('copied_tiff.tif', 'tmp') }
-    after { File.unlink(dest_tiff) if File.exist?(dest_tiff) }
+    after { FileUtils.rm_f(dest_tiff) }
 
     context 'source is a GTiff' do
       it 'copies the file' do
@@ -100,15 +97,15 @@ RSpec.describe 'Driver Info', type: :integration do
       let(:source_file) { __FILE__ }
 
       it 'copies the file' do
-        expect { subject.copy_dataset_files(source_file, dest_tiff) }.
-          to raise_exception(GDAL::OpenFailure)
+        expect { subject.copy_dataset_files(source_file, dest_tiff) }
+          .to raise_exception(GDAL::OpenFailure)
       end
     end
   end
 
   describe '#create_dataset' do
     let(:new_dataset_path) { 'tmp/driver_create_dataset.tif' }
-    after { File.unlink(new_dataset_path) if File.exist?(new_dataset_path) }
+    after { FileUtils.rm_f(new_dataset_path) }
 
     it 'creates a dataset' do
       dataset = subject.create_dataset(new_dataset_path, 2, 2)
@@ -139,8 +136,8 @@ RSpec.describe 'Driver Info', type: :integration do
   describe '#delete_dataset' do
     context 'dataset exists' do
       it 'removes the related files' do
-        expect { subject.delete_dataset(tmp_source_tiff) }.
-          to change { File.exist?(tmp_source_tiff) }.from(true).to(false)
+        expect { subject.delete_dataset(tmp_source_tiff) }
+          .to change { File.exist?(tmp_source_tiff) }.from(true).to(false)
       end
     end
 
@@ -153,11 +150,11 @@ RSpec.describe 'Driver Info', type: :integration do
 
   describe 'rename_dataset' do
     context 'dataset exists' do
-      after { File.unlink('tmp/meow.tif') if File.exist?('tmp/meow.tif') }
+      after { FileUtils.rm_f('tmp/meow.tif') }
 
       it 'removes the related files' do
-        expect { subject.rename_dataset(tmp_source_tiff, 'tmp/meow.tif') }.
-          to change { File.exist?('tmp/meow.tif') }.from(false).to(true)
+        expect { subject.rename_dataset(tmp_source_tiff, 'tmp/meow.tif') }
+          .to change { File.exist?('tmp/meow.tif') }.from(false).to(true)
       end
     end
 

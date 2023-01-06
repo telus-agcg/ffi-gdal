@@ -15,7 +15,7 @@ module OGR
       #
       # @return [Hash]
       def area_units
-        spatial_reference ? spatial_reference.linear_units : nil
+        spatial_reference&.linear_units
       end
     end
   end

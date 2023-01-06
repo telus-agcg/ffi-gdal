@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/coordinate_transformation'
 
 RSpec.describe OGR::CoordinateTransformation do
-  let(:source_srs) { OGR::SpatialReference.new_from_epsg(3857) }
-  let(:dest_srs) { OGR::SpatialReference.new_from_epsg(4326) }
+  let(:source_srs) { OGR::SpatialReference.new.import_from_epsg(3857) }
+  let(:dest_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
 
   # From https://epsg.io/3857
   let(:epsg4326_y_bounds) { [-85.06, 85.06] }
@@ -25,14 +24,16 @@ RSpec.describe OGR::CoordinateTransformation do
 
   describe '#initialize' do
     context 'source_srs is not an OGR::SpatialReference' do
-      it 'raises an OGR::Failure' do
-        expect { described_class.new(123, dest_srs) }.to raise_exception(OGR::Failure)
+      it do
+        expect { described_class.new(123, dest_srs) }
+          .to raise_exception GDAL::Error
       end
     end
 
     context 'dest_srs is not an OGR::SpatialReference' do
-      it 'raises an OGR::Failure' do
-        expect { described_class.new(source_srs, 123) }.to raise_exception(OGR::Failure)
+      it do
+        expect { described_class.new(source_srs, 123) }
+          .to raise_exception GDAL::Error
       end
     end
 
@@ -42,13 +43,6 @@ RSpec.describe OGR::CoordinateTransformation do
         expect(instance).to be_a described_class
         expect(instance.c_pointer).to be_a FFI::Pointer
       end
-    end
-  end
-
-  describe '#destroy!' do
-    it 'sets @c_pointer to nil' do
-      subject.destroy!
-      expect(subject.c_pointer).to be_nil
     end
   end
 

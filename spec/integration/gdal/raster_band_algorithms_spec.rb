@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/dataset'
 require 'gdal/raster_band'
 
@@ -10,7 +9,7 @@ RSpec.describe GDAL::RasterBand, type: :integration do
     let(:dest_image_path) { 'tmp/image0.tif' }
 
     before do
-      FileUtils.rm(dest_image_path) if File.exist?(dest_image_path)
+      FileUtils.rm_f(dest_image_path)
       FileUtils.cp(source_image_path, dest_image_path)
     end
 

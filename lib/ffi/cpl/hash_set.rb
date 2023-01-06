@@ -22,13 +22,13 @@ module FFI
       # Functions
       #-------------------------------------------------------------------------
       attach_function :CPLHashSetNew,
-        %i[CPLHashSetHashFunc CPLHashSetEqualFunc CPLHashSetFreeEltFunc],
-        :CPLHashSetH
+                      %i[CPLHashSetHashFunc CPLHashSetEqualFunc CPLHashSetFreeEltFunc],
+                      :CPLHashSetH
       attach_function :CPLHashSetDestroy, %i[CPLHashSetH], :void
       attach_function :CPLHashSetSize, %i[CPLHashSetH], :int
       attach_function :CPLHashSetForeach,
-        %i[CPLHashSetH CPLHashSetIterEltFunc pointer],
-        :void
+                      %i[CPLHashSetH CPLHashSetIterEltFunc pointer],
+                      :void
       attach_function :CPLHashSetInsert, %i[CPLHashSetH pointer], :bool
       attach_function :CPLHashSetLookup, %i[CPLHashSetH pointer], :pointer
       attach_function :CPLHashSetRemove, %i[CPLHashSetH pointer], :bool

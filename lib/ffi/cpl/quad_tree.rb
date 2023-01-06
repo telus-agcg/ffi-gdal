@@ -24,30 +24,30 @@ module FFI
       # Functions
       #-------------------------------------------------------------------------
       attach_function :CPLQuadTreeCreate,
-        [RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
-        :CPLQuadTreeH
+                      [RectObj.ptr, :CPLQuadTreeGetBoundsFunc],
+                      :CPLQuadTreeH
       attach_function :CPLQuadTreeDestroy, %i[CPLQuadTreeH], :void
       attach_function :CPLQuadTreeSetBucketCapacity,
-        %i[CPLQuadTreeH int],
-        :void
+                      %i[CPLQuadTreeH int],
+                      :void
       attach_function :CPLQuadTreeGetAdvisedMaxDepth, %i[int], :int
       attach_function :CPLQuadTreeSetMaxDepth, %i[CPLQuadTreeH int], :void
       attach_function :CPLQuadTreeInsert, %i[CPLQuadTreeH pointer], :void
       attach_function :CPLQuadTreeInsertWithBounds,
-        [:CPLQuadTreeH, :pointer, RectObj.ptr],
-        :void
+                      [:CPLQuadTreeH, :pointer, RectObj.ptr],
+                      :void
       attach_function :CPLQuadTreeSearch,
-        [:CPLQuadTreeH, RectObj.ptr, :pointer],
-        :void
+                      [:CPLQuadTreeH, RectObj.ptr, :pointer],
+                      :void
       attach_function :CPLQuadTreeForeach,
-        %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
-        :void
+                      %i[CPLQuadTreeH CPLQuadTreeForeachFunc pointer],
+                      :void
       attach_function :CPLQuadTreeDump,
-        %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
-        :void
+                      %i[CPLQuadTreeH CPLQuadTreeDumpFeatureFunc pointer],
+                      :void
       attach_function :CPLQuadTreeGetStats,
-        %i[CPLQuadTreeH pointer pointer pointer pointer],
-        :void
+                      %i[CPLQuadTreeH pointer pointer pointer pointer],
+                      :void
     end
   end
 end

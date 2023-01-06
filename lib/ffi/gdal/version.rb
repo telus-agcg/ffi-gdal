@@ -2,6 +2,6 @@
 
 module FFI
   module GDAL
-    VERSION = '1.0.0.beta16'
+    VERSION = '1.0.0'
   end
 end

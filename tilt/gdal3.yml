@@ -1,0 +1,22 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gdal3
+  labels:
+    app: gdal3
+spec:
+  restartPolicy: Never
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  parallelism: 1
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: gdal3
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: gdal3
+          image: ttl.sh/ffi-gdal-12345/ff64f94d-84fb-4762-a1f2-ce223da180b1

@@ -2,6 +2,7 @@
 
 require 'date'
 require_relative '../ogr'
+require_relative '../gdal'
 
 module OGR
   class Field
@@ -18,23 +19,23 @@ module OGR
       @c_struct.to_ptr
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def integer
       @c_struct[:integer]
     end
     alias to_i integer
 
-    # @param new_int [Fixnum]
+    # @param new_int [Integer]
     def integer=(new_int)
       @c_struct[:integer] = new_int
     end
 
-    # @return [Bignum]
+    # @return [Integer]
     def integer64
       @c_struct[:integer64]
     end
 
-    # @param new_int64 [Bignum]
+    # @param new_int64 [Integer]
     def integer64=(new_int64)
       @c_struct[:integer64] = new_int64
     end
@@ -61,7 +62,7 @@ module OGR
       @c_struct[:string] = FFI::MemoryPointer.from_string(new_string)
     end
 
-    # @return [Array<Fixnum>]
+    # @return [Array<Integer>]
     def integer_list
       il = @c_struct[:integer_list]
       return [] if il[:count].zero?
@@ -69,7 +70,7 @@ module OGR
       il[:list].read_array_of_int(il[:count])
     end
 
-    # @param new_integer_list [Array<Fixnum>]
+    # @param new_integer_list [Array<Integer>]
     def integer_list=(new_integer_list)
       list_ptr = FFI::MemoryPointer.new(:int, new_integer_list.length)
       list_ptr.write_array_of_int(new_integer_list)
@@ -81,7 +82,7 @@ module OGR
       @c_struct[:integer_list] = il
     end
 
-    # @return [Array<Bignum>]
+    # @return [Array<Integer>]
     def integer64_list
       il = @c_struct[:integer_list]
       return [] if il[:count].zero?
@@ -90,7 +91,7 @@ module OGR
     end
     alias to_bignum integer64_list
 
-    # @param new_integer64_list [Array<Bignum>]
+    # @param new_integer64_list [Array<Integer>]
     def integer64_list=(new_integer64_list)
       list_ptr = FFI::MemoryPointer.new(:int64, new_integer64_list.size)
       list_ptr.write_array_of_int64(new_integer64_list)
@@ -149,7 +150,7 @@ module OGR
     def binary
       b = @c_struct[:binary]
 
-      b[:count] > 0 ? b[:data].read_bytes(b[:count]) : ''
+      b[:count].positive? ? b[:data].read_bytes(b[:count]) : ''
     end
 
     # @param new_binary [String] Binary string of 8-bit, unsigned data (uchar).
@@ -170,7 +171,7 @@ module OGR
       { marker1: @c_struct[:set][:marker1], marker2: @c_struct[:set][:marker2] }
     end
 
-    # @param new_set [Hash{marker1 => Fixnum, marker2 => Fixnum}]
+    # @param new_set [Hash{marker1 => Integer, marker2 => Integer}]
     def set=(new_set)
       set = FFI::OGR::FieldTypes::Set.new
       set[:marker1] = new_set[:marker1]
@@ -185,16 +186,13 @@ module OGR
       return if c_date[:year].zero? || c_date[:month].zero? || c_date[:day].zero?
 
       formatted_tz = OGR._format_time_zone_for_ruby(c_date[:tz_flag].to_i)
-
-      # rubocop:disable Style/DateTime
       DateTime.new(c_date[:year],
-        c_date[:month],
-        c_date[:day],
-        c_date[:hour],
-        c_date[:minute],
-        c_date[:second],
-        formatted_tz)
-      # rubocop:enable Style/DateTime
+                   c_date[:month],
+                   c_date[:day],
+                   c_date[:hour],
+                   c_date[:minute],
+                   c_date[:second],
+                   formatted_tz)
     end
 
     # @param new_date [Date, Time, DateTime]

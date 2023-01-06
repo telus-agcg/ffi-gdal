@@ -1,19 +1,10 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry_field_definition'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::GeometryFieldDefinition do
   subject(:geometry_field_definition) { described_class.new('test gfld') }
-
-  describe '#destroy!' do
-    it 'sets the c_pointer to nil' do
-      subject.destroy!
-      expect(subject.instance_variable_get(:@c_pointer)).
-        to be_nil
-    end
-  end
 
   describe '#name' do
     it 'returns the name' do
@@ -50,7 +41,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
 
   describe '#spatial_reference= + #spatial_reference' do
     it 'assigns the new SpatialReference' do
-      new_spatial_reference = OGR::SpatialReference.new_from_epsg 4326
+      new_spatial_reference = OGR::SpatialReference.new.import_from_epsg 4326
       subject.spatial_reference = new_spatial_reference
       expect(subject.spatial_reference.authority_code.to_i).to eq 4326
     end

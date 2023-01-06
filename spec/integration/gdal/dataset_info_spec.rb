@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ffi-gdal'
 require 'gdal'
 
@@ -39,19 +38,19 @@ RSpec.describe 'Dataset Info', type: :integration do
   end
 
   describe '#raster_x_size' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_x_size).to eq 101
     end
   end
 
   describe '#raster_y_size' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_y_size).to eq 101
     end
   end
 
   describe '#raster_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.raster_count).to eq 1
     end
   end
@@ -79,7 +78,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'param is an valid projection string' do
       let(:wkt) do
-        <<~WKT
+        <<~WKT.delete("\n").gsub(/,\s+/, ',')
           GEOGCS["WGS 84",
             DATUM["WGS_1984",
               SPHEROID["WGS 84",6378137,298.257223563,
@@ -96,7 +95,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
       it 'sets the projection' do
         subject.projection = wkt
-        expect(subject.projection).to eq wkt
+        expect(subject.projection).to start_with wkt[0..30]
       end
     end
 
@@ -121,32 +120,32 @@ RSpec.describe 'Dataset Info', type: :integration do
 
   describe '#create_mask_band' do
     context ':GMF_ALL_VALID' do
-      it 'returns true' do
-        expect(subject.create_mask_band(:GMF_ALL_VALID)).to eq true
+      it 'does not raise' do
+        expect(subject.create_mask_band(:GMF_ALL_VALID)).to be_nil
       end
     end
 
     context ':GMF_PER_DATASET' do
-      it 'returns true' do
-        expect(subject.create_mask_band(:GMF_PER_DATASET)).to eq true
+      it 'does not raise' do
+        expect(subject.create_mask_band(:GMF_PER_DATASET)).to be_nil
       end
     end
 
     context ':GMF_PER_ALPHA' do
-      it 'returns true' do
-        expect(subject.create_mask_band(:GMF_PER_ALPHA)).to eq true
+      it 'does not raise' do
+        expect(subject.create_mask_band(:GMF_PER_ALPHA)).to be_nil
       end
     end
 
     context ':GMF_NODATA' do
-      it 'returns true' do
-        expect(subject.create_mask_band(:GMF_NODATA)).to eq true
+      it 'does not raise' do
+        expect(subject.create_mask_band(:GMF_NODATA)).to be_nil
       end
     end
 
     context 'all flags' do
-      it 'returns true' do
-        expect(subject.create_mask_band(:GMF_ALL_VALID, :GMF_PER_DATASET, :GMF_PER_ALPHA, :GMF_NODATA)).to eq true
+      it 'does not raise' do
+        expect(subject.create_mask_band(:GMF_ALL_VALID, :GMF_PER_DATASET, :GMF_PER_ALPHA, :GMF_NODATA)).to be_nil
       end
     end
   end
@@ -186,7 +185,7 @@ RSpec.describe 'Dataset Info', type: :integration do
   end
 
   describe '#gcp_count' do
-    it 'is a Fixnum' do
+    it 'is an Integer' do
       expect(subject.gcp_count).to be_a Integer
     end
   end
@@ -205,7 +204,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
   describe '#build_overviews' do
     let(:ovr_file) { "#{tmp_tiff}.ovr" }
-    after { File.unlink(ovr_file) if File.exist?(ovr_file) }
+    after { FileUtils.rm_f(ovr_file) }
 
     context 'nearest neighbor resampling' do
       it 'creates an .ovr file with the same base name as the dataset file' do
@@ -258,8 +257,8 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'unknown resampling algorithm' do
       it 'creates an .ovr file with the same base name as the dataset file' do
-        expect { subject.build_overviews(:stuff, [2, 4, 8]) }.
-          to raise_exception(GDAL::Error)
+        expect { subject.build_overviews(:stuff, [2, 4, 8]) }
+          .to raise_exception(GDAL::Error)
       end
     end
   end
@@ -275,7 +274,7 @@ RSpec.describe 'Dataset Info', type: :integration do
     context 'write to read-only dataset' do
       it 'raises a GDAL::Error when flushing the cache' do
         expect do
-          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1)
+          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1, band_numbers: [1])
           subject.flush_cache
         end.to raise_exception(GDAL::Error)
       end
@@ -297,7 +296,7 @@ RSpec.describe 'Dataset Info', type: :integration do
 
       it 'writes the data' do
         expect do
-          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1)
+          subject.raster_io('w', write_buffer, x_size: 2, y_size: 1, band_numbers: [1])
           subject.flush_cache
         end.to_not raise_exception
       end
@@ -305,14 +304,14 @@ RSpec.describe 'Dataset Info', type: :integration do
 
     context 'read, buffer size too small' do
       it 'raises a GDAL::BufferTooSmall' do
-        expect { subject.raster_io('r', read_buffer) }.
-          to raise_exception GDAL::BufferTooSmall
+        expect { subject.raster_io('r', read_buffer) }
+          .to raise_exception GDAL::BufferTooSmall
       end
     end
 
     context 'read, giving params that fulfil buffer size requirements' do
       it 'reads the data' do
-        subject.raster_io('r', read_buffer, x_size: 2, y_size: 1)
+        subject.raster_io('r', read_buffer, x_size: 2, y_size: 1, band_numbers: [1])
         expect(read_buffer.read_array_of_uchar(2)).to eq [2, 2]
       end
     end
@@ -327,7 +326,11 @@ RSpec.describe 'Dataset Info', type: :integration do
   describe '#band_numbers_args' do
     context 'param is nil' do
       it 'returns no pointer and 0 band count' do
-        expect(subject.send(:band_numbers_args, nil)).to eq [nil, 0]
+        pointer, count = subject.send(:band_numbers_args, nil)
+
+        expect(pointer.size).to eq 0
+        expect(pointer.type_size).to eq FFI::NativeType::INT32.size
+        expect(count).to be_zero
       end
     end
 

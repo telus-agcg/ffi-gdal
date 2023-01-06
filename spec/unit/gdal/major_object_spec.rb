@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/major_object'
 
 RSpec.describe GDAL::MajorObject do

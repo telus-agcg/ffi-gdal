@@ -9,8 +9,8 @@ RSpec.shared_context 'OGR::Layer, spatial_reference' do
 
   subject(:layer) do
     data_source.create_layer 'spec layer',
-      geometry_type: :wkbMultiPoint,
-      spatial_reference: OGR::SpatialReference.new_from_epsg(4326)
+                             geometry_type: :wkbMultiPoint,
+                             spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326)
   end
 end
 
@@ -23,6 +23,6 @@ RSpec.shared_context 'OGR::Layer, no spatial_reference' do
 
   subject(:layer) do
     data_source.create_layer 'spec layer',
-      geometry_type: :wkbMultiPoint
+                             geometry_type: :wkbMultiPoint
   end
 end

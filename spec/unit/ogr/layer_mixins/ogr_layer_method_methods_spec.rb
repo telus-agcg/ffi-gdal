@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
@@ -9,8 +8,8 @@ RSpec.describe OGR::Layer do
   describe '#symmetrical_difference' do
     let(:other_layer) do
       data_source.create_layer 'other layer',
-        geometry_type: :wkbMultiPoint,
-        spatial_reference: OGR::SpatialReference.new_from_epsg(4326)
+                               geometry_type: :wkbMultiPoint,
+                               spatial_reference: OGR::SpatialReference.new.import_from_epsg(4326)
     end
 
     it 'does not die' do

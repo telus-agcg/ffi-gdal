@@ -8,6 +8,8 @@ module OGR
       # @return [OGR::FeatureDefinition,nil]
       def definition
         feature_defn_pointer = FFI::OGR::API.OGR_L_GetLayerDefn(@c_pointer)
+        feature_defn_pointer.autorelease = false
+
         return nil if feature_defn_pointer.null?
 
         # This object should not be modified.
@@ -23,58 +25,68 @@ module OGR
       #   layer.create_feature(feature)
       #
       # @param feature [OGR::Feature] [description]
-      # @return [Boolean]
+      # @raise [OGR::Failure]
       def create_feature(feature)
-        raise OGR::UnsupportedOperation, 'This layer does not support feature creation.' unless can_sequential_write?
+        unless test_capability('SequentialWrite')
+          raise OGR::UnsupportedOperation,
+                'This layer does not support feature creation.'
+        end
 
-        ogr_err = FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to create feature') do
+          FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
+        end
       end
 
       # Deletes the feature from the layer.
       #
-      # @param feature_id [Fixnum] ID of the Feature to delete.
-      # @return +true+ if successful, otherwise raises an OGR exception.
+      # @param feature_id [Integer] ID of the Feature to delete.
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
       def delete_feature(feature_id)
-        raise OGR::UnsupportedOperation, 'This layer does not support feature deletion.' unless can_delete_feature?
+        unless test_capability('DeleteFeature')
+          raise OGR::UnsupportedOperation,
+                'This layer does not support feature deletion.'
+        end
 
-        ogr_err = FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
-
-        ogr_err.handle_result "Unable to delete feature with ID '#{feature_id}'"
+        OGR::ErrorHandling.handle_ogr_err("Unable to delete feature with ID '#{feature_id}'") do
+          FFI::OGR::API.OGR_L_DeleteFeature(@c_pointer, feature_id)
+        end
       end
 
       # The number of features in this layer.  If +force+ is false and it would be
       # expensive to determine the feature count, -1 may be returned.
       #
       # @param force [Boolean] Force the calculation even if it's expensive.
-      # @return [Fixnum]
-      def feature_count(force = true)
+      # @return [Integer]
+      def feature_count(force: true)
         FFI::OGR::API.OGR_L_GetFeatureCount(@c_pointer, force)
       end
 
       # Rewrites an existing feature using the ID within the given Feature.
       #
       # @param new_feature [OGR::Feature, FFI::Pointer]
+      # @raise [OGR::Failure]
       def feature=(new_feature)
-        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless can_random_write?
+        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless test_capability('RandomWrite')
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
-        ogr_err = FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)
-
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err('Unable to set feature') do
+          FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)
+        end
       end
 
-      # @param index [Fixnum] The 0-based index of the feature to get.  It should
+      # @param index [Integer] The 0-based index of the feature to get.  It should
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
-        raise OGR::UnsupportedOperation, '#feature(index) not supported by this Layer' unless can_random_read?
+        unless test_capability('RandomRead')
+          raise OGR::UnsupportedOperation,
+                '#feature(index) not supported by this Layer'
+        end
 
+        # This feature needs to be Destroyed.
         feature_pointer = FFI::OGR::API.OGR_L_GetFeature(@c_pointer, index)
         return nil if feature_pointer.null?
 
@@ -98,16 +110,16 @@ module OGR
 
       # Sets the index for #next_feature.
       #
-      # @param feature_index [Fixnum]
-      # @return [Boolean]
+      # @param feature_index [Integer]
+      # @raise [OGR::Failure]
       def next_feature_index=(feature_index)
-        ogr_err = FFI::OGR::API.OGR_L_SetNextByIndex(@c_pointer, feature_index)
-
-        ogr_err.handle_result "Unable to set next feature index to #{feature_index}"
+        OGR::ErrorHandling.handle_ogr_err("Unable to set next feature index to #{feature_index}") do
+          FFI::OGR::API.OGR_L_SetNextByIndex(@c_pointer, feature_index)
+        end
       end
       alias set_next_by_index next_feature_index=
 
-      # @return [Fixnum]
+      # @return [Integer]
       def features_read
         FFI::OGR::API.OGR_L_GetFeaturesRead(@c_pointer)
       end

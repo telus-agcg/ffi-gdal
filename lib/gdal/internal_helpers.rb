@@ -10,12 +10,24 @@ module GDAL
     module ClassMethods
       # Internal factory method for returning a pointer from +variable+, which could
       # be either of +klass+ class or a type of FFI::Pointer.
-      def _pointer(klass, variable, warn_on_nil = true)
-        if variable.is_a?(klass)
-          variable.c_pointer.autorelease = true
+      #
+      # @param klass [Class]
+      # @param variable [Object]
+      # @param warn_on_nil [Boolean] If +true+, print out warning that the method
+      #   couldn't do what it's supposed to do.
+      # @param autorelease [Boolean] Pass this on to the pointer.
+      # @return [FFI::Pointer, nil]
+      def _pointer(klass, variable, warn_on_nil: true, autorelease: true)
+        case variable
+        when klass
+          variable.c_pointer.autorelease = autorelease
           variable.c_pointer
-        elsif variable.is_a? FFI::Pointer
-          variable.autorelease = true
+        when FFI::MemoryPointer
+          variable.autorelease = autorelease
+          variable
+        when FFI::Pointer
+          # This is a C-allocated pointer and needs to be freed using a C method,
+          # and thus shouldn't be autorelease-freed.
           variable
         else
           if warn_on_nil && Logger.logging_enabled
@@ -29,7 +41,7 @@ module GDAL
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @param size [Fixnum] Size of the pointer to allocate.
+      # @param size [Integer] Size of the pointer to allocate.
       # @return [FFI::MemoryPointer]
       def _pointer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -38,7 +50,7 @@ module GDAL
       end
 
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @param size [Fixnum] Size of the pointer to allocate.
+      # @param size [Integer] Size of the pointer to allocate.
       # @return [FFI::Buffer]
       def _buffer_from_data_type(data_type, size = nil)
         pointer_type = _gdal_data_type_to_ffi(data_type)
@@ -95,6 +107,31 @@ module GDAL
         return if pointer_ptr.read_pointer.null?
 
         pointer_ptr.read_pointer.send("read_#{type}".to_sym)
+      end
+
+      # Convenience function for allocating a pointer to a string (**char),
+      # yielding the pointer so it can written to (i.e. passed to a GDAL/OGR
+      # function to be written to), then reads the string out of the buffer,
+      # then calls FFI::CPL::VSI.VSIFree (which is an alias for
+      # FFI::CPL::Conv.CPLFree).
+      #
+      # @yield [FFI::MemoryPointer]
+      # @return [String]
+      def _cpl_read_and_free_string
+        result_ptr_ptr = GDAL._pointer_pointer(:string)
+        result_ptr_ptr.autorelease = false
+
+        yield result_ptr_ptr
+
+        result = if result_ptr_ptr.null?
+                   ''
+                 else
+                   GDAL._read_pointer_pointer_safely(result_ptr_ptr, :string)
+                 end
+
+        FFI::CPL::VSI.VSIFree(result_ptr_ptr)
+
+        result
       end
 
       # Maps GDAL DataTypes to FFI types.
@@ -159,7 +196,7 @@ module GDAL
       # @param pointer [FFI::Pointer] The pointer to read from.
       # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when reading.
-      # @param length [Fixnum] The amount of data to read from the pointer. If
+      # @param length [Integer] The amount of data to read from the pointer. If
       #   > 1, the "read_array_of_" method will be called.
       # @return [Number, Array<Number>]
       def _read_pointer(pointer, data_type, length = 1)
@@ -176,7 +213,7 @@ module GDAL
       # @param pointer [FFI::Pointer] The pointer to write to.
       # @param data_type [FFI::GDAL::GDAL::DataType] The GDAL data type that
       #   determines what FFI type to use when writing.
-      # @param data [Fixnum] The data to write to the pointer. If it's an Array
+      # @param data [Integer] The data to write to the pointer. If it's an Array
       #   with size > 1, the "write_array_of_" method will be called.
       def _write_pointer(pointer, data_type, data)
         if data.is_a?(Array) && data.size > 1

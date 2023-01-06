@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/color_table'
 
 RSpec.describe GDAL::ColorTable do
@@ -21,32 +20,32 @@ RSpec.describe GDAL::ColorTable do
 
     context ':GPI_RGB' do
       it 'extends the new object with the ColorTableTypes::RGB module' do
-        expect_any_instance_of(described_class).to receive(:extend).
-          with(GDAL::ColorTableTypes::RGB)
+        expect_any_instance_of(described_class).to receive(:extend)
+          .with(GDAL::ColorTableTypes::RGB)
         described_class.new(:GPI_RGB)
       end
     end
 
     context ':GPI_Gray' do
       it 'extends the new object with the ColorTableTypes::Gray module' do
-        expect_any_instance_of(described_class).to receive(:extend).
-          with(GDAL::ColorTableTypes::Gray)
+        expect_any_instance_of(described_class).to receive(:extend)
+          .with(GDAL::ColorTableTypes::Gray)
         described_class.new(:GPI_Gray)
       end
     end
 
     context ':GPI_CMYK' do
       it 'extends the new object with the ColorTableTypes::CMYK module' do
-        expect_any_instance_of(described_class).to receive(:extend).
-          with(GDAL::ColorTableTypes::CMYK)
+        expect_any_instance_of(described_class).to receive(:extend)
+          .with(GDAL::ColorTableTypes::CMYK)
         described_class.new(:GPI_CMYK)
       end
     end
 
     context ':GPI_HLS' do
       it 'extends the new object with the ColorTableTypes::HLS module' do
-        expect_any_instance_of(described_class).to receive(:extend).
-          with(GDAL::ColorTableTypes::HLS)
+        expect_any_instance_of(described_class).to receive(:extend)
+          .with(GDAL::ColorTableTypes::HLS)
         described_class.new(:GPI_HLS)
       end
     end

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/virtual_dataset'
 require 'gdal/dataset'
 
@@ -20,7 +19,7 @@ RSpec.describe GDAL::VirtualDataset do
   describe '#to_xml' do
     it 'returns a String' do
       expect(subject.to_xml).to be_a String
-      expect(subject.to_xml.size).to be > 0
+      expect(subject.to_xml.size).to be_positive
     end
   end
 

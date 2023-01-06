@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr'
 
 RSpec.describe OGR::Point25D do

@@ -5,6 +5,7 @@ require 'thor'
 require 'fileutils'
 require 'gdal/dataset'
 require 'gdal/raster_band'
+require 'gdal/raster_band/algorithm_extensions'
 
 GDAL::Logger.logging_enabled = true
 

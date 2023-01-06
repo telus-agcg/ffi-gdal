@@ -1,31 +1,31 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'pry'
 require 'ffi-gdal'
+require 'ogr'
 
-data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
+_data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
 
 point_wkt = 'POINT (1 2)'
-point = OGR::Geometry.create_from_wkt(point_wkt)
-other_point_wkt = 'POINT (1 2)'
-other_point = OGR::Geometry.create_from_wkt(point_wkt)
+_point = OGR::Geometry.create_from_wkt(point_wkt)
+_other_point_wkt = 'POINT (1 2)'
+_other_point = OGR::Geometry.create_from_wkt(point_wkt)
 
 line_string_wkt = 'LINESTRING (1 2, 10 30, 40 40, 1 2)'
-line_string = OGR::Geometry.create_from_wkt(line_string_wkt)
+_line_string = OGR::Geometry.create_from_wkt(line_string_wkt)
 other_line_string_wkt = 'LINESTRING (10 10, 0 30, 40 10)'
-other_line_string = OGR::Geometry.create_from_wkt(other_line_string_wkt)
+_other_line_string = OGR::Geometry.create_from_wkt(other_line_string_wkt)
 
 polygon_wkt = 'POLYGON ((0 0,4 0,4 4,0 4,0 0), (1 1, 2 1, 2 2, 1 1))'
-polygon = OGR::Geometry.create_from_wkt(polygon_wkt)
+_polygon = OGR::Geometry.create_from_wkt(polygon_wkt)
 other_polygon_wkt = 'POLYGON ((1 1,5 1,5 5,1 5,1 1), (10 10, 20 10, 20 20, 10 10))'
-other_polygon = OGR::Geometry.create_from_wkt(other_polygon_wkt)
+_other_polygon = OGR::Geometry.create_from_wkt(other_polygon_wkt)
 
 multi_point_wkt = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))'
-multi_point = OGR::Geometry.create_from_wkt(multi_point_wkt)
+_multi_point = OGR::Geometry.create_from_wkt(multi_point_wkt)
 
 multi_line_string_wkt = 'MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))'
-multi_line_string = OGR::Geometry.create_from_wkt(multi_line_string_wkt)
+_multi_line_string = OGR::Geometry.create_from_wkt(multi_line_string_wkt)
 
 multi_polygon_wkt = <<-WKT
   MULTIPOLYGON (((-120.03296317083633 44.226828996384285, -120.03199741570855 44.230616638863914,
@@ -93,7 +93,7 @@ multi_polygon_wkt = <<-WKT
   -120.0331825583669 44.22634017780693, -120.03296317083633 44.226828996384285)))
 WKT
 
-multi_polygon = OGR::Geometry.create_from_wkt(multi_polygon_wkt)
+_multi_polygon = OGR::Geometry.create_from_wkt(multi_polygon_wkt)
 
 # point_wkt = 'POINT (1 2)'
 # point =  OGR::Geometry.create_from_wkt(point_wkt)
@@ -112,5 +112,5 @@ multi_polygon = OGR::Geometry.create_from_wkt(multi_polygon_wkt)
 #
 
 geometry = geometry.clone
-ls = geometry.to_line_string
-mls = geometry.to_multi_line_string
+_ls = geometry.to_line_string
+_mls = geometry.to_multi_line_string

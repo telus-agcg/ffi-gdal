@@ -3,7 +3,6 @@
 require 'multi_xml'
 require_relative '../gdal'
 require_relative 'major_object'
-require_relative 'driver_mixins/extensions'
 
 module GDAL
   # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working
@@ -11,11 +10,10 @@ module GDAL
   class Driver
     include MajorObject
     include GDAL::Logger
-    include DriverMixins::Extensions
 
     GDAL_DOCS_URL = 'http://gdal.org'
 
-    # @return [Fixnum]
+    # @return [Integer]
     def self.count
       FFI::GDAL::GDAL.GDALGetDriverCount
     end
@@ -32,7 +30,7 @@ module GDAL
       new(driver_ptr)
     end
 
-    # @param index [Fixnum] Index of the registered driver.  Must be less than
+    # @param index [Integer] Index of the registered driver.  Must be less than
     #   GDAL::Driver.count.
     # @return [GDAL::Driver]
     # @raise [GDAL::InvalidDriverIndex] If driver at +index+ does not exist.
@@ -57,22 +55,34 @@ module GDAL
 
     # @param driver [GDAL::Driver, FFI::Pointer]
     def initialize(driver)
-      @c_pointer = GDAL._pointer(GDAL::Driver, driver)
+      @c_pointer = GDAL._pointer(GDAL::Driver, driver, autorelease: false)
     end
 
     # @return [String]
     def short_name
-      FFI::GDAL::GDAL.GDALGetDriverShortName(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      name, ptr = FFI::GDAL::GDAL.GDALGetDriverShortName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [String]
     def long_name
-      FFI::GDAL::GDAL.GDALGetDriverLongName(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      name, ptr = FFI::GDAL::GDAL.GDALGetDriverLongName(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @return [String]
     def help_topic
-      "#{GDAL_DOCS_URL}/#{FFI::GDAL::GDAL.GDALGetDriverHelpTopic(@c_pointer)}"
+      # The returned string should not be freed and is owned by the driver.
+      url, ptr = FFI::GDAL::GDAL.GDALGetDriverHelpTopic(@c_pointer)
+      ptr.autorelease = false
+
+      "#{GDAL_DOCS_URL}/#{url}"
     end
 
     # Lists and describes the options that can be used when calling
@@ -82,8 +92,11 @@ module GDAL
     def creation_option_list
       return [] unless @c_pointer
 
-      creation_option_list_xml = FFI::GDAL::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
+      # The returned string should not be freed and is owned by the driver.
+      creation_option_list_xml, ptr = FFI::GDAL::GDAL.GDALGetDriverCreationOptionList(@c_pointer)
+      ptr.autorelease = false
       root = MultiXml.parse(creation_option_list_xml)
+
       return [] if root.nil? || root.empty?
 
       list = root['CreationOptionList']
@@ -109,9 +122,11 @@ module GDAL
     # @param new_name [String]
     # @param old_name [String]
     # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def copy_dataset_files(old_name, new_name)
-      FFI::GDAL::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to copy dataset files: '#{old_name}' -> '#{new_name}'") do
+        FFI::GDAL::GDAL.GDALCopyDatasetFiles(@c_pointer, new_name, old_name)
+      end
     end
 
     # Create a new Dataset with this driver.  Legal arguments depend on the
@@ -119,9 +134,9 @@ module GDAL
     # out all data to the destination, you must call #close on the dataset!
     #
     # @param filename [String]
-    # @param x_size [Fixnum] Width of created raster in pixels.
-    # @param y_size [Fixnum] Height of created raster in pixels.
-    # @param band_count [Fixnum]
+    # @param x_size [Integer] Width of created raster in pixels.
+    # @param y_size [Integer] Height of created raster in pixels.
+    # @param band_count [Integer]
     # @param data_type [FFI::GDAL::GDAL::DataType]
     # @return [GDAL::Dataset] If no block is given, returns the *open*
     #   (writable) dataset; you'll need to close it. If a block is given,
@@ -201,18 +216,20 @@ module GDAL
     # this could mean deleting associated files, database objects, etc.
     #
     # @param file_name [String]
-    # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def delete_dataset(file_name)
-      FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to delete dataset: #{file_name}") do
+        FFI::GDAL::GDAL.GDALDeleteDataset(@c_pointer, file_name)
+      end
     end
 
     # @param old_name [String]
     # @param new_name [String]
-    # @return true on success, false on warning.
-    # @raise [GDAL::CPLErrFailure] If failures.
+    # @raise [GDAL::Error] If failures.
     def rename_dataset(old_name, new_name)
-      FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      GDAL::CPLErrorHandler.manually_handle("Unable to rename dataset: #{old_name}") do
+        FFI::GDAL::GDAL.GDALRenameDataset(@c_pointer, new_name, old_name)
+      end
     end
 
     private
@@ -224,7 +241,7 @@ module GDAL
       if dataset.is_a? String
         GDAL::Dataset.open(dataset, 'r').c_pointer
       else
-        GDAL._pointer(GDAL::Dataset, dataset)
+        GDAL._pointer(GDAL::Dataset, dataset, autorelease: false)
       end
     end
   end

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/grid'
 
 RSpec.describe GDAL::Grid do
@@ -90,8 +89,8 @@ RSpec.describe GDAL::Grid do
 
     context 'unknown algorithm' do
       it 'raises a GDAL::UnknownGridAlgorithm' do
-        expect { grid.send(:init_algorithm, :metric_pants) }.
-          to raise_exception(GDAL::UnknownGridAlgorithm)
+        expect { grid.send(:init_algorithm, :metric_pants) }
+          .to raise_exception(GDAL::UnknownGridAlgorithm)
       end
     end
   end

@@ -17,7 +17,7 @@ module GDAL
         # @param red_band [GDAL::RasterBand, FFI::Pointer]
         # @param green_band [GDAL::RasterBand, FFI::Pointer]
         # @param blue_band [GDAL::RasterBand, FFI::Pointer]
-        # @param colors [Fixnum] Number of colors to return; 2-256.
+        # @param colors [Integer] Number of colors to return; 2-256.
         # @param color_interpretation [FFI::GDAL::GDAL::PaletteInterp] The type
         #   of ColorTable to return.
         # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
@@ -90,11 +90,11 @@ module GDAL
       # of the raster data won't affect the checksum.  Real and imaginary
       # components of complex bands influence the result.
       #
-      # @param x_offset [Fixnum]
-      # @param y_offset [Fixnum]
-      # @param x_size [Fixnum]
-      # @param y_size [Fixnum]
-      # @return [Fixnum] The checksum value.
+      # @param x_offset [Integer]
+      # @param y_offset [Integer]
+      # @param x_size [Integer]
+      # @param y_size [Integer]
+      # @return [Integer] The checksum value.
       def checksum_image(x_offset, y_offset, x_size, y_size)
         !!FFI::GDAL::Alg.GDALChecksumImage(
           @c_pointer,
@@ -123,11 +123,11 @@ module GDAL
       #   from non-zero pixel values.
       # @option options [String] distunits (PIXEL) Indicates what unit type to
       #   use for computing.
-      # @option options [Fixnum] maxdist The maximum distance to search.
-      # @option options [Fixnum] nodata If not given, it will try to use the
+      # @option options [Integer] maxdist The maximum distance to search.
+      # @option options [Integer] nodata If not given, it will try to use the
       #   nodata value on the +proximity_band+. If not found there, will use
       #   65535.
-      # @option options [Fixnum] fixed_buf_val If set, all pixels within the
+      # @option options [Integer] fixed_buf_val If set, all pixels within the
       #   +maxdist+ threshold are set to this fixed value instead of to a
       #   proximity distance.
       def compute_proximity!(proximity_band, progress_function: nil, progress_arg: nil, **options)
@@ -164,7 +164,7 @@ module GDAL
       #   be interpolated (it does so using 0-valued pixels).
       # @param max_search_distance [Float] Max number of pixels to search in all
       #   directions to find values to interpolate from.
-      # @param smoothing_iterations [Fixnum] The number of 3x3 smoothing filter
+      # @param smoothing_iterations [Integer] The number of 3x3 smoothing filter
       #   passes to run.  Can be 0.
       # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
       # @param progress_arg [FFI::Pointer] Usually used when when using a
@@ -177,13 +177,13 @@ module GDAL
         options_ptr = GDAL::Options.pointer(options)
 
         !!FFI::GDAL::Alg.GDALFillNodata(@c_pointer,
-          mask_band_ptr,
-          max_search_distance,
-          0, # deprecated option in GDAL
-          smoothing_iterations,
-          options_ptr,
-          progress_function,
-          progress_arg)
+                                        mask_band_ptr,
+                                        max_search_distance,
+                                        0, # deprecated option in GDAL
+                                        smoothing_iterations,
+                                        options_ptr,
+                                        progress_function,
+                                        progress_arg)
       end
 
       # Creates vector polygons for all connected regions of pixels in the raster
@@ -211,7 +211,7 @@ module GDAL
       # @param mask_band [GDAL::RasterBand, FFI::Pointer] Optional band, where all
       #   pixels in the mask with a value other than zero will be considered
       #   suitable for collection as polygons.
-      # @param pixel_value_field [Fixnum] Index of the feature attribute into
+      # @param pixel_value_field [Integer] Index of the feature attribute into
       #   which the pixel value of the polygon should be written.
       # @param use_integer_function [Boolean] Indicates using GDAL's
       #   GDALPolygonize() instead of GDALFPolygonize(); the former uses a
@@ -219,7 +219,7 @@ module GDAL
       #   32-bit float buffer. The integer based function is faster but less
       #   precise.
       # @param options [Hash]
-      # @option options [Fixnum] '8CONNECTED' (4) Set to 8 to use 8
+      # @option options [Integer] '8CONNECTED' (4) Set to 8 to use 8
       #   connectedness.
       # @param progress_function [Proc, FFI:GDAL::GDAL.ProgressFunc]
       # @param progress_arg [FFI::Pointer] Usually used when when using a
@@ -227,9 +227,10 @@ module GDAL
       # @return [OGR::Layer]
       def polygonize(layer, mask_band: nil, pixel_value_field: -1, use_integer_function: false, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
         layer_ptr = GDAL._pointer(OGR::Layer, layer)
         raise OGR::InvalidLayer, "Invalid layer: #{layer.inspect}" if layer_ptr.null?
+
         log "Pixel value field: #{pixel_value_field}"
 
         options_ptr = GDAL::Options.pointer(options)
@@ -258,9 +259,9 @@ module GDAL
       # If +mask_band+ is given, "nodata" pixels in the band will not be treated
       # as part of a polygon, regardless of their pixel values.
       #
-      # @param size_threshold [Fixnum] Polygons found in the raster with sizes
+      # @param size_threshold [Integer] Polygons found in the raster with sizes
       #   smaller than this will be merged into their largest neighbor.
-      # @param connectedness [Fixnum] 4 or 8. 4 indicates that diagonal pixels
+      # @param connectedness [Integer] 4 or 8. 4 indicates that diagonal pixels
       #   are not considered directly adjacent for polygon membership purposes;
       #   8 indicates they are.
       # @param mask_band [GDAL::RasterBand] [description] All pixels in this
@@ -299,9 +300,9 @@ module GDAL
 
       private
 
-      # @param size_threshold [Fixnum] Polygons found in the raster with sizes
+      # @param size_threshold [Integer] Polygons found in the raster with sizes
       #   smaller than this will be merged into their largest neighbor.
-      # @param connectedness [Fixnum] 4 or 8. 4 indicates that diagonal pixels
+      # @param connectedness [Integer] 4 or 8. 4 indicates that diagonal pixels
       #   are not considered directly adjacent for polygon membership purposes;
       #   8 indicates they are.
       # @param mask_band [GDAL::RasterBand] [description] All pixels in this
@@ -313,7 +314,7 @@ module GDAL
       # @param options [Hash] None supported in GDAL as of this writing.
       def _sieve_filter(size_threshold, connectedness, destination_band, mask_band: nil, progress_function: nil,
         progress_arg: nil, **options)
-        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, false)
+        mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band, warn_on_nil: false)
         destination_band_ptr = GDAL._pointer(GDAL::RasterBand, destination_band)
 
         if destination_band.nil? || destination_band.null?

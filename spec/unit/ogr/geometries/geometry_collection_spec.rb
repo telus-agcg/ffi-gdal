@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::GeometryCollection do
@@ -147,8 +146,8 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         it 'returns WKT with the merged strings' do
-          expect(subject.to_wkt).
-            to eq 'POLYGON ((0 0 0,0 1 0,0 2 0,1 1 0,1 2 0,1 3 0,0 0 0))'
+          expect(subject.to_wkt)
+            .to eq 'POLYGON ((0 0 0,0 1 0,0 2 0,1 1 0,1 2 0,1 3 0,0 0 0))'
         end
       end
 

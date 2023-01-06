@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/driver'
 
 RSpec.describe OGR::Driver do
@@ -24,8 +23,8 @@ RSpec.describe OGR::Driver do
 
     context 'invalid index' do
       it 'raises an OGR::DriverNotFound' do
-        expect { described_class.at_index(123_456) }.
-          to raise_exception OGR::DriverNotFound
+        expect { described_class.at_index(123_456) }
+          .to raise_exception OGR::DriverNotFound
       end
     end
   end
@@ -49,15 +48,15 @@ RSpec.describe OGR::Driver do
     context 'data source at path does not exist' do
       context 'with write flag' do
         it 'raises an OGR::InvalidDataSource' do
-          expect { subject.open('spec source', 'w') }.
-            to raise_exception OGR::InvalidDataSource
+          expect { subject.open('spec source', 'w') }
+            .to raise_exception OGR::InvalidDataSource
         end
       end
 
       context 'with read flag' do
         it 'raises an OGR::InvalidDataSource' do
-          expect { subject.open('spec source', 'r') }.
-            to raise_exception OGR::InvalidDataSource
+          expect { subject.open('spec source', 'r') }
+            .to raise_exception OGR::InvalidDataSource
         end
       end
     end
@@ -83,8 +82,8 @@ RSpec.describe OGR::Driver do
 
       context 'using a driver that does not support the file type' do
         it 'raises an OGR::InvalidDataSource' do
-          expect { memory_driver.open(shapefile_path, 'r') }.
-            to raise_exception OGR::InvalidDataSource
+          expect { memory_driver.open(shapefile_path, 'r') }
+            .to raise_exception OGR::InvalidDataSource
         end
       end
     end
@@ -93,7 +92,7 @@ RSpec.describe OGR::Driver do
   describe '#create_data_source' do
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_data_source?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateDataSource').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -112,8 +111,8 @@ RSpec.describe OGR::Driver do
 
       context 'no block given' do
         it 'returns the new data source' do
-          expect(subject.create_data_source('test source')).
-            to be_a OGR::DataSource
+          expect(subject.create_data_source('test source'))
+            .to be_a OGR::DataSource
         end
       end
     end
@@ -144,8 +143,8 @@ RSpec.describe OGR::Driver do
       end
 
       it 'returns the new OGR::DataSource' do
-        expect(subject.copy_data_source(data_source, 'datasource2')).
-          to be_a OGR::DataSource
+        expect(subject.copy_data_source(data_source, 'datasource2'))
+          .to be_a OGR::DataSource
       end
     end
   end

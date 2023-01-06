@@ -1,26 +1,36 @@
 # frozen_string_literal: true
 
+require_relative '../gdal'
 require_relative '../ogr'
-require_relative 'style_table_extensions'
 
 module OGR
   class StyleTable
-    include StyleTableExtensions
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_STBL_Destroy(pointer)
+    end
 
     # @return [FFI::Pointer] C pointer to the C style table.
     attr_reader :c_pointer
 
     # @param [FFI::Pointer] c_pointer
     def initialize(c_pointer = nil)
-      @c_pointer = c_pointer ? c_pointer : FFI::OGR::API.OGR_STBL_Create
+      @c_pointer = if c_pointer
+                     c_pointer
+                   else
+                     pointer = FFI::OGR::API.OGR_STBL_Create
+                     pointer.autorelease = false
+                     FFI::AutoPointer.new(pointer, StyleTable.method(:release))
+                   end
 
       raise 'Unable to create StyleTable' if @c_pointer.null?
     end
 
     def destroy!
-      return unless @c_pointer
+      StyleTable.release(@c_pointer)
 
-      FFI::OGR::API.OGR_STBL_Destroy(@c_pointer)
       @c_pointer = nil
     end
 

@@ -23,7 +23,7 @@ module OGR
 
       # Only feature which intersect the filter geometry will be returned.
       #
-      # @param geometry_field_index [Fixnum] The spatial filter operates on this
+      # @param geometry_field_index [Integer] The spatial filter operates on this
       #   geometry field.
       # @param geometry [OGR::Geometry] Use this geometry as the filtering
       #   region.
@@ -60,7 +60,7 @@ module OGR
       # from #set_spatial_filter_rectangle).  To clear the filter, set
       # #spatial_filter = nil.
       #
-      # @param geometry_field_index [Fixnum]
+      # @param geometry_field_index [Integer]
       # @param min_x [Float]
       # @param min_y [Float]
       # @param max_x [Float]
@@ -82,10 +82,11 @@ module OGR
       #
       # @param query [String]
       # @see http://ogdi.sourceforge.net/prop/6.2.CapabilitiesMetadata.html
-      def set_attribute_filter(query)
-        ogr_err = FFI::OGR::API.OGR_L_SetAttributeFilter(@c_pointer, query)
-
-        ogr_err.handle_result
+      # @raise [OGR::Failure]
+      def set_attribute_filter(query) # rubocop:disable Naming/AccessorMethodName
+        OGR::ErrorHandling.handle_ogr_err("Unable to set attribute filter: #{query}") do
+          FFI::OGR::API.OGR_L_SetAttributeFilter(@c_pointer, query)
+        end
       end
     end
   end

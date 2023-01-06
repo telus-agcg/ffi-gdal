@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/geo_transform'
 
 RSpec.describe GDAL::GeoTransform do
@@ -238,27 +237,6 @@ RSpec.describe GDAL::GeoTransform do
 
       it 'returns an inverted y_rotation' do
         expect(subject.y_rotation).to eq 0.8
-      end
-    end
-
-    describe '#world_to_pixel' do
-      subject do
-        gt = described_class.new
-        gt.x_origin = 1000
-        gt.y_origin = -2000
-        gt.pixel_height = 0.1
-        gt.pixel_width = 0.1
-        gt
-      end
-
-      it 'converts (0, 0)' do
-        result = subject.world_to_pixel(0, 0)
-        expect(result).to eq pixel: -10_000, line: -20_000
-      end
-
-      it 'converts (100, -100)' do
-        result = subject.world_to_pixel(100, -100)
-        expect(result).to eq pixel: -9000, line: -19_000
       end
     end
   end

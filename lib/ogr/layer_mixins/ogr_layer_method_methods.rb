@@ -22,6 +22,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def clip(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Clip, method_layer, output_layer, **options, &progress)
       end
@@ -42,6 +43,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def erase(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Erase, method_layer, output_layer, **options, &progress)
       end
@@ -60,6 +62,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def identity(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Identity, method_layer, output_layer, **options, &progress)
       end
@@ -76,6 +79,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def intersection(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Intersection, method_layer, output_layer, **options, &progress)
       end
@@ -97,6 +101,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def symmetrical_difference(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_SymDifference, method_layer, output_layer, **options, &progress)
       end
@@ -117,6 +122,7 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def union(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Union, method_layer, output_layer, **options, &progress)
       end
@@ -138,25 +144,28 @@ module OGR
       #   that will be created from the fields of the input Layer.
       # @option options [String] method_prefix Set a prefix for the field names
       #   that will be created from the fields of the method Layer.
+      # @raise [OGR::Failure]
       def update(method_layer, output_layer, **options, &progress)
         run_layer_method(:OGR_L_Update, method_layer, output_layer, **options, &progress)
       end
 
       private
 
+      # @raise [OGR::Failure]
       def run_layer_method(method_name, method_layer, output_layer, **options, &progress)
         method_layer_ptr = GDAL._pointer(OGR::Layer, method_layer)
         options_ptr = GDAL::Options.pointer(options)
         result_layer_ptr = output_layer.c_pointer
 
-        ogr_err = FFI::OGR::API.send(method_name,
-          @c_pointer,
-          method_layer_ptr,
-          result_layer_ptr,
-          options_ptr,
-          progress,
-          nil)
-        ogr_err.handle_result
+        OGR::ErrorHandling.handle_ogr_err("Unable to run layer method '#{method_name}'") do
+          FFI::OGR::API.send(method_name,
+                             @c_pointer,
+                             method_layer_ptr,
+                             result_layer_ptr,
+                             options_ptr,
+                             progress,
+                             nil)
+        end
 
         output_layer
       end

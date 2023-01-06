@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/geometry'
 
 RSpec.describe OGR::Point do
@@ -213,22 +212,22 @@ RSpec.describe OGR::Point do
 
     describe '#set_point' do
       it 'changes the x & y values' do
-        expect { subject.set_point(5, 6) }.to change { subject.point_value }.
-          from([1.0, 2.0]).to([5.0, 6.0])
+        expect { subject.set_point(5, 6) }.to change { subject.point_value }
+          .from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe '#add_point' do
       it 'changes the x & y values' do
-        expect { subject.add_point(5, 6) }.to change { subject.point_value }.
-          from([1.0, 2.0]).to([5.0, 6.0])
+        expect { subject.add_point(5, 6) }.to change { subject.point_value }
+          .from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe '#empty!' do
       it 'clears the point' do
-        expect { subject.empty! }.to change { subject.point_value }.
-          from([1.0, 2.0]).to([])
+        expect { subject.empty! }.to change { subject.point_value }
+          .from([1.0, 2.0]).to([])
       end
     end
   end
@@ -286,15 +285,15 @@ RSpec.describe OGR::Point do
 
     describe '#set_point' do
       it 'changes the x & y values' do
-        expect { subject.set_point(5, 6) }.to change { subject.point_value }.
-          from([]).to([5.0, 6.0])
+        expect { subject.set_point(5, 6) }.to change { subject.point_value }
+          .from([]).to([5.0, 6.0])
       end
     end
 
     describe '#add_point' do
       it 'changes the x & y values' do
-        expect { subject.add_point(5, 6) }.to change { subject.point_value }.
-          from([]).to([5.0, 6.0])
+        expect { subject.add_point(5, 6) }.to change { subject.point_value }
+          .from([]).to([5.0, 6.0])
       end
     end
 

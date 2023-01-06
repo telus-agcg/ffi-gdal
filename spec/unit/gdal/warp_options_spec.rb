@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'gdal/warp_options'
 
 RSpec.describe GDAL::WarpOptions do
@@ -142,12 +141,12 @@ RSpec.describe GDAL::WarpOptions do
         expect(subject.warp_operation_options).to eq(warp_operation_options)
       end
 
-      it' sets source_dataset and the internal pointer' do
+      it 'sets source_dataset and the internal pointer' do
         expect(subject.source_dataset).to eq(source_dataset)
         expect(subject.c_struct[:source_dataset]).to eq(source_dataset.c_pointer)
       end
 
-      it' sets destination_dataset' do
+      it 'sets destination_dataset' do
         expect(subject.destination_dataset).to eq(dest_dataset)
         expect(subject.c_struct[:destination_dataset]).to eq(dest_dataset.c_pointer)
       end

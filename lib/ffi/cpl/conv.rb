@@ -18,7 +18,7 @@ module FFI
       # Config
       #---------
       attach_function :CPLVerifyConfiguration, %i[], :void
-      attach_function :CPLGetConfigOption, %i[string string], :string
+      attach_function :CPLGetConfigOption, %i[string string], :strptr
       attach_function :CPLSetConfigOption, %i[string string], :void
       attach_function :CPLSetThreadLocalConfigOption, %i[string string], :void
       attach_function :CPLFreeConfig, %i[], :void
@@ -36,9 +36,9 @@ module FFI
       attach_function :CPLStrdup, %i[string], :string
       attach_function :CPLStrlwr, %i[string], :string
       attach_function :CPLFGets, %i[string int pointer], :string
-      attach_function :CPLReadLine, %i[pointer], :string
-      attach_function :CPLReadLineL, %i[pointer], :string
-      attach_function :CPLReadLine2L, %i[pointer int pointer], :string
+      attach_function :CPLReadLine, %i[pointer], :strptr
+      attach_function :CPLReadLineL, %i[pointer], :strptr
+      attach_function :CPLReadLine2L, %i[pointer int pointer], :strptr
       attach_function :CPLAtof, %i[string], :double
       attach_function :CPLAtofDelim, %i[string char], :double
       attach_function :CPLStrtod, %i[string pointer], :double
@@ -46,7 +46,8 @@ module FFI
       attach_function :CPLStrtof, %i[string pointer], :float
       attach_function :CPLStrtofDelim, %i[string pointer char], :float
       attach_function :CPLAtofM, %i[string], :double
-      attach_function :CPLScanString, %i[string int int int], :string
+      # Caller responsible to free this buffer with CPLFree().
+      attach_function :CPLScanString, %i[string int int int], :pointer
       attach_function :CPLScanDouble, %i[string int], :double
       attach_function :CPLScanLong, %i[string int], :long
       attach_function :CPLScanULong, %i[string int], :ulong
@@ -69,24 +70,25 @@ module FFI
       # Files
       #---------
       attach_function :CPLGetExecPath, %i[string int], :int
-      attach_function :CPLGetPath, %i[string], :string
-      attach_function :CPLGetDirname, %i[string], :string
-      attach_function :CPLGetFilename, %i[string], :string
-      attach_function :CPLGetBasename, %i[string], :string
-      attach_function :CPLGetExtension, %i[string], :string
-      attach_function :CPLGetCurrentDir, [], :string
-      attach_function :CPLFormFilename, %i[string string string], :string
-      attach_function :CPLFormCIFilename, %i[string string string], :string
-      attach_function :CPLResetExtension, %i[string string], :string
-      attach_function :CPLProjectRelativeFilename, %i[string string], :string
+      attach_function :CPLGetPath, %i[string], :strptr
+      attach_function :CPLGetDirname, %i[string], :strptr
+      attach_function :CPLGetFilename, %i[string], :strptr
+      attach_function :CPLGetBasename, %i[string], :strptr
+      attach_function :CPLGetExtension, %i[string], :strptr
+      # User is responsible to free that buffer after usage with CPLFree() function.
+      attach_function :CPLGetCurrentDir, [], :pointer
+      attach_function :CPLFormFilename, %i[string string string], :strptr
+      attach_function :CPLFormCIFilename, %i[string string string], :strptr
+      attach_function :CPLResetExtension, %i[string string], :strptr
+      attach_function :CPLProjectRelativeFilename, %i[string string], :strptr
       attach_function :CPLIsFilenameRelative, %i[string], :int
-      attach_function :CPLExtractRelativePath, %i[string string pointer], :string
-      attach_function :CPLCleanTrailingSlash, %i[string], :string
+      attach_function :CPLExtractRelativePath, %i[string string pointer], :strptr
+      attach_function :CPLCleanTrailingSlash, %i[string], :strptr
       attach_function :CPLCorrespondingPaths, %i[string string pointer], :pointer
       attach_function :CPLCheckForFile, %i[string string], :int
-      attach_function :CPLGenerateTempFilename, %i[string], :string
-      attach_function :CPLFindFile, %i[string string], :string
-      attach_function :CPLDefaultFindFile, %i[string string], :string
+      attach_function :CPLGenerateTempFilename, %i[string], :strptr
+      attach_function :CPLFindFile, %i[string string], :strptr
+      attach_function :CPLDefaultFindFile, %i[string string], :strptr
       attach_function :CPLPushFileFinder, %i[CPLFileFinder], :void
       attach_function :CPLPopFileFinder, %i[], :CPLFileFinder
       attach_function :CPLPushFinderLocation, %i[string], :void
@@ -117,14 +119,14 @@ module FFI
       attach_function :CPLCloseFileInZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_function :CPLCloseZip, %i[pointer], FFI::CPL::Error::CPLErr
       attach_function :CPLZLibDeflate,
-        %i[pointer size_t int pointer size_t pointer],
-        :pointer
+                      %i[pointer size_t int pointer size_t pointer],
+                      :pointer
       attach_function :CPLZLibInflate,
-        %i[pointer size_t pointer size_t pointer],
-        :pointer
+                      %i[pointer size_t pointer size_t pointer],
+                      :pointer
 
       attach_function :CPLValidateXML, %i[string string pointer], :int
-      attach_function :CPLsetlocale, %i[int string], :string
+      attach_function :CPLsetlocale, %i[int string], :strptr
 
       attach_function :CPLCleanupSetlocaleMutex, %i[], :void
     end

@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   describe '#geographic?' do
     context 'root is a GEOGCS node' do
-      subject { described_class.new_from_epsg 4326 }
+      subject { described_class.new.import_from_epsg 4326 }
       it { is_expected.to be_geographic }
     end
 
@@ -50,7 +49,7 @@ RSpec.describe OGR::SpatialReference do
   describe '#compound?' do
     context 'contains a COMPD_CS node' do
       subject do
-        sr = described_class.new_from_epsg(4326)
+        sr = described_class.new.import_from_epsg(4326)
         sr.set_vert_cs('darrel', 'bobby', 2005)
         sr
       end
@@ -97,28 +96,28 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#same?' do
     context 'SpatialReferences describe the same system' do
-      subject { described_class.new_from_epsg(4322) }
-      let(:other) { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
+      let(:other) { described_class.new.import_from_epsg(4322) }
       it('returns true') { expect(subject.same?(other)).to eq true }
     end
 
     context 'SpatialReferences describe different systems' do
-      subject { described_class.new_from_epsg(4322) }
-      let(:other) { described_class.new_from_epsg(4326) }
+      subject { described_class.new.import_from_epsg(4322) }
+      let(:other) { described_class.new.import_from_epsg(4326) }
       it('returns false') { expect(subject.same?(other)).to eq false }
     end
   end
 
   describe '#geog_cs_is_same?' do
     context 'SpatialReferences describe the same GEOGCS system' do
-      subject { described_class.new_from_epsg(4322) }
-      let(:other) { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
+      let(:other) { described_class.new.import_from_epsg(4322) }
       it('returns true') { expect(subject.geog_cs_is_same?(other)).to eq true }
     end
 
     context 'SpatialReferences describe different systems' do
-      subject { described_class.new_from_epsg(4322) }
-      let(:other) { described_class.new_from_epsg(4326) }
+      subject { described_class.new.import_from_epsg(4322) }
+      let(:other) { described_class.new.import_from_epsg(4326) }
       it('returns false') { expect(subject.geog_cs_is_same?(other)).to eq false }
     end
   end

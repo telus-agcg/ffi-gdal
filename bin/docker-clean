@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# ╭───────────────────────────────────────────────────────────────────────╮
+# │Using Tilt ends up generating a bunch of local images; I thought Tilt  │
+# │is supposed to be resposible for cleaning these up, but it doesn't look│
+# │like it does?                                                          │
+# ╰───────────────────────────────────────────────────────────────────────╯
+docker images -a | grep 'gdal' | awk '{print $3}' | xargs docker rmi

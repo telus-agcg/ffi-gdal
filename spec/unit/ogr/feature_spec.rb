@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'date'
 require 'ogr/feature'
 require 'ogr/field'
@@ -210,7 +209,7 @@ RSpec.describe OGR::Feature do
       end
     end
 
-    context 'value is an Array of Integers' do
+    context 'value is not an array of strings' do
       it 'returns an Array of Strings' do
         subject.set_field_string_list(5, [1, 2, 3])
         expect(subject.field_as_string_list(5)).to eq %w[1 2 3]
@@ -275,7 +274,7 @@ RSpec.describe OGR::Feature do
   end
 
   describe '#set_field_date_time + #field_as_date_time' do
-    let(:date_time) { DateTime.now } # rubocop:disable Style/DateTime
+    let(:date_time) { DateTime.now }
 
     context 'to a valid index' do
       it 'adds the field' do

@@ -10,14 +10,18 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Steve Loveless']
   spec.email         = %w[steve@agrian.com]
   spec.summary       = 'FFI wrapper for GDAL/OGR.'
-  spec.homepage      = 'http://bitbucket.org/agrian/ffi-gdal'
+  spec.homepage      = 'https://github.com/agrian-inc/ffi-gdal'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = %w[lib]
+  spec.files         = Dir.chdir(File.expand_path(__dir__)) do
+    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  end
 
+  spec.metadata['rubygems_mfa_required'] = 'true'
+  spec.require_paths = %w[lib]
+  spec.required_ruby_version = '>= 2.6'
+
+  spec.add_dependency 'bindata', '~> 2.0'
   spec.add_dependency 'ffi'
   spec.add_dependency 'log_switch', '~> 1.0.0'
   spec.add_dependency 'multi_xml'
@@ -26,10 +30,12 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'byebug'
+  spec.add_development_dependency 'climate_control'
   spec.add_development_dependency 'fakefs'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'rubocop'
-  spec.add_development_dependency 'rubocop-checkstyle_formatter'
+  spec.add_development_dependency 'rspec-github'
+  spec.add_development_dependency 'rubocop', '>= 1.0'
+  spec.add_development_dependency 'rubocop-performance'
   spec.add_development_dependency 'simplecov', '~> 0.9'
 end

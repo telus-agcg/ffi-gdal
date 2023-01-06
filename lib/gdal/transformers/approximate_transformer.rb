@@ -8,6 +8,14 @@ module GDAL
         FFI::GDAL::Alg::ApproxTransform
       end
 
+      # @param pointer [FFI::Pointer]
+      def self.release(pointer)
+        return unless pointer && !pointer.null?
+
+        FFI::GDAL::Alg.GDALDestroyApproxTransformer(pointer)
+      end
+
+      # @return [FFI::Pointer]
       attr_reader :c_pointer
 
       # @param base_transformer [GDAL::Transformer]
@@ -17,17 +25,18 @@ module GDAL
         base_transformer_function = base_transformer.function
         transformer_arg_ptr = base_transformer.c_pointer
 
-        @c_pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
+        pointer = FFI::GDAL::Alg.GDALCreateApproxTransformer(
           base_transformer_function,
           transformer_arg_ptr,
           max_error
         )
+
+        @c_pointer = FFI::AutoPointer.new(pointer, ApproximateTransformer.method(:destroy))
       end
 
       def destroy!
-        return unless @c_pointer
+        ApproximateTransformer.destroy(@c_pointer)
 
-        FFI::GDAL::Alg.GDALDestroyApproxTransformer(@c_pointer)
         @c_pointer = nil
       end
 

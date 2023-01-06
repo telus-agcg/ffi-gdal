@@ -1,0 +1,36 @@
+name: Continuous Integration
+
+on:
+  push:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgdal-dev librttopo-dev
+          bundle install --jobs 4 --retry 3
+      - name: Run specs
+        run: bundle exec rspec spec --format RSpec::Github::Formatter --format progress
+
+  static_analysis:
+    name: Rubocop
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+      - name: Rubocop
+        run: bundle exec rubocop --format github --parallel

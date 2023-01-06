@@ -1,23 +1,35 @@
 # frozen_string_literal: true
 
 require_relative '../gdal'
-require_relative 'color_table_mixins/extensions'
 require_relative 'color_entry'
 
 module GDAL
   module ColorTableTypes
     autoload :CMYK,
-      File.expand_path('color_table_types/cmyk', __dir__)
+             File.expand_path('color_table_types/cmyk', __dir__)
     autoload :Gray,
-      File.expand_path('color_table_types/gray', __dir__)
+             File.expand_path('color_table_types/gray', __dir__)
     autoload :HLS,
-      File.expand_path('color_table_types/hls', __dir__)
+             File.expand_path('color_table_types/hls', __dir__)
     autoload :RGB,
-      File.expand_path('color_table_types/rgb', __dir__)
+             File.expand_path('color_table_types/rgb', __dir__)
   end
 
   class ColorTable
-    include ColorTableMixins::Extensions
+    # @param color_table [GDAL::ColorTable]
+    # @return [FFI::AutoPointer]
+    def self.new_pointer(color_table)
+      ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
+
+      FFI::AutoPointer.new(ptr, ColorTable.method(:release))
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::GDAL::GDAL.GDALDestroyColorTable(pointer)
+    end
 
     # @return [FFI::Pointer] C pointer to the C color table.
     attr_reader :c_pointer
@@ -26,18 +38,22 @@ module GDAL
     #   FFI::Pointer]
     # @raise [GDAL::InvalidColorTable] If unable to create the color table.
     def initialize(palette_interp_or_pointer)
-      @c_pointer =
+      pointer =
         if FFI::GDAL::GDAL::PaletteInterp[palette_interp_or_pointer]
-          FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
-        else
+          ptr = FFI::GDAL::GDAL.GDALCreateColorTable(palette_interp_or_pointer)
+          ptr.autorelease = false
+
+          ptr
+        elsif palette_interp_or_pointer.is_a? FFI::Pointer
           palette_interp_or_pointer
         end
 
-      if !@c_pointer.is_a?(FFI::Pointer) || @c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
         raise GDAL::InvalidColorTable,
-          "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
+              "Unable to create #{self.class.name} from #{palette_interp_or_pointer}"
       end
 
+      @c_pointer = pointer
       @color_entries = []
 
       case palette_interpretation
@@ -51,9 +67,8 @@ module GDAL
     end
 
     def destroy!
-      return unless @c_pointer
+      ColorTable.release(@c_pointer)
 
-      FFI::GDAL::GDAL.GDALDestroyColorTable(@c_pointer)
       @c_pointer = nil
     end
 
@@ -62,6 +77,8 @@ module GDAL
     # @return [GDAL::ColorTable]
     def clone
       ct_ptr = FFI::GDAL::GDAL.GDALCloneColorTable(@c_pointer)
+      ct_ptr.autorelease = false
+
       return nil if ct_ptr.null?
 
       GDAL::ColorTable.new(ct_ptr)
@@ -74,12 +91,12 @@ module GDAL
       FFI::GDAL::GDAL.GDALGetPaletteInterpretation(@c_pointer)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def color_entry_count
       FFI::GDAL::GDAL.GDALGetColorEntryCount(@c_pointer)
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [GDAL::ColorEntry]
     def color_entry(index)
       @color_entries.fetch(index) do
@@ -90,7 +107,7 @@ module GDAL
       end
     end
 
-    # @param index [Fixnum]
+    # @param index [Integer]
     # @return [GDAL::ColorEntry]
     def color_entry_as_rgb(index)
       entry = color_entry(index)
@@ -107,17 +124,18 @@ module GDAL
     # 65535).  Values must also be relevant to the PaletteInterp type you're
     # working with.
     #
-    # @param index [Fixnum] The index of the color table's color entry to set.
+    # @param index [Integer] The index of the color table's color entry to set.
     #   Must be between 0 and color_entry_count - 1.
-    # @param one [Fixnum] The `c1` value of the GDAL::ColorEntry struct
+    # @param one [Integer] The `c1` value of the GDAL::ColorEntry struct
     #   to set.
-    # @param two [Fixnum] The `c2` value of the GDAL::ColorEntry struct
+    # @param two [Integer] The `c2` value of the GDAL::ColorEntry struct
     #   to set.
-    # @param three [Fixnum] The `c3` value of the GDAL::ColorEntry
+    # @param three [Integer] The `c3` value of the GDAL::ColorEntry
     #   struct to set.
-    # @param four [Fixnum] The `c4` value of the GDAL::ColorEntry
+    # @param four [Integer] The `c4` value of the GDAL::ColorEntry
     #   struct to set.
     # @return [GDAL::ColorEntry]
+    # rubocop:disable Metrics/ParameterLists
     def add_color_entry(index, one = nil, two = nil, three = nil, four = nil)
       entry = GDAL::ColorEntry.new
       entry.color1 = one if one
@@ -130,24 +148,25 @@ module GDAL
 
       entry
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # Automatically creates a color ramp from one color entry to another.  It
     # can be called several times to create multiple ramps in the same color
     # table.
     #
-    # @param start_index [Fixnum] Index to start the ramp on (0..255)
+    # @param start_index [Integer] Index to start the ramp on (0..255)
     # @param start_color [GDAL::ColorEntry] Value to start the ramp.
-    # @param end_index [Fixnum] Index to end the ramp on (0..255)
+    # @param end_index [Integer] Index to end the ramp on (0..255)
     # @param end_color [GDAL::ColorEntry] Value to end the ramp.
-    # @return [Fixnum] The total number of entries.  nil or -1 on error.
+    # @return [Integer] The total number of entries.  nil or -1 on error.
     def create_color_ramp!(start_index, start_color, end_index, end_color)
       start_color_ptr = start_color.c_struct
       end_color_ptr = end_color.c_struct
 
       FFI::GDAL::GDAL.GDALCreateColorRamp(@c_pointer, start_index,
-        start_color_ptr,
-        end_index,
-        end_color_ptr)
+                                          start_color_ptr,
+                                          end_index,
+                                          end_color_ptr)
     end
   end
 end

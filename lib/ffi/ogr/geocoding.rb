@@ -20,11 +20,11 @@ module FFI
       attach_function :OGRGeocodeCreateSession, %i[pointer], :OGRGeocodingSessionH
       attach_function :OGRGeocodeDestroySession, %i[OGRGeocodingSessionH], :void
       attach_function :OGRGeocode,
-        %i[OGRGeocodingSessionH string pointer pointer],
-        FFI::OGR::API.find_type(:OGRLayerH)
+                      %i[OGRGeocodingSessionH string pointer pointer],
+                      FFI::OGR::API.find_type(:OGRLayerH)
       attach_function :OGRGeocodeReverse,
-        %i[OGRGeocodingSessionH double double pointer],
-        FFI::OGR::API.find_type(:OGRLayerH)
+                      %i[OGRGeocodingSessionH double double pointer],
+                      FFI::OGR::API.find_type(:OGRLayerH)
       attach_function :OGRGeocodeFreeResult, [FFI::OGR::API.find_type(:OGRLayerH)], :void
     end
   end

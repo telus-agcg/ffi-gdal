@@ -42,7 +42,8 @@ module Examples
         options = make_basic_options(source_dataset, dest_dataset)
 
         geom = OGR::Geometry.create_from_wkt(clip_wkt)
-        spatial_reference = OGR::SpatialReference.new_from_epsg(source_dataset.spatial_reference.authority_code.to_i)
+        spatial_reference =
+          OGR::SpatialReference.new.import_from_epsg(source_dataset.spatial_reference.authority_code.to_i)
         geom.spatial_reference = spatial_reference
         options.cutline_geometry = geom
         # options.cutline_blend_distance = 100
@@ -50,14 +51,14 @@ module Examples
 
         options.warp_operation_options = {
           init_dest: 'NO_DATA',
-          cutline: clip_wkt,
+          cutline: clip_wkt
           # cutline_all_touched: 'TRUE'
           # cutline_all_touched: true
         }
 
         transformer_arg = GDAL::Transformers::GeneralImageProjectionTransformer2.new(
           source_dataset, destination_dataset: dest_dataset,
-                          insert_center_long: 'FALSE',
+                          insert_center_long: 'FALSE'
           # DST_SRS: spatial_reference.to_wkt
         )
         # transformer_arg = GDAL::Transformers::GeneralImageProjectionTransformer.new(
@@ -87,7 +88,7 @@ module Examples
       end
 
       def create_destination_reprojected_dataset(source_dataset, path, srid)
-        dest_wkt = OGR::SpatialReference.new_from_epsg(srid).to_wkt
+        dest_wkt = OGR::SpatialReference.new.import_from_epsg(srid).to_wkt
 
         transformer_arg = GDAL::Transformers::GeneralImageProjectionTransformer.new(
           source_dataset, destination_wkt: dest_wkt, order: 1
@@ -97,7 +98,7 @@ module Examples
 
         driver = GDAL::Driver.by_name 'GTiff'
         ds = driver.create_dataset(path, suggested_options[:pixels], suggested_options[:lines],
-          data_type: source_dataset.raster_band(1).data_type)
+                                   data_type: source_dataset.raster_band(1).data_type)
         ds.geo_transform = suggested_options[:geo_transform]
         ds.projection = dest_wkt
         ds.raster_band(1).no_data_value = source_dataset.raster_band(1).no_data_value[:value]
@@ -141,8 +142,9 @@ if $PROGRAM_NAME == __FILE__
   source_dataset = GDAL::Dataset.open(source_path, 'r')
   puts "source srid: #{source_dataset.spatial_reference.authority_code.to_i}"
 
-  dest_dataset = Examples::Warping.create_destination_reprojected_dataset(source_dataset,
-    dest_path, source_dataset.spatial_reference.authority_code.to_i)
+  dest_dataset = Examples::Warping
+                 .create_destination_reprojected_dataset(source_dataset, dest_path,
+                                                         source_dataset.spatial_reference.authority_code.to_i)
   # Examples::Warping.copy_dataset(source_dataset, dest_path)
   # dest_dataset = GDAL::Dataset.open(dest_path, 'w')
 

@@ -5,7 +5,7 @@ module GDAL
     module Matching
       # @param other_dataset [GDAL::Dataset]
       # @param options [Hash]
-      # @return [Hash{count => Fixnum, gcp: => FFI::GDAL::GCP}] Not sure why,
+      # @return [Hash{count => Integer, gcp: => FFI::GDAL::GCP}] Not sure why,
       #   but the C function seems to return a single GCP instead of an Array of
       #   them.
       def compute_matching_points(other_dataset, **options)

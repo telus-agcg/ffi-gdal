@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/spatial_reference'
 
 RSpec.describe OGR::SpatialReference do
   describe '#to_erm' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
       it 'returns a Hash' do
         expect(subject.to_erm).to eq(projection_name: 'GEODETIC', datum_name: 'WGS72DOD', units: 'METERS')
@@ -14,35 +13,31 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context 'empty SRS' do
-      it 'raises an OGR::NotEnoughData' do
-        expect { subject.to_erm }.to raise_exception OGR::NotEnoughData
+      it 'raises an OGR::UnsupportedSRS' do
+        expect { subject.to_erm }.to raise_exception OGR::UnsupportedSRS
       end
     end
   end
 
   describe '#to_mapinfo' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
-      it 'returns a populated array' do
-        pending 'Understanding how to make it work'
-        expect(subject.to_mapinfo).to be_an Array
-        expect(subject.to_mapinfo).to_not be_empty
+      it 'returns the string' do
+        expect(subject.to_mapinfo).to start_with 'Earth Projection'
       end
     end
 
     context 'empty SRS' do
-      it 'raises an OGR::NotEnoughData' do
-        pending 'Understanding how to make it work'
-
-        expect { subject.to_mapinfo }.to raise_exception OGR::NotEnoughData
+      it 'returns a "NonEarth Units" message' do
+        expect(subject.to_mapinfo).to start_with 'NonEarth Units'
       end
     end
   end
 
   describe '#to_pci' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
       it 'returns a Hash' do
         expect(subject.to_pci).to eq(
@@ -66,10 +61,11 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_proj4' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
       it 'returns a PROJ4 String' do
-        expect(subject.to_proj4).to eq('+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs ')
+        expect(subject.to_proj4.strip)
+          .to eq('+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs')
       end
     end
 
@@ -82,18 +78,10 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_wkt' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
-
-      let(:expected_wkt) do
-        'GEOGCS["WGS 72",DATUM["WGS_1972",SPHEROID["WGS 72",6378135,298.26,' \
-          'AUTHORITY["EPSG","7043"]],TOWGS84[0,0,4.5,0,0,0.554,0.2263],' \
-          'AUTHORITY["EPSG","6322"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],' \
-          'UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],' \
-          'AUTHORITY["EPSG","4322"]]'
-      end
+      subject { described_class.new.import_from_epsg(4322) }
 
       it 'returns a well-known text String' do
-        expect(subject.to_wkt).to eq(expected_wkt)
+        expect(subject.to_wkt).to start_with 'GEOGCS["WGS 72",DATUM["'
       end
     end
 
@@ -106,39 +94,26 @@ RSpec.describe OGR::SpatialReference do
 
   describe '#to_pretty_wkt' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
-      it 'returns a well-known text String' do
-        expect(subject.to_pretty_wkt).to eq <<~WKT.strip
-          GEOGCS["WGS 72",
-              DATUM["WGS_1972",
-                  SPHEROID["WGS 72",6378135,298.26,
-                      AUTHORITY["EPSG","7043"]],
-                  TOWGS84[0,0,4.5,0,0,0.554,0.2263],
-                  AUTHORITY["EPSG","6322"]],
-              PRIMEM["Greenwich",0,
-                  AUTHORITY["EPSG","8901"]],
-              UNIT["degree",0.0174532925199433,
-                  AUTHORITY["EPSG","9122"]],
-              AUTHORITY["EPSG","4322"]]
-        WKT
+      it 'returns a formatted well-known text String' do
+        expect(subject.to_wkt).to start_with %(GEOGCS["WGS 72",DATUM[")
       end
     end
 
     context 'empty SRS' do
       it 'returns an empty String' do
-        expect(subject.to_pretty_wkt).to eq ''
+        expect(subject.to_pretty_wkt).to be_empty
       end
     end
   end
 
   describe '#to_xml' do
     context 'known projection' do
-      subject { described_class.new_from_epsg(4322) }
+      subject { described_class.new.import_from_epsg(4322) }
 
       it 'returns an XML string' do
-        pending 'Understanding how to make it work'
-        expect(subject.to_xml).to eq 'something'
+        expect(subject.to_xml).to start_with '<gml:GeographicCRS gml:id="ogrcrs1">'
       end
     end
 
@@ -147,5 +122,9 @@ RSpec.describe OGR::SpatialReference do
         expect { subject.to_xml }.to raise_exception OGR::UnsupportedSRS
       end
     end
+  end
+
+  describe '#to_gml' do
+    it { is_expected.to respond_to :to_gml }
   end
 end

@@ -3,6 +3,7 @@
 require_relative 'ffi-gdal'
 require_relative 'ogr/internal_helpers'
 require_relative 'ogr/exceptions'
+require_relative 'ogr/error_handling'
 
 module OGR
   include InternalHelpers

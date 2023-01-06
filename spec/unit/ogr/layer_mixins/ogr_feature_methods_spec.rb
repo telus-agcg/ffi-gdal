@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
@@ -16,7 +15,7 @@ RSpec.describe OGR::Layer do
     let(:feature) { OGR::Feature.new(subject.feature_definition) }
 
     context 'creation is not supported' do
-      before { expect(subject).to receive(:can_sequential_write?).and_return(false) }
+      before { expect(subject).to receive(:test_capability).with('SequentialWrite').and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
         expect { subject.create_feature(feature) }.to raise_exception OGR::UnsupportedOperation
@@ -24,15 +23,15 @@ RSpec.describe OGR::Layer do
     end
 
     context 'creation is supported' do
-      it 'returns true' do
-        expect(subject.create_feature(feature)).to eq true
+      it do
+        expect(subject.create_feature(feature)).to be_nil
       end
     end
   end
 
   describe '#delete_feature' do
     context 'deletion is not supported' do
-      before { expect(subject).to receive(:can_delete_feature?).and_return(false) }
+      before { expect(subject).to receive(:test_capability).with('DeleteFeature').and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
         expect { subject.delete_feature(0) }.to raise_exception OGR::UnsupportedOperation
@@ -49,8 +48,8 @@ RSpec.describe OGR::Layer do
       context 'has a feature' do
         before { subject.create_feature(OGR::Feature.new(subject.feature_definition)) }
 
-        it 'returns true' do
-          expect(subject.delete_feature(0)).to eq true
+        it 'returns nil' do
+          expect(subject.delete_feature(0)).to be_nil
         end
       end
     end
@@ -64,7 +63,7 @@ RSpec.describe OGR::Layer do
 
   describe '#feature' do
     context 'cannot random read' do
-      before { expect(subject).to receive(:can_random_read?).and_return(false) }
+      before { expect(subject).to receive(:test_capability).with('RandomRead').and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
         expect { subject.feature(0) }.to raise_exception OGR::UnsupportedOperation
@@ -90,11 +89,11 @@ RSpec.describe OGR::Layer do
 
   describe '#feature=' do
     context 'cannot random write' do
-      before { expect(subject).to receive(:can_random_write?).and_return(false) }
+      before { expect(subject).to receive(:test_capability).with('RandomWrite').and_return(false) }
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.feature = OGR::Feature.new(subject.feature_definition) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
@@ -126,8 +125,8 @@ RSpec.describe OGR::Layer do
   describe '#next_feature_index=' do
     context 'no features' do
       it 'raises an OGR::Failure' do
-        expect { subject.next_feature_index = 123 }.
-          to raise_exception OGR::Failure
+        expect { subject.next_feature_index = 123 }
+          .to raise_exception OGR::Failure
       end
     end
 

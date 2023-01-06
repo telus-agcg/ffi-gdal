@@ -38,15 +38,6 @@ module OGR
     end
     alias point_value point
 
-    # Wrapper around {#point_value} to provide API parity with other geometries
-    # that can have multiple points.
-    #
-    # @return [Array<Array<Float, Float>>]
-    # TODO: move to an extension
-    def point_values
-      [point]
-    end
-
     # @param x [Number]
     # @param y [Number]
     def set_point(x, y)

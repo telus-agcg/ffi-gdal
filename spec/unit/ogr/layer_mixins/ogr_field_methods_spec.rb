@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/layer'
 
 RSpec.describe OGR::Layer do
@@ -9,12 +8,12 @@ RSpec.describe OGR::Layer do
   describe '#create_field + #find_field_index' do
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_field?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.create_field(OGR::FieldDefinition.new('test', :OFTInteger)) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.create_field(OGR::FieldDefinition.new('test', :OFTInteger)) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
@@ -84,7 +83,7 @@ RSpec.describe OGR::Layer do
   describe '#delete_field + #create_field' do
     context 'delete not supported' do
       before do
-        expect(subject).to receive(:can_delete_field?).and_return false
+        expect(subject).to receive(:test_capability).with('DeleteField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -100,7 +99,7 @@ RSpec.describe OGR::Layer do
         end
 
         it 'can delete the field' do
-          expect(subject.delete_field(0)).to eq true
+          expect(subject.delete_field(0)).to be_nil
         end
       end
 
@@ -115,7 +114,7 @@ RSpec.describe OGR::Layer do
   describe '#reorder_fields + #create_field' do
     context 'reordering not supported' do
       before do
-        expect(subject).to receive(:can_reorder_fields?).and_return false
+        expect(subject).to receive(:test_capability).with('ReorderFields').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -144,11 +143,11 @@ RSpec.describe OGR::Layer do
           subject.create_field(fd1)
         end
 
-        it 'returns true and reorders the fields' do
+        it 'returns nil and reorders the fields' do
           expect(subject.find_field_index('field0')).to eq 0
           expect(subject.find_field_index('field1')).to eq 1
 
-          expect(subject.reorder_fields(1, 0)).to eq true
+          expect(subject.reorder_fields(1, 0)).to be_nil
 
           expect(subject.find_field_index('field0')).to eq 1
           expect(subject.find_field_index('field1')).to eq 0
@@ -165,7 +164,7 @@ RSpec.describe OGR::Layer do
   describe '#reorder_field + #create_field' do
     context 'reordering not supported' do
       before do
-        expect(subject).to receive(:can_reorder_fields?).and_return false
+        expect(subject).to receive(:test_capability).with('ReorderFields').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -188,11 +187,11 @@ RSpec.describe OGR::Layer do
           subject.create_field(fd1)
         end
 
-        it 'returns true and reorders the fields' do
+        it 'returns nil and reorders the fields' do
           expect(subject.find_field_index('field0')).to eq 0
           expect(subject.find_field_index('field1')).to eq 1
 
-          expect(subject.reorder_field(1, 0)).to eq true
+          expect(subject.reorder_field(1, 0)).to be_nil
 
           expect(subject.find_field_index('field0')).to eq 1
           expect(subject.find_field_index('field1')).to eq 0
@@ -209,7 +208,7 @@ RSpec.describe OGR::Layer do
   describe '#alter_field_definition + #create_field' do
     context 'altering not supported' do
       before do
-        expect(subject).to receive(:can_alter_field_definition?).and_return false
+        expect(subject).to receive(:test_capability).with('AlterFieldDefn').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
@@ -390,18 +389,18 @@ RSpec.describe OGR::Layer do
 
     context 'creation not supported' do
       before do
-        expect(subject).to receive(:can_create_geometry_field?).and_return false
+        expect(subject).to receive(:test_capability).with('CreateGeomField').and_return false
       end
 
       it 'raises an OGR::UnsupportedOperation' do
-        expect { subject.create_geometry_field(geometry_field_def) }.
-          to raise_exception OGR::UnsupportedOperation
+        expect { subject.create_geometry_field(geometry_field_def) }
+          .to raise_exception OGR::UnsupportedOperation
       end
     end
 
     context 'creation is supported' do
-      it 'returns true' do
-        expect(subject.create_geometry_field(geometry_field_def)).to eq true
+      it 'returns nil' do
+        expect(subject.create_geometry_field(geometry_field_def)).to be_nil
       end
     end
   end
@@ -415,8 +414,8 @@ RSpec.describe OGR::Layer do
 
     context 'invalid field names given' do
       it 'raises an OGR::Failure' do
-        expect { subject.set_ignored_fields('meow', 'bobo') }.
-          to raise_exception OGR::Failure
+        expect { subject.set_ignored_fields('meow', 'bobo') }
+          .to raise_exception OGR::Failure
       end
     end
 
@@ -426,8 +425,8 @@ RSpec.describe OGR::Layer do
         subject.create_field(OGR::FieldDefinition.new('bobo', :OFTInteger))
       end
 
-      it 'returns true' do
-        expect(subject.set_ignored_fields('meow', 'bobo')).to eq true
+      it 'returns nil' do
+        expect(subject.set_ignored_fields('meow', 'bobo')).to be_nil
       end
     end
   end

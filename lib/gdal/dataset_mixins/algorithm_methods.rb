@@ -8,7 +8,7 @@ module GDAL
       # +transformer+ can be nil as long as the +geometries+ are within the
       # georeferenced coordinates of this raster's dataset.
       #
-      # @param band_numbers [Array<Fixnum>, Fixnum]
+      # @param band_numbers [Array<Integer>, Integer]
       # @param geometries [Array<OGR::Geometry>, OGR::Geometry]
       # @param burn_values [Array<Float>, Float]
       # @param transformer [Proc]
@@ -29,9 +29,9 @@ module GDAL
         end
 
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
-        geometries = geometries.is_a?(Array) ? geometries : [geometries]
-        burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
+        band_numbers = Array(band_numbers)
+        geometries = Array(geometries)
+        burn_values = Array(burn_values)
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
         band_numbers_ptr.write_array_of_int(band_numbers)
@@ -43,26 +43,26 @@ module GDAL
         burn_values_ptr.write_array_of_double(burn_values)
 
         FFI::GDAL::Alg.GDALRasterizeGeometries(@c_pointer,
-          band_numbers.size,
-          band_numbers_ptr,
-          geometries.size,
-          geometries_ptr,
-          transformer,
-          transform_arg,
-          burn_values_ptr,
-          gdal_options,
-          progress_block,
-          nil)
+                                               band_numbers.size,
+                                               band_numbers_ptr,
+                                               geometries.size,
+                                               geometries_ptr,
+                                               transformer,
+                                               transform_arg,
+                                               burn_values_ptr,
+                                               gdal_options,
+                                               progress_block,
+                                               nil)
       end
 
-      # @param band_numbers [Array<Fixnum>, Fixnum]
+      # @param band_numbers [Array<Integer>, Integer]
       # @param layers [Array<OGR::Layer>, OGR::Layer]
       # @param burn_values [Array<Float>, Float]
       # @param transformer [Proc]
       # @param options [Hash]
       # @option options attribute [String] An attribute field on features to be
       #   used for a burn-in value, which will be burned into all output bands.
-      # @option options chunkysize [Fixnum] The height in lines of the chunk to
+      # @option options chunkysize [Integer] The height in lines of the chunk to
       #   operate on.
       # @option options all_touched [Boolean]  If +true+, sets all pixels touched
       #   by the line or polygons, not just those whose center is within the
@@ -75,13 +75,13 @@ module GDAL
       def rasterize_layers!(band_numbers, layers, burn_values,
         transformer: nil, transform_arg: nil, **options, &progress_block)
         gdal_options = GDAL::Options.pointer(options)
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+        band_numbers = Array(band_numbers)
         log "band numbers: #{band_numbers}"
 
-        layers = layers.is_a?(Array) ? layers : [layers]
+        layers = Array(layers)
         log "layers: #{layers}"
 
-        burn_values = burn_values.is_a?(Array) ? burn_values : [burn_values]
+        burn_values = Array(burn_values)
         log "burn values: #{burn_values}"
 
         band_numbers_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
@@ -96,17 +96,17 @@ module GDAL
         burn_values_ptr.write_array_of_double(burn_values)
         log "burn value ptr null? #{burn_values_ptr.null?}"
 
-        FFI::GDAL::Alg.GDALRasterizeLayers(@c_pointer,      # hDS
-          band_numbers.size,                                # nBandCount
-          band_numbers_ptr,                                 # panBandList
-          layers.size,                                      # nLayerCount
-          layers_ptr,                                       # pahLayers
-          transformer,                                      # pfnTransformer
-          transform_arg,                                    # pTransformerArg
-          burn_values_ptr,                                  # padfLayerBurnValues
-          gdal_options,                                     # papszOptions
-          progress_block,                                   # pfnProgress
-          nil)                                              # pProgressArg
+        FFI::GDAL::Alg.GDALRasterizeLayers(@c_pointer, # hDS
+                                           band_numbers.size,                                # nBandCount
+                                           band_numbers_ptr,                                 # panBandList
+                                           layers.size,                                      # nLayerCount
+                                           layers_ptr,                                       # pahLayers
+                                           transformer,                                      # pfnTransformer
+                                           transform_arg,                                    # pTransformerArg
+                                           burn_values_ptr,                                  # padfLayerBurnValues
+                                           gdal_options,                                     # papszOptions
+                                           progress_block,                                   # pfnProgress
+                                           nil)                                              # pProgressArg
       end
 
       # @param destination_dataset [String]
@@ -117,7 +117,7 @@ module GDAL
       # @option warp_options [String] init Indicates that the output dataset should be
       #   initialized to the given value in any area where valid data isn't
       #   written.  In form: "v[,v...]"
-      # @param band_numbers [Fixnum, Array<Fixnum>] Raster bands to include in the
+      # @param band_numbers [Integer, Array<Integer>] Raster bands to include in the
       #   warping.  0 indicates all bands.
       # @param progress [Proc]
       # @return [GDAL::Dataset, nil] The new dataset or nil if the warping failed.
@@ -125,7 +125,7 @@ module GDAL
         warp_options, band_numbers = 0, progress = nil)
         destination_dataset_ptr = destination_dataset.c_pointer
 
-        band_numbers = band_numbers.is_a?(Array) ? band_numbers : [band_numbers]
+        band_numbers = Array(band_numbers)
         log "band numbers: #{band_numbers}"
 
         bands_ptr = FFI::MemoryPointer.new(:pointer, band_numbers.size)
@@ -133,20 +133,20 @@ module GDAL
         log "band numbers ptr null? #{bands_ptr.null?}"
 
         success = FFI::GDAL::Alg.GDALSimpleImageWarp(@c_pointer,
-          destination_dataset_ptr,
-          band_numbers.size,
-          bands_ptr,
-          transformer,
-          transformer_arg_ptr,
-          progress,
-          nil,
-          warp_options.c_pointer)
+                                                     destination_dataset_ptr,
+                                                     band_numbers.size,
+                                                     bands_ptr,
+                                                     transformer,
+                                                     transformer_arg_ptr,
+                                                     progress,
+                                                     nil,
+                                                     warp_options.c_pointer)
 
         success ? destination_dataset : nil
       end
 
       # @param transformer [GDAL::Transformers]
-      # @return [Hash{geo_transform: GDAL::GeoTransform, lines: Fixnum, pixels: Fixnum}]
+      # @return [Hash{geo_transform: GDAL::GeoTransform, lines: Integer, pixels: Integer}]
       def suggested_warp_output(transformer)
         geo_transform = GDAL::GeoTransform.new
         pixels_ptr = FFI::MemoryPointer.new(:int)
@@ -169,9 +169,9 @@ module GDAL
       end
 
       # @param transformer [GDAL::Transformers]
-      # @return [Hash{extents: Hash{ min_x: Fixnum, min_y: Fixnum, max_x: Fixnum,
-      #   max_y: Fixnum }, geo_transform: GDAL::GeoTransform, lines: Fixnum,
-      #   pixels: Fixnum}]
+      # @return [Hash{extents: Hash{ min_x: Integer, min_y: Integer, max_x: Integer,
+      #   max_y: Integer }, geo_transform: GDAL::GeoTransform, lines: Integer,
+      #   pixels: Integer}]
       def suggested_warp_output2(transformer)
         geo_transform = GDAL::GeoTransform.new
         pixels_ptr = FFI::MemoryPointer.new(:int)

@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
 require 'ogr/internal_helpers'
+
+module Tester
+  include OGR::InternalHelpers
+end
 
 RSpec.describe OGR::InternalHelpers do
   subject(:tester) do
-    module Tester
-      include OGR::InternalHelpers
-    end
+    Tester
   end
 
   describe '._boolean_access_flag' do

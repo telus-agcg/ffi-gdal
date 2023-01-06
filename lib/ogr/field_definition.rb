@@ -4,27 +4,36 @@ require_relative '../ogr'
 
 module OGR
   class FieldDefinition
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::API.OGR_Fld_Destroy(pointer)
+    end
+
     # @return [FFI::Pointer] C pointer to the C FieldDefn.
     attr_reader :c_pointer
 
     # @param name_or_pointer [String, FFI::Pointer]
     # @param type [FFI::OGR::FieldType]
     def initialize(name_or_pointer, type)
-      @c_pointer = if name_or_pointer.is_a? String
-                     FFI::OGR::API.OGR_Fld_Create(name_or_pointer, type)
-                   else
-                     name_or_pointer
-                   end
+      pointer = if name_or_pointer.is_a? String
+                  FFI::OGR::API.OGR_Fld_Create(name_or_pointer, type)
+                else
+                  name_or_pointer
+                end
 
-      return if @c_pointer.is_a?(FFI::Pointer) && !@c_pointer.null?
+      if !pointer.is_a?(FFI::Pointer) || pointer.null?
+        raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      end
 
-      raise OGR::InvalidFieldDefinition, "Unable to create #{self.class.name} from #{name_or_pointer}"
+      @c_pointer = FFI::AutoPointer.new(pointer, FieldDefinition.method(:release))
+      @c_pointer.autorelease = false
     end
 
     def destroy!
-      return unless @c_pointer
+      FieldDefinition.release(@c_pointer)
 
-      FFI::OGR::API.OGR_Fld_Destroy(@c_pointer)
       @c_pointer = nil
     end
 
@@ -32,8 +41,8 @@ module OGR
     #
     # @param name [String]
     # @param type [FFI::OGR::FieldType]
-    # @param width [Fixnum]
-    # @param precision [Fixnum]
+    # @param width [Integer]
+    # @param precision [Integer]
     # @param justification [FFI::OGR::Justification]
     def set(name, type, width, precision, justification)
       FFI::OGR::API.OGR_Fld_Set(
@@ -48,7 +57,10 @@ module OGR
 
     # @return [String]
     def name
-      FFI::OGR::API.OGR_Fld_GetNameRef(@c_pointer)
+      name, ptr = FFI::OGR::API.OGR_Fld_GetNameRef(@c_pointer)
+      ptr.autorelease = false
+
+      name
     end
 
     # @param new_value [String]
@@ -66,12 +78,12 @@ module OGR
       FFI::OGR::API.OGR_Fld_SetJustify(@c_pointer, new_value)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def precision
       FFI::OGR::API.OGR_Fld_GetPrecision(@c_pointer)
     end
 
-    # @param new_value [Fixnum]
+    # @param new_value [Integer]
     def precision=(new_value)
       FFI::OGR::API.OGR_Fld_SetPrecision(@c_pointer, new_value)
     end
@@ -86,12 +98,12 @@ module OGR
       FFI::OGR::API.OGR_Fld_SetType(@c_pointer, new_value)
     end
 
-    # @return [Fixnum]
+    # @return [Integer]
     def width
       FFI::OGR::API.OGR_Fld_GetWidth(@c_pointer)
     end
 
-    # @param new_value [Fixnum]
+    # @param new_value [Integer]
     def width=(new_value)
       FFI::OGR::API.OGR_Fld_SetWidth(@c_pointer, new_value)
     end

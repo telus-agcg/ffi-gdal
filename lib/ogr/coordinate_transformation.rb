@@ -13,8 +13,15 @@ module OGR
         FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
       else
         raise OGR::UnsupportedOperation,
-          'Your version of GDAL/OGR does not support OCTProj4Normalize'
+              'Your version of GDAL/OGR does not support OCTProj4Normalize'
       end
+    end
+
+    # @param pointer [FFI::Pointer]
+    def self.release(pointer)
+      return unless pointer && !pointer.null?
+
+      FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(pointer)
     end
 
     # @return [OGR::SpatialReference]
@@ -31,16 +38,23 @@ module OGR
     def initialize(source_srs, destination_srs)
       source_ptr = GDAL._pointer(OGR::SpatialReference, source_srs)
       destination_ptr = GDAL._pointer(OGR::SpatialReference, destination_srs)
-      @c_pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
-      raise OGR::Failure, 'Unable to create coordinate transformation' if @c_pointer.null?
+      # Input spatial reference system objects are assigned by copy (calling clone() method)
+      # and no ownership transfer occurs.
+      # NOTE: In GDAL 3, this will cause the GDAL error handler to raise a
+      # GDAL::Error; in < 3, this just returns a null pointer, then gets handled
+      # by the null-pointer check below.
+      pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
+
+      raise GDAL::Error, 'Unable to create coordinate transformation' if pointer.null?
+
+      @c_pointer = pointer
     end
 
     # Deletes the object and deallocates all related C resources.
     def destroy!
-      return unless @c_pointer
+      CoordinateTransformation.release(@c_pointer)
 
-      FFI::OGR::SRSAPI.OCTDestroyCoordinateTransformation(@c_pointer)
       @c_pointer = nil
     end
 
@@ -83,10 +97,10 @@ module OGR
     # @param x_vertices [Array<Float>]
     # @param y_vertices [Array<Float>]
     # @param z_vertices [Array<Float>]
-    # @yieldparam point_count [Fixnum]
-    # @yieldparam x_ptr [FFI::MemortyPointer]
-    # @yieldparam y_ptr [FFI::MemortyPointer]
-    # @yieldparam z_ptr [FFI::MemortyPointer]
+    # @yieldparam point_count [Integer]
+    # @yieldparam x_ptr [FFI::MemoryPointer]
+    # @yieldparam y_ptr [FFI::MemoryPointer]
+    # @yieldparam z_ptr [FFI::MemoryPointer]
     # @yieldreturn [Boolean]
     # @return [Array<Array<Float>,Array<Float>,Array<Float>>] [[x1, x2, etc], [y1, y2, etc]]
     #   Will include a 3rd array of Z values if z vertices are given.

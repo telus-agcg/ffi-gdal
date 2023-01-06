@@ -16,7 +16,7 @@ module FFI
     autoload :Grid, File.expand_path('gdal/grid.rb', __dir__)
     autoload :GridDataMetricsOptions, File.expand_path('gdal/grid_data_metrics_options.rb', __dir__)
     autoload :GridInverseDistanceToAPowerOptions,
-      File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
+             File.expand_path('gdal/grid_inverse_distance_to_a_power_options.rb', __dir__)
     autoload :GridMovingAverageOptions, File.expand_path('gdal/grid_moving_average_options.rb', __dir__)
     autoload :GridNearestNeighborOptions, File.expand_path('gdal/grid_nearest_neighbor_options.rb', __dir__)
     autoload :Matching, File.expand_path('gdal/matching.rb', __dir__)
@@ -28,36 +28,7 @@ module FFI
 
     # @return [String]
     def self.gdal_library_path
-      @gdal_library_path ||= find_lib('{lib,}gdal*')
-    end
-
-    # @param [String] lib Name of the library file to find.
-    # @return [String] Path to the library file.
-    def self.find_lib(lib)
-      lib_file_name = "#{lib}.#{FFI::Platform::LIBSUFFIX}*"
-
-      return Dir[File.join(ENV['GDAL_LIBRARY_PATH'], lib_file_name)] if ENV['GDAL_LIBRARY_PATH']
-
-      search_paths.map do |search_path|
-        Dir.glob(search_path).map do |path|
-          Dir.glob(File.join(path, lib_file_name))
-        end
-      end.flatten.uniq.first
-    end
-
-    # @return [Array<String>] List of paths to search for libs in.
-    def self.search_paths
-      return ENV['GDAL_LIBRARY_PATH'] if ENV['GDAL_LIBRARY_PATH']
-
-      @search_paths ||= begin
-        paths = ENV['PATH'].split(File::PATH_SEPARATOR)
-
-        unless FFI::Platform.windows?
-          paths += %w[/usr/local/{lib64,lib} /opt/local/{lib64,lib} /usr/{lib64,lib} /usr/lib/{x86_64,i386}-linux-gnu]
-        end
-
-        paths
-      end
+      @gdal_library_path ||= ENV.fetch('GDAL_LIBRARY_PATH', 'gdal')
     end
 
     # @return [Array<String>] Related files that contain C constants.
