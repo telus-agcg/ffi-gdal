@@ -9,8 +9,6 @@ module GDAL
     # them.
     #
     # @param hash [Hash]
-    # @param nil_on_empty [Boolean] When +true+, if +hash+ is empty, return
-    #   +nil+.  If +false+, creates a 0-size pointer.
     # @return [FFI::MemoryPointer, nil]
     def self.pointer(hash)
       return if hash.empty?

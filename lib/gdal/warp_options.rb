@@ -169,7 +169,7 @@ module GDAL
     end
 
     # Set a Proc per source band; number of procs in +band_procs+ should equal
-    # {band_count}.
+    # the internal +band_count+.
     #
     # @param band_procs [Array<Proc>]
     def source_per_band_validity_mask_function=(band_procs)

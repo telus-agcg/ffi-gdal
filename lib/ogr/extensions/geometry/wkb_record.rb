@@ -9,7 +9,7 @@ module OGR
     # Parses raw WKB and turns into a data structure. Only really exists for
     # converting to and from EWKB.
     #
-    # @see {{OGR::Geometry::EWKBRecord}}
+    # @see OGR::Geometry::EWKBRecord
     class WKBRecord < BinData::Record
       uint8 :endianness, assert: -> { [0, 1].include?(value) }
 

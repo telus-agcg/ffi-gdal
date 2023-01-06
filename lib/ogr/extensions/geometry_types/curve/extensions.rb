@@ -32,7 +32,7 @@ module OGR
         end
 
         # @return [Array<OGR::Point>]
-        # @see {{#each_point_geometry}}, {{#point_geometry}}
+        # @see #each_point_geometry, #point_geometry
         def point_geometries
           each_point_geometry.to_a
         end
