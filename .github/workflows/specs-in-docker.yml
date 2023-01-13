@@ -20,8 +20,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build gdal2 image
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker compose version
           docker compose build gdal2

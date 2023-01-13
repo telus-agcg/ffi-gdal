@@ -45,14 +45,9 @@ For classes that are enabled with logging capabilities, you can turn logging on
 and off like `GDAL::RasterBand.logging_enabled = true`. If you're using ffi-gdal
 in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 
-## Additional Libraries
-
-[ffi-gdal-extensions](https://github.com/agrian-inc/ffi-gdal-extensions) provides
-additional functionality, not provided in this core, GDAL-wrapper library.
-
 ## Contributing
 
-1. Fork it ( https://github.com/agrian-inc/ffi-gdal/fork )
+1. Fork it ( https://github.com/telus-agcg/ffi-gdal/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
