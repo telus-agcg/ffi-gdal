@@ -1,93 +1,10 @@
 # syntax=docker/dockerfile:1
-FROM ruby:3.1.2 as base
-
-#------------------------------------------------------------------------------
-# GDAL setup
-# We don't need much for ffi-gdal...
-# https://trac.osgeo.org/gdal/wiki/BuildingOnUnixWithMinimizedDrivers
-#------------------------------------------------------------------------------
-FROM base as gdal_builder
-
-ARG GDAL_VERSION="2.4.4"
-ARG GDAL_TARBALL="gdal-${GDAL_VERSION}.tar.gz"
-
-WORKDIR /tmp
-
-RUN apt-get update -yqq \
-  && apt-get upgrade -yqq \
-  && apt-get install -yqq --no-install-recommends \
-  build-essential \
-  ca-certificates \
-  curl \
-  libgeos-dev \
-  libproj-dev \
-  librttopo-dev \
-  && rm -rf /var/lib/apt/lists/* \
-  && curl -sSf -L -O "https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/${GDAL_TARBALL}" \
-  && curl -sSf -L -O "https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/${GDAL_TARBALL}.md5" \
-  && md5sum --strict --check "${GDAL_TARBALL}.md5" \
-  && mkdir gdal \
-  && tar -zxvf $GDAL_TARBALL -C /tmp/gdal --strip-components=1 \
-  && rm ${GDAL_TARBALL} "${GDAL_TARBALL}.md5" \
-  && cd /tmp/gdal \
-  && ./configure \
-  --with-geos \
-  --with-geotiff=internal \
-  --with-libtiff=internal \
-  --with-libz=internal \
-  --with-threads \
-  --without-bsb \
-  --without-cfitsio \
-  --without-cryptopp \
-  --without-curl \
-  --without-ecw \
-  --without-expat \
-  --without-fme \
-  --without-freexl \
-  --without-gif \
-  --without-gnm \
-  --without-grass \
-  --without-grib \
-  --without-hdf4 \
-  --without-hdf5 \
-  --without-idb \
-  --without-ingres \
-  --without-jasper \
-  --without-jp2mrsid \
-  --without-jpeg \
-  --without-kakadu \
-  --without-libgrass \
-  --without-libkml \
-  --without-libtool \
-  --without-mrf \
-  --without-mrsid \
-  --without-mysql \
-  --without-netcdf \
-  --without-odbc \
-  --without-ogdi \
-  --without-openjpeg \
-  --without-pcidsk \
-  --without-pcraster \
-  --without-pcre \
-  --without-perl \
-  --without-pg \
-  --without-png \
-  --without-python \
-  --without-qhull \
-  --without-sde \
-  --without-sqlite3 \
-  --without-webp \
-  --without-xerces \
-  --without-xml2 \
-  && make \
-  && make install \
-  && cd /tmp \
-  && rm -rf gdal
+FROM ghcr.io/telus-agcg/ruby3.2-gdal2.4.4:1.0 as base
 
 #------------------------------------------------------------------------------
 # Dev setup 1
 #------------------------------------------------------------------------------
-FROM gdal_builder as dev_builder
+FROM base as dev_builder
 
 RUN gem update --system \
   && gem install bundler
