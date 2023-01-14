@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'ffi-gdal'
   spec.version       = FFI::GDAL::VERSION
   spec.authors       = ['Steve Loveless']
-  spec.email         = %w[steve.loveless@telus-agcg.com]
+  spec.email         = %w[steve.loveless@telusagcg.com]
   spec.summary       = 'FFI wrapper for GDAL/OGR.'
   spec.homepage      = 'https://github.com/telus-agcg/ffi-gdal'
   spec.license       = 'MIT'
