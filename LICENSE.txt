@@ -1,4 +1,4 @@
-Copyright (c) 2014 Agrian, Inc.
+Copyright (c) 2023 Telus Agriculture & Consumer Goods
 
 MIT License
 
