@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../geometry_types/curve'
+require_relative "../geometry_types/curve"
 
 module OGR
   class LineString

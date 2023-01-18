@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'data_metrics_base'
+require_relative "data_metrics_base"
 
 module GDAL
   module GridAlgorithms

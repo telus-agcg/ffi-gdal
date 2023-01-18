@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'gdal'
-require 'numo/narray'
+require "gdal"
+require "numo/narray"
 
 module GDAL
   # Takes a list of Ranges of color values and remaps them.  Note that these
@@ -35,7 +35,7 @@ module GDAL
     # @param range [Range] The range of values to map to a new value.
     # @param map_to_value [Number]
     def add_range(range, map_to_value)
-      raise 'range must be a Ruby Range' unless range.is_a? Range
+      raise "range must be a Ruby Range" unless range.is_a? Range
 
       @ranges << { range: range, map_to: map_to_value }
     end

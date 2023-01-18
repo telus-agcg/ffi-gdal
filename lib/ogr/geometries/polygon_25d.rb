@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'polygon'
+require_relative "polygon"
 
 module OGR
   # NOTE: {{#type}} will return :wkbPolygon (read: 2D instead of 2.5D) until a Z

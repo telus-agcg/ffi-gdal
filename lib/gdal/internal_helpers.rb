@@ -124,7 +124,7 @@ module GDAL
         yield result_ptr_ptr
 
         result = if result_ptr_ptr.null?
-                   ''
+                   ""
                  else
                    GDAL._read_pointer_pointer_safely(result_ptr_ptr, :string)
                  end
@@ -241,8 +241,8 @@ module GDAL
       # @raise [GDAL::InvalidAccessFlag] If +char+ is not 'r' or 'w'.
       def _gdal_access_flag(char)
         case char
-        when 'r' then :GF_Read
-        when 'w' then :GF_Write
+        when "r" then :GF_Read
+        when "w" then :GF_Write
         else raise GDAL::InvalidAccessFlag, "Invalid access flag: #{char}"
         end
       end

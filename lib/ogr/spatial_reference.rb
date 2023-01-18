@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
-require_relative '../gdal'
-require_relative 'spatial_reference_mixins/coordinate_system_getter_setters'
-require_relative 'spatial_reference_mixins/exporters'
-require_relative 'spatial_reference_mixins/importers'
-require_relative 'spatial_reference_mixins/morphers'
-require_relative 'spatial_reference_mixins/parameter_getter_setters'
-require_relative 'spatial_reference_mixins/type_checks'
+require_relative "../ogr"
+require_relative "../gdal"
+require_relative "spatial_reference_mixins/coordinate_system_getter_setters"
+require_relative "spatial_reference_mixins/exporters"
+require_relative "spatial_reference_mixins/importers"
+require_relative "spatial_reference_mixins/morphers"
+require_relative "spatial_reference_mixins/parameter_getter_setters"
+require_relative "spatial_reference_mixins/type_checks"
 
 module OGR
   # Represents a geographic coordinate system.  There are two primary types:
@@ -46,7 +46,7 @@ module OGR
 
       list = pointer_array.map(&:read_string).sort
 
-      strip_underscores ? list.map! { |l| l.tr('_', ' ') } : list
+      strip_underscores ? list.map! { |l| l.tr("_", " ") } : list
     end
 
     # @deprecated This was removed in GDAL 3.0.
@@ -141,13 +141,13 @@ module OGR
     def initialize(spatial_reference_or_wkt = nil)
       pointer =
         case spatial_reference_or_wkt.class.name
-        when 'OGR::SpatialReference'
+        when "OGR::SpatialReference"
           # This is basically getting a reference to the SpatialReference that
           # was passed in, thus when this SpatialReference gets garbage-collected,
           # it shouldn't release anything.
           ptr = spatial_reference_or_wkt.c_pointer
           ptr.autorelease = false
-        when 'String', 'NilClass'
+        when "String", "NilClass"
           # FWIW, the docs say:
           # Note that newly created objects are given a reference count of one.
           #
@@ -157,7 +157,7 @@ module OGR
 
           # We're instantiating a new SR, so we can use .destroy.
           FFI::AutoPointer.new(ptr, SpatialReference.method(:release))
-        when 'FFI::AutoPointer', 'FFI::Pointer', 'FFI::MemoryPointer'
+        when "FFI::AutoPointer", "FFI::Pointer", "FFI::MemoryPointer"
           # If we got a pointer, we don't know who owns the data, so don't
           # touch anything about autorelease/AutoPointer.
           spatial_reference_or_wkt
@@ -165,7 +165,7 @@ module OGR
           log "Dunno what to do with #{spatial_reference_or_wkt.inspect}"
         end
 
-      raise OGR::CreateFailure, 'Unable to create SpatialReference.' if pointer.nil? || pointer.null?
+      raise OGR::CreateFailure, "Unable to create SpatialReference." if pointer.nil? || pointer.null?
 
       @c_pointer = pointer
     end
@@ -201,28 +201,28 @@ module OGR
       other_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, other_spatial_ref)
       raise OGR::InvalidSpatialReference if other_spatial_ref_ptr.nil? || other_spatial_ref_ptr.null?
 
-      OGR::ErrorHandling.handle_ogr_err('Unable to copy GEOGCS') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to copy GEOGCS") do
         FFI::OGR::SRSAPI.OSRCopyGeogCSFrom(@c_pointer, other_spatial_ref_ptr)
       end
     end
 
     # @raise [OGR::Failure]
     def validate
-      OGR::ErrorHandling.handle_ogr_err('Unable to validate') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to validate") do
         FFI::OGR::SRSAPI.OSRValidate(@c_pointer)
       end
     end
 
     # @raise [OGR::Failure]
     def fixup_ordering!
-      OGR::ErrorHandling.handle_ogr_err('Unable to fixup ordering') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to fixup ordering") do
         FFI::OGR::SRSAPI.OSRFixupOrdering(@c_pointer)
       end
     end
 
     # @raise [OGR::Failure]
     def fixup!
-      OGR::ErrorHandling.handle_ogr_err('Unable to fixup') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to fixup") do
         FFI::OGR::SRSAPI.OSRFixup(@c_pointer)
       end
     end
@@ -231,7 +231,7 @@ module OGR
     #
     # @raise [OGR::Failure]
     def strip_ct_parameters!
-      OGR::ErrorHandling.handle_ogr_err('Unable to strip coordinate transformation parameters') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to strip coordinate transformation parameters") do
         FFI::OGR::SRSAPI.OSRStripCTParms(@c_pointer)
       end
     end
@@ -240,7 +240,7 @@ module OGR
     #
     # @raise [OGR::Failure]
     def auto_identify_epsg!
-      OGR::ErrorHandling.handle_ogr_err('Unable to determine SRS from EPSG') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to determine SRS from EPSG") do
         FFI::OGR::SRSAPI.OSRAutoIdentifyEPSG(@c_pointer)
       end
     end

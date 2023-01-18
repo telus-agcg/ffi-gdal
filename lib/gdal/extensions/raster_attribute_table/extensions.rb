@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'gdal/raster_attribute_table'
+require "gdal/raster_attribute_table"
 
 module GDAL
   class RasterAttributeTable

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../geometry_types/container'
+require_relative "../geometry_types/container"
 
 module OGR
   class MultiPoint

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'gdal/extensions/gridder'
-require 'ogr/data_source'
+require "gdal/extensions/gridder"
+require "ogr/data_source"
 
-RSpec.describe 'GDAL::Gridder', type: :integration do
-  let(:shapefile_path) { File.expand_path('../../../spec/support/shapefiles/states_21basic', __dir__) }
-  let(:source_data_source) { OGR::DataSource.open(shapefile_path, 'r') }
+RSpec.describe "GDAL::Gridder", type: :integration do
+  let(:shapefile_path) { File.expand_path("../../../spec/support/shapefiles/states_21basic", __dir__) }
+  let(:source_data_source) { OGR::DataSource.open(shapefile_path, "r") }
   let(:source_layer) { source_data_source.layer(0) }
-  let(:dataset) { GDAL::Dataset.open(output_file_name, 'w', shared: true) }
+  let(:dataset) { GDAL::Dataset.open(output_file_name, "w", shared: true) }
 
   after do
     source_data_source.close if source_data_source.c_pointer
@@ -18,7 +18,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Inverse Distance to a Power' do
+  describe "Inverse Distance to a Power" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:inverse_distance_to_a_power)
 
@@ -31,16 +31,16 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 15
       gridder_options.algorithm_options[:smoothing] = 5
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 300, height: 200 }
       gridder_options.output_data_type = :GDT_UInt16
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-idtap.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-idtap.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
+    it "results in a raster with relevant data to the grid algorithm" do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -59,7 +59,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Nearest Neighbor' do
+  describe "Nearest Neighbor" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:nearest_neighbor)
 
@@ -68,16 +68,16 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius1] = 2
       gridder_options.algorithm_options[:radius2] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 10, height: 15 }
       gridder_options.output_data_type = :GDT_Int16
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-nearest_neighbor.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-nearest_neighbor.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
+    it "results in a raster with relevant data to the grid algorithm" do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -96,7 +96,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Metric Average Distance' do
+  describe "Metric Average Distance" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_average_distance)
 
@@ -106,16 +106,16 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 15
       gridder_options.algorithm_options[:min_points] = 1000
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 100, height: 150 }
       gridder_options.output_data_type = :GDT_UInt32
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_average_distance.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_average_distance.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
+    it "results in a raster with relevant data to the grid algorithm" do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -134,7 +134,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Metric Average Distance Between Points' do
+  describe "Metric Average Distance Between Points" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_average_distance_pts)
 
@@ -144,16 +144,16 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 0.3
       gridder_options.algorithm_options[:min_points] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 50, height: 250 }
       gridder_options.output_data_type = :GDT_Float32
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_average_distance_pts.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_average_distance_pts.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
+    it "results in a raster with relevant data to the grid algorithm" do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -172,7 +172,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Metric Count' do
+  describe "Metric Count" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_count)
 
@@ -182,16 +182,16 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 0.2
       gridder_options.algorithm_options[:min_points] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 50, height: 50 }
       gridder_options.output_data_type = :GDT_Int32
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_count.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_count.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
+    it "results in a raster with relevant data to the grid algorithm" do
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -210,7 +210,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Metric Maximum' do
+  describe "Metric Maximum" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_maximum)
 
@@ -220,17 +220,17 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 0.1
       gridder_options.algorithm_options[:min_points] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 50, height: 50 }
       gridder_options.output_data_type = :GDT_Byte
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_maximum.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_maximum.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
-      skip 'AGDEV-13650 figure out why this test causes a crash'
+    it "results in a raster with relevant data to the grid algorithm" do
+      skip "AGDEV-13650 figure out why this test causes a crash"
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -249,7 +249,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
     end
   end
 
-  describe 'Metric Minimum' do
+  describe "Metric Minimum" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_minimum)
 
@@ -259,17 +259,17 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 0.1
       gridder_options.algorithm_options[:min_points] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 50, height: 50 }
       gridder_options.output_data_type = :GDT_CInt16
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_minimum.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_minimum.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
-      skip 'AGDEV-13650 figure out why this test causes a crash'
+    it "results in a raster with relevant data to the grid algorithm" do
+      skip "AGDEV-13650 figure out why this test causes a crash"
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 
@@ -289,7 +289,7 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
   end
 
   # TODO: This test seems particularly prone to ruby malloc errors.
-  describe 'Metric Range' do
+  describe "Metric Range" do
     let(:gridder_options) do
       gridder_options = GDAL::GridderOptions.new(:metric_range)
 
@@ -299,17 +299,17 @@ RSpec.describe 'GDAL::Gridder', type: :integration do
       gridder_options.algorithm_options[:radius2] = 10
       gridder_options.algorithm_options[:min_points] = 1
 
-      gridder_options.input_field_name = 'STATE_FIPS'
+      gridder_options.input_field_name = "STATE_FIPS"
       gridder_options.output_size = { width: 50, height: 50 }
       gridder_options.output_data_type = :GDT_CFloat64
 
       gridder_options
     end
 
-    let(:output_file_name) { File.expand_path('../../../tmp/gridder_spec-metric_range.tif', __dir__) }
+    let(:output_file_name) { File.expand_path("../../../tmp/gridder_spec-metric_range.tif", __dir__) }
 
-    it 'results in a raster with relevant data to the grid algorithm' do
-      skip 'AGDEV-13650 figure out why this test causes a crash'
+    it "results in a raster with relevant data to the grid algorithm" do
+      skip "AGDEV-13650 figure out why this test causes a crash"
       gridder = GDAL::Gridder.new(source_layer, output_file_name, gridder_options)
       gridder.grid!
 

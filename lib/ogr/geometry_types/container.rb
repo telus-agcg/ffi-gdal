@@ -71,7 +71,7 @@ module OGR
                                                                   tolerance,
                                                                   ogrerr_ptr)
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to create polygon from edges') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to create polygon from edges") do
           FFI::OGR::Core::Err[ogrerr_ptr.read_int]
         end
 

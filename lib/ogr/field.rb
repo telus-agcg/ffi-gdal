@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'date'
-require_relative '../ogr'
-require_relative '../gdal'
+require "date"
+require_relative "../ogr"
+require_relative "../gdal"
 
 module OGR
   class Field
@@ -53,7 +53,7 @@ module OGR
 
     # TODO: This blows up when another value type has been set.
     def string
-      return '' if @c_struct[:string]&.null?
+      return "" if @c_struct[:string]&.null?
 
       @c_struct[:string].read_string
     end
@@ -150,7 +150,7 @@ module OGR
     def binary
       b = @c_struct[:binary]
 
-      b[:count].positive? ? b[:data].read_bytes(b[:count]) : ''
+      b[:count].positive? ? b[:data].read_bytes(b[:count]) : ""
     end
 
     # @param new_binary [String] Binary string of 8-bit, unsigned data (uchar).

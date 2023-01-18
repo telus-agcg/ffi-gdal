@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
+require_relative "../gdal"
 
 module GDAL
   class GeoTransform

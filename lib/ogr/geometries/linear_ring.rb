@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'line_string'
+require_relative "line_string"
 
 module OGR
   class LinearRing < LineString
@@ -14,7 +14,7 @@ module OGR
     def to_line_string
       line_string = OGR::LineString.new
       line_string.spatial_reference = spatial_reference if spatial_reference
-      line_string.import_from_wkt(to_wkt.sub('LINEARRING', 'LINESTRING'))
+      line_string.import_from_wkt(to_wkt.sub("LINEARRING", "LINESTRING"))
 
       line_string
     end

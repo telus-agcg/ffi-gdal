@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/feature_definition'
+require "ogr/feature_definition"
 
 module OGR
   class FeatureDefinition

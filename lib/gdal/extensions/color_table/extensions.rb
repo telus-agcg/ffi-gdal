@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'gdal/color_table'
+require "json"
+require "gdal/color_table"
 
 module GDAL
   module ColorTableMixins

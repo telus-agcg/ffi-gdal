@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'ogr/spatial_reference'
-require_relative 'ewkb_record'
-require_relative 'wkb_record'
+require "ogr/spatial_reference"
+require_relative "ewkb_record"
+require_relative "wkb_record"
 
 module OGR
   module Geometry

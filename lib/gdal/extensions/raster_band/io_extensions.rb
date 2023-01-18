@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'gdal/raster_band'
+require "gdal/raster_band"
 
 module GDAL
   class RasterBand
@@ -14,7 +14,7 @@ module GDAL
         return enum_for(:readlines) unless block_given?
 
         y_size.times do |row_number|
-          scan_line = raster_io('r', x_size: x_size, y_size: 1, y_offset: row_number)
+          scan_line = raster_io("r", x_size: x_size, y_size: 1, y_offset: row_number)
           line_array = GDAL._read_pointer(scan_line, data_type, x_size)
 
           yield line_array
@@ -57,7 +57,7 @@ module GDAL
         data_pointer = GDAL._pointer_from_data_type(data_type)
         GDAL._write_pointer(data_pointer, data_type, new_value)
 
-        raster_io('w', data_pointer, x_size: 1, y_size: 1, x_offset: x, y_offset: y, buffer_x_size: 1, buffer_y_size: 1)
+        raster_io("w", data_pointer, x_size: 1, y_size: 1, x_offset: x, y_offset: y, buffer_x_size: 1, buffer_y_size: 1)
       end
 
       # Convenience method for directly getting a single pixel value.
@@ -66,7 +66,7 @@ module GDAL
       # @param y [Integer] Row number of the pixel to get.
       # @return [Number]
       def pixel_value(x, y)
-        output = raster_io('r', x_size: 1, y_size: 1, x_offset: x, y_offset: y, buffer_x_size: 1, buffer_y_size: 1)
+        output = raster_io("r", x_size: 1, y_size: 1, x_offset: x, y_offset: y, buffer_x_size: 1, buffer_y_size: 1)
 
         GDAL._read_pointer(output, data_type)
       end

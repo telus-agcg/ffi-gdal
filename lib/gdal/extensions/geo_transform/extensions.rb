@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'gdal/exceptions'
-require 'gdal/geo_transform'
+require "gdal/exceptions"
+require "gdal/geo_transform"
 
 module GDAL
   class GeoTransform

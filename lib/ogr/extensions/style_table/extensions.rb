@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/style_table'
+require "ogr/style_table"
 
 module OGR
   class StyleTable

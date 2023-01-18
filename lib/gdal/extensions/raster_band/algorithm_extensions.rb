@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'gdal/raster_band'
+require "gdal/raster_band"
 
 module GDAL
   class RasterBand
@@ -66,11 +66,11 @@ module GDAL
 
         unless erase_value
           raise GDAL::NoRasterEraseValue,
-                'Cannot erase values, RasterBand does not have a NODATA value set'
+                "Cannot erase values, RasterBand does not have a NODATA value set"
         end
 
         y_size.times do |line_num|
-          pixel_row = raster_io('r', x_size: x_size, y_size: 1, x_offset: 0, y_offset: line_num)
+          pixel_row = raster_io("r", x_size: x_size, y_size: 1, x_offset: 0, y_offset: line_num)
           pixel_values = GDAL._read_pointer(pixel_row, data_type, x_size)
           row_changed = false
           pixel_num = 0
@@ -101,7 +101,7 @@ module GDAL
       # @param line_number [Integer]
       def rewrite_pixel_row(write_buffer, pixel_values, line_number)
         GDAL._write_pointer(write_buffer, data_type, pixel_values)
-        raster_io('w', write_buffer, x_size: x_size, y_size: 1, y_offset: line_number)
+        raster_io("w", write_buffer, x_size: x_size, y_size: 1, y_offset: line_number)
         write_buffer.clear
       end
     end

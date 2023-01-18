@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
+require_relative "../ogr"
 
 module OGR
   class FieldDefinition

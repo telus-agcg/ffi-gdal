@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'ffi-gdal'
-require 'gdal/dataset'
-require 'gdal/warp_operation'
-require 'gdal/warp_options'
-require 'gdal/transformers/general_image_projection_transformer'
-require 'gdal/transformers/general_image_projection_transformer2'
-require 'byebug'
+require "bundler/setup"
+require "ffi-gdal"
+require "gdal/dataset"
+require "gdal/warp_operation"
+require "gdal/warp_options"
+require "gdal/transformers/general_image_projection_transformer"
+require "gdal/transformers/general_image_projection_transformer2"
+require "byebug"
 
 GDAL::Logger.logging_enabled = true
 
@@ -50,7 +50,7 @@ module Examples
         options.resample_algorithm = :GRA_Average
 
         options.warp_operation_options = {
-          init_dest: 'NO_DATA',
+          init_dest: "NO_DATA",
           cutline: clip_wkt
           # cutline_all_touched: 'TRUE'
           # cutline_all_touched: true
@@ -58,7 +58,7 @@ module Examples
 
         transformer_arg = GDAL::Transformers::GeneralImageProjectionTransformer2.new(
           source_dataset, destination_dataset: dest_dataset,
-                          insert_center_long: 'FALSE'
+                          insert_center_long: "FALSE"
           # DST_SRS: spatial_reference.to_wkt
         )
         # transformer_arg = GDAL::Transformers::GeneralImageProjectionTransformer.new(
@@ -96,7 +96,7 @@ module Examples
 
         suggested_options = source_dataset.suggested_warp_output(transformer_arg)
 
-        driver = GDAL::Driver.by_name 'GTiff'
+        driver = GDAL::Driver.by_name "GTiff"
         ds = driver.create_dataset(path, suggested_options[:pixels], suggested_options[:lines],
                                    data_type: source_dataset.raster_band(1).data_type)
         ds.geo_transform = suggested_options[:geo_transform]
@@ -111,7 +111,7 @@ end
 
 if $PROGRAM_NAME == __FILE__
   args = ARGV.dup
-  raise 'Must only supply 2 args: [source destination]' unless args.length == 2
+  raise "Must only supply 2 args: [source destination]" unless args.length == 2
 
   # 32616
   # harper_wkt = <<-WKT
@@ -139,7 +139,7 @@ if $PROGRAM_NAME == __FILE__
   source_path = args.shift
   dest_path = args.shift
 
-  source_dataset = GDAL::Dataset.open(source_path, 'r')
+  source_dataset = GDAL::Dataset.open(source_path, "r")
   puts "source srid: #{source_dataset.spatial_reference.authority_code.to_i}"
 
   dest_dataset = Examples::Warping

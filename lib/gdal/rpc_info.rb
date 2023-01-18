@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-require_relative '../gdal'
+require "forwardable"
+require_relative "../gdal"
 
 module GDAL
   # @return [FFI::GDAL::RPCInfo]

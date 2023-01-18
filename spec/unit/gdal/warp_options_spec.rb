@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'gdal/warp_options'
+require "gdal/warp_options"
 
 RSpec.describe GDAL::WarpOptions do
-  shared_examples 'a WarpOptions object' do
-    it 'inits proper types' do
+  shared_examples "a WarpOptions object" do
+    it "inits proper types" do
       expect(subject.warp_operation_options).to be_a Hash
 
       expect(subject.source_bands).to be_a Array
@@ -39,11 +39,11 @@ RSpec.describe GDAL::WarpOptions do
     end
   end
 
-  describe '#initialize' do
-    context 'with no options' do
-      it_behaves_like 'a WarpOptions object'
+  describe "#initialize" do
+    context "with no options" do
+      it_behaves_like "a WarpOptions object"
 
-      it 'inits a FFI::GDAL::WarpOptions struct internally, with nothing set' do
+      it "inits a FFI::GDAL::WarpOptions struct internally, with nothing set" do
         expect(subject.warp_operation_options).to eq({})
 
         expect(subject.warp_memory_limit).to be_zero
@@ -96,19 +96,19 @@ RSpec.describe GDAL::WarpOptions do
       end
     end
 
-    context 'passing in options that are also accessor methods' do
+    context "passing in options that are also accessor methods" do
       let(:warp_operation_options) do
         {
-          init_dest: 'NODATA',
-          write_flush: 'YES',
-          skip_nosource: 'NO',
-          sample_grid: 'YES'
+          init_dest: "NODATA",
+          write_flush: "YES",
+          skip_nosource: "NO",
+          sample_grid: "YES"
         }
       end
 
-      let(:memory_driver) { GDAL::Driver.by_name('MEM') }
-      let(:source_dataset) { memory_driver.create_dataset 'source', 10, 20 }
-      let(:dest_dataset) { memory_driver.create_dataset 'dest', 20, 30 }
+      let(:memory_driver) { GDAL::Driver.by_name("MEM") }
+      let(:source_dataset) { memory_driver.create_dataset "source", 10, 20 }
+      let(:dest_dataset) { memory_driver.create_dataset "dest", 20, 30 }
       let(:cutline) { OGR::LineString.new }
       let(:spb_validity_mask_function1) { proc { true } }
       let(:spb_validity_mask_function2) { proc { false } }
@@ -135,57 +135,57 @@ RSpec.describe GDAL::WarpOptions do
                             ]
       end
 
-      it_behaves_like 'a WarpOptions object'
+      it_behaves_like "a WarpOptions object"
 
-      it 'sets warp_operation_options' do
+      it "sets warp_operation_options" do
         expect(subject.warp_operation_options).to eq(warp_operation_options)
       end
 
-      it 'sets source_dataset and the internal pointer' do
+      it "sets source_dataset and the internal pointer" do
         expect(subject.source_dataset).to eq(source_dataset)
         expect(subject.c_struct[:source_dataset]).to eq(source_dataset.c_pointer)
       end
 
-      it 'sets destination_dataset' do
+      it "sets destination_dataset" do
         expect(subject.destination_dataset).to eq(dest_dataset)
         expect(subject.c_struct[:destination_dataset]).to eq(dest_dataset.c_pointer)
       end
 
-      it 'sets source_bands' do
+      it "sets source_bands" do
         expect(subject.source_bands).to eq([1, 2, 3])
       end
 
-      it 'sets destination_bands' do
+      it "sets destination_bands" do
         expect(subject.destination_bands).to eq([2, 4, 6])
       end
 
-      it 'sets band_count and the internal to 3' do
+      it "sets band_count and the internal to 3" do
         expect(subject.band_count).to eq 3
         expect(subject.c_struct[:band_count]).to eq 3
       end
 
-      it 'sets cutline and its internal pointer' do
+      it "sets cutline and its internal pointer" do
         expect(subject.cutline).to eq(cutline)
         expect(subject.c_struct[:cutline]).to eq(cutline.c_pointer)
       end
 
-      it 'sets source_no_data_real' do
+      it "sets source_no_data_real" do
         expect(subject.source_no_data_real).to eq([123.456, 78.9, -999.9])
       end
 
-      it 'sets source_no_data_imaginary' do
+      it "sets source_no_data_imaginary" do
         expect(subject.source_no_data_imaginary).to eq([1.2, 3.4, -5.6])
       end
 
-      it 'sets destination_no_data_real' do
+      it "sets destination_no_data_real" do
         expect(subject.destination_no_data_real).to eq([11.1, 22.2, 33.3])
       end
 
-      it 'sets destination_no_data_imaginary' do
+      it "sets destination_no_data_imaginary" do
         expect(subject.destination_no_data_imaginary).to eq([-44.4, -55.5, -66.6])
       end
 
-      it 'sets source_per_band_validity_mask_function' do
+      it "sets source_per_band_validity_mask_function" do
         function_ptr = subject.source_per_band_validity_mask_function
         expect(function_ptr).to be_a(FFI::Pointer)
 
@@ -194,7 +194,7 @@ RSpec.describe GDAL::WarpOptions do
       end
     end
 
-    context 'passing in options that are NOT accessor methods' do
+    context "passing in options that are NOT accessor methods" do
       def make_int_pointer(int)
         i = FFI::MemoryPointer.new(:int)
         i.write_int(int)
@@ -237,99 +237,99 @@ RSpec.describe GDAL::WarpOptions do
                             cutline_blend_distance: 3.3
       end
 
-      it_behaves_like 'a WarpOptions object'
+      it_behaves_like "a WarpOptions object"
 
-      it 'sets warp_memory_limit' do
+      it "sets warp_memory_limit" do
         expect(subject.warp_memory_limit).to eq(123)
       end
 
-      it 'sets resample_alg' do
+      it "sets resample_alg" do
         expect(subject.resample_alg).to eq(:GRA_Lanczos)
       end
 
-      it 'sets working_data_type' do
+      it "sets working_data_type" do
         expect(subject.working_data_type).to eq(:GDT_CInt32)
       end
 
-      it 'sets band_count' do
+      it "sets band_count" do
         expect(subject.band_count).to eq(3)
       end
 
-      it 'sets source_alpha_band' do
+      it "sets source_alpha_band" do
         expect(subject.source_alpha_band).to eq(1)
       end
 
-      it 'sets destination_alpha_band' do
+      it "sets destination_alpha_band" do
         expect(subject.destination_alpha_band).to eq(5)
       end
 
-      it 'sets progress_arg' do
+      it "sets progress_arg" do
         expect(subject.progress_arg).to eq(FFI::CPL::Progress::ScaledProgress)
       end
 
-      it 'sets source_per_band_validity_mask_function_arg' do
+      it "sets source_per_band_validity_mask_function_arg" do
         pointer = subject.source_per_band_validity_mask_function_arg
         pointer.autorelease = false
         expect(pointer.read_int).to eq 5
       end
 
-      it 'sets source_validity_mask_function' do
+      it "sets source_validity_mask_function" do
         expect(subject.source_validity_mask_function).to_not be_null
       end
 
-      it 'sets source_validity_mask_function_arg' do
+      it "sets source_validity_mask_function_arg" do
         pointer = subject.source_validity_mask_function_arg
         pointer.autorelease = false
         expect(pointer.read_int).to eq 3
       end
 
-      it 'sets source_density_mask_function' do
+      it "sets source_density_mask_function" do
         expect(subject.source_density_mask_function).to_not be_null
       end
 
-      it 'sets source_density_mask_function_arg' do
+      it "sets source_density_mask_function_arg" do
         pointer = subject.source_density_mask_function_arg
         pointer.autorelease = false
         expect(pointer.read_int).to eq 2
       end
 
-      it 'sets destination_validity_mask_function' do
+      it "sets destination_validity_mask_function" do
         expect(subject.destination_validity_mask_function).to_not be_null
       end
 
-      it 'sets destination_validity_mask_function_arg' do
+      it "sets destination_validity_mask_function_arg" do
         pointer = subject.destination_validity_mask_function_arg
         pointer.autorelease = false
         expect(pointer.read_int).to eq 4
       end
 
-      it 'sets destination_density_mask_function' do
+      it "sets destination_density_mask_function" do
         expect(subject.destination_density_mask_function).to_not be_null
       end
 
-      it 'sets destination_density_mask_function_arg' do
+      it "sets destination_density_mask_function_arg" do
         pointer = subject.destination_density_mask_function_arg
         pointer.autorelease = false
         expect(pointer.read_int).to eq 11
       end
 
-      it 'sets pre_warp_chunk_processor' do
+      it "sets pre_warp_chunk_processor" do
         expect(subject.pre_warp_chunk_processor.call(nil, nil)).to eq(:CE_Warning)
       end
 
-      it 'sets pre_warp_chunk_processor_arg' do
+      it "sets pre_warp_chunk_processor_arg" do
         expect(subject.pre_warp_processor_arg).to_not be_null
       end
 
-      it 'sets post_warp_chunk_processor' do
+      it "sets post_warp_chunk_processor" do
         expect(subject.post_warp_chunk_processor.call(nil, nil)).to eq(:CE_Failure)
       end
 
-      it 'sets post_warp_chunk_processor_arg' do
+      it "sets post_warp_chunk_processor_arg" do
         expect(subject.post_warp_processor_arg).to_not be_null
       end
 
-      it 'sets cutline_blend_distance' do
+      it "sets cutline_blend_distance" do
         expect(subject.cutline_blend_distance).to eq(3.3)
       end
     end

@@ -50,7 +50,7 @@ module OGR
       # @param definition [String]
       # @raise [OGR::Failure]
       def set_from_user_input(definition) # rubocop:disable Naming/AccessorMethodName
-        OGR::ErrorHandling.handle_ogr_err('Invalid projection info given.') do
+        OGR::ErrorHandling.handle_ogr_err("Invalid projection info given.") do
           FFI::OGR::SRSAPI.OSRSetFromUserInput(@c_pointer, definition)
         end
       end
@@ -60,7 +60,7 @@ module OGR
       def towgs84
         coefficients = FFI::MemoryPointer.new(:double, 7)
 
-        OGR::ErrorHandling.handle_ogr_err('No TOWGS84 node available') do
+        OGR::ErrorHandling.handle_ogr_err("No TOWGS84 node available") do
           FFI::OGR::SRSAPI.OSRGetTOWGS84(@c_pointer, coefficients, 7)
         end
 
@@ -77,7 +77,7 @@ module OGR
       # @raise [OGR::Failure]
       def set_towgs84(x_distance: nil, y_distance: nil, z_distance: 0.0,
         x_rotation: 0.0, y_rotation: 0.0, z_rotation: 0.0, scaling_factor: 0.0)
-        OGR::ErrorHandling.handle_ogr_err('No existing DATUM node') do
+        OGR::ErrorHandling.handle_ogr_err("No existing DATUM node") do
           FFI::OGR::SRSAPI.OSRSetTOWGS84(
             @c_pointer,
             x_distance, y_distance, z_distance,
@@ -488,7 +488,7 @@ module OGR
       # @param false_northing [Float]
       # @raise [OGR::Failure]
       def set_transverse_mercator(center_lat, center_long, scale, false_easting, false_northing)
-        msg = 'Unable to set transverse mercator: ' \
+        msg = "Unable to set transverse mercator: " \
               "#{center_lat}, #{center_long}, #{scale}, #{false_easting}, #{false_northing}"
 
         OGR::ErrorHandling.handle_ogr_err(msg) do

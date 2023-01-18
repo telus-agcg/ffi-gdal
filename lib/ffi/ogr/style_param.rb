@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ffi'
-require_relative '../cpl/port'
+require "ffi"
+require_relative "../cpl/port"
 
 module FFI
   module OGR

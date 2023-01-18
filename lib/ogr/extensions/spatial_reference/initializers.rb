@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/spatial_reference'
+require "ogr/spatial_reference"
 
 module OGR
   module SpatialReferenceMixins
@@ -124,7 +124,7 @@ module OGR
           object = new(spatial_reference_or_wkt)
           ogr_err = yield object.c_pointer
 
-          OGR::ErrorHandling.handle_ogr_err('Unable to build SpatialReference') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to build SpatialReference") do
             ogr_err
           end
 

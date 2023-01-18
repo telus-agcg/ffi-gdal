@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ffi'
+require "ffi"
 
 module GDAL
   # A wrapper for the way GDAL does key/value pair options for methods.
@@ -39,7 +39,7 @@ module GDAL
         key_and_value, ptr = FFI::CPL::String.CSLGetField(pointer, i)
         ptr.autorelease = false
 
-        key, value = key_and_value.split('=')
+        key, value = key_and_value.split("=")
         o[key.downcase.to_sym] = value
       end
     end

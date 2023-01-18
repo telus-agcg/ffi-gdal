@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'multi_line_string'
+require_relative "multi_line_string"
 
 module OGR
   # NOTE: {{#type}} will return :wkbMultiLineString (read: 2D instead of 2.5D)
