@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative '../ogr'
-require_relative 'major_object'
-require_relative 'dataset_mixins/matching'
-require_relative 'dataset_mixins/algorithm_methods'
-require_relative 'dataset_mixins/warp_methods'
+require_relative "../gdal"
+require_relative "../ogr"
+require_relative "major_object"
+require_relative "dataset_mixins/matching"
+require_relative "dataset_mixins/algorithm_methods"
+require_relative "dataset_mixins/warp_methods"
 
 module GDAL
   # A set of associated raster bands and info common to them all.  It's also
@@ -19,8 +19,8 @@ module GDAL
     include GDAL::Logger
 
     ACCESS_FLAGS = {
-      'r' => :GA_ReadOnly,
-      'w' => :GA_Update
+      "r" => :GA_ReadOnly,
+      "w" => :GA_Update
     }.freeze
 
     # @param path [String] Path to the file that contains the dataset.  Can be
@@ -65,7 +65,7 @@ module GDAL
       dest_ptr = GDAL._pointer(GDAL::Dataset, destination, autorelease: false)
       options_ptr = GDAL::Options.pointer(options)
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to copy whole raster') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to copy whole raster") do
         FFI::GDAL::GDAL.GDALDatasetCopyWholeRaster(source_ptr, dest_ptr, options_ptr, progress_function, nil)
       end
     end
@@ -198,7 +198,7 @@ module GDAL
     def add_band(type, **options)
       options_ptr = GDAL::Options.pointer(options)
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to add band') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to add band") do
         FFI::GDAL::GDAL.GDALAddBand(@c_pointer, type, options_ptr)
       end
 
@@ -212,7 +212,7 @@ module GDAL
     def create_mask_band(*flags)
       flag_value = parse_mask_flag_symbols(flags)
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to create Dataset mask band') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to create Dataset mask band") do
         FFI::GDAL::GDAL.GDALCreateDatasetMaskBand(@c_pointer, flag_value)
       end
     end
@@ -224,13 +224,13 @@ module GDAL
       proj, ptr = FFI::GDAL::GDAL.GDALGetProjectionRef(@c_pointer)
       ptr.autorelease = false
 
-      proj || ''
+      proj || ""
     end
 
     # @param new_projection [String] Should be in WKT or PROJ.4 format.
     # @raise [GDAL::Error]
     def projection=(new_projection)
-      GDAL::CPLErrorHandler.manually_handle('Unable to set projection') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to set projection") do
         FFI::GDAL::GDAL.GDALSetProjection(@c_pointer, new_projection.to_s)
       end
     end
@@ -242,7 +242,7 @@ module GDAL
 
       geo_transform_pointer = GDAL::GeoTransform.new_pointer
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to get geo_transform') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to get geo_transform") do
         FFI::GDAL::GDAL.GDALGetGeoTransform(@c_pointer, geo_transform_pointer)
       end
 
@@ -255,7 +255,7 @@ module GDAL
     def geo_transform=(new_transform)
       new_pointer = GDAL._pointer(GDAL::GeoTransform, new_transform)
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to set geo_transform') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to set geo_transform") do
         FFI::GDAL::GDAL.GDALSetGeoTransform(@c_pointer, new_pointer)
       end
 
@@ -271,7 +271,7 @@ module GDAL
 
     # @return [String]
     def gcp_projection
-      return '' if null?
+      return "" if null?
 
       proj, ptr = FFI::GDAL::GDAL.GDALGetGCPProjection(@c_pointer)
       ptr.autorelease = false
@@ -318,7 +318,7 @@ module GDAL
       overview_levels_ptr.write_array_of_int(overview_levels)
       band_numbers_ptr, band_count = band_numbers_args(band_numbers)
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to build overviews') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to build overviews") do
         FFI::GDAL::GDAL.GDALBuildOverviews(
           @c_pointer,
           resampling_string,
@@ -393,7 +393,7 @@ module GDAL
         raise GDAL::BufferTooSmall, "Buffer size (#{buffer.size}) too small (#{min_buffer_size})"
       end
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to perform raster band IO') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to perform raster band IO") do
         FFI::GDAL::GDAL::GDALDatasetRasterIO(
           @c_pointer,                     # hDS
           gdal_access_flag,               # eRWFlag

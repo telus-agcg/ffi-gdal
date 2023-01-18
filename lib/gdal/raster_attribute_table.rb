@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
+require_relative "../gdal"
 
 module GDAL
   class RasterAttributeTable
@@ -13,7 +13,7 @@ module GDAL
       color_table_ptr = GDAL._pointer(GDAL::ColorTable, color_table, autorelease: false)
       rat_ptr = FFI::GDAL::GDAL.GDALCreateRasterAttributeTable
 
-      GDAL::CPLErrorHandler.manually_handle('Unable to initialize from ColorTable') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to initialize from ColorTable") do
         FFI::GDAL::GDAL.GDALRATInitializeFromColorTable(rat_ptr, color_table_ptr)
       end
 
@@ -110,7 +110,7 @@ module GDAL
     # @param usage [FFI::GDAL::GDALRATFieldUsage]
     # @raise [GDAL::Error]
     def create_column(name, type, usage)
-      GDAL::CPLErrorHandler.manually_handle('Unable to create column') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to create column") do
         FFI::GDAL::GDAL.GDALRATCreateColumn(@c_pointer, name, type, usage)
       end
     end
@@ -202,7 +202,7 @@ module GDAL
     # @param bin_size [Float]
     # @raise [GDAL::Error]
     def set_linear_binning(row_0_minimum, bin_size)
-      GDAL::CPLErrorHandler.manually_handle('Unable to set linear binning') do
+      GDAL::CPLErrorHandler.manually_handle("Unable to set linear binning") do
         FFI::GDAL::GDAL.GDALRATSetLinearBinning(@c_pointer, row_0_minimum, bin_size)
       end
     end
@@ -219,7 +219,7 @@ module GDAL
 
     # @param file_path [String] Without giving a +file_path+, dumps to STDOUT.
     def dump_readable(file_path = nil)
-      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, "w", false) : nil
       FFI::GDAL::GDAL.GDALRATDumpReadable(@c_pointer, file_ptr)
       FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
     end

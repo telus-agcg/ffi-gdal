@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/driver'
+require "ogr/driver"
 
 module OGR
   module DriverMixins
@@ -8,12 +8,12 @@ module OGR
     module CapabilityMethods
       # @return [Boolean] +true+ if this driver supports creating data sources.
       def can_create_data_source?
-        test_capability('CreateDataSource')
+        test_capability("CreateDataSource")
       end
 
       # @return [Boolean] +true+ if this driver supports deleting data sources.
       def can_delete_data_source?
-        test_capability('DeleteDataSource')
+        test_capability("DeleteDataSource")
       end
     end
   end

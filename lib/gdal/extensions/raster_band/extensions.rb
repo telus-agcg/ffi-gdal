@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'gdal/raster_band'
-require 'numo/narray'
-require_relative 'io_extensions'
+require "gdal/raster_band"
+require "numo/narray"
+require_relative "io_extensions"
 
 module GDAL
   class RasterBand

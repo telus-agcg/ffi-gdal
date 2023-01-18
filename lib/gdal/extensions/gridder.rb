@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'narray'
-require 'gdal'
-require 'gdal/options'
-require 'ogr'
-require_relative 'gridder_options'
-require_relative 'gridder/point_extracting'
+require "narray"
+require "gdal"
+require "gdal/options"
+require "ogr"
+require_relative "gridder_options"
+require_relative "gridder/point_extracting"
 
 module GDAL
   # Somewhat analogous to the gdal_grid utility.
@@ -95,7 +95,7 @@ module GDAL
       spatial_ref = @options.output_projection || @source_layer.spatial_reference
 
       unless spatial_ref
-        log 'No spatial reference specified'
+        log "No spatial reference specified"
         return
       end
 
@@ -204,7 +204,7 @@ module GDAL
         @options.grid.create(points, extents, data_ptr, output_size,
                              progress_arg, scaled_progress_ptr)
 
-        raster_band.raster_io('w', data_ptr, x_offset: x_offset, y_offset: y_offset,
+        raster_band.raster_io("w", data_ptr, x_offset: x_offset, y_offset: y_offset,
                                              x_size: x_request, y_size: y_request,
                                              buffer_x_size: x_request, buffer_y_size: y_request)
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
+require_relative "../gdal"
 
 module GDAL
   class WarpOptions
@@ -97,7 +97,7 @@ module GDAL
 
     # @param geometry [OGR::Geometry]
     def cutline=(geometry)
-      raise 'Not a geom' unless geometry.is_a?(OGR::Geometry)
+      raise "Not a geom" unless geometry.is_a?(OGR::Geometry)
 
       @cutline = geometry
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../ext/ffi_library_function_checks'
+require_relative "../../ext/ffi_library_function_checks"
 
 module FFI
   module CPL

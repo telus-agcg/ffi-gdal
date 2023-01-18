@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'bindata'
-require 'ffi-gdal'
-require 'ogr'
+require "bindata"
+require "ffi-gdal"
+require "ogr"
 
 module OGR
   module Geometry

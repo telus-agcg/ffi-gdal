@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
+require_relative "../ogr"
 
 module OGR
   # Geocode things!  http://www.gdal.org/ogr__geocoding_8h.html

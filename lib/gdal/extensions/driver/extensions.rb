@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'gdal/driver'
+require "gdal/driver"
 
 module GDAL
   class Driver
@@ -60,32 +60,32 @@ module GDAL
 
       # @return [Boolean]
       def can_open_datasets?
-        metadata_item('DCAP_OPEN') == 'YES'
+        metadata_item("DCAP_OPEN") == "YES"
       end
 
       # @return [Boolean]
       def can_create_datasets?
-        metadata_item('DCAP_CREATE') == 'YES'
+        metadata_item("DCAP_CREATE") == "YES"
       end
 
       # @return [Boolean]
       def can_copy_datasets?
-        metadata_item('DCAP_CREATECOPY') == 'YES'
+        metadata_item("DCAP_CREATECOPY") == "YES"
       end
 
       # @return [Boolean]
       def can_do_virtual_io?
-        metadata_item('DCAP_VIRTUALIO') == 'YES'
+        metadata_item("DCAP_VIRTUALIO") == "YES"
       end
 
       # @return [Boolean]
       def can_do_rasters?
-        metadata_item('DCAP_RASTER') == 'YES'
+        metadata_item("DCAP_RASTER") == "YES"
       end
 
       # @return [Boolean]
       def can_do_vectors?
-        metadata_item('DCAP_VECTOR') == 'YES'
+        metadata_item("DCAP_VECTOR") == "YES"
       end
     end
   end

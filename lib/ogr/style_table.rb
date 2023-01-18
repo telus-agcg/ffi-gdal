@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative '../ogr'
+require_relative "../gdal"
+require_relative "../ogr"
 
 module OGR
   class StyleTable
@@ -25,7 +25,7 @@ module OGR
                      FFI::AutoPointer.new(pointer, StyleTable.method(:release))
                    end
 
-      raise 'Unable to create StyleTable' if @c_pointer.null?
+      raise "Unable to create StyleTable" if @c_pointer.null?
     end
 
     def destroy!

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'multi_polygon'
+require_relative "multi_polygon"
 
 module OGR
   # NOTE: {{#type}} will return :wkbMultiPolygon (read: 2D instead of 2.5D)

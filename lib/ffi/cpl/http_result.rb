@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ffi'
-require_relative 'mime_part'
+require "ffi"
+require_relative "mime_part"
 
 module FFI
   module CPL

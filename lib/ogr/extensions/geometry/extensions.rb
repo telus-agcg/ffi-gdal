@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/geometry'
+require "ogr/geometry"
 
 module OGR
   module GeometryMixins
@@ -10,7 +10,7 @@ module OGR
         return unless spatial_reference
 
         self_as4326 =
-          if spatial_reference.authority_code == '4326'
+          if spatial_reference.authority_code == "4326"
             self
           else
             # NOTE: #clone here has overridden Ruby's clone and calls OGR_G_Clone;
@@ -64,7 +64,7 @@ module OGR
         false
       end
 
-      def to_vector(file_name, driver, layer_name: 'vectorized_geometry', spatial_reference: nil)
+      def to_vector(file_name, driver, layer_name: "vectorized_geometry", spatial_reference: nil)
         driver = OGR::Driver.by_name(driver)
 
         data_source = driver.create_data_source(file_name)

@@ -75,7 +75,7 @@ module OGR
                                                    x_buffer, x_stride, y_buffer,
                                                    y_stride, z_buffer, z_stride)
 
-        log 'Got different number of points than point_count in #point_values' unless num_points == point_count
+        log "Got different number of points than point_count in #point_values" unless num_points == point_count
 
         x_array = x_buffer.read_array_of_double(buffer_size)
         y_array = y_buffer.read_array_of_double(buffer_size)

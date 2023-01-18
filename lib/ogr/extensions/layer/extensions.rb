@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/layer'
+require "ogr/layer"
 
 module OGR
   class Layer

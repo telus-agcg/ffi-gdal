@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'narray'
+require "narray"
 
 class NArray
   def type

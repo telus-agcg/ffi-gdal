@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative '../ogr'
-require_relative '../gdal/major_object'
+require_relative "../gdal"
+require_relative "../ogr"
+require_relative "../gdal/major_object"
 
 module OGR
   class DataSource
@@ -14,7 +14,7 @@ module OGR
     # @param path [String]
     # @param access_flag [String] 'r' for read, 'w', for write.
     # @return [OGR::DataSource]
-    def self.open(path, access_flag = 'r')
+    def self.open(path, access_flag = "r")
       ds = new(path, access_flag)
 
       if block_given?
@@ -138,9 +138,9 @@ module OGR
     # @param options [Hash] Driver-specific options.
     # @return [OGR::Layer]
     def create_layer(name, geometry_type: :wkbUnknown, spatial_reference: nil, **options)
-      unless test_capability('CreateLayer')
+      unless test_capability("CreateLayer")
         raise OGR::UnsupportedOperation,
-              'This data source does not support creating layers.'
+              "This data source does not support creating layers."
       end
 
       spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, spatial_reference, autorelease: false) if spatial_reference
@@ -174,9 +174,9 @@ module OGR
     # @param index [Integer]
     # @raise [OGR::Failure]
     def delete_layer(index)
-      unless test_capability('DeleteLayer')
+      unless test_capability("DeleteLayer")
         raise OGR::UnsupportedOperation,
-              'This data source does not support deleting layers.'
+              "This data source does not support deleting layers."
       end
 
       OGR::ErrorHandling.handle_ogr_err("Unable to delete layer at index #{index}") do
@@ -236,7 +236,7 @@ module OGR
 
     # @raise [OGR::Failure]
     def sync_to_disk
-      OGR::ErrorHandling.handle_ogr_err('Unable to syn datasource to disk') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to syn datasource to disk") do
         FFI::OGR::API.OGR_DS_SyncToDisk(@c_pointer)
       end
     end

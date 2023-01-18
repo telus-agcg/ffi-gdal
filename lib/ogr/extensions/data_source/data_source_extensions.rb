@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/data_source'
+require "ogr/data_source"
 
 module OGR
   class DataSource

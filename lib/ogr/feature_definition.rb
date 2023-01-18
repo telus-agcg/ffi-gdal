@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative '../ogr'
+require_relative "../gdal"
+require_relative "../ogr"
 
 module OGR
   class FeatureDefinition

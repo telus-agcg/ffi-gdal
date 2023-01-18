@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'date'
+require "date"
 
 module GDAL
   module VersionInfo
@@ -8,42 +8,42 @@ module GDAL
     #
     # @return [String]
     def version_num
-      FFI::GDAL.GDALVersionInfo('VERSION_NUM')
+      FFI::GDAL.GDALVersionInfo("VERSION_NUM")
     end
 
     # @return [Date]
     def release_date
-      Date.parse(FFI::GDAL.GDALVersionInfo('RELEASE_DATE'))
+      Date.parse(FFI::GDAL.GDALVersionInfo("RELEASE_DATE"))
     end
 
     # Version in the form "1.1.7".
     #
     # @return [String]
     def release_name
-      FFI::GDAL.GDALVersionInfo('RELEASE_NAME')
+      FFI::GDAL.GDALVersionInfo("RELEASE_NAME")
     end
 
     # The long licensing info.
     #
     # @return [String]
     def license
-      FFI::GDAL.GDALVersionInfo('LICENSE')
+      FFI::GDAL.GDALVersionInfo("LICENSE")
     end
 
     # Options used when building GDAL.
     #
     # @return [Hash{String => String}]
     def build_info
-      key_value_pairs = FFI::GDAL.GDALVersionInfo('BUILD_INFO')
+      key_value_pairs = FFI::GDAL.GDALVersionInfo("BUILD_INFO")
       key_value_pairs.split.each_with_object({}) do |kv, obj|
-        key, value = kv.split('=', 2)
+        key, value = kv.split("=", 2)
         obj[key] = value
       end
     end
 
     # @return [String]
     def long_version
-      FFI::GDAL.GDALVersionInfo('--version')
+      FFI::GDAL.GDALVersionInfo("--version")
     end
 
     # @param major [Integer]
@@ -51,7 +51,7 @@ module GDAL
     # @return [Boolean] +true+ if the runtime GDAL library matches the given
     #   version params.
     def check_version(major, minor)
-      FFI::GDAL.GDALCheckVersion(major, minor, 'FFI::GDAL')
+      FFI::GDAL.GDALCheckVersion(major, minor, "FFI::GDAL")
     end
   end
 end

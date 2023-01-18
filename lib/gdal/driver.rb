@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'multi_xml'
-require_relative '../gdal'
-require_relative 'major_object'
+require "multi_xml"
+require_relative "../gdal"
+require_relative "major_object"
 
 module GDAL
   # Wrapper for GDAL drivers (aka "formats"). Useful for opening and working
@@ -11,7 +11,7 @@ module GDAL
     include MajorObject
     include GDAL::Logger
 
-    GDAL_DOCS_URL = 'http://gdal.org'
+    GDAL_DOCS_URL = "http://gdal.org"
 
     # @return [Integer]
     def self.count
@@ -99,10 +99,10 @@ module GDAL
 
       return [] if root.nil? || root.empty?
 
-      list = root['CreationOptionList']
+      list = root["CreationOptionList"]
       return [] if list.nil? || list.empty?
 
-      list['Option']
+      list["Option"]
     end
 
     # @param options [Hash]
@@ -156,7 +156,7 @@ module GDAL
 
       raise CreateFail if dataset_pointer.null?
 
-      dataset = GDAL::Dataset.new(dataset_pointer, 'w')
+      dataset = GDAL::Dataset.new(dataset_pointer, "w")
 
       if block_given?
         result = yield(dataset)
@@ -204,7 +204,7 @@ module GDAL
       raise CreateFail if destination_dataset_ptr.nil? || destination_dataset_ptr.null?
 
       if block_given?
-        dataset = Dataset.new(destination_dataset_ptr, 'w')
+        dataset = Dataset.new(destination_dataset_ptr, "w")
         yield(dataset)
         dataset.close
       end
@@ -239,7 +239,7 @@ module GDAL
     # @return [GDAL::Dataset]
     def make_dataset_pointer(dataset)
       if dataset.is_a? String
-        GDAL::Dataset.open(dataset, 'r').c_pointer
+        GDAL::Dataset.open(dataset, "r").c_pointer
       else
         GDAL._pointer(GDAL::Dataset, dataset, autorelease: false)
       end
@@ -247,4 +247,4 @@ module GDAL
   end
 end
 
-require_relative 'dataset'
+require_relative "dataset"

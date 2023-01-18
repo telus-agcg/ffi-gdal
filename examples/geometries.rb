@@ -1,30 +1,30 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'ffi-gdal'
-require 'ogr'
+require "bundler/setup"
+require "ffi-gdal"
+require "ogr"
 
-_data_source = OGR::DataSource.open('spec/support/shapefiles/states_21basic/states.shp', 'r')
+_data_source = OGR::DataSource.open("spec/support/shapefiles/states_21basic/states.shp", "r")
 
-point_wkt = 'POINT (1 2)'
+point_wkt = "POINT (1 2)"
 _point = OGR::Geometry.create_from_wkt(point_wkt)
-_other_point_wkt = 'POINT (1 2)'
+_other_point_wkt = "POINT (1 2)"
 _other_point = OGR::Geometry.create_from_wkt(point_wkt)
 
-line_string_wkt = 'LINESTRING (1 2, 10 30, 40 40, 1 2)'
+line_string_wkt = "LINESTRING (1 2, 10 30, 40 40, 1 2)"
 _line_string = OGR::Geometry.create_from_wkt(line_string_wkt)
-other_line_string_wkt = 'LINESTRING (10 10, 0 30, 40 10)'
+other_line_string_wkt = "LINESTRING (10 10, 0 30, 40 10)"
 _other_line_string = OGR::Geometry.create_from_wkt(other_line_string_wkt)
 
-polygon_wkt = 'POLYGON ((0 0,4 0,4 4,0 4,0 0), (1 1, 2 1, 2 2, 1 1))'
+polygon_wkt = "POLYGON ((0 0,4 0,4 4,0 4,0 0), (1 1, 2 1, 2 2, 1 1))"
 _polygon = OGR::Geometry.create_from_wkt(polygon_wkt)
-other_polygon_wkt = 'POLYGON ((1 1,5 1,5 5,1 5,1 1), (10 10, 20 10, 20 20, 10 10))'
+other_polygon_wkt = "POLYGON ((1 1,5 1,5 5,1 5,1 1), (10 10, 20 10, 20 20, 10 10))"
 _other_polygon = OGR::Geometry.create_from_wkt(other_polygon_wkt)
 
-multi_point_wkt = 'MULTIPOINT ((10 40), (40 30), (20 20), (30 10))'
+multi_point_wkt = "MULTIPOINT ((10 40), (40 30), (20 20), (30 10))"
 _multi_point = OGR::Geometry.create_from_wkt(multi_point_wkt)
 
-multi_line_string_wkt = 'MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))'
+multi_line_string_wkt = "MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))"
 _multi_line_string = OGR::Geometry.create_from_wkt(multi_line_string_wkt)
 
 multi_polygon_wkt = <<-WKT

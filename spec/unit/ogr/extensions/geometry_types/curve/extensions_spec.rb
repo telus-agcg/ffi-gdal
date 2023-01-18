@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/extensions/geometry_types/curve/extensions'
+require "ogr/extensions/geometry_types/curve/extensions"
 
 RSpec.describe OGR::GeometryTypes::Curve::Extensions do
   let(:open_line_string) do
@@ -21,13 +21,13 @@ RSpec.describe OGR::GeometryTypes::Curve::Extensions do
     end
   end
 
-  describe '#closed?' do
-    context 'geometry is closed' do
+  describe "#closed?" do
+    context "geometry is closed" do
       subject { closed_line_string }
       it { is_expected.to be_closed }
     end
 
-    context 'geometry is not closed' do
+    context "geometry is not closed" do
       subject { open_line_string }
       it { is_expected.to_not be_closed }
     end

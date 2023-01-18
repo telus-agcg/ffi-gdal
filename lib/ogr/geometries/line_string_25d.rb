@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'line_string'
+require_relative "line_string"
 
 module OGR
   # NOTE: {{#type}} will return :wkbLineString (read: 2D instead of 2.5D) until

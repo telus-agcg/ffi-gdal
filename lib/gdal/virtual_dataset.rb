@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative 'major_object'
+require_relative "../gdal"
+require_relative "major_object"
 
 module GDAL
   class VirtualDataset
@@ -19,7 +19,7 @@ module GDAL
     end
 
     # TODO: Build the xml string
-    def to_xml(path = '')
+    def to_xml(path = "")
       xml_node = FFI::GDAL::VRT.VRTSerializeToXML(@c_pointer, path)
 
       FFI::CPL::MiniXML.CPLSerializeXMLTree(xml_node)
@@ -46,7 +46,7 @@ module GDAL
     def add_simple_source(vrt_band, source_band, no_data_value,
       src_x_offset: 0, src_y_offset: 0, src_x_size: nil, src_y_size: nil,
       dst_x_offset: 0, dst_y_offset: 0, dst_x_size: nil, dst_y_size: nil,
-      resampling: '')
+      resampling: "")
       FFI::GDAL::VRT.VRTAddSimpleSource(
         vrt_band,
         source_band,      # hSrcBand

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'geometry_collection'
+require_relative "geometry_collection"
 
 module OGR
   # NOTE: {{#type}} will return :wkbGeometryCollection (read: 2D instead of

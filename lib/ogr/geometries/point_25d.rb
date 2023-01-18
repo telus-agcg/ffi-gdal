@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'point'
+require_relative "point"
 
 module OGR
   # NOTE: {{#type}} will return :wkbPoint (read: 2D instead of 2.5D) until a Z

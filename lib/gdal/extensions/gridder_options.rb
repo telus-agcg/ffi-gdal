@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'gdal/grid'
-require 'gdal/options'
-require 'ogr/exceptions'
-require 'ogr/geometry'
-require 'ogr/spatial_reference'
+require "gdal/grid"
+require "gdal/options"
+require "ogr/exceptions"
+require "ogr/geometry"
+require "ogr/spatial_reference"
 
 module GDAL
   # Object to be used with a {GDAL::Gridder}.
@@ -123,7 +123,7 @@ module GDAL
     def initialize(algorithm_type)
       # Options with defaults
       @output_data_type = :GDT_Float64
-      @output_format = 'GTiff'
+      @output_format = "GTiff"
       @output_size = { width: 256, height: 256 }
 
       # Options without defaults

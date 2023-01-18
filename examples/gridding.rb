@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'ffi-gdal'
-require 'gdal/gridder'
-require 'ogr/data_source'
-require 'ogr/spatial_reference'
+require "bundler/setup"
+require "ffi-gdal"
+require "gdal/gridder"
+require "ogr/data_source"
+require "ogr/spatial_reference"
 
 GDAL::Logger.logging_enabled = true
 
@@ -24,7 +24,7 @@ module Examples
         gridder_options.algorithm_options[:radius2] = 15
         gridder_options.algorithm_options[:smoothing] = 5
 
-        [gridder_options, 'gridded-idtap.tif']
+        [gridder_options, "gridded-idtap.tif"]
       end
 
       def make_moving_average_options
@@ -36,7 +36,7 @@ module Examples
         gridder_options.algorithm_options[:radius1] = 20
         gridder_options.algorithm_options[:radius2] = 51
 
-        [gridder_options, 'gridded-ma.tif']
+        [gridder_options, "gridded-ma.tif"]
       end
 
       def make_nearest_neighbor_options
@@ -47,7 +47,7 @@ module Examples
         gridder_options.algorithm_options[:radius1] = 20
         gridder_options.algorithm_options[:radius2] = 15
 
-        [gridder_options, 'gridded-nn.tif']
+        [gridder_options, "gridded-nn.tif"]
       end
 
       def make_metric_range_options
@@ -58,7 +58,7 @@ module Examples
         gridder_options.algorithm_options[:radius1] = 20
         gridder_options.algorithm_options[:radius2] = 15
 
-        [gridder_options, 'gridded-metric-range.tif']
+        [gridder_options, "gridded-metric-range.tif"]
       end
 
       def make_file(source_layer, file_name, gridder_options)
@@ -69,14 +69,14 @@ module Examples
           true
         end
 
-        gridder_options.input_field_name = 'STATE_FIPS'
+        gridder_options.input_field_name = "STATE_FIPS"
         gridder_options.progress_formatter = output_formatter
         gridder_options.output_size = { width: 1600, height: 1480 }
 
         gridder = GDAL::Gridder.new(source_layer, file_name, gridder_options)
         gridder.grid!
 
-        puts ''
+        puts ""
         puts "Duration for #{file_name}: #{Time.now - start}"
       end
     end
@@ -84,26 +84,26 @@ module Examples
 end
 
 if $PROGRAM_NAME == __FILE__
-  shp_path = './spec/support/shapefiles/states_21basic'
-  ds = OGR::DataSource.open(shp_path, 'r')
+  shp_path = "./spec/support/shapefiles/states_21basic"
+  ds = OGR::DataSource.open(shp_path, "r")
 
   # Inverse Distance To A Power
   gridder_options, output_file_name = Examples::Gridding.make_idtap_options
-  puts ''
+  puts ""
   Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 
   # Moving Average
   gridder_options, output_file_name = Examples::Gridding.make_moving_average_options
-  puts ''
+  puts ""
   Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 
   # Nearest Neighbor
   gridder_options, output_file_name = Examples::Gridding.make_nearest_neighbor_options
-  puts ''
+  puts ""
   Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 
   # Metric Range
   gridder_options, output_file_name = Examples::Gridding.make_metric_range_options
-  puts ''
+  puts ""
   Examples::Gridding.make_file(ds.layer(0), output_file_name, gridder_options)
 end

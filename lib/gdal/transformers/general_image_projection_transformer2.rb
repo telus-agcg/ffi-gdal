@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base_general_image_projection_transformer'
+require_relative "base_general_image_projection_transformer"
 
 module GDAL
   module Transformers

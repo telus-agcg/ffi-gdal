@@ -74,7 +74,7 @@ module OGR
       # @raise [OGR::Failure]
       def set_linear_units_and_update_parameters(unit_label, transform_to_meters)
         msg = "Unable to set linear units to #{unit_label} (transform to meters? #{transform_to_meters}) and update" \
-              'parameters'
+              "parameters"
 
         OGR::ErrorHandling.handle_ogr_err(msg) do
           FFI::OGR::SRSAPI.OSRSetLinearUnitsAndUpdateParameters(@c_pointer, unit_label, transform_to_meters.to_f)

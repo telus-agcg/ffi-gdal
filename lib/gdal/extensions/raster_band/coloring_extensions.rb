@@ -76,7 +76,7 @@ module GDAL
 
       # @param hex [String]
       def hex_to_rgb(hex)
-        hex = hex.sub(/^#/, '')
+        hex = hex.sub(/^#/, "")
         matches = hex.match(/(?<red>[a-zA-Z0-9]{2})(?<green>[a-zA-Z0-9]{2})(?<blue>[a-zA-Z0-9]{2})/)
 
         [matches[:red].to_i(16), matches[:green].to_i(16), matches[:blue].to_i(16)]

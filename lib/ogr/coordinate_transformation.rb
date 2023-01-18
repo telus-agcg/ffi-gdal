@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'narray'
-require_relative '../ogr'
-require_relative '../gdal'
+require "narray"
+require_relative "../ogr"
+require_relative "../gdal"
 
 module OGR
   class CoordinateTransformation
@@ -13,7 +13,7 @@ module OGR
         FFI::GDAL::GDAL.OCTProj4Normalize(proj4_source)
       else
         raise OGR::UnsupportedOperation,
-              'Your version of GDAL/OGR does not support OCTProj4Normalize'
+              "Your version of GDAL/OGR does not support OCTProj4Normalize"
       end
     end
 
@@ -46,7 +46,7 @@ module OGR
       # by the null-pointer check below.
       pointer = FFI::OGR::SRSAPI.OCTNewCoordinateTransformation(source_ptr, destination_ptr)
 
-      raise GDAL::Error, 'Unable to create coordinate transformation' if pointer.null?
+      raise GDAL::Error, "Unable to create coordinate transformation" if pointer.null?
 
       @c_pointer = pointer
     end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/spatial_reference'
+require "ogr/spatial_reference"
 
 module OGR
   class SpatialReference
