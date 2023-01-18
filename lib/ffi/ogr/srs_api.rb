@@ -41,7 +41,7 @@ module FFI
       # -----------------------------------------------------------------------
       # Constants
       # -----------------------------------------------------------------------
-      SRS_UL = FFI::ConstGenerator.new("SRS_UL") do |gen|
+      SRS_UL = FFI::ConstGenerator.new("SRS_UL") do |gen| # rubocop:disable Metrics/BlockLength
         gen.include FFI::GDAL._file_with_constants("ogr_srs_api.h")
         gen.const :SRS_UL_METER,              "%s", nil, :METER_LABEL, &:inspect
         gen.const :SRS_UL_FOOT,               "%s", nil, :FOOT_LABEL, &:inspect

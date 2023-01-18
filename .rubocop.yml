@@ -11,6 +11,7 @@ Layout/ParameterAlignment:
 
 Metrics/BlockLength:
   Exclude:
+    - ffi-gdal.gemspec
     - spec/**/*_spec.rb
     - spec/support/shared_examples/**/*.rb
 
