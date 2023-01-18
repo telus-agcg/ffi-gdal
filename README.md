@@ -4,10 +4,6 @@ Ruby wrapper around GDAL, using FFI, along with some helper methods.
 
 ## Installation
 
-For Ubuntu you need to install libgdal-dev via:
-
-    sudo apt-get install libgdal-dev
-
 Add this line to your application's Gemfile:
 
     gem 'ffi-gdal'
@@ -19,6 +15,9 @@ And then execute:
 Or install it yourself as:
 
     $ gem install ffi-gdal
+
+Note that this requires you to have `libgdal` installed on your system and accessible in your
+`PATH`.
 
 ## Usage
 
@@ -52,6 +51,9 @@ in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+Please consider adhering to [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
+with your commit messages.
 
 ### Docker
 
