@@ -16,17 +16,17 @@ Or install it yourself as:
 
     $ gem install ffi-gdal
 
-Note that this requires you to have `libgdal` installed on your system and accessible in your
-`PATH`.
+Note that this requires you to have `libgdal` installed on your system and
+accessible in your `PATH`.
 
 ## Usage
 
-ffi-gdal provides two interfaces, really: the direct FFI wrapper around GDAL's
-C API, and a Ruby-fied interface that uses the FFI wrapper to make use more
-like using an object-oriented library instead of a functional one. Most likely
-you'll just want to use the Ruby-fied library, but if for some reason that
-doesn't get you what you want, direct access to the FFI wrapper (which is
-really just direct access to the C API) is available.
+ffi-gdal provides two interfaces, really: the direct FFI wrapper around GDAL's C
+API, and a Ruby-fied interface that uses the FFI wrapper to make use more like
+using an object-oriented library instead of a functional one. Most likely you'll
+just want to use the Ruby-fied library, but if for some reason that doesn't get
+you what you want, direct access to the FFI wrapper (which is really just direct
+access to the C API) is available.
 
 ### The Ruby-fied Library
 
@@ -52,7 +52,8 @@ in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
-Please consider adhering to [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
+Please consider adhering to
+[Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
 with your commit messages.
 
 ### Docker
