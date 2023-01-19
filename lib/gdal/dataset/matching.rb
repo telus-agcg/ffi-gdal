@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module GDAL
-  module DatasetMixins
+  class Dataset
     module Matching
       # @param other_dataset [GDAL::Dataset]
       # @param options [Hash]

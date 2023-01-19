@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+RSpec.shared_context "A .tif Dataset" do
+  let(:file_path) do
+    File.expand_path("images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif", __dir__)
+  end
+
+  subject do
+    GDAL::Dataset.open(file_path, "r", shared: false)
+  end
+end
+
 RSpec.shared_context "OGR::Layer, spatial_reference" do
   require "ogr/driver"
   require "ogr/spatial_reference"
