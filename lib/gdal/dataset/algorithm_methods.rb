@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module GDAL
-  module DatasetMixins
+  class Dataset
     # Wrappers for Warp algorithm methods defined in gdal_alg.h.
     module AlgorithmMethods
       # Rasterizes the geometric objects +geometries+ into this raster dataset.

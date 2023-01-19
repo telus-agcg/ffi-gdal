@@ -316,30 +316,4 @@ RSpec.describe "Dataset Info", type: :integration do
       end
     end
   end
-
-  describe "#valid_min_buffer_size" do
-    it "returns the number of bytes for the GDT type * x buffer size * y buffer size" do
-      expect(subject.send(:valid_min_buffer_size, :GDT_Float32, 3, 4)).to eq 48
-    end
-  end
-
-  describe "#band_numbers_args" do
-    context "param is nil" do
-      it "returns no pointer and 0 band count" do
-        pointer, count = subject.send(:band_numbers_args, nil)
-
-        expect(pointer.size).to eq 0
-        expect(pointer.type_size).to eq FFI::NativeType::INT32.size
-        expect(count).to be_zero
-      end
-    end
-
-    context "param is an array of numbers" do
-      it "returns a pointer and the number of bands" do
-        result_ptr, band_count = subject.send(:band_numbers_args, [3, 4, 5])
-        expect(result_ptr).to be_a FFI::MemoryPointer
-        expect(band_count).to eq 3
-      end
-    end
-  end
 end

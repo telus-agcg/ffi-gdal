@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module GDAL
-  module DatasetMixins
+  class Dataset
     # Methods used for warping; most taken from gdalwarper.h.
     module WarpMethods
       # @param destination_dataset [GDAL::Dataset]

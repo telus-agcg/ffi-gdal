@@ -3,16 +3,12 @@
 require "gdal"
 
 RSpec.describe GDAL::Dataset do
-  let(:source_file_path) do
-    File.expand_path("../../../support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif", __dir__)
-  end
+  include_context "A .tif Dataset"
 
   let(:output_dir) { Dir.mktmpdir(File.basename(__FILE__, ".rb")) }
   let(:output_file) { File.join(output_dir, "reprojected_image.tif") }
 
   after { FileUtils.rm_rf(output_dir) }
-
-  subject { described_class.open(source_file_path, "r", shared: false) }
 
   describe "#reproject_image" do
     let(:dest_dataset) do
