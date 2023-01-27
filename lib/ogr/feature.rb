@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'date'
-require_relative '../ogr'
-require_relative '../gdal'
+require "date"
+require_relative "../ogr"
+require_relative "../gdal"
 
 module OGR
   class Feature
@@ -26,7 +26,7 @@ module OGR
                   fd_or_pointer.autorelease = false
                   fd_or_pointer
                 else
-                  raise OGR::InvalidFeature, 'OGR::Feature must be instantiated with valid feature'
+                  raise OGR::InvalidFeature, "OGR::Feature must be instantiated with valid feature"
                 end
 
       if !pointer.is_a?(FFI::Pointer) || pointer.null?
@@ -50,7 +50,7 @@ module OGR
     def clone
       # This new feature is owned by the caller and must be released accordingly.
       feature_ptr = FFI::OGR::API.OGR_F_Clone(@c_pointer)
-      raise OGR::Failure, 'Unable to clone feature' if feature_ptr.nil?
+      raise OGR::Failure, "Unable to clone feature" if feature_ptr.nil?
 
       OGR::Feature.new(feature_ptr)
     end
@@ -59,7 +59,7 @@ module OGR
     #
     # @param file_path [String]
     def dump_readable(file_path = nil)
-      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, "w", false) : nil
       FFI::OGR::API.OGR_F_DumpReadable(@c_pointer, file_ptr)
       FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
     end
@@ -74,9 +74,9 @@ module OGR
     # @raise [OGR::Failure]
     # TODO: Implement +with_map+
     def set_from!(_other_feature, _be_forgiving: false, with_map: nil)
-      raise NotImplementedError, 'with_map: is not yet supported' if with_map
+      raise NotImplementedError, "with_map: is not yet supported" if with_map
 
-      OGR::ErrorHandling.handle_ogr_err('Unable to set from other feature') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to set from other feature") do
         FFI::OGR::API.OGR_F_SetFrom(@c_pointer, other_feature_ptr)
       end
     end
@@ -159,7 +159,7 @@ module OGR
     # @param index [Integer]
     # @param value [String]
     def set_field_binary(index, value)
-      raise TypeError, 'value must be a binary string' unless value.is_a? String
+      raise TypeError, "value must be a binary string" unless value.is_a? String
 
       value_ptr = FFI::MemoryPointer.new(:uchar, value.length)
       value_ptr.put_bytes(0, value)
@@ -249,7 +249,7 @@ module OGR
     # @param new_geometry [OGR::Geometry]
     # @raise [OGR::Failure]
     def set_geometry(new_geometry) # rubocop:disable Naming/AccessorMethodName
-      OGR::ErrorHandling.handle_ogr_err('Unable to set geometry on feature') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to set geometry on feature") do
         FFI::OGR::API.OGR_F_SetGeometry(@c_pointer, new_geometry.c_pointer)
       end
     end
@@ -261,7 +261,7 @@ module OGR
     def set_geometry_directly(new_geometry) # rubocop:disable Naming/AccessorMethodName
       new_geometry.c_pointer.autorelease = false
 
-      OGR::ErrorHandling.handle_ogr_err('Unable to set geometry directly on feature') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to set geometry directly on feature") do
         FFI::OGR::API.OGR_F_SetGeometryDirectly(@c_pointer, new_geometry.c_pointer)
       end
     end
@@ -272,7 +272,7 @@ module OGR
     # @return [OGR::Geometry]
     def steal_geometry
       geometry_ptr = FFI::OGR::API.OGR_F_StealGeometry(@c_pointer)
-      raise OGR::Failure, 'Unable to steal geometry.' if geometry_ptr.nil? || geometry_ptr.null?
+      raise OGR::Failure, "Unable to steal geometry." if geometry_ptr.nil? || geometry_ptr.null?
 
       OGR::Geometry.factory(geometry_ptr)
     end
@@ -285,7 +285,7 @@ module OGR
     # @param new_fid [Integer]
     # @raise [OGR::Failure]
     def fid=(new_fid)
-      OGR::ErrorHandling.handle_ogr_err('Unable to set FID') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to set FID") do
         FFI::OGR::API.OGR_F_SetFID(@c_pointer, new_fid)
       end
     end
@@ -443,9 +443,9 @@ module OGR
       binary_data_ptr.autorelease = false
 
       byte_count = byte_count_ptr.read_int
-      string = byte_count.positive? ? binary_data_ptr.read_bytes(byte_count) : ''
+      string = byte_count.positive? ? binary_data_ptr.read_bytes(byte_count) : ""
 
-      string.unpack('C*')
+      string.unpack("C*")
     end
 
     def field_as_date_time(index)

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
-require_relative '../gdal'
-require_relative 'layer_mixins/ogr_feature_methods'
-require_relative 'layer_mixins/ogr_field_methods'
-require_relative 'layer_mixins/ogr_layer_method_methods'
-require_relative 'layer_mixins/ogr_query_filter_methods'
-require_relative 'layer_mixins/ogr_sql_methods'
+require_relative "../ogr"
+require_relative "../gdal"
+require_relative "layer_mixins/ogr_feature_methods"
+require_relative "layer_mixins/ogr_field_methods"
+require_relative "layer_mixins/ogr_layer_method_methods"
+require_relative "layer_mixins/ogr_query_filter_methods"
+require_relative "layer_mixins/ogr_sql_methods"
 
 module OGR
   class Layer
@@ -42,7 +42,7 @@ module OGR
     # TODO: This seems to occasionally lead to: 28352 illegal hardware
     #   instruction, and sometimes full crashes.
     def sync_to_disk
-      OGR::ErrorHandling.handle_ogr_err('Unable to sync layer to disk') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to sync layer to disk") do
         FFI::OGR::API.OGR_L_SyncToDisk(@c_pointer)
       end
     end

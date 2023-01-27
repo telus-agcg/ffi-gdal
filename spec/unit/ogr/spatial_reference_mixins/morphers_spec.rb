@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-require 'ogr/spatial_reference'
+require "ogr/spatial_reference"
 
 RSpec.describe OGR::SpatialReference do
-  describe '#morph_to_esri!' do
+  describe "#morph_to_esri!" do
     subject { described_class.new.import_from_epsg 4326 }
 
-    it 'changes the SRS to ESRI' do
+    it "changes the SRS to ESRI" do
       expect do
         subject.morph_to_esri!
       end.to(change { subject.to_wkt.size })
     end
   end
 
-  describe '#morph_from_esri!' do
+  describe "#morph_from_esri!" do
     let(:esri) do
       <<-ESRI.strip
         GEOGCS["GCS_North_American_1983",
@@ -26,8 +26,8 @@ RSpec.describe OGR::SpatialReference do
 
     subject { described_class.new.import_from_esri(esri) }
 
-    it 'changes the SRS to ESRI' do
-      pending 'Figure out why morphing does not change anything'
+    it "changes the SRS to ESRI" do
+      pending "Figure out why morphing does not change anything"
 
       expect do
         subject.morph_from_esri!

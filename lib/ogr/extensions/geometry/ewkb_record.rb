@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'bindata'
-require 'ffi-gdal'
-require 'ogr'
-require_relative 'wkb_record'
+require "bindata"
+require "ffi-gdal"
+require "ogr"
+require_relative "wkb_record"
 
 # rubocop:disable Naming/PredicateName
 module OGR

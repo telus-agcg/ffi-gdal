@@ -27,12 +27,12 @@ module OGR
       # @param feature [OGR::Feature] [description]
       # @raise [OGR::Failure]
       def create_feature(feature)
-        unless test_capability('SequentialWrite')
+        unless test_capability("SequentialWrite")
           raise OGR::UnsupportedOperation,
-                'This layer does not support feature creation.'
+                "This layer does not support feature creation."
         end
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to create feature') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to create feature") do
           FFI::OGR::API.OGR_L_CreateFeature(@c_pointer, feature.c_pointer)
         end
       end
@@ -43,9 +43,9 @@ module OGR
       # @raise [OGR::Failure] When trying to delete a feature with an ID that
       #   does not exist.
       def delete_feature(feature_id)
-        unless test_capability('DeleteFeature')
+        unless test_capability("DeleteFeature")
           raise OGR::UnsupportedOperation,
-                'This layer does not support feature deletion.'
+                "This layer does not support feature deletion."
         end
 
         OGR::ErrorHandling.handle_ogr_err("Unable to delete feature with ID '#{feature_id}'") do
@@ -67,12 +67,12 @@ module OGR
       # @param new_feature [OGR::Feature, FFI::Pointer]
       # @raise [OGR::Failure]
       def feature=(new_feature)
-        raise OGR::UnsupportedOperation, '#feature= not supported by this Layer' unless test_capability('RandomWrite')
+        raise OGR::UnsupportedOperation, "#feature= not supported by this Layer" unless test_capability("RandomWrite")
 
         new_feature_ptr = GDAL._pointer(OGR::Feature, new_feature)
         raise OGR::InvalidFeature if new_feature_ptr.nil? || new_feature_ptr.null?
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to set feature') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set feature") do
           FFI::OGR::API.OGR_L_SetFeature(@c_pointer, new_feature_ptr)
         end
       end
@@ -81,9 +81,9 @@ module OGR
       #   be <= +feature_count+, but no checking is done to ensure.
       # @return [OGR::Feature, nil]
       def feature(index)
-        unless test_capability('RandomRead')
+        unless test_capability("RandomRead")
           raise OGR::UnsupportedOperation,
-                '#feature(index) not supported by this Layer'
+                "#feature(index) not supported by this Layer"
         end
 
         # This feature needs to be Destroyed.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'multi_point'
+require_relative "multi_point"
 
 module OGR
   # NOTE: {{#type}} will return :wkbMultiPoint (read: 2D instead of 2.5D) until

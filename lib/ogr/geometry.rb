@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
-require_relative '../gdal'
+require_relative "../ogr"
+require_relative "../gdal"
 
 module OGR
   module Geometry
@@ -213,7 +213,7 @@ module OGR
         FFI::OGR::API.OGR_G_GetEnvelope3D(@c_pointer, envelope)
       when 0 then return nil
       else
-        raise 'Unknown envelope dimension.'
+        raise "Unknown envelope dimension."
       end
 
       return if envelope.null?
@@ -268,7 +268,7 @@ module OGR
     # @param file_path [String] The text file to write to.
     # @param prefix [String] The prefix to put on each line of output.
     def dump_readable(file_path = nil, prefix: nil)
-      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, 'w', false) : nil
+      file_ptr = file_path ? FFI::CPL::Conv.CPLOpenShared(file_path, "w", false) : nil
       FFI::OGR::API.OGR_G_DumpReadable(@c_pointer, file_ptr, prefix)
       FFI::CPL::Conv.CPLCloseShared(file_ptr) if file_ptr
     end
@@ -363,7 +363,7 @@ module OGR
     def ring?
       FFI::OGR::API.OGR_G_IsRing(@c_pointer)
     rescue GDAL::Error => e
-      return false if e.message.include? 'IllegalArgumentException'
+      return false if e.message.include? "IllegalArgumentException"
 
       raise
     end
@@ -467,7 +467,7 @@ module OGR
 
       return if coord_trans_ptr.nil? || coord_trans_ptr.null?
 
-      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to transform geometry") do
         FFI::OGR::API.OGR_G_Transform(@c_pointer, coord_trans_ptr)
       end
     end
@@ -489,7 +489,7 @@ module OGR
       new_spatial_ref_ptr = GDAL._pointer(OGR::SpatialReference, new_spatial_ref, autorelease: false)
       return if new_spatial_ref_ptr.null?
 
-      OGR::ErrorHandling.handle_ogr_err('Unable to transform geometry') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to transform geometry") do
         FFI::OGR::API.OGR_G_TransformTo(@c_pointer, new_spatial_ref_ptr)
       end
     end
@@ -552,7 +552,7 @@ module OGR
     # @param wkb_data [String] Binary WKB data.
     # @raise [OGR::Failure]
     def import_from_wkb(wkb_data)
-      OGR::ErrorHandling.handle_ogr_err('Unable to import geometry from WKB') do
+      OGR::ErrorHandling.handle_ogr_err("Unable to import geometry from WKB") do
         FFI::OGR::API.OGR_G_ImportFromWkb(@c_pointer, wkb_data, wkb_data.length)
       end
     end
@@ -592,7 +592,7 @@ module OGR
     # @raise [OGR::Failure]
     def to_wkt
       GDAL._cpl_read_and_free_string do |output_ptr|
-        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to export to WKT") do
           FFI::OGR::API.OGR_G_ExportToWkt(@c_pointer, output_ptr)
         end
       end
@@ -602,7 +602,7 @@ module OGR
     # @raise [OGR::Failure]
     def to_iso_wkt
       GDAL._cpl_read_and_free_string do |output_ptr|
-        OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to export to WKT") do
           FFI::OGR::API.OGR_G_ExportToIsoWkt(@c_pointer, output_ptr)
         end
       end
@@ -683,7 +683,7 @@ module OGR
 
       linear_ring.spatial_reference = line_string.spatial_reference.clone if line_string.spatial_reference
 
-      linear_ring.import_from_wkt(line_string.to_wkt.tr('LINESTRING', 'LINEARRING'))
+      linear_ring.import_from_wkt(line_string.to_wkt.tr("LINESTRING", "LINEARRING"))
       linear_ring.close_rings! if close_rings
 
       linear_ring

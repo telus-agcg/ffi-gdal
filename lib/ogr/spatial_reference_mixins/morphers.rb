@@ -8,7 +8,7 @@ module OGR
       # @return [OGR::SpatialReference] If successful, returns self.
       # @raise [OGR::Failure]
       def morph_to_esri!
-        OGR::ErrorHandling.handle_ogr_err('Unable to morph self to ESRI') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to morph self to ESRI") do
           FFI::OGR::SRSAPI.OSRMorphToESRI(@c_pointer)
         end
 
@@ -20,7 +20,7 @@ module OGR
       # @return [OGR::SpatialReference] If successful, returns self.
       # @raise [OGR::Failure]
       def morph_from_esri!
-        OGR::ErrorHandling.handle_ogr_err('Unable to morph self from ESRI') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to morph self from ESRI") do
           FFI::OGR::SRSAPI.OSRMorphFromESRI(@c_pointer)
         end
 

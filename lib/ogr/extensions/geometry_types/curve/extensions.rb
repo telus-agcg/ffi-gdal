@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ogr/geometry'
-require 'gdal/extensions/geo_transform/extensions'
+require "ogr/geometry"
+require "gdal/extensions/geo_transform/extensions"
 
 module OGR
   module GeometryTypes

@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'thor'
-require 'fileutils'
-require 'gdal/dataset'
-require 'gdal/raster_band'
-require 'gdal/raster_band/algorithm_extensions'
+require "bundler/setup"
+require "thor"
+require "fileutils"
+require "gdal/dataset"
+require "gdal/raster_band"
+require "gdal/raster_band/algorithm_extensions"
 
 GDAL::Logger.logging_enabled = true
 
 module Examples
   class RasterErasing < ::Thor
-    desc 'erase SOURCE DEST', 'Erase (clip) pixels from the center of the first raster band in SOURCE to DEST'
+    desc "erase SOURCE DEST", "Erase (clip) pixels from the center of the first raster band in SOURCE to DEST"
     def erase(source_path, dest_path)
       FileUtils.cp(source_path, dest_path)
-      dest_dataset = GDAL::Dataset.open(dest_path, 'w')
+      dest_dataset = GDAL::Dataset.open(dest_path, "w")
       geo_transform = dest_dataset.geo_transform
 
       raster_band = dest_dataset.raster_band(1)
       extent_polygon = buffer_extent(dest_dataset.extent)
 
       if extent_polygon.empty?
-        raise 'Poorly buffered extent--you should play with these values to get this demo to work.'
+        raise "Poorly buffered extent--you should play with these values to get this demo to work."
       end
 
       raster_point = OGR::Point.new

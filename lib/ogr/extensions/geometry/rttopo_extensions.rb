@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ogr'
-require 'ffi/extensions/rttopo'
+require "ogr"
+require "ffi/extensions/rttopo"
 
 module OGR
   module Geometry

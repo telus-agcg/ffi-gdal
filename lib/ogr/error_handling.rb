@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'exceptions'
+require_relative "exceptions"
 
 module OGR
   # OGR returns errors as Integers--not as part of the GDAL/CPLErr error

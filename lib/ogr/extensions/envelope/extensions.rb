@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/envelope'
+require "ogr/envelope"
 
 module OGR
   class Envelope

@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require_relative 'color_entry'
+require_relative "../gdal"
+require_relative "color_entry"
 
 module GDAL
   module ColorTableTypes
     autoload :CMYK,
-             File.expand_path('color_table_types/cmyk', __dir__)
+             File.expand_path("color_table_types/cmyk", __dir__)
     autoload :Gray,
-             File.expand_path('color_table_types/gray', __dir__)
+             File.expand_path("color_table_types/gray", __dir__)
     autoload :HLS,
-             File.expand_path('color_table_types/hls', __dir__)
+             File.expand_path("color_table_types/hls", __dir__)
     autoload :RGB,
-             File.expand_path('color_table_types/rgb', __dir__)
+             File.expand_path("color_table_types/rgb", __dir__)
   end
 
   class ColorTable

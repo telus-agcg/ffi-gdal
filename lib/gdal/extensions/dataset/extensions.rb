@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'narray'
-require 'ffi-gdal'
-require 'gdal/dataset'
-require 'gdal/raster_band'
-require 'gdal/warp_operation'
-require 'ogr/driver'
-require 'ogr/layer'
-require 'ogr/spatial_reference'
-require 'ogr/coordinate_transformation'
+require "narray"
+require "ffi-gdal"
+require "gdal/dataset"
+require "gdal/raster_band"
+require "gdal/warp_operation"
+require "ogr/driver"
+require "ogr/layer"
+require "ogr/spatial_reference"
+require "ogr/coordinate_transformation"
 
 module GDAL
   class Dataset
@@ -97,8 +97,8 @@ module GDAL
       #   of Integers.
       # @return [OGR::DataSource]
       def to_vector(file_name, vector_driver_name, geometry_type: :wkbUnknown,
-        layer_name_prefix: 'band_number', band_numbers: [1],
-        field_name_prefix: 'field', use_band_masks: true)
+        layer_name_prefix: "band_number", band_numbers: [1],
+        field_name_prefix: "field", use_band_masks: true)
         band_numbers = [band_numbers] unless band_numbers.is_a?(Array)
         ogr_driver = OGR::Driver.by_name(vector_driver_name)
 

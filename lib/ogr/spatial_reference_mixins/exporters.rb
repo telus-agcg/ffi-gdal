@@ -10,7 +10,7 @@ module OGR
         datum_name = FFI::MemoryPointer.new(:string, 32)
         units = FFI::MemoryPointer.new(:string, 32)
 
-        OGR::ErrorHandling.handle_ogr_err('Required parameters (name, datum name, units) are not defined') do
+        OGR::ErrorHandling.handle_ogr_err("Required parameters (name, datum name, units) are not defined") do
           FFI::OGR::SRSAPI.OSRExportToERM(@c_pointer, projection_name, datum_name, units)
         end
 
@@ -25,7 +25,7 @@ module OGR
       # @raise [OGR::Failure]
       def to_mapinfo
         GDAL._cpl_read_and_free_string do |return_ptr_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to MapInfo') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to export to MapInfo") do
             FFI::OGR::SRSAPI.OSRExportToMICoordSys(@c_pointer, return_ptr_ptr)
           end
         end
@@ -41,7 +41,7 @@ module OGR
         prj_params_ptr_ptr = GDAL._pointer_pointer(:double)
         prj_params_ptr_ptr.autorelease = false
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to export to PCI') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to export to PCI") do
           FFI::OGR::SRSAPI.OSRExportToPCI(@c_pointer, proj_ptr_ptr, units_ptr_ptr, prj_params_ptr_ptr)
         end
 
@@ -66,7 +66,7 @@ module OGR
       # @raise [GDAL::UnsupportedOperation] If empty definition.
       def to_proj4
         GDAL._cpl_read_and_free_string do |proj4_ptr_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to PROJ.4') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to export to PROJ.4") do
             FFI::OGR::SRSAPI.OSRExportToProj4(@c_pointer, proj4_ptr_ptr)
           end
         end
@@ -81,7 +81,7 @@ module OGR
         prj_params_ptr_ptr = GDAL._pointer_pointer(:double)
         prj_params_ptr_ptr.autorelease = false
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to export to USGS GCTP') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to export to USGS GCTP") do
           FFI::OGR::SRSAPI.OSRExportToUSGS(@c_pointer, proj_sys_ptr, zone_ptr, prj_params_ptr_ptr, datum_ptr)
         end
 
@@ -106,7 +106,7 @@ module OGR
       # @raise [OGR::Failure]
       def to_wkt
         GDAL._cpl_read_and_free_string do |wkt_ptr_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to WKT') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to export to WKT") do
             FFI::OGR::SRSAPI.OSRExportToWkt(@c_pointer, wkt_ptr_ptr)
           end
         end
@@ -117,10 +117,10 @@ module OGR
       # @raise [OGR::Failure]
       # @return [String]
       def to_pretty_wkt(simplify: false)
-        return +'' if @c_pointer.null?
+        return +"" if @c_pointer.null?
 
         GDAL._cpl_read_and_free_string do |wkt_ptr_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to pretty WKT') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to export to pretty WKT") do
             FFI::OGR::SRSAPI.OSRExportToPrettyWkt(@c_pointer, wkt_ptr_ptr, simplify)
           end
         end
@@ -130,7 +130,7 @@ module OGR
       # @raise [OGR::Failure]
       def to_xml
         GDAL._cpl_read_and_free_string do |xml_ptr_ptr|
-          OGR::ErrorHandling.handle_ogr_err('Unable to export to XML (GML)') do
+          OGR::ErrorHandling.handle_ogr_err("Unable to export to XML (GML)") do
             FFI::OGR::SRSAPI.OSRExportToXML(@c_pointer, xml_ptr_ptr, nil)
           end
         end

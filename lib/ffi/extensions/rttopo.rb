@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ffi-gdal'
-require_relative 'rttopo/geom'
+require "ffi-gdal"
+require_relative "rttopo/geom"
 
 module FFI
   module Rttopo
@@ -9,7 +9,7 @@ module FFI
 
     # @return [String]
     def self.rttopo_library_path
-      @rttopo_library_path ||= ENV.fetch('RTTOPO_LIBRARY_PATH', 'rttopo')
+      @rttopo_library_path ||= ENV.fetch("RTTOPO_LIBRARY_PATH", "rttopo")
     end
 
     if rttopo_library_path.nil? || rttopo_library_path.empty?

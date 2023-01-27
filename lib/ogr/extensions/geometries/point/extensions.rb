@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ogr/geometry'
+require "ogr/geometry"
 
 module OGR
   class Point

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-require 'narray'
-require_relative '../gdal'
-require_relative 'grid_algorithms'
+require "forwardable"
+require "narray"
+require_relative "../gdal"
+require_relative "grid_algorithms"
 
 module GDAL
   # Wrapper for GDAL's [Grid API](http://www.gdal.org/grid_tutorial.html).
@@ -38,7 +38,7 @@ module GDAL
       points = points.to_a if points.is_a? NArray
       point_count = points.length
       log "Number of points: #{point_count}"
-      raise GDAL::NoValuesToGrid, 'No points to grid' if point_count.zero?
+      raise GDAL::NoValuesToGrid, "No points to grid" if point_count.zero?
 
       points = points.transpose
       x_input_coordinates_ptr = make_points_pointer(points[0])
@@ -73,7 +73,7 @@ module GDAL
 
     # @param points [Array]
     def make_points_pointer(points)
-      raise GDAL::Error, 'No points to make pointer for' if points.compact.empty?
+      raise GDAL::Error, "No points to make pointer for" if points.compact.empty?
 
       input_coordinates_ptr = FFI::MemoryPointer.new(:double, points.length)
       input_coordinates_ptr.write_array_of_double(points)

@@ -43,11 +43,11 @@ module OGR
 
       # @raise [OGR::Failure]
       def transact
-        raise OGR::UnsupportedOperation, 'This layer does not support transactions.' unless supports_transactions?
+        raise OGR::UnsupportedOperation, "This layer does not support transactions." unless supports_transactions?
 
         ogr_err = yield
 
-        OGR::ErrorHandling.handle_ogr_err('Unable to set geometry directly on feature') do
+        OGR::ErrorHandling.handle_ogr_err("Unable to set geometry directly on feature") do
           ogr_err
         end
       end

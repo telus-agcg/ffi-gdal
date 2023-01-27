@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'ffi'
-require_relative 'gbox'
+require "ffi"
+require_relative "gbox"
 
 module FFI
   module Rttopo

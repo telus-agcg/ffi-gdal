@@ -1,10 +1,12 @@
 ---
 inherit_from: .rubocop_todo.yml
+
+inherit_mode:
+  merge:
+    - Exclude
+
 require:
   - rubocop-performance
-
-Layout/LineLength:
-  Max: 120
 
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
@@ -25,10 +27,12 @@ Naming/MethodParameterName:
 Style/Documentation:
   Enabled: false
 
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  Exclude:
-    - vendor/bundle/**/*
   NewCops: enable
+  SuggestExtensions: false
   TargetRubyVersion: 2.6

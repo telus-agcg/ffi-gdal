@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
+require_relative "../gdal"
 
 module GDAL
   class WarpOperation
@@ -18,7 +18,7 @@ module GDAL
     def initialize(warp_options)
       pointer = FFI::GDAL::Warper.GDALCreateWarpOperation(warp_options.c_struct)
 
-      raise GDAL::Error, 'Unable to create warp operation' if pointer.null?
+      raise GDAL::Error, "Unable to create warp operation" if pointer.null?
 
       @c_pointer = FFI::AutoPointer.new(pointer, WarpOperation.method(:release))
     end

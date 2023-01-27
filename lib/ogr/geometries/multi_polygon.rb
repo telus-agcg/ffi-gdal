@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../geometry_types/container'
-require_relative '../geometry_types/surface'
+require_relative "../geometry_types/container"
+require_relative "../geometry_types/surface"
 
 module OGR
   class MultiPolygon

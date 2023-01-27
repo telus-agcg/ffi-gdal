@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'ogr/geometries/geometry_collection'
-require 'ogr/geometries/geometry_collection_25d'
-require 'ogr/geometries/multi_line_string'
-require 'ogr/geometries/multi_line_string_25d'
-require 'ogr/geometries/multi_point'
-require 'ogr/geometries/multi_point_25d'
-require 'ogr/geometries/multi_polygon'
-require 'ogr/geometries/multi_polygon_25d'
-require 'ogr/geometries/polygon'
-require 'ogr/geometries/polygon_25d'
+require "ogr/geometries/geometry_collection"
+require "ogr/geometries/geometry_collection_25d"
+require "ogr/geometries/multi_line_string"
+require "ogr/geometries/multi_line_string_25d"
+require "ogr/geometries/multi_point"
+require "ogr/geometries/multi_point_25d"
+require "ogr/geometries/multi_polygon"
+require "ogr/geometries/multi_polygon_25d"
+require "ogr/geometries/polygon"
+require "ogr/geometries/polygon_25d"
 
 module OGR
   module GeometryMixins

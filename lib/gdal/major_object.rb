@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../gdal'
-require 'multi_xml'
+require_relative "../gdal"
+require "multi_xml"
 
 module GDAL
   module MajorObject
@@ -31,7 +31,7 @@ module GDAL
       data_array = m.get_array_of_string(0)
 
       data_array.each_with_object({}) do |key_value_pair, obj|
-        key, value = key_value_pair.split('=', 2)
+        key, value = key_value_pair.split("=", 2)
 
         begin
           obj[key] = MultiXml.parse(value)
@@ -44,15 +44,15 @@ module GDAL
     # @param name [String]
     # @param domain [String]
     # @return [String]
-    def metadata_item(name, domain = '')
+    def metadata_item(name, domain = "")
       item, ptr = FFI::GDAL::GDAL.GDALGetMetadataItem(@c_pointer, name, domain)
       ptr.autorelease = false
 
       item
     end
 
-    def set_metadata_item(name, value, domain = '')
-      GDAL::CPLErrorHandler.manually_handle('Unable to set metadata item') do
+    def set_metadata_item(name, value, domain = "")
+      GDAL::CPLErrorHandler.manually_handle("Unable to set metadata item") do
         FFI::GDAL::GDAL.GDALSetMetadataItem(@c_pointer, name, value.to_s, domain)
       end
     end

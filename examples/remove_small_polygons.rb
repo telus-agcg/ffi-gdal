@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
-require 'thor'
-require 'fileutils'
-require 'gdal/dataset'
-require 'gdal/raster_band'
+require "bundler/setup"
+require "thor"
+require "fileutils"
+require "gdal/dataset"
+require "gdal/raster_band"
 
 GDAL::Logger.logging_enabled = true
 
 module Examples
   class RemoveSmallPolygons < ::Thor
-    desc 'filter SOURCE_PATH DEST_PATH SIZE',
-         'Removes polygons from SOURCE that are under SIZE'
+    desc "filter SOURCE_PATH DEST_PATH SIZE",
+         "Removes polygons from SOURCE that are under SIZE"
     option :band_number, type: :numeric, default: 1
     def filter(source_path, dest_path, size)
       puts "Copying source '#{source_path}' to '#{dest_path}'..."
       FileUtils.cp(source_path, dest_path)
 
       size = size.to_f
-      dataset = GDAL::Dataset.open(dest_path, 'w')
+      dataset = GDAL::Dataset.open(dest_path, "w")
       puts "Raster area: #{dataset.extent.area}"
       raster_band = dataset.raster_band(options[:band_number])
 
@@ -41,11 +41,11 @@ module Examples
         FileUtils.rm_rf(dir_path)
       end
 
-      shp_driver = OGR::Driver.by_name 'ESRI Shapefile'
+      shp_driver = OGR::Driver.by_name "ESRI Shapefile"
       data_source = shp_driver.create_data_source(dir_path)
-      layer = data_source.create_layer('sieve-filtered', geometry_type: :wkbMultiPolygon,
+      layer = data_source.create_layer("sieve-filtered", geometry_type: :wkbMultiPolygon,
                                                          spatial_reference: srs)
-      zone_num_field_def = OGR::FieldDefinition.new 'ZONE', :OFTInteger
+      zone_num_field_def = OGR::FieldDefinition.new "ZONE", :OFTInteger
       layer.create_field(zone_num_field_def)
       yield layer
 

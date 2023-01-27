@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'ffi'
-require_relative '../gdal'
-require_relative '../../ext/ffi_library_function_checks'
-require_relative 'field'
+require "ffi"
+require_relative "../gdal"
+require_relative "../../ext/ffi_library_function_checks"
+require_relative "field"
 
 module FFI
   module OGR
@@ -150,11 +150,11 @@ module FFI
       # Constants
       #------------------------------------------------------------------------
       OGR_ALTER = FFI::ConstGenerator.new do |gen|
-        gen.include FFI::GDAL._file_with_constants('ogr_core.h')
-        gen.const :ALTER_NAME_FLAG, '%x'
-        gen.const :ALTER_TYPE_FLAG, '%x'
-        gen.const :ALTER_WIDTH_PRECISION_FLAG, '%x'
-        gen.const :ALTER_ALL_FLAG, '%x'
+        gen.include FFI::GDAL._file_with_constants("ogr_core.h")
+        gen.const :ALTER_NAME_FLAG, "%x"
+        gen.const :ALTER_TYPE_FLAG, "%x"
+        gen.const :ALTER_WIDTH_PRECISION_FLAG, "%x"
+        gen.const :ALTER_ALL_FLAG, "%x"
       end
       OGR_ALTER.calculate
 

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../ogr'
-require_relative '../gdal'
-require_relative '../gdal/major_object'
+require_relative "../ogr"
+require_relative "../gdal"
+require_relative "../gdal/major_object"
 
 module OGR
   # Wrapper for OGR's Driver class.  In this case, to use a driver, find the
@@ -69,7 +69,7 @@ module OGR
     # @param file_name [String]
     # @param access_flag [String] 'r' or 'w'.
     # @return [OGR::DataSource, nil]
-    def open(file_name, access_flag = 'r')
+    def open(file_name, access_flag = "r")
       update = OGR._boolean_access_flag(access_flag)
 
       data_source_ptr = FFI::OGR::API.OGR_Dr_Open(@c_pointer, file_name, update)
@@ -87,8 +87,8 @@ module OGR
     # @param options [Hash]
     # @return [OGR::DataSource, nil]
     def create_data_source(file_name, **options)
-      unless test_capability('CreateDataSource')
-        raise OGR::UnsupportedOperation, 'This driver does not support data source creation.'
+      unless test_capability("CreateDataSource")
+        raise OGR::UnsupportedOperation, "This driver does not support data source creation."
       end
 
       options_ptr = GDAL::Options.pointer(options)
@@ -97,7 +97,7 @@ module OGR
                                                               file_name, options_ptr)
       raise OGR::CreateFailure, "Unable to create DataSource '#{file_name}'" if data_source_ptr.null?
 
-      ds = OGR::DataSource.new(data_source_ptr, 'w')
+      ds = OGR::DataSource.new(data_source_ptr, "w")
       yield ds if block_given?
 
       ds
@@ -106,8 +106,8 @@ module OGR
     # @param file_name [String]
     # @raise [OGR::Failure]
     def delete_data_source(file_name)
-      unless test_capability('DeleteDataSource')
-        raise OGR::UnsupportedOperation, 'This driver does not support deleting data sources.'
+      unless test_capability("DeleteDataSource")
+        raise OGR::UnsupportedOperation, "This driver does not support deleting data sources."
       end
 
       OGR::ErrorHandling.handle_ogr_err("Unable to delete data source '#{file_name}'") do

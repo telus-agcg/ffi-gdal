@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'time'
+require "time"
 
 module OGR
   module InternalHelpers
@@ -15,8 +15,8 @@ module OGR
       # @param flag [String] 'w' for writing, 'r' for reading.
       def _boolean_access_flag(flag)
         case flag
-        when 'w' then true
-        when 'r' then false
+        when "w" then true
+        when "r" then false
         else raise "Invalid access_flag '#{flag}'.  Use 'r' or 'w'."
         end
       end
@@ -33,7 +33,7 @@ module OGR
         case time_zone
         when 0 then nil
         when 1 then (Time.now.getlocal.utc_offset / 3600).to_s
-        when 100 then '+0'
+        when 100 then "+0"
         else raise "Unable to process time zone: #{time_zone}"
         end
       end
