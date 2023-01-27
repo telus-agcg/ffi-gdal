@@ -15,10 +15,7 @@ module OGR
           else
             # NOTE: #clone here has overridden Ruby's clone and calls OGR_G_Clone;
             # it's important to do this and
-            as4326 = clone
-            return unless as4326.transform_to!(OGR::SpatialReference.new.import_from_epsg(4326))
-
-            as4326
+            clone.tap { |as4326| as4326.transform_to!(OGR::SpatialReference.new.import_from_epsg(4326)) }
           end
 
         self_as4326 = self_as4326.buffer(0) unless valid?

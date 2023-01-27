@@ -1,17 +1,18 @@
 ---
 inherit_from: .rubocop_todo.yml
+
+inherit_mode:
+  merge:
+    - Exclude
+
 require:
   - rubocop-performance
-
-Layout/LineLength:
-  Max: 120
 
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
 
 Metrics/BlockLength:
   Exclude:
-    - ffi-gdal.gemspec
     - spec/**/*_spec.rb
     - spec/support/shared_examples/**/*.rb
 
@@ -32,7 +33,6 @@ Style/StringLiterals:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  Exclude:
-    - vendor/bundle/**/*
   NewCops: enable
+  SuggestExtensions: false
   TargetRubyVersion: 2.6
