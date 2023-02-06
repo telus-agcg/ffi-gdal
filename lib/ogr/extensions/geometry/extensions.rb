@@ -44,14 +44,6 @@ module OGR
         !equals?(other)
       end
 
-      def is_2d?
-        coordinate_dimension == 2
-      end
-
-      def is_3d?
-        coordinate_dimension == 3
-      end
-
       # @return [Boolean]
       def invalid?
         !valid?
