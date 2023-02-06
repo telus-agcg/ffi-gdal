@@ -263,6 +263,14 @@ module OGR
       point
     end
 
+    def is_2d?
+      coordinate_dimension == 2
+    end
+
+    def is_3d?
+      coordinate_dimension == 3
+    end
+
     # Dump as WKT to the given +file_path+; dumps to STDOUT if none is given.
     #
     # @param file_path [String] The text file to write to.
