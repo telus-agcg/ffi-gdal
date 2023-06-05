@@ -44,6 +44,15 @@ For classes that are enabled with logging capabilities, you can turn logging on
 and off like `GDAL::RasterBand.logging_enabled = true`. If you're using ffi-gdal
 in Rails, you can `GDAL::Logger.logger = Rails.logger`.
 
+### Debugging
+
+Additional error logging can be enabled through GDAL's [global configuration options](https://gdal.org/user/configoptions.html).
+
+```ruby
+FFI::CPL::Conv.CPLSetConfigOption('CPL_DEBUG', 'ON')
+FFI::CPL::Conv.CPLSetConfigOption('CPL_LOG_ERRORS', 'ON')
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/telus-agcg/ffi-gdal/fork )
