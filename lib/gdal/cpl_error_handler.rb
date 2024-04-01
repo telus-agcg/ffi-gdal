@@ -65,11 +65,15 @@ module GDAL
 
     def initialize
       @on_none = SUCCESS_PROC
-      @on_debug = SUCCESS_PROC
+
+      @on_debug = lambda do |_, message|
+        logger.debug(message)
+        true
+      end
 
       @on_warning = lambda do |_, message|
-        warn(message)
-        false
+        logger.warn(message)
+        true
       end
 
       @on_failure = FAIL_PROC
