@@ -111,6 +111,16 @@ module FFI
       attach_function :VSICTime, %i[ulong], :strptr
       attach_function :VSIGMTime, %i[pointer pointer], :pointer
       attach_function :VSILocalTime, %i[pointer pointer], :pointer
+
+      # GDAL 3.5+ VSI Credentials (legacy, VSI PathSpecificOptions should be used instead in GDAL 3.6+)
+      attach_function :VSISetCredential, %i[string string string], :void
+      attach_function :VSIClearCredentials, %i[string], :void
+      attach_function :VSIGetCredential, %i[string string string], :string
+
+      # GDAL 3.6+ VSI PathSpecificOptions
+      attach_function :VSISetPathSpecificOption, %i[string string string], :void
+      attach_function :VSIClearPathSpecificOptions, %i[string], :void
+      attach_function :VSIGetPathSpecificOption, %i[string string string], :string
     end
   end
 end
