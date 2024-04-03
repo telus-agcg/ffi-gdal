@@ -37,6 +37,7 @@ module GDAL
   autoload :Options,              gdal_require("gdal/options")
   autoload :RasterAttributeTable, gdal_require("gdal/raster_attribute_table")
   autoload :RasterBand,           gdal_require("gdal/raster_band")
+  autoload :Utils,                gdal_require("gdal/utils")
 end
 
 require_relative "gdal/exceptions"
