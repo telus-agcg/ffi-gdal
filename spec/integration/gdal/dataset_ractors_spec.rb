@@ -15,18 +15,24 @@ RSpec.describe "Dataset with Ractors", type: :integration do
   end
   let(:dataset_paths) { [tiff1, tiff2] }
 
-  if Object.const_defined?("Ractor")
+  # Ractors support is availalbe when using ffi 1.16.0+ with CRuby 3.1.0+
+  ractors_supported =
+    Object.const_defined?(:Ractor) &&
+    Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.1.0") &&
+    Gem::Version.new(FFI::VERSION) >= Gem::Version.new("1.16.0")
+
+  if ractors_supported
     it "succesfully open datasets in Ractor threads" do
       ractors = dataset_paths.map do |file_path|
         Ractor.new(file_path) do |file_path_r|
-          GDAL::Dataset.open(file_path_r, "r", shared: false)
+          GDAL::Dataset.open(file_path_r, "r")
         end
       end
 
       datasets = ractors.map(&:take)
 
       expect(datasets.size).to eq(2)
-      expect(datasets.map(&:description)).to contain_exactly(tiff1, tiff2)
+      expect(datasets.map(&:description)).to eq(dataset_paths)
 
       datasets.each(&:close)
     end
