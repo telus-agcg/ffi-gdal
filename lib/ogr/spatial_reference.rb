@@ -23,13 +23,13 @@ module OGR
     include SpatialReferenceMixins::TypeChecks
 
     # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
-    FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
+    FFI::OGR::SRSAPI::SRS_UL.constants.each_value do |obj|
       const_set(obj.ruby_name, obj.value)
     end
 
     METER_TO_METER = 1.0
 
-    FFI::OGR::SRSAPI::SRS_UA.constants.each do |_name, obj|
+    FFI::OGR::SRSAPI::SRS_UA.constants.each_value do |obj|
       const_set(obj.ruby_name, obj.value)
     end
 

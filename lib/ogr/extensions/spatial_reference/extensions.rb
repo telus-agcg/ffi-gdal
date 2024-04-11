@@ -11,8 +11,8 @@ module OGR
       # @raise [NameError] If the +unit_label+ isn't of a known type.
       def angular_units=(unit_label)
         unit_name = unit_label.to_s.upcase
-        unit_label = self.class.const_get("#{unit_name}_LABEL".to_sym)
-        unit_value = self.class.const_get("RADIAN_TO_#{unit_name}".to_sym)
+        unit_label = self.class.const_get(:"#{unit_name}_LABEL")
+        unit_value = self.class.const_get(:"RADIAN_TO_#{unit_name}")
 
         set_angular_units(unit_label, unit_value)
       rescue NameError
@@ -24,8 +24,8 @@ module OGR
       # @raise [NameError] If the +unit_label+ isn't of a known type.
       def linear_units=(unit_label)
         unit_name = unit_label.to_s.upcase
-        unit_label = self.class.const_get("#{unit_name}_LABEL".to_sym)
-        unit_value = self.class.const_get("METER_TO_#{unit_name}".to_sym)
+        unit_label = self.class.const_get(:"#{unit_name}_LABEL")
+        unit_value = self.class.const_get(:"METER_TO_#{unit_name}")
 
         set_linear_units(unit_label, unit_value)
       rescue NameError

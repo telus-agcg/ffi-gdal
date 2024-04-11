@@ -12,7 +12,7 @@ module GDAL
       @destination_dataset = nil
 
       options.each_key do |k|
-        assign_meth = "#{k}=".to_sym
+        assign_meth = :"#{k}="
 
         begin
           if respond_to?(assign_meth)
