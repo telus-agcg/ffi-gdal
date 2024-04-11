@@ -175,8 +175,17 @@ module GDAL
     def source_per_band_validity_mask_function=(band_procs)
       mask_func = FFI::GDAL::Warper::MaskFunc
 
+      mask_func_return_type =
+        if mask_func.respond_to?(:return_type)
+          # `.return_type` is for FFI 1.16.0+;
+          mask_func.return_type
+        else
+          # `.result_type` is for older FFI versions.
+          mask_func.result_type
+        end
+
       funcs = band_procs.map do |band_proc|
-        FFI::Function.new(mask_func.result_type, mask_func.param_types, band_proc, blocking: true)
+        FFI::Function.new(mask_func_return_type, mask_func.param_types, band_proc, blocking: true)
       end
 
       pointer = FFI::MemoryPointer.new(:pointer, band_procs.length)
