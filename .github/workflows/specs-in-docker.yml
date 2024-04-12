@@ -1,6 +1,7 @@
 name: Specs in Docker
 
 on:
+  pull_request:
   push:
 
 jobs:

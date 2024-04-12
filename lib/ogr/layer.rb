@@ -18,7 +18,7 @@ module OGR
     include LayerMixins::OGRQueryFilterMethods
     include LayerMixins::OGRSQLMethods
 
-    FFI::OGR::Core::OGR_ALTER.constants.each do |_name, obj|
+    FFI::OGR::Core::OGR_ALTER.constants.each_value do |obj|
       const_set(obj.ruby_name, obj.value.to_i(16))
     end
 

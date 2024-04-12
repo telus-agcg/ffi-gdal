@@ -10,7 +10,7 @@ module GDAL
         raise "Invalid ColorEntry number 'color#{color_number}'" unless (1..4).to_a.include? color_number
 
         Array.new(color_entry_count) do |i|
-          color_entry(i).send("color#{color_number}".to_sym)
+          color_entry(i).send(:"color#{color_number}")
         end
       end
 

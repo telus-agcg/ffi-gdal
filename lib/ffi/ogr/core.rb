@@ -121,7 +121,7 @@ module FFI
                            :OGRSTSymbolPriority,  9,
                            :OGRSTSymbolFontName, 10,
                            :OGRSTSymbolOColor,   11,
-                           :OGRSTSymbolLast,      12
+                           :OGRSTSymbolLast,     12
 
       STLabelParam = enum :OGRSTLabelFontName, 0,
                           :OGRSTLabelSize,        1,

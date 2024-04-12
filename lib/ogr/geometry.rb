@@ -21,12 +21,7 @@ module OGR
       # @param geometry [OGR::Geometry, FFI::Pointer]
       # @return [OGR::Geometry]
       def factory(geometry)
-        geometry =
-          if geometry.is_a?(OGR::Geometry)
-            geometry
-          else
-            OGR::UnknownGeometry.new(geometry)
-          end
+        geometry = OGR::UnknownGeometry.new(geometry) unless geometry.is_a?(OGR::Geometry)
 
         new_pointer = geometry.c_pointer
         return if new_pointer.nil? || new_pointer.null?

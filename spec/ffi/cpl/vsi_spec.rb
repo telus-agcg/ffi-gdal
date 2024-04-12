@@ -33,12 +33,16 @@ RSpec.describe FFI::CPL::VSI do
       describe "VSIGetPathSpecificOption" do
         it "properly get credential" do
           expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be(nil)
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")).to eq("DefaultValue1234")
+          expect(
+            FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
+          ).to eq("DefaultValue1234")
 
           FFI::CPL::VSI.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
 
           expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")).to eq("Value1234")
+          expect(
+            FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
+          ).to eq("Value1234")
         end
       end
     end
