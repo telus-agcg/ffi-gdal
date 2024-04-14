@@ -87,7 +87,16 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         it "returns WKT with the merged strings" do
-          expect(subject.to_wkt).to eq "POLYGON ((0 0,0 1,0 2,1 1,1 2,1 3))"
+          # NOTE: The WKT result is different between GDAL 2 and GDAL 3.
+          # Just documenting the difference here.
+          expected_wkt =
+            if GDAL.version_num < "3000000"
+              "POLYGON ((0 0,0 1,0 2,1 1,1 2,1 3))"
+            else
+              "POLYGON ((0 0,0 1,0 2,1 2,1 3))"
+            end
+
+          expect(subject.to_wkt).to eq(expected_wkt)
         end
       end
 
@@ -146,8 +155,16 @@ RSpec.describe OGR::GeometryCollection do
         end
 
         it "returns WKT with the merged strings" do
-          expect(subject.to_wkt)
-            .to eq "POLYGON ((0 0 0,0 1 0,0 2 0,1 1 0,1 2 0,1 3 0,0 0 0))"
+          # NOTE: The WKT result is different between GDAL 2 and GDAL 3.
+          # Just documenting the difference here.
+          expected_wkt =
+            if GDAL.version_num < "3000000"
+              "POLYGON ((0 0 0,0 1 0,0 2 0,1 1 0,1 2 0,1 3 0,0 0 0))"
+            else
+              "POLYGON ((0 0 0,0 1 0,0 2 0,1 2 0,0 0 0))"
+            end
+
+          expect(subject.to_wkt).to eq(expected_wkt)
         end
       end
 

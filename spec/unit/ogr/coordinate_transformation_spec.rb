@@ -3,8 +3,20 @@
 require "ogr/coordinate_transformation"
 
 RSpec.describe OGR::CoordinateTransformation do
-  let(:source_srs) { OGR::SpatialReference.new.import_from_epsg(3857) }
-  let(:dest_srs) { OGR::SpatialReference.new.import_from_epsg(4326) }
+  let(:source_srs) do
+    OGR::SpatialReference.new.import_from_epsg(3857).tap do |srs|
+      # NOTE: GDAL 3 changed default axis order: https://github.com/OSGeo/gdal/issues/1546
+      # Set traditional axis order for GDAL3 to keep save behavior as for GDAL2.
+      srs.axis_mapping_strategy = :OAMS_TRADITIONAL_GIS_ORDER if GDAL.version_num >= "3000000"
+    end
+  end
+  let(:dest_srs) do
+    OGR::SpatialReference.new.import_from_epsg(4326).tap do |srs|
+      # NOTE: GDAL 3 changed default axis order: https://github.com/OSGeo/gdal/issues/1546
+      # Set traditional axis order for GDAL3 to keep save behavior as for GDAL2.
+      srs.axis_mapping_strategy = :OAMS_TRADITIONAL_GIS_ORDER if GDAL.version_num >= "3000000"
+    end
+  end
 
   # From https://epsg.io/3857
   let(:epsg4326_y_bounds) { [-85.06, 85.06] }
