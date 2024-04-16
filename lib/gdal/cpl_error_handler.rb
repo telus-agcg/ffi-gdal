@@ -10,17 +10,17 @@ module GDAL
     include GDAL::Logger
 
     CPLE_MAP = [
-      { cple: :CPLE_None,           exception: nil },
-      { cple: :CPLE_AppDefined,     exception: GDAL::Error },
-      { cple: :CPLE_OutOfMemory,    exception: ::NoMemoryError },
-      { cple: :CPLE_FileIO,         exception: ::IOError },
-      { cple: :CPLE_OpenFailed,     exception: GDAL::OpenFailure },
-      { cple: :CPLE_IllegalArg,     exception: ::ArgumentError },
-      { cple: :CPLE_NotSupported,   exception: GDAL::UnsupportedOperation },
-      { cple: :CPLE_AssertionFailed, exception: ::RuntimeError },
-      { cple: :CPLE_NoWriteAccess,  exception: GDAL::NoWriteAccess },
-      { cple: :CPLE_UserInterrupt,  exception: ::Interrupt },
-      { cple: :CPLE_ObjectNull,     exception: GDAL::NullObject }
+      { cple: :CPLE_None,           exception: nil }.freeze,
+      { cple: :CPLE_AppDefined,     exception: GDAL::Error }.freeze,
+      { cple: :CPLE_OutOfMemory,    exception: ::NoMemoryError }.freeze,
+      { cple: :CPLE_FileIO,         exception: ::IOError }.freeze,
+      { cple: :CPLE_OpenFailed,     exception: GDAL::OpenFailure }.freeze,
+      { cple: :CPLE_IllegalArg,     exception: ::ArgumentError }.freeze,
+      { cple: :CPLE_NotSupported,   exception: GDAL::UnsupportedOperation }.freeze,
+      { cple: :CPLE_AssertionFailed, exception: ::RuntimeError }.freeze,
+      { cple: :CPLE_NoWriteAccess,  exception: GDAL::NoWriteAccess }.freeze,
+      { cple: :CPLE_UserInterrupt,  exception: ::Interrupt }.freeze,
+      { cple: :CPLE_ObjectNull,     exception: GDAL::NullObject }.freeze
     ].freeze
 
     FAIL_PROC = lambda do |exception, message|
