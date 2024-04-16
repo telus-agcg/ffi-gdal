@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install GDAL
-        run: sudo apt-get install -y --no-install-recommends libgdal-dev librttopo-dev libproj-dev
+        run: sudo apt-get install -y --no-install-recommends libgdal-dev librttopo-dev
       - uses: actions/checkout@v3
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1

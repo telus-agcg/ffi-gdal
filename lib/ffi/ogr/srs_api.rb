@@ -38,6 +38,13 @@ module FFI
                        :ODT_LD_Min, 10_000,
                        :ODT_LD_Max, 32_767
 
+      # https://gdal.org/api/ogr_srs_api.html#_CPPv422OSRAxisMappingStrategy
+      OSRAxisMappingStrategy = enum(
+        :OAMS_TRADITIONAL_GIS_ORDER, 0,
+        :OAMS_AUTHORITY_COMPLIANT, 1,
+        :OAMS_CUSTOM, 2
+      )
+
       # -----------------------------------------------------------------------
       # Constants
       # -----------------------------------------------------------------------
@@ -125,6 +132,10 @@ module FFI
       # ~~~~~~~~~~~~~
       # SpatialReference
       # ~~~~~~~~~~~~~
+
+      # https://gdal.org/api/ogr_srs_api.html#_CPPv417OSRGetPROJVersionPiPiPi
+      attach_function :OSRGetPROJVersion, %i[pointer pointer pointer], :void
+
       attach_function :OSRNewSpatialReference, %i[string], :OGRSpatialReferenceH
       attach_function :OSRCloneGeogCS, %i[OGRSpatialReferenceH], :OGRSpatialReferenceH
       attach_function :OSRClone, %i[OGRSpatialReferenceH], :OGRSpatialReferenceH
@@ -214,6 +225,12 @@ module FFI
       attach_function :OSRGetAxis,
                       %i[OGRSpatialReferenceH string int pointer],
                       :string
+
+      # https://gdal.org/api/ogr_srs_api.html#_CPPv425OSRGetAxisMappingStrategy20OGRSpatialReferenceH
+      attach_function :OSRGetAxisMappingStrategy, %i[OGRSpatialReferenceH], OSRAxisMappingStrategy
+
+      # https://gdal.org/api/ogr_srs_api.html#_CPPv425OSRGetAxisMappingStrategy20OGRSpatialReferenceH
+      attach_function :OSRSetAxisMappingStrategy, [:OGRSpatialReferenceH, OSRAxisMappingStrategy], :void
 
       attach_function :OSRSetACEA,
                       %i[OGRSpatialReferenceH double double double double double double],

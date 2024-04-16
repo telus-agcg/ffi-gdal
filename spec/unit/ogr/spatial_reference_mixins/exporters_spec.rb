@@ -64,14 +64,27 @@ RSpec.describe OGR::SpatialReference do
       subject { described_class.new.import_from_epsg(4322) }
 
       it "returns a PROJ4 String" do
-        expect(subject.to_proj4.strip)
-          .to eq("+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs")
+        expected_proj4 =
+          if GDAL.version_num >= "3000100" && OGR::SpatialReference.proj_version.major > 6
+            # Returns official PROJ4 string for EPSG:4322 (https://epsg.io/4322).
+            "+proj=longlat +ellps=WGS72 +no_defs"
+          else
+            # NOTE: The result is slightly different for different versions of PROJ4.
+            # Just documenting the difference here.
+            "+proj=longlat +ellps=WGS72 +towgs84=0,0,4.5,0,0,0.554,0.2263 +no_defs"
+          end
+
+        expect(subject.to_proj4.strip).to eq(expected_proj4)
       end
     end
 
     context "empty SRS" do
-      it "raises a GDAL::UnsupportedOperation" do
-        expect { subject.to_proj4 }.to raise_exception GDAL::UnsupportedOperation
+      it "raises an exception" do
+        if GDAL.version_num < "3000000"
+          expect { subject.to_proj4 }.to raise_exception(GDAL::UnsupportedOperation)
+        else
+          expect { subject.to_proj4 }.to raise_exception(OGR::Failure, "Unable to export to PROJ.4")
+        end
       end
     end
   end
@@ -86,8 +99,13 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "empty SRS" do
-      it "returns an empty String" do
-        expect(subject.to_wkt).to eq ""
+      it "raises an exception" do
+        if GDAL.version_num < "3000000"
+          # NOTE: GDAL 2 returns an empty string instead of raise exception.
+          expect(subject.to_wkt).to eq("")
+        else
+          expect { subject.to_wkt }.to raise_exception(OGR::Failure, "Unable to export to WKT")
+        end
       end
     end
   end
@@ -102,8 +120,13 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "empty SRS" do
-      it "returns an empty String" do
-        expect(subject.to_pretty_wkt).to be_empty
+      it "raises an exception" do
+        if GDAL.version_num < "3000000"
+          # NOTE: GDAL 2 returns an empty string instead of raise exception.
+          expect(subject.to_pretty_wkt).to eq("")
+        else
+          expect { subject.to_pretty_wkt }.to raise_exception(OGR::Failure, "Unable to export to pretty WKT")
+        end
       end
     end
   end
