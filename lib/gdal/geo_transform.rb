@@ -40,6 +40,19 @@ module GDAL
       self.y_rotation ||= 0.0
     end
 
+    # @param other [GDAL::GeoTransform]
+    # @return [Boolean]
+    def ==(other)
+      return false unless other.is_a?(GDAL::GeoTransform)
+
+      x_origin == other.x_origin &&
+        pixel_width == other.pixel_width &&
+        x_rotation == other.x_rotation &&
+        y_origin == other.y_origin &&
+        y_rotation == other.y_rotation &&
+        pixel_height == other.pixel_height
+    end
+
     def null?
       @c_pointer.null?
     end
