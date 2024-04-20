@@ -15,6 +15,7 @@
 .byebug_history
 .config
 .idea/
+.vscode/
 .rake_tasks
 .tags
 .yardoc
