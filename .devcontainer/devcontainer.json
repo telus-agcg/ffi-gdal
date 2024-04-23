@@ -1,0 +1,98 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ruby
+{
+	"name": "ffi-gdal dev container",
+
+	// Use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "ruby --version",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			// Basic settings config.
+			// Fine-tune inside the project with `.vscode/settings.json` file.
+
+			// Use 'settings' to set *default* container specific settings.json values on container create.
+			// You can edit these settings after create using File > Preferences > Settings > Remote.
+			"settings": {
+				// You could redefine this settings with .vscode/settings.json file
+				// inside workspace folder.
+
+				// Controls the maximum amount of lines the terminal keeps in its buffer.
+				// Increase to 50000. Default 1000 is too low.
+				"terminal.integrated.scrollback": 50000,
+
+				// Basic formatting settings.
+				"files.insertFinalNewline": true,
+				"files.trimTrailingWhitespace": true,
+
+				// Colorize and highlight bracket pairs.
+				"editor.guides.bracketPairs": true,
+				"editor.bracketPairColorization.enabled": true,
+
+				// Ruby LSP settings
+				"rubyLsp.formatter": "rubocop",
+				"rubyLsp.enableExperimentalFeatures": true,
+
+				// Ruby LSP advanced semantic highlighting.
+				"workbench.colorTheme": "Spinel",
+
+				"[ruby]": {
+					"editor.formatOnSave": true,
+					"editor.formatOnType": true,
+					"editor.defaultFormatter": "Shopify.ruby-lsp",
+					"editor.rulers": [
+						120
+					],
+					"editor.tabSize": 2,
+					"editor.insertSpaces": true,
+					"editor.semanticHighlighting.enabled": true,
+					"files.trimFinalNewlines": true
+				},
+
+				// Basic launch config for Run and Debug.
+				// Fine-tune inside the project with `.vscode/launch.json` file.
+				"launch": {
+					// Use IntelliSense to learn about possible attributes.
+					// Hover to view descriptions of existing attributes.
+					// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+					"version": "0.2.0",
+					"configurations": [
+						{
+							"type": "ruby_lsp",
+							"name": "Run specs with debugger",
+							"request": "launch",
+							"program": "bin/rspec"
+						},
+						{
+							"type": "ruby_lsp",
+							"name": "Run current spec line with debugger",
+							"request": "launch",
+							"program": "bin/rspec ${file}:${lineNumber}"
+						}
+					]
+				}
+			},
+
+			// Add the IDs of extensions you want installed when the container is created in the array below.
+			"extensions": [
+				"Shopify.ruby-extensions-pack",
+				"eamodio.gitlens"
+			]
+		}
+	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
