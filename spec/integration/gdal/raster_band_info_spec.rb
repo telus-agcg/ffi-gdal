@@ -178,26 +178,88 @@ RSpec.describe "Raster Band Info", type: :integration do
   end
 
   describe "#scale" do
-    it "returns a Float" do
-      expect(subject.scale).to be_a Float
+    context "when scale is not set" do
+      it "returns 1.0" do
+        expect(subject.scale).to eq(1.0)
+      end
+    end
+
+    context "when scale is set" do
+      it "returns scale" do
+        subject.scale = 12.345
+        expect(subject.scale).to eq(12.345)
+      end
+    end
+  end
+
+  describe "#scale?" do
+    context "when scale is not set" do
+      it "returns false" do
+        if GDAL.version_num >= "3040000"
+          # NOTE: This is an expeced behavior in GDAL 3.4+.
+          expect(subject.scale?).to be(false)
+        else
+          # NOTE: This is kinda unexpected behavior in older versions of GDAL.
+          # Just documenting it here.
+          expect(subject.scale?).to be(true)
+        end
+      end
+    end
+
+    context "when scale is set" do
+      it "returns true" do
+        subject.scale = 12.345
+        expect(subject.scale?).to be(true)
+      end
     end
   end
 
   describe "#scale=" do
-    it "does nothing (because the file formats dont support it)" do
+    it "set scale" do
       subject.scale = 0.1
       expect(subject.scale).to eq 0.1
     end
   end
 
   describe "#offset" do
-    it "returns a Float" do
-      expect(subject.offset).to be_a Float
+    context "when offset is not set" do
+      it "returns 0.0" do
+        expect(subject.offset).to eq(0.0)
+      end
+    end
+
+    context "when offset is set" do
+      it "returns offset" do
+        subject.offset = 12.345
+        expect(subject.offset).to eq(12.345)
+      end
+    end
+  end
+
+  describe "#offset?" do
+    context "when offset is not set" do
+      it "returns false" do
+        if GDAL.version_num >= "3040000"
+          # NOTE: This is an expeced behavior in GDAL 3.4+.
+          expect(subject.offset?).to be(false)
+        else
+          # NOTE: This is kinda unexpected behavior in older versions of GDAL.
+          # Just documenting it here.
+          expect(subject.offset?).to be(true)
+        end
+      end
+    end
+
+    context "when offset is set" do
+      it "returns true" do
+        subject.offset = 12.345
+        expect(subject.offset?).to be(true)
+      end
     end
   end
 
   describe "#offset=" do
-    it "does nothing (because the file formats dont support it)" do
+    it "set offset" do
       subject.offset = 0.1
       expect(subject.offset).to eq 0.1
     end

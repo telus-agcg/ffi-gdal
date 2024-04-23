@@ -347,14 +347,16 @@ module GDAL
     # returned.
     #
     # @return Float
-    # @raise GDAL::Error if the underlying call fails.
     def scale
+      FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, nil)
+    end
+
+    # Check if the scale is set.
+    # @return [Boolean]
+    def scale?
       success = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, success)
-
-      raise GDAL::Error, "GDALGetRasterScale failed" unless success.read_bytes(1).to_bool
-
-      result
+      FFI::GDAL::GDAL.GDALGetRasterScale(@c_pointer, success)
+      success.read_bytes(1).to_bool
     end
 
     # @param new_scale [Float]
@@ -376,14 +378,16 @@ module GDAL
     # returned.
     #
     # @return Float
-    # @raise GDAL::Error if the underlying call fails.
     def offset
+      FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, nil)
+    end
+
+    # Check if the offset is set.
+    # @return [Boolean]
+    def offset?
       success = FFI::MemoryPointer.new(:bool)
-      result = FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, success)
-
-      raise GDAL::Error, "GDALGetRasterOffset failed" unless success.read_bytes(1).to_bool
-
-      result
+      FFI::GDAL::GDAL.GDALGetRasterOffset(@c_pointer, success)
+      success.read_bytes(1).to_bool
     end
 
     # Sets the scaling offset. Very few formats support this method.
