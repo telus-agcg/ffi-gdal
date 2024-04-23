@@ -215,6 +215,14 @@ RSpec.describe OGR::DataSource do
   end
 
   describe "#sync_to_disk" do
+    # NOTE: We redefine driver, as we should use file-based format to test #sync_to_disk.
+    let(:driver) { OGR::Driver.by_name("CSV") }
+    let(:tmpfile) { Tempfile.new(["spec", ".csv"]) }
+
+    subject(:data_source) do
+      driver.create_data_source(tmpfile.path)
+    end
+
     it do
       expect(subject.sync_to_disk).to be_nil
     end
