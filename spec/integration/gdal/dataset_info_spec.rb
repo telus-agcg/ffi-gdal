@@ -168,16 +168,13 @@ RSpec.describe "Dataset Info", type: :integration do
       end
 
       it "raises a GDAL::UnsupportedOperation" do
-        skip "GDAL 3.4+ has different behaviour" if GDAL.version_num >= "3040000"
+        skip "This spec only for GDAL < 3.6" if GDAL.version_num >= "3060000"
 
-        expect { subject.geo_transform = geo_transform }.to raise_exception(
-          GDAL::UnsupportedOperation,
-          "Attempt to call SetGeoTransform() on a read-only GeoTIFF file."
-        )
+        expect { subject.geo_transform = geo_transform }.to raise_exception(GDAL::UnsupportedOperation)
       end
 
       it "save in memory, but do not persist in file" do
-        skip "GDAL before 3.4 has different behaviour" if GDAL.version_num < "3040000"
+        skip "This spec only for GDAL 3.6+" if GDAL.version_num < "3060000"
 
         subject.geo_transform = geo_transform
         expect(subject.geo_transform).to eq(geo_transform)
