@@ -2,6 +2,16 @@
 
 Ruby wrapper around GDAL, using FFI, along with some helper methods.
 
+## Status
+
+[![Gem Version](https://badge.fury.io/rb/ffi-gdal.svg)](https://badge.fury.io/rb/ffi-gdal)
+[![Github Actions CI](https://github.com/telus-agcg/ffi-gdal/actions/workflows/continuous-integration.yml/badge.svg?branch=develop)](https://github.com/telus-agcg/ffi-gdal/actions/workflows/continuous-integration.yml)
+[![Github CodeQL](https://github.com/telus-agcg/ffi-gdal/actions/workflows/codeql.yml/badge.svg?branch=develop)](https://github.com/telus-agcg/ffi-gdal/actions/workflows/codeql.yml)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
+
+- **GDAL 2.4** and **GDAL 3+** are supported.
+- Ruby **2.6+** supported.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -52,6 +62,20 @@ Additional error logging can be enabled through GDAL's [global configuration opt
 FFI::CPL::Conv.CPLSetConfigOption('CPL_DEBUG', 'ON')
 FFI::CPL::Conv.CPLSetConfigOption('CPL_LOG_ERRORS', 'ON')
 ```
+
+## Compatibility
+
+CI is run against:
+- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 22.04
+  (**GDAL 3.4.1**, PROJ 8.2.1, GEOS 3.10.2)
+- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 20.04
+  (**GDAL 3.0.4**, PROJ 6.3.1, GEOS 3.8.0)
+- Ruby 3.2 with **GDAL 2.4.4**
+
+> GDAL itself has differences in behaviour between versions. This means that
+> upgrading your project to a newer version of GDAL may introduce some
+> breaking changes to your project due to changes in GDAL internal logic.
+> We document these differences in the specs when possible.
 
 ## Contributing
 
