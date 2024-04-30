@@ -10,6 +10,7 @@ module GDAL
     autoload :Helpers, File.expand_path("utils/helpers", __dir__)
 
     # GDAL Utils
+    autoload :Grid, File.expand_path("utils/grid", __dir__)
     autoload :Rasterize, File.expand_path("utils/rasterize", __dir__)
     autoload :Info, File.expand_path("utils/info", __dir__)
     autoload :Translate, File.expand_path("utils/translate", __dir__)
