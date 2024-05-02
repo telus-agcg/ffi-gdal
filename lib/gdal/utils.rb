@@ -12,6 +12,7 @@ module GDAL
     # GDAL Utils
     autoload :DEM, File.expand_path("utils/dem", __dir__)
     autoload :Grid, File.expand_path("utils/grid", __dir__)
+    autoload :Nearblack, File.expand_path("utils/nearblack", __dir__)
     autoload :Rasterize, File.expand_path("utils/rasterize", __dir__)
     autoload :Info, File.expand_path("utils/info", __dir__)
     autoload :Translate, File.expand_path("utils/translate", __dir__)
