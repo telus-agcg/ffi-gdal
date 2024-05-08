@@ -22,6 +22,7 @@ module FFI
     autoload :Matching, File.expand_path("gdal/matching.rb", __dir__)
     autoload :RPCInfo, File.expand_path("gdal/rpc_info.rb", __dir__)
     autoload :TransformerInfo, File.expand_path("gdal/transformer_info.rb", __dir__)
+    autoload :Utils, File.expand_path("gdal/utils.rb", __dir__)
     autoload :VRT, File.expand_path("gdal/vrt.rb", __dir__)
     autoload :Warper, File.expand_path("gdal/warper.rb", __dir__)
     autoload :WarpOptions, File.expand_path("gdal/warp_options.rb", __dir__)
