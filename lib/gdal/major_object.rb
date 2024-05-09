@@ -75,6 +75,12 @@ module GDAL
       desc
     end
 
+    # @param description [String]
+    # @return [String]
+    def description=(description)
+      FFI::GDAL::GDAL.GDALSetDescription(@c_pointer, description)
+    end
+
     def null?
       @c_pointer.null?
     end
