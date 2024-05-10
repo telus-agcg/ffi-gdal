@@ -4,7 +4,7 @@ module NumericAsDataType
   # @param data_type [FFI::GDAL::GDAL::DataType]
   def to_data_type(data_type)
     case data_type
-    when :GDT_Byte, :GDT_UInt16, :GDT_Int16, :GDT_UInt32, :GDT_Int32
+    when :GDT_Byte, :GDT_Int8, :GDT_UInt16, :GDT_Int16, :GDT_UInt32, :GDT_Int32, :GDT_UInt64, :GDT_Int64
       to_i
     when :GDT_Float32, :GDT_Float64
       to_f

@@ -6,6 +6,7 @@ require_relative "color_entry"
 
 module FFI
   module GDAL
+    # rubocop:disable Metrics/ModuleLength
     module GDAL
       extend ::FFI::Library
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
@@ -13,19 +14,24 @@ module FFI
       # ----------------------------------------------------------------
       # Enums
       # ----------------------------------------------------------------
-      DataType = enum :GDT_Unknown, 0,
+      # https://gdal.org/doxygen/gdal_8h_source.html
+      # NOTE: GDT_TypeCount is maximum type # + 1.
+      DataType = enum :GDT_Unknown,     0,
                       :GDT_Byte,        1,
+                      :GDT_Int8,        14,
                       :GDT_UInt16,      2,
                       :GDT_Int16,       3,
                       :GDT_UInt32,      4,
                       :GDT_Int32,       5,
+                      :GDT_UInt64,      12,
+                      :GDT_Int64,       13,
                       :GDT_Float32,     6,
                       :GDT_Float64,     7,
                       :GDT_CInt16,      8,
                       :GDT_CInt32,      9,
                       :GDT_CFloat32,    10,
                       :GDT_CFloat64,    11,
-                      :GDT_TypeCount,   12
+                      :GDT_TypeCount,   15
 
       AsyncStatusType = enum :GARIO_PENDING, 0,
                              :GARIO_UPDATE,     1,
@@ -679,5 +685,6 @@ module FFI
                       %i[pointer int int pointer int int int int],
                       :void
     end
+    # rubocop:enable Metrics/ModuleLength
   end
 end

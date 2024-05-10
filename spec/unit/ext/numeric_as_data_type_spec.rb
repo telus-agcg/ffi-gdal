@@ -2,7 +2,7 @@
 
 RSpec.describe Numeric do
   let(:integer_data_types) do
-    %i[GDT_Byte GDT_UInt16 GDT_Int16 GDT_UInt32 GDT_Int32]
+    %i[GDT_Byte GDT_Int8 GDT_UInt16 GDT_Int16 GDT_UInt32 GDT_Int32 GDT_UInt64 GDT_Int64]
   end
 
   let(:float_data_types) do
