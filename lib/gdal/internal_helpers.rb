@@ -141,10 +141,13 @@ module GDAL
       def _gdal_data_type_to_ffi(data_type)
         case data_type
         when :GDT_Byte                    then :uchar
+        when :GDT_Int8                    then :int8
         when :GDT_UInt16                  then :uint16
         when :GDT_Int16, :GDT_CInt16      then :int16
         when :GDT_UInt32                  then :uint32
         when :GDT_Int32, :GDT_CInt32      then :int32
+        when :GDT_UInt64                  then :uint64
+        when :GDT_Int64                   then :int64
         when :GDT_Float32, :GDT_CFloat32  then :float
         when :GDT_Float64, :GDT_CFloat64  then :double
         else

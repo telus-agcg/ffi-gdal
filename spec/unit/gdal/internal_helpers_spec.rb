@@ -65,6 +65,11 @@ RSpec.describe GDAL::InternalHelpers do
       it { is_expected.to eq :uchar }
     end
 
+    context "data type is :GDT_Int8" do
+      subject { tester._gdal_data_type_to_ffi(:GDT_Int8) }
+      it { is_expected.to eq :int8 }
+    end
+
     context "data type is :GDT_UInt16" do
       subject { tester._gdal_data_type_to_ffi(:GDT_UInt16) }
       it { is_expected.to eq :uint16 }
@@ -83,6 +88,16 @@ RSpec.describe GDAL::InternalHelpers do
     context "data type is :GDT_Int32" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Int32) }
       it { is_expected.to eq :int32 }
+    end
+
+    context "data type is :GDT_UInt64" do
+      subject { tester._gdal_data_type_to_ffi(:GDT_UInt64) }
+      it { is_expected.to eq :uint64 }
+    end
+
+    context "data type is :GDT_Int64" do
+      subject { tester._gdal_data_type_to_ffi(:GDT_Int64) }
+      it { is_expected.to eq :int64 }
     end
 
     context "data type is :GDT_Float32" do
