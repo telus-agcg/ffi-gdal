@@ -101,9 +101,24 @@ RSpec.describe "Raster Band Info", type: :integration do
     describe "#no_data_value" do
       it "is a Hash with :value and :is_associated keys" do
         expect(subject.no_data_value).to be_an Hash
+        expect(subject.no_data_value).to have_key(:value)
+        expect(subject.no_data_value).to have_key(:is_associated)
+      end
 
-        expect(subject.no_data_value[:value]).to be_nil
-        expect(subject.no_data_value[:is_associated]).to_not be_nil
+      it "is a `false` value for :is_associated key" do
+        expect(subject.no_data_value.fetch(:is_associated)).to eq(false)
+      end
+
+      it "has `nil` value for :value" do
+        skip "This spec only for GDAL before 3.6" if GDAL.version_num >= "3060000"
+
+        expect(subject.no_data_value.fetch(:value)).to be_nil
+      end
+
+      it "has `0` value for :value" do
+        skip "This spec only for GDAL 3.6+" if GDAL.version_num < "3060000"
+
+        expect(subject.no_data_value.fetch(:value)).to eq(0)
       end
     end
   end

@@ -17,7 +17,15 @@ RSpec.describe OGR::Polygon25D do
       subject { described_class.new }
 
       it "returns :wkbPolygon" do
+        skip "This spec only for GDAL before 3.8" if GDAL.version_num >= "3080000"
+
         expect(subject.type).to eq :wkbPolygon
+      end
+
+      it "returns :wkbPolygon25D" do
+        skip "This spec only for GDAL 3.8+" if GDAL.version_num < "3080000"
+
+        expect(subject.type).to eq :wkbPolygon25D
       end
     end
   end
