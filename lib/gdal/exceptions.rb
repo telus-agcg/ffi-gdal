@@ -1,20 +1,48 @@
 # frozen_string_literal: true
 
 module GDAL
-  class BufferTooSmall < StandardError
-  end
-
-  class CreateFail < StandardError
-  end
-
   class Error < ::RuntimeError
   end
 
-  class OpenFailure < StandardError
+  # CPLE_OpenFailed
+  class OpenFailure < ::StandardError
     def initialize(file, msg = nil)
       message = msg || "Unable to open file '#{file}'. Perhaps an unsupported file format?"
       super(message)
     end
+  end
+
+  # CPLE_NotSupported
+  class UnsupportedOperation < ::StandardError; end
+
+  # CPLE_NoWriteAccess
+  class NoWriteAccess < ::RuntimeError; end
+
+  # CPLE_ObjectNull
+  class NullObject < ::TypeError; end
+
+  # CPLE_HttpResponse
+  class HttpResponse < ::RuntimeError; end
+
+  # CPLE_AWSBucketNotFound
+  class AWSBucketNotFound < ::RuntimeError; end
+
+  # CPLE_AWSObjectNotFound
+  class AWSObjectNotFound < ::RuntimeError; end
+
+  # CPLE_AWSAccessDenied
+  class AWSAccessDenied < ::RuntimeError; end
+
+  # CPLE_AWSInvalidCredentials
+  class AWSInvalidCredentials < ::RuntimeError; end
+
+  # CPLE_AWSSignatureDoesNotMatch
+  class AWSSignatureDoesNotMatch < ::RuntimeError; end
+
+  class BufferTooSmall < StandardError
+  end
+
+  class CreateFail < StandardError
   end
 
   class InvalidAccessFlag < RuntimeError
@@ -51,12 +79,6 @@ module GDAL
   class NoValuesToGrid < RuntimeError
   end
 
-  class NoWriteAccess < RuntimeError
-  end
-
-  class NullObject < TypeError
-  end
-
   class RequiredBandNotFound < StandardError
   end
 
@@ -68,8 +90,5 @@ module GDAL
   end
 
   class UnknownRasterAttributeTableType < StandardError
-  end
-
-  class UnsupportedOperation < StandardError
   end
 end
