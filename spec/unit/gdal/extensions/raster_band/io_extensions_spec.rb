@@ -41,6 +41,8 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
 
   describe "#set_pixel_value/#pixel_value" do
     context "valid values, GDT_Byte" do
+      subject { dataset_byte.raster_band(1) }
+
       it "sets and gets the value successfully" do
         subject.set_pixel_value(0, 0, 123)
         expect(subject.pixel_value(0, 0)).to eq(123)
@@ -48,6 +50,8 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
     end
 
     context "valid values, GDT_Int8" do
+      subject { dataset_int8.raster_band(1) }
+
       it "sets and gets the value successfully" do
         skip "This spec only for GDAL 3.7+" if GDAL.version_num < "3070000"
 

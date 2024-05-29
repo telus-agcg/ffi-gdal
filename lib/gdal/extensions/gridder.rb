@@ -4,6 +4,10 @@ require "narray"
 require "gdal"
 require "gdal/options"
 require "ogr"
+require "ogr/extensions/envelope/extensions"
+require "ogr/extensions/layer/extensions"
+require "gdal/extensions/geo_transform/extensions"
+
 require_relative "gridder_options"
 require_relative "gridder/point_extracting"
 
