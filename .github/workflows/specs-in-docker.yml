@@ -5,8 +5,8 @@ on:
   push:
 
 jobs:
-  test:
-    name: Test
+  docker_test:
+    name: Docker Test (GDAL2)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +21,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Log in to registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+        run:
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $
+          --password-stdin
       - name: Build gdal2 image
         run: |
           docker compose version
           docker compose build gdal2
       - name: Run specs
-        run: docker compose run --rm gdal2 bundle exec rspec spec --format RSpec::Github::Formatter --format progress
+        run:
+          docker compose run --rm gdal2 bundle exec rspec spec --format
+          RSpec::Github::Formatter --format progress
+
