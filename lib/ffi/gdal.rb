@@ -41,7 +41,7 @@ module FFI
         ogr_core.h ogr_srs_api.h
       ]
 
-      header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal]
+      header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal /opt/homebrew/include/]
 
       header_files.map do |file|
         dir = header_search_paths.find do |d|
