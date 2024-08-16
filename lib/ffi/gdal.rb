@@ -19,9 +19,11 @@ module FFI
              File.expand_path("gdal/grid_inverse_distance_to_a_power_options.rb", __dir__)
     autoload :GridMovingAverageOptions, File.expand_path("gdal/grid_moving_average_options.rb", __dir__)
     autoload :GridNearestNeighborOptions, File.expand_path("gdal/grid_nearest_neighbor_options.rb", __dir__)
+    autoload :InternalHelpers, File.expand_path("gdal/internal_helpers.rb", __dir__)
     autoload :Matching, File.expand_path("gdal/matching.rb", __dir__)
     autoload :RPCInfo, File.expand_path("gdal/rpc_info.rb", __dir__)
     autoload :TransformerInfo, File.expand_path("gdal/transformer_info.rb", __dir__)
+    autoload :Utils, File.expand_path("gdal/utils.rb", __dir__)
     autoload :VRT, File.expand_path("gdal/vrt.rb", __dir__)
     autoload :Warper, File.expand_path("gdal/warper.rb", __dir__)
     autoload :WarpOptions, File.expand_path("gdal/warp_options.rb", __dir__)
@@ -39,7 +41,7 @@ module FFI
         ogr_core.h ogr_srs_api.h
       ]
 
-      header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal]
+      header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal /opt/homebrew/include/]
 
       header_files.map do |file|
         dir = header_search_paths.find do |d|

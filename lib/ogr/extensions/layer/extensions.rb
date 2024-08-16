@@ -130,7 +130,7 @@ module OGR
         # least at this point), it needs to be as fast as possible.
         each_feature_pointer do |feature_ptr| # rubocop:todo Metrics/BlockLength
           field_values = field_indices.map.with_index do |j, attribute_index|
-            FFI::OGR::API.send("OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
+            FFI::OGR::API.send(:"OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
           end
 
           geom_ptr = FFI::OGR::API.OGR_F_GetGeometryRef(feature_ptr)

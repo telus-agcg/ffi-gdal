@@ -17,7 +17,15 @@ RSpec.describe OGR::LineString25D do
       subject { described_class.new }
 
       it "returns :wkbLineString" do
+        skip "This spec only for GDAL before 3.8" if GDAL.version_num >= "3080000"
+
         expect(subject.type).to eq :wkbLineString
+      end
+
+      it "returns :wkbLineString25D" do
+        skip "This spec only for GDAL 3.8+" if GDAL.version_num < "3080000"
+
+        expect(subject.type).to eq :wkbLineString25D
       end
     end
   end

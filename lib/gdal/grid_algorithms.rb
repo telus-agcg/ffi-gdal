@@ -2,6 +2,8 @@
 
 module GDAL
   module GridAlgorithms
+    autoload :AlgorithmBase,
+             File.expand_path("grid_algorithms/algorithm_base", __dir__)
     autoload :InverseDistanceToAPower,
              File.expand_path("grid_algorithms/inverse_distance_to_a_power", __dir__)
     autoload :MetricAverageDistance,

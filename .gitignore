@@ -15,9 +15,12 @@
 .byebug_history
 .config
 .idea/
+.vscode/
 .rake_tasks
 .tags
 .yardoc
+
+.ruby-version
 
 Gemfile.lock
 InstalledFiles

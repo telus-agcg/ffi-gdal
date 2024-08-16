@@ -2,15 +2,11 @@
 
 module GDAL
   module GridAlgorithms
-    class NearestNeighbor
-      # @return [FFI::GDAL::GridNearestNeighborOptions]
-      attr_reader :options
-
-      def initialize
-        @options = FFI::GDAL::GridNearestNeighborOptions.new
+    class NearestNeighbor < AlgorithmBase
+      def options_class
+        ::FFI::GDAL::GridNearestNeighborOptions
       end
 
-      # @return [Symbol]
       def c_identifier
         :GGA_NearestNeighbor
       end

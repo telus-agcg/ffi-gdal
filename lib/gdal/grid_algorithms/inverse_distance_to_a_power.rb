@@ -2,15 +2,11 @@
 
 module GDAL
   module GridAlgorithms
-    class InverseDistanceToAPower
-      # @return [FFI::GDAL::GridInverseDistanceToAPowerOptions]
-      attr_reader :options
-
-      def initialize
-        @options = FFI::GDAL::GridInverseDistanceToAPowerOptions.new
+    class InverseDistanceToAPower < AlgorithmBase
+      def options_class
+        ::FFI::GDAL::GridInverseDistanceToAPowerOptions
       end
 
-      # @return [Symbol]
       def c_identifier
         :GGA_InverseDistanceToAPower
       end

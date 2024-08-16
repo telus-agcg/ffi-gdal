@@ -1,36 +1,47 @@
 name: Continuous Integration
 
 on:
+  pull_request:
   push:
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgdal-dev librttopo-dev
-          bundle install --jobs 4 --retry 3
-      - name: Run specs
-        run: bundle exec rspec spec --format RSpec::Github::Formatter --format progress
-
   static_analysis:
     name: Rubocop
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: "3.3"
           bundler-cache: true
-      - name: Install dependencies
-        run: bundle install --jobs 4 --retry 3
       - name: Rubocop
         run: bundle exec rubocop --format github --parallel
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # NOTE:
+        # - ubuntu-20.04 has GDAL 3.0.4, PROJ 6.3.1, GEOS 3.8.0
+        # - ubuntu-22.04 has GDAL 3.4.1, PROJ 8.2.1, GEOS 3.10.2
+        # - ubuntu-24.04 has GDAL 3.8.4, PROJ 9.4.0, GEOS 3.12.1
+        os: ["ubuntu-20.04", "ubuntu-22.04", "ubuntu-24.04"]
+        ruby-version: ["2.6", "2.7", "3.0", "3.1", "3.2", "3.3"]
+    name: "Test on Ruby ${{ matrix.ruby-version }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install GDAL
+        run:
+          sudo apt-get install -y --no-install-recommends libgdal-dev
+          librttopo-dev
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Run specs
+        run:
+          bundle exec rspec spec --format RSpec::Github::Formatter --format
+          progress

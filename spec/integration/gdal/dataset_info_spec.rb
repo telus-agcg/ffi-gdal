@@ -159,9 +159,69 @@ RSpec.describe "Dataset Info", type: :integration do
   describe "#geo_transform=" do
     let(:geo_transform) { GDAL::GeoTransform.new }
 
-    context "read-only dataset" do
+    context "read-only dataset with PAM disabled" do
+      around do |example|
+        previous_pam_status = FFI::CPL::Conv.CPLGetConfigOption("GDAL_PAM_ENABLED", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_PAM_ENABLED", "NO")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_PAM_ENABLED", previous_pam_status)
+      end
+
       it "raises a GDAL::UnsupportedOperation" do
-        expect { subject.geo_transform = geo_transform }.to raise_exception GDAL::UnsupportedOperation
+        skip "This spec only for GDAL < 3.6" if GDAL.version_num >= "3060000"
+
+        expect { subject.geo_transform = geo_transform }.to raise_exception(GDAL::UnsupportedOperation)
+      end
+
+      it "save in memory, but do not persist in file" do
+        skip "This spec only for GDAL 3.6+" if GDAL.version_num < "3060000"
+
+        subject.geo_transform = geo_transform
+        expect(subject.geo_transform).to eq(geo_transform)
+        subject.flush_cache
+
+        # Reopen dataset
+        GDAL::Dataset.open(tmp_tiff, "r", shared: false) do |reopened_dataset|
+          expect(reopened_dataset.geo_transform).to_not eq(geo_transform)
+        end
+      end
+    end
+
+    context "read-only dataset with PAM enabled" do
+      around do |example|
+        previous_pam_status = FFI::CPL::Conv.CPLGetConfigOption("GDAL_PAM_ENABLED", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_PAM_ENABLED", "YES")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_PAM_ENABLED", previous_pam_status)
+      end
+
+      it "raises a GDAL::UnsupportedOperation" do
+        skip "GDAL 3.4+ has different behaviour" if GDAL.version_num >= "3040000"
+
+        expect { subject.geo_transform = geo_transform }.to raise_exception(
+          GDAL::UnsupportedOperation,
+          "Attempt to call SetGeoTransform() on a read-only GeoTIFF file."
+        )
+      end
+
+      it "persist GeoTransform in PAM file" do
+        skip "GDAL before 3.4 has different behaviour" if GDAL.version_num < "3040000"
+
+        # PAM file not expected to be present
+        expect(File.exist?("#{tmp_tiff}.aux.xml")).to be false
+
+        subject.geo_transform = geo_transform
+        expect(subject.geo_transform).to eq geo_transform
+
+        subject.flush_cache
+
+        # PAM file expected to be created
+        expect(File.exist?("#{tmp_tiff}.aux.xml")).to be true
+
+        # Reopen dataset
+        GDAL::Dataset.open(tmp_tiff, "r", shared: false) do |reopened_dataset|
+          expect(reopened_dataset.geo_transform).to eq(geo_transform)
+        end
       end
     end
 

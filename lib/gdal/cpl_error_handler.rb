@@ -9,19 +9,27 @@ module GDAL
   class CPLErrorHandler
     include GDAL::Logger
 
+    # NOTE: Error codes are defined in https://gdal.org/doxygen/cpl__error_8h_source.html
     CPLE_MAP = [
-      { cple: :CPLE_None,           exception: nil },
-      { cple: :CPLE_AppDefined,     exception: GDAL::Error },
-      { cple: :CPLE_OutOfMemory,    exception: ::NoMemoryError },
-      { cple: :CPLE_FileIO,         exception: ::IOError },
-      { cple: :CPLE_OpenFailed,     exception: GDAL::OpenFailure },
-      { cple: :CPLE_IllegalArg,     exception: ::ArgumentError },
-      { cple: :CPLE_NotSupported,   exception: GDAL::UnsupportedOperation },
-      { cple: :CPLE_AssertionFailed, exception: ::RuntimeError },
-      { cple: :CPLE_NoWriteAccess,  exception: GDAL::NoWriteAccess },
-      { cple: :CPLE_UserInterrupt,  exception: ::Interrupt },
-      { cple: :CPLE_ObjectNull,     exception: GDAL::NullObject }
+      { cple: :CPLE_None,                     exception: nil }.freeze,
+      { cple: :CPLE_AppDefined,               exception: GDAL::Error }.freeze,
+      { cple: :CPLE_OutOfMemory,              exception: ::NoMemoryError }.freeze,
+      { cple: :CPLE_FileIO,                   exception: ::IOError }.freeze,
+      { cple: :CPLE_OpenFailed,               exception: GDAL::OpenFailure }.freeze,
+      { cple: :CPLE_IllegalArg,               exception: ::ArgumentError }.freeze,
+      { cple: :CPLE_NotSupported,             exception: GDAL::UnsupportedOperation }.freeze,
+      { cple: :CPLE_AssertionFailed,          exception: ::RuntimeError }.freeze,
+      { cple: :CPLE_NoWriteAccess,            exception: GDAL::NoWriteAccess }.freeze,
+      { cple: :CPLE_UserInterrupt,            exception: ::Interrupt }.freeze,
+      { cple: :CPLE_ObjectNull,               exception: GDAL::NullObject }.freeze,
+      { cple: :CPLE_HttpResponse,             exception: GDAL::HttpResponse }.freeze,
+      { cple: :CPLE_AWSBucketNotFound,        exception: GDAL::AWSBucketNotFound }.freeze,
+      { cple: :CPLE_AWSObjectNotFound,        exception: GDAL::AWSObjectNotFound }.freeze,
+      { cple: :CPLE_AWSAccessDenied,          exception: GDAL::AWSAccessDenied }.freeze,
+      { cple: :CPLE_AWSInvalidCredentials,    exception: GDAL::AWSInvalidCredentials }.freeze,
+      { cple: :CPLE_AWSSignatureDoesNotMatch, exception: GDAL::AWSSignatureDoesNotMatch }.freeze
     ].freeze
+    FALLBACK_CPLE_EXCEPTION = { exception: GDAL::Error }.freeze
 
     FAIL_PROC = lambda do |exception, message|
       ex = exception ? exception.new(message) : GDAL::Error.new(message)
@@ -65,11 +73,15 @@ module GDAL
 
     def initialize
       @on_none = SUCCESS_PROC
-      @on_debug = SUCCESS_PROC
+
+      @on_debug = lambda do |_, message|
+        logger.debug(message)
+        true
+      end
 
       @on_warning = lambda do |_, message|
-        warn(message)
-        false
+        logger.warn(message)
+        true
       end
 
       @on_failure = FAIL_PROC
@@ -123,7 +135,10 @@ module GDAL
 
     # @return Whatever the Proc evaluates.
     def result(error_class, error_number, message)
-      error_class_map(error_class).call(CPLE_MAP[error_number][:exception], message)
+      error_class_map(error_class).call(
+        CPLE_MAP.fetch(error_number, FALLBACK_CPLE_EXCEPTION).fetch(:exception),
+        message
+      )
     end
 
     def error_class_map(error_class)

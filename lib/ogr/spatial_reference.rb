@@ -14,6 +14,8 @@ module OGR
   #   1. "geographic", where positions are measured in long/lat.
   #   2. "projected", where positions are measure in meters or feet.
   class SpatialReference
+    Version = Struct.new(:major, :minor, :patch)
+
     include GDAL::Logger
     include SpatialReferenceMixins::CoordinateSystemGetterSetters
     include SpatialReferenceMixins::Exporters
@@ -23,13 +25,13 @@ module OGR
     include SpatialReferenceMixins::TypeChecks
 
     # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
-    FFI::OGR::SRSAPI::SRS_UL.constants.each do |_name, obj|
+    FFI::OGR::SRSAPI::SRS_UL.constants.each_value do |obj|
       const_set(obj.ruby_name, obj.value)
     end
 
     METER_TO_METER = 1.0
 
-    FFI::OGR::SRSAPI::SRS_UA.constants.each do |_name, obj|
+    FFI::OGR::SRSAPI::SRS_UA.constants.each_value do |obj|
       const_set(obj.ruby_name, obj.value)
     end
 
@@ -123,6 +125,19 @@ module OGR
       return unless pointer && !pointer.null?
 
       FFI::OGR::SRSAPI.OSRRelease(pointer)
+    end
+
+    def self.proj_version
+      major_ptr = FFI::MemoryPointer.new(:int)
+      major_ptr.autorelease = false
+      minor_ptr = FFI::MemoryPointer.new(:int)
+      minor_ptr.autorelease = false
+      patch_ptr = FFI::MemoryPointer.new(:int)
+      patch_ptr.autorelease = false
+
+      FFI::OGR::SRSAPI.OSRGetPROJVersion(major_ptr, minor_ptr, patch_ptr)
+
+      Version.new(major_ptr.read_int, minor_ptr.read_int, patch_ptr.read_int)
     end
 
     # @return [FFI::Pointer] C pointer to the C Spatial Reference.
@@ -260,6 +275,16 @@ module OGR
     # @return [OGR::SpatialReference, FFI::Pointer] Pointer to an OGR::SpatialReference.
     def create_coordinate_transformation(destination_spatial_ref)
       OGR::CoordinateTransformation.new(@c_pointer, destination_spatial_ref)
+    end
+
+    # @return [nil] Sets the axis mapping strategy for this spatial reference.
+    def axis_mapping_strategy=(strategy)
+      FFI::OGR::SRSAPI.OSRSetAxisMappingStrategy(@c_pointer, strategy)
+    end
+
+    # @return [FFI::OGR::SRSAPI::AxisMappingStrategy] The axis mapping strategy.
+    def axis_mapping_strategy
+      FFI::OGR::SRSAPI.OSRGetAxisMappingStrategy(@c_pointer)
     end
   end
 end

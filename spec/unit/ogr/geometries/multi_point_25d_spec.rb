@@ -16,8 +16,16 @@ RSpec.describe OGR::MultiPoint25D do
     context "when created without data" do
       subject { described_class.new }
 
-      it "returns :wkbPoint" do
+      it "returns :wkbMultiPoint" do
+        skip "This spec only for GDAL before 3.8" if GDAL.version_num >= "3080000"
+
         expect(subject.type).to eq :wkbMultiPoint
+      end
+
+      it "returns :wkbMultiPoint25D" do
+        skip "This spec only for GDAL 3.8+" if GDAL.version_num < "3080000"
+
+        expect(subject.type).to eq :wkbMultiPoint25D
       end
     end
   end

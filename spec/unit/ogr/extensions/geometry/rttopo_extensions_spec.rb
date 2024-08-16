@@ -36,15 +36,28 @@ RSpec.describe OGR::Geometry do
       include_context "crossing lines"
 
       it "makes a valid MULTIPOLYGON" do
-        ci_expected_wkt = "MULTIPOLYGON (((0 0,0 10,3.33333333333333 6.66666666666667,0 0))," \
-                          "((3.33333333333333 6.66666666666667,5 10,5 5,3.33333333333333 6.66666666666667))," \
-                          "((10 0,5 0,5 5,10 0)))"
+        ci_expected_wkt =
+          "MULTIPOLYGON (" \
+          "((0 0,0 10,3.33333333333333 6.66666666666667,0 0))," \
+          "((3.33333333333333 6.66666666666667,5 10,5 5,3.33333333333333 6.66666666666667))," \
+          "((10 0,5 0,5 5,10 0))" \
+          ")"
 
-        local_expected_wkt = "MULTIPOLYGON (((0 0,0 10,3.33333333333333 6.66666666666667,0 0))," \
-                             "((5 5,10 0,5 0,5 5))," \
-                             "((5 5,3.33333333333333 6.66666666666667,5 10,5 5)))"
+        ci2_expected_wkt =
+          "MULTIPOLYGON (" \
+          "((10 0,5 0,5 5,10 0))," \
+          "((3.33333333333333 6.66666666666667,0 0,0 10,3.33333333333333 6.66666666666667))," \
+          "((5 10,5 5,3.33333333333333 6.66666666666667,5 10))" \
+          ")"
 
-        expect(subject.make_valid.to_wkt).to eq(ci_expected_wkt).or eq(local_expected_wkt)
+        local_expected_wkt =
+          "MULTIPOLYGON (" \
+          "((0 0,0 10,3.33333333333333 6.66666666666667,0 0))," \
+          "((5 5,10 0,5 0,5 5))," \
+          "((5 5,3.33333333333333 6.66666666666667,5 10,5 5))" \
+          ")"
+
+        expect(subject.make_valid.to_wkt).to eq(ci_expected_wkt).or eq(ci2_expected_wkt).or eq(local_expected_wkt)
       end
     end
   end

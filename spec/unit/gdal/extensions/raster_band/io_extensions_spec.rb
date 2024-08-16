@@ -6,10 +6,13 @@ require "gdal/extensions/raster_band/io_extensions"
 RSpec.describe "GDAL::RasterBand::IOExtensions" do
   let(:driver) { GDAL::Driver.by_name("MEM") }
   let(:dataset_byte) { driver.create_dataset("test", 15, 25, data_type: :GDT_Byte) }
-  let(:dataset_int16) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int16) }
+  let(:dataset_int8) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int8) }
   let(:dataset_uint16) { driver.create_dataset("test", 15, 25, data_type: :GDT_UInt16) }
-  let(:dataset_int32) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int32) }
+  let(:dataset_int16) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int16) }
   let(:dataset_uint32) { driver.create_dataset("test", 15, 25, data_type: :GDT_UInt32) }
+  let(:dataset_int32) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int32) }
+  let(:dataset_uint64) { driver.create_dataset("test", 15, 25, data_type: :GDT_UInt64) }
+  let(:dataset_int64) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int64) }
   let(:dataset_float32) { driver.create_dataset("test", 15, 25, data_type: :GDT_Float32) }
   let(:dataset_float64) { driver.create_dataset("test", 15, 25, data_type: :GDT_Float64) }
 
@@ -38,18 +41,22 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
 
   describe "#set_pixel_value/#pixel_value" do
     context "valid values, GDT_Byte" do
+      subject { dataset_byte.raster_band(1) }
+
       it "sets and gets the value successfully" do
         subject.set_pixel_value(0, 0, 123)
         expect(subject.pixel_value(0, 0)).to eq(123)
       end
     end
 
-    context "valid values, GDT_Int16" do
-      subject { dataset_int16.raster_band(1) }
+    context "valid values, GDT_Int8" do
+      subject { dataset_int8.raster_band(1) }
 
       it "sets and gets the value successfully" do
-        subject.set_pixel_value(0, 0, -12_345)
-        expect(subject.pixel_value(0, 0)).to eq(-12_345)
+        skip "This spec only for GDAL 3.7+" if GDAL.version_num < "3070000"
+
+        subject.set_pixel_value(0, 0, -128)
+        expect(subject.pixel_value(0, 0)).to eq(-128)
       end
     end
 
@@ -62,12 +69,12 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
       end
     end
 
-    context "valid values, GDT_Int32" do
-      subject { dataset_int32.raster_band(1) }
+    context "valid values, GDT_Int16" do
+      subject { dataset_int16.raster_band(1) }
 
       it "sets and gets the value successfully" do
-        subject.set_pixel_value(0, 0, -123_456_789)
-        expect(subject.pixel_value(0, 0)).to eq(-123_456_789)
+        subject.set_pixel_value(0, 0, -12_345)
+        expect(subject.pixel_value(0, 0)).to eq(-12_345)
       end
     end
 
@@ -77,6 +84,37 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
       it "sets and gets the value successfully" do
         subject.set_pixel_value(0, 0, 4_123_456_789)
         expect(subject.pixel_value(0, 0)).to eq(4_123_456_789)
+      end
+    end
+
+    context "valid values, GDT_Int32" do
+      subject { dataset_int32.raster_band(1) }
+
+      it "sets and gets the value successfully" do
+        subject.set_pixel_value(0, 0, -123_456_789)
+        expect(subject.pixel_value(0, 0)).to eq(-123_456_789)
+      end
+    end
+
+    context "valid values, GDT_UInt64" do
+      subject { dataset_uint64.raster_band(1) }
+
+      it "sets and gets the value successfully" do
+        skip "This spec only for GDAL 3.5+" if GDAL.version_num < "3050000"
+
+        subject.set_pixel_value(0, 0, 18_446_744_073_709_551_615)
+        expect(subject.pixel_value(0, 0)).to eq(18_446_744_073_709_551_615)
+      end
+    end
+
+    context "valid values, GDT_Int64" do
+      subject { dataset_int64.raster_band(1) }
+
+      it "sets and gets the value successfully" do
+        skip "This spec only for GDAL 3.5+" if GDAL.version_num < "3050000"
+
+        subject.set_pixel_value(0, 0, -9_223_372_036_854_775_808)
+        expect(subject.pixel_value(0, 0)).to eq(-9_223_372_036_854_775_808)
       end
     end
 

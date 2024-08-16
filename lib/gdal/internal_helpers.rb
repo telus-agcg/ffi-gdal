@@ -106,7 +106,7 @@ module GDAL
       def _read_pointer_pointer_safely(pointer_ptr, type)
         return if pointer_ptr.read_pointer.null?
 
-        pointer_ptr.read_pointer.send("read_#{type}".to_sym)
+        pointer_ptr.read_pointer.send(:"read_#{type}")
       end
 
       # Convenience function for allocating a pointer to a string (**char),
@@ -141,10 +141,13 @@ module GDAL
       def _gdal_data_type_to_ffi(data_type)
         case data_type
         when :GDT_Byte                    then :uchar
+        when :GDT_Int8                    then :int8
         when :GDT_UInt16                  then :uint16
         when :GDT_Int16, :GDT_CInt16      then :int16
         when :GDT_UInt32                  then :uint32
         when :GDT_Int32, :GDT_CInt32      then :int32
+        when :GDT_UInt64                  then :uint64
+        when :GDT_Int64                   then :int64
         when :GDT_Float32, :GDT_CFloat32  then :float
         when :GDT_Float64, :GDT_CFloat64  then :double
         else
@@ -201,9 +204,9 @@ module GDAL
       # @return [Number, Array<Number>]
       def _read_pointer(pointer, data_type, length = 1)
         if length == 1
-          pointer.send("read_#{_gdal_data_type_to_ffi(data_type)}")
+          pointer.send(:"read_#{_gdal_data_type_to_ffi(data_type)}")
         else
-          pointer.send("read_array_of_#{_gdal_data_type_to_ffi(data_type)}", length)
+          pointer.send(:"read_array_of_#{_gdal_data_type_to_ffi(data_type)}", length)
         end
       end
 
@@ -217,10 +220,10 @@ module GDAL
       #   with size > 1, the "write_array_of_" method will be called.
       def _write_pointer(pointer, data_type, data)
         if data.is_a?(Array) && data.size > 1
-          pointer.send("write_array_of_#{_gdal_data_type_to_ffi(data_type)}", data)
+          pointer.send(:"write_array_of_#{_gdal_data_type_to_ffi(data_type)}", data)
         else
           data = data.first if data.is_a?(Array)
-          pointer.send("write_#{_gdal_data_type_to_ffi(data_type)}", data)
+          pointer.send(:"write_#{_gdal_data_type_to_ffi(data_type)}", data)
         end
       end
 
