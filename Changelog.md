@@ -68,6 +68,14 @@ and this project adheres to
 ### Added
 
 - Added support for Ruby 4.0 in CI.
+- Added the following Missing variants in `FFI::GDAL::Warper::ResampleAlg`
+  - `:GRA_Mode`
+  - `:GRA_Max`
+  - `:GRA_Min`
+  - `:GRA_Med`
+  - `:GRA_Q1`
+  - `:GRA_Q3`
+
 
 ## [1.1.0] — 2024-08-16
 
