@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "gdal/driver"
-require "gdal/extensions/raster_band/io_extensions"
+require "gdal/extensions/raster_band/extensions"
 
 RSpec.describe "GDAL::RasterBand::IOExtensions" do
   let(:driver) { GDAL::Driver.by_name("MEM") }
@@ -156,6 +156,30 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
   end
 
   describe "#read_lines_by_block" do
+    context "block size is larger than the raster" do
+      let(:rows) { (1..4).map { |i| Array.new(15) { i } } }
+
+      let(:dataset_path) do
+        filename = "/tmp/#{SecureRandom.uuid}.tif"
+        options = { BLOCKXSIZE: 256, BLOCKYSIZE: 256, TILED: "YES" }
+        GDAL::Driver.by_name("GTiff").create_dataset(filename, 15, 4, **options) do |dataset|
+          dataset.raster_band(1).write_xy_narray(NArray.to_na(rows))
+        end
+        filename
+      end
+
+      after { FileUtils.rm_f(dataset_path) }
+
+      let(:dataset) { GDAL::Dataset.open(dataset_path, "r") }
+
+      subject { dataset.raster_band(1) }
+
+      it "yields all block rows with correct values" do
+        expect { |b| subject.read_lines_by_block(&b) }
+          .to yield_successive_args(*rows)
+      end
+    end
+
     context "block is given" do
       it "yields each row of pixels" do
         expect { |b| subject.read_lines_by_block(&b) }
