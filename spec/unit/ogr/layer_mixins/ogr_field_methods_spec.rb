@@ -213,7 +213,8 @@ RSpec.describe OGR::Layer do
 
       it "raises an OGR::UnsupportedOperation" do
         expect do
-          subject.alter_field_definition(123, OGR::FieldDefinition.new("blah", :OFTString), OGR::Layer::ALTER_ALL_FLAG)
+          subject.alter_field_definition(123, OGR::FieldDefinition.new("blah", :OFTString),
+                                         OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
         end.to raise_exception OGR::UnsupportedOperation
       end
     end
@@ -243,7 +244,7 @@ RSpec.describe OGR::Layer do
       context "no field at given index" do
         it "raises a GDAL::UnsupportedOperation" do
           expect do
-            subject.alter_field_definition(123, int_field_def, OGR::Layer::ALTER_ALL_FLAG)
+            subject.alter_field_definition(123, int_field_def, OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
           end.to raise_exception GDAL::UnsupportedOperation
         end
       end
@@ -319,13 +320,13 @@ RSpec.describe OGR::Layer do
           end
         end
 
-        context "ALTER_ALL_FLAG" do
+        context "ALTER_NAME_FLAG + ALTER_TYPE_FLAG + ALTER_WIDTH_PRECISION_FLAG" do
           context "convert OFTString to OFTInteger" do
             before { subject.create_field(string_field_def) }
 
             it "raises a GDAL::UnsupportedOperation" do
               expect do
-                subject.alter_field_definition(0, int_field_def, OGR::Layer::ALTER_ALL_FLAG)
+                subject.alter_field_definition(0, int_field_def, OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
               end.to raise_exception GDAL::UnsupportedOperation
             end
           end
@@ -334,7 +335,8 @@ RSpec.describe OGR::Layer do
             before { subject.create_field(int_field_def) }
 
             it "alters all attributes of the field" do
-              subject.alter_field_definition(0, string_field_def, OGR::Layer::ALTER_ALL_FLAG)
+              subject.alter_field_definition(0, string_field_def,
+                                             OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
 
               expect(subject.feature_definition.field_definition(0).name).to eq "StringField"
               expect(subject.feature_definition.field_definition(0).type).to eq :OFTString
@@ -346,7 +348,7 @@ RSpec.describe OGR::Layer do
             before { subject.create_field(int_field_def) }
 
             it "alters all attributes of the field" do
-              subject.alter_field_definition(0, real_field_def, OGR::Layer::ALTER_ALL_FLAG)
+              subject.alter_field_definition(0, real_field_def, OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
 
               expect(subject.feature_definition.field_definition(0).name).to eq "RealField"
               expect(subject.feature_definition.field_definition(0).type).to eq :OFTReal
@@ -359,7 +361,7 @@ RSpec.describe OGR::Layer do
 
             it "raises a GDAL::UnsupportedOperation" do
               expect do
-                subject.alter_field_definition(0, int_field_def, OGR::Layer::ALTER_ALL_FLAG)
+                subject.alter_field_definition(0, int_field_def, OGR::Layer::ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG)
               end.to raise_exception GDAL::UnsupportedOperation
             end
           end
