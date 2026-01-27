@@ -24,17 +24,66 @@ module OGR
     include SpatialReferenceMixins::ParameterGetterSetters
     include SpatialReferenceMixins::TypeChecks
 
-    # class_eval FFI::OGR::SRSAPI::SRS_UL.to_ruby
-    FFI::OGR::SRSAPI::SRS_UL.constants.each_value do |obj|
-      const_set(obj.ruby_name, obj.value)
-    end
-
+    # Linear unit constants from ogr_srs_api.h (SRS_UL_*)
+    METER_LABEL = "Meter"                                    # SRS_UL_METER
     METER_TO_METER = 1.0
+    FOOT_LABEL = "Foot (International)"                      # SRS_UL_FOOT
+    METER_TO_FOOT = 0.3048                                   # SRS_UL_FOOT_CONV
+    NAUTICAL_MILE_LABEL = "Nautical Mile"                    # SRS_UL_NAUTICAL_MILE
+    METER_TO_NAUTICAL_MILE = 1852.0                          # SRS_UL_NAUTICAL_MILE_CONV
+    LINK_LABEL = "Link"                                      # SRS_UL_LINK
+    METER_TO_LINK = 0.20116684023368047                      # SRS_UL_LINK_CONV
+    CHAIN_LABEL = "Chain"                                    # SRS_UL_CHAIN
+    METER_TO_CHAIN = 20.116684023368047                      # SRS_UL_CHAIN_CONV
+    ROD_LABEL = "Rod"                                        # SRS_UL_ROD
+    METER_TO_ROD = 5.02921005842012                          # SRS_UL_ROD_CONV
+    LINK_CLARKE_LABEL = "Link_Clarke"                        # SRS_UL_LINK_Clarke
+    METER_TO_LINK_CLARKE = 0.2011661949                      # SRS_UL_LINK_Clarke_CONV
+    KILOMETER_LABEL = "Kilometer"                            # SRS_UL_KILOMETER
+    METER_TO_KILOMETER = 1000.0                              # SRS_UL_KILOMETER_CONV
+    DECIMETER_LABEL = "Decimeter"                            # SRS_UL_DECIMETER
+    METER_TO_DECIMETER = 0.1                                 # SRS_UL_DECIMETER_CONV
+    CENTIMETER_LABEL = "Centimeter"                          # SRS_UL_CENTIMETER
+    METER_TO_CENTIMETER = 0.01                               # SRS_UL_CENTIMETER_CONV
+    MILLIMETER_LABEL = "Millimeter"                          # SRS_UL_MILLIMETER
+    METER_TO_MILLIMETER = 0.001                              # SRS_UL_MILLIMETER_CONV
+    INTL_NAUTICAL_MILE_LABEL = "Nautical_Mile_International" # SRS_UL_INTL_NAUT_MILE
+    METER_TO_INTL_NAUTICAL_MILE = 1852.0                     # SRS_UL_INTL_NAUT_MILE_CONV
+    INTL_INCH_LABEL = "Inch_International"                   # SRS_UL_INTL_INCH
+    METER_TO_INTL_INCH = 0.0254                              # SRS_UL_INTL_INCH_CONV
+    INTL_FOOT_LABEL = "Foot_International"                   # SRS_UL_INTL_FOOT
+    METER_TO_INTL_FOOT = 0.3048                              # SRS_UL_INTL_FOOT_CONV
+    INTL_YARD_LABEL = "Yard_International"                   # SRS_UL_INTL_YARD
+    METER_TO_INTL_YARD = 0.9144                              # SRS_UL_INTL_YARD_CONV
+    INTL_STATUTE_MILE_LABEL = "Statute_Mile_International"   # SRS_UL_INTL_STAT_MILE
+    METER_TO_INTL_STATUTE_MILE = 1609.344                    # SRS_UL_INTL_STAT_MILE_CONV
+    INTL_FATHOM_LABEL = "Fathom_International"               # SRS_UL_INTL_FATHOM
+    METER_TO_INTL_FATHOM = 1.8288                            # SRS_UL_INTL_FATHOM_CONV
+    INTL_CHAIN_LABEL = "Chain_International"                 # SRS_UL_INTL_CHAIN
+    METER_TO_INTL_CHAIN = 20.1168                            # SRS_UL_INTL_CHAIN_CONV
+    INTL_LINK_LABEL = "Link_International"                   # SRS_UL_INTL_LINK
+    METER_TO_INTL_LINK = 0.201168                            # SRS_UL_INTL_LINK_CONV
+    US_INCH_LABEL = "Inch_US_Surveyor"                       # SRS_UL_US_INCH
+    METER_TO_US_INCH = 0.025400050800101603                  # SRS_UL_US_INCH_CONV
+    US_FOOT_LABEL = "Foot_US"                                # SRS_UL_US_FOOT
+    METER_TO_US_FOOT = 0.3048006096012192                    # SRS_UL_US_FOOT_CONV
+    US_YARD_LABEL = "Yard_US_Surveyor"                       # SRS_UL_US_YARD
+    METER_TO_US_YARD = 0.914401828803658                     # SRS_UL_US_YARD_CONV
+    US_CHAIN_LABEL = "Chain_US_Surveyor"                     # SRS_UL_US_CHAIN
+    METER_TO_US_CHAIN = 20.11684023368047                    # SRS_UL_US_CHAIN_CONV
+    US_STATUTE_MILE_LABEL = "Statute_Mile_US_Surveyor"       # SRS_UL_US_STAT_MILE
+    METER_TO_US_STATUTE_MILE = 1609.347218694437             # SRS_UL_US_STAT_MILE_CONV
+    INDIAN_YARD_LABEL = "Yard_Indian"                        # SRS_UL_INDIAN_YARD
+    METER_TO_INDIAN_YARD = 0.91439523                        # SRS_UL_INDIAN_YARD_CONV
+    INDIAN_FOOT_LABEL = "Foot_Indian"                        # SRS_UL_INDIAN_FOOT
+    METER_TO_INDIAN_FOOT = 0.30479841                        # SRS_UL_INDIAN_FOOT_CONV
+    INDIAN_CHAIN_LABEL = "Chain_Indian"                      # SRS_UL_INDIAN_CHAIN
+    METER_TO_INDIAN_CHAIN = 20.11669506                      # SRS_UL_INDIAN_CHAIN_CONV
 
-    FFI::OGR::SRSAPI::SRS_UA.constants.each_value do |obj|
-      const_set(obj.ruby_name, obj.value)
-    end
-
+    # Angular unit constants from ogr_srs_api.h (SRS_UA_*)
+    DEGREE_LABEL = "degree"                                  # SRS_UA_DEGREE
+    RADIAN_TO_DEGREE = 0.0174532925199433                    # SRS_UA_DEGREE_CONV
+    RADIAN_LABEL = "radian"                                  # SRS_UA_RADIAN
     RADIAN_TO_RADIAN = 1.0
 
     # @deprecated This was removed in GDAL 3.0.

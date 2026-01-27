@@ -77,7 +77,7 @@ module OGR
       # @param new_field_definition [OGR::FieldDefinition] The definition for
       #   which to base the Field at +field_index+ off of.
       # @param flags [Integer] ALTER_NAME_FLAG, ALTER_TYPE_FLAG,
-      #   ALTER_WIDTH_PRECISION_FLAG, or ALTER_ALL_FLAG.
+      #   ALTER_WIDTH_PRECISION_FLAG, or other ALTER_* flags.
       # @raise [OGR::Failure]
       def alter_field_definition(field_index, new_field_definition, flags)
         unless test_capability("AlterFieldDefn")

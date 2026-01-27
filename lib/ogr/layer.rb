@@ -18,9 +18,12 @@ module OGR
     include LayerMixins::OGRQueryFilterMethods
     include LayerMixins::OGRSQLMethods
 
-    FFI::OGR::Core::OGR_ALTER.constants.each_value do |obj|
-      const_set(obj.ruby_name, obj.value.to_i(16))
-    end
+    # OGR_ALTER constants from ogr_core.h
+    ALTER_NAME_FLAG = 1                                           # ALTER_NAME_FLAG
+    ALTER_TYPE_FLAG = 2                                           # ALTER_TYPE_FLAG
+    ALTER_WIDTH_PRECISION_FLAG = 4                                # ALTER_WIDTH_PRECISION_FLAG
+    # Computed union of basic alteration flags (version-independent)
+    ALTER_UNION_NAME_TYPE_WIDTH_PRECISION_FLAG = ALTER_NAME_FLAG | ALTER_TYPE_FLAG | ALTER_WIDTH_PRECISION_FLAG
 
     # @return [FFI::Pointer] C pointer to the C Layer.
     attr_reader :c_pointer
