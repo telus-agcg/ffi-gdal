@@ -34,12 +34,12 @@ RSpec.describe "Tiled RasterBand IO extensions", type: :integration do
   end
 
   describe "#to_na" do
-    it "returns an NArray whose shape matches the band's x/y sizes" do
-      expect(raster_band.to_na.shape).to eq([raster_band.x_size, raster_band.y_size])
+    it "returns a Numo::NArray whose row-major shape matches the band's y/x sizes" do
+      expect(raster_band.to_na.shape).to eq([raster_band.y_size, raster_band.x_size])
     end
 
     it "orders pixels the same as a canonical full-band read" do
-      expect(raster_band.to_na).to eq(NArray.to_na(reference))
+      expect(raster_band.to_na).to eq(Numo::UInt8.cast(reference))
     end
   end
 

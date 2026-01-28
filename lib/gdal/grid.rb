@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
-require "narray"
+require "numo/narray"
 require_relative "../gdal"
 require_relative "grid_algorithms"
 
@@ -24,7 +24,7 @@ module GDAL
       @data_type = data_type
     end
 
-    # @param points [Array,NArray] An Array containing all x, y, and z points.
+    # @param points [Array,Numo::NArray] An Array containing all x, y, and z points.
     # @param extents [Hash{x_min: Integer, y_min: Integer, x_max: Integer, y_max: Integer}]
     # @param data_pointer [FFI::Pointer] Pointer that will contain the gridded
     #   data (after this method is done).
@@ -35,7 +35,7 @@ module GDAL
     # @return [FFI::MemoryPointer] Pointer to the grid data.
     def create(points, extents, data_pointer, output_size = { x: 256, y: 256 },
       progress_block = nil, progress_arg = nil)
-      points = points.to_a if points.is_a? NArray
+      points = points.to_a if points.is_a? Numo::NArray
       point_count = points.length
       log "Number of points: #{point_count}"
       raise GDAL::NoValuesToGrid, "No points to grid" if point_count.zero?

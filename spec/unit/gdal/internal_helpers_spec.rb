@@ -196,67 +196,67 @@ RSpec.describe GDAL::InternalHelpers do
     context "data_type is :GDT_Byte" do
       let(:data_type) { :GDT_Byte }
 
-      it { is_expected.to eq(:byte) }
+      it { is_expected.to eq(Numo::UInt8) }
     end
 
     context "data_type is :GDT_Int16" do
       let(:data_type) { :GDT_Int16 }
 
-      it { is_expected.to eq(:sint) }
+      it { is_expected.to eq(Numo::Int16) }
     end
 
     context "data_type is :GDT_UInt16" do
       let(:data_type) { :GDT_UInt16 }
 
-      it { is_expected.to eq(:int) }
+      it { is_expected.to eq(Numo::UInt16) }
     end
 
     context "data_type is :GDT_Int32" do
       let(:data_type) { :GDT_Int32 }
 
-      it { is_expected.to eq(:int) }
+      it { is_expected.to eq(Numo::Int32) }
     end
 
     context "data_type is :GDT_UInt32" do
       let(:data_type) { :GDT_UInt32 }
 
-      it { is_expected.to eq(:int) }
+      it { is_expected.to eq(Numo::UInt32) }
     end
 
     context "data_type is :GDT_Float32" do
       let(:data_type) { :GDT_Float32 }
 
-      it { is_expected.to eq(:float) }
+      it { is_expected.to eq(Numo::SFloat) }
     end
 
     context "data_type is :GDT_Float64" do
       let(:data_type) { :GDT_Float64 }
 
-      it { is_expected.to eq(:dfloat) }
+      it { is_expected.to eq(Numo::DFloat) }
     end
 
     context "data_type is :GDT_CInt16" do
       let(:data_type) { :GDT_CInt16 }
 
-      it { is_expected.to eq(:scomplex) }
+      it { is_expected.to eq(Numo::SComplex) }
     end
 
     context "data_type is :GDT_CInt32" do
       let(:data_type) { :GDT_CInt32 }
 
-      it { is_expected.to eq(:scomplex) }
+      it { is_expected.to eq(Numo::SComplex) }
     end
 
     context "data_type is :GDT_CFloat32" do
       let(:data_type) { :GDT_CFloat32 }
 
-      it { is_expected.to eq(:complex) }
+      it { is_expected.to eq(Numo::SComplex) }
     end
 
     context "data_type is :GDT_CFloat64" do
       let(:data_type) { :GDT_CFloat64 }
 
-      it { is_expected.to eq(:dcomplex) }
+      it { is_expected.to eq(Numo::DComplex) }
     end
 
     context "unknown data_type" do
@@ -271,21 +271,21 @@ RSpec.describe GDAL::InternalHelpers do
     context "0 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte) }
 
-      it { is_expected.to be_a NArray }
+      it { is_expected.to be_a Numo::NArray }
 
-      it "has size 0" do
-        expect(subject.size).to be_zero
+      it "has size 1 (zeros with no args creates [0])" do
+        expect(subject.size).to eq(1)
       end
 
-      it "has shape []" do
-        expect(subject.shape).to eq([])
+      it "has shape [1]" do
+        expect(subject.shape).to eq([1])
       end
     end
 
     context "1 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte, 2) }
 
-      it { is_expected.to be_a NArray }
+      it { is_expected.to be_a Numo::NArray }
 
       it "has size of the 2nd param" do
         expect(subject.size).to eq(2)
@@ -299,7 +299,7 @@ RSpec.describe GDAL::InternalHelpers do
     context "2 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte, 2, 3) }
 
-      it { is_expected.to be_a NArray }
+      it { is_expected.to be_a Numo::NArray }
 
       it "has size of the 2nd param * 3rd param" do
         expect(subject.size).to eq(6)
@@ -310,41 +310,38 @@ RSpec.describe GDAL::InternalHelpers do
       end
     end
 
-    # narray has no unsigned integer types and aliases its FLOAT/COMPLEX
-    # constants to the double-precision variants, so several GDAL data types
-    # allocate wider or differently-signed storage than their names suggest.
-    # (NArray's == compares values across types, so each type needs an
-    # explicit typecode assertion.)
+    # Numo provides real unsigned and single-precision types, where narray
+    # mapped these to signed int and double storage. (Numo's == compares
+    # values across types, so each type needs an explicit class assertion.)
     context "data_type is :GDT_UInt16" do
       subject { GDAL._narray_from_data_type(:GDT_UInt16, 2) }
 
-      it "allocates signed int storage" do
-        expect(subject.typecode).to eq(NArray::INT)
+      it "allocates unsigned 16-bit storage" do
+        expect(subject.class).to eq(Numo::UInt16)
       end
     end
 
     context "data_type is :GDT_UInt32" do
       subject { GDAL._narray_from_data_type(:GDT_UInt32, 2) }
 
-      # Values above 2**31 - 1 are not representable in the allocated array.
-      it "allocates signed int storage" do
-        expect(subject.typecode).to eq(NArray::INT)
+      it "allocates unsigned 32-bit storage" do
+        expect(subject.class).to eq(Numo::UInt32)
       end
     end
 
     context "data_type is :GDT_Float32" do
       subject { GDAL._narray_from_data_type(:GDT_Float32, 2) }
 
-      it "allocates double-precision storage" do
-        expect(subject.typecode).to eq(NArray::DFLOAT)
+      it "allocates single-precision storage" do
+        expect(subject.class).to eq(Numo::SFloat)
       end
     end
 
     context "data_type is :GDT_CFloat32" do
       subject { GDAL._narray_from_data_type(:GDT_CFloat32, 2) }
 
-      it "allocates double-precision complex storage" do
-        expect(subject.typecode).to eq(NArray::DCOMPLEX)
+      it "allocates single-precision complex storage" do
+        expect(subject.class).to eq(Numo::SComplex)
       end
     end
 
