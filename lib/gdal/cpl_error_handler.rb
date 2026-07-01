@@ -95,10 +95,13 @@ module GDAL
     # @return [Proc] A lambda that adheres to the CPL Error interface.
     def handler_lambda
       @handler_lambda ||= lambda do |error_class, error_number, message|
-        r = result(error_class, error_number, message)
+        result(error_class, error_number, message)
+      ensure
+        # Reset even when #result raises (CE_Failure/CE_Fatal): the exception
+        # already carries the error to Ruby-land, and a stale thread-local
+        # error state would be misread by OGR functions that report failure
+        # via CPLGetLastErrorType (e.g. OGR_DS_SyncToDisk).
         FFI::CPL::Error.CPLErrorReset
-
-        r
       end
     end
 
