@@ -70,8 +70,6 @@ CI is run against:
   (**GDAL 3.8.4**, PROJ 9.4.0, GEOS 3.12.1)
 - Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 22.04
   (**GDAL 3.4.1**, PROJ 8.2.1, GEOS 3.10.2)
-- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 20.04
-  (**GDAL 3.0.4**, PROJ 6.3.1, GEOS 3.8.0)
 - Ruby 3.2 with **GDAL 2.4.4**
 
 > GDAL itself has differences in behaviour between versions. This means that
