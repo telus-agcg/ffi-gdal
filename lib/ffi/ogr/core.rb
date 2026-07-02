@@ -25,7 +25,8 @@ module FFI
                  :OGRERR_CORRUPT_DATA,
                  :OGRERR_FAILURE,
                  :OGRERR_UNSUPPORTED_SRS,
-                 :OGRERR_INVALID_HANDLE
+                 :OGRERR_INVALID_HANDLE,
+                 :OGRERR_NON_EXISTING_FEATURE
 
       WKBGeometryType = enum FFI::Type::UINT,
                              :wkbUnknown,                0,

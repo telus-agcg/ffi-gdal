@@ -66,5 +66,19 @@ RSpec.describe OGR::ErrorHandling do
           .to raise_exception OGR::InvalidHandle
       end
     end
+
+    context ":OGRERR_NON_EXISTING_FEATURE" do
+      it "raises an OGR::NonExistingFeature exception" do
+        expect { described_class.handle_ogr_err("") { :OGRERR_NON_EXISTING_FEATURE } }
+          .to raise_exception OGR::NonExistingFeature
+      end
+    end
+
+    context "unknown OGRERR type" do
+      it "raises a RuntimeError naming the unknown type" do
+        expect { described_class.handle_ogr_err("") { :OGRERR_BOGUS } }
+          .to raise_exception RuntimeError, "Unknown OGRERR type: OGRERR_BOGUS"
+      end
+    end
   end
 end
