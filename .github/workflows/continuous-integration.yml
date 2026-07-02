@@ -32,9 +32,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install GDAL
-        run:
-          sudo apt-get install -y --no-install-recommends libgdal-dev
-          librttopo-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgdal-dev librttopo-dev
       - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -43,5 +43,4 @@ jobs:
           bundler-cache: true
       - name: Run specs
         run:
-          bundle exec rspec spec --format RSpec::Github::Formatter --format
-          progress
+          bundle exec rspec spec --format RSpec::Github::Formatter --format progress
