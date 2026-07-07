@@ -54,8 +54,21 @@ module GDAL
   # Register all drivers!
   ::FFI::GDAL::GDAL.GDALAllRegister
 
-  # We define our own error handler so we can turn GDAL errors into Ruby
-  # exceptions.
+  # We define our own error handler so we can turn GDAL errors into Ruby exceptions.
+  #
+  # The handler is installed in two places on purpose:
+  #
+  #   * As the GLOBAL handler we install GDAL's native (C) default handler. GDAL's own worker
+  #     threads (e.g. the multi-threaded warp in GDAL >= 3.11) report through the global
+  #     handler; it must NOT be a Ruby callback. A Ruby callback invoked from a worker thread
+  #     needs the GVL, which the calling Ruby thread holds across the blocking GDAL call, so
+  #     the two deadlock. The native default handler keeps worker-thread warnings visible on
+  #     stderr. See GDAL::CPLErrorHandler::NATIVE_DEFAULT_HANDLER.
+  #   * As a PUSHED handler on the main thread we install the Ruby handler. GDAL's error
+  #     handler stack is thread-local, so this only affects the main thread: main-thread
+  #     errors are still turned into Ruby exceptions exactly as before, while worker threads
+  #     fall back to the native global handler.
   FFI_GDAL_ERROR_HANDLER = GDAL::CPLErrorHandler.handle_error
-  ::FFI::CPL::Error.CPLSetErrorHandler(FFI_GDAL_ERROR_HANDLER)
+  ::FFI::CPL::Error.CPLSetErrorHandler(GDAL::CPLErrorHandler::NATIVE_DEFAULT_HANDLER)
+  ::FFI::CPL::Error.CPLPushErrorHandler(FFI_GDAL_ERROR_HANDLER)
 end
