@@ -32,9 +32,14 @@ RSpec.describe GDAL::Utils::DEM::Options do
     let(:options) { ["-unknown123"] }
 
     it "raises exception" do
-      expect { subject }.to raise_exception(
-        GDAL::UnsupportedOperation, "Unknown option name '-unknown123'"
-      )
+      expected_errors = [
+        [GDAL::Error, "Unexpected exception: Argument(s) are not valid with any processing mode."], # GDAL 3.10+
+        [GDAL::UnsupportedOperation, "Unknown option name '-unknown123'"] # GDAL < 3.10
+      ]
+
+      expect { subject }.to raise_exception(StandardError) do |error|
+        expect(expected_errors).to include([error.class, error.message])
+      end
     end
   end
 end

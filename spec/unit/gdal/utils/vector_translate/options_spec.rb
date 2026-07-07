@@ -32,9 +32,14 @@ RSpec.describe GDAL::Utils::VectorTranslate::Options do
     let(:options) { ["-overwrite123"] }
 
     it "raises exception" do
-      expect { subject }.to raise_exception(
-        GDAL::UnsupportedOperation, "Unknown option name '-overwrite123'"
-      )
+      expected_errors = [
+        [GDAL::Error, "Unknown argument: -overwrite123"], # GDAL 3.9+
+        [GDAL::UnsupportedOperation, "Unknown option name '-overwrite123'"] # GDAL < 3.9
+      ]
+
+      expect { subject }.to raise_exception(StandardError) do |error|
+        expect(expected_errors).to include([error.class, error.message])
+      end
     end
   end
 end

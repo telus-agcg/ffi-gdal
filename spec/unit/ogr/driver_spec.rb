@@ -119,11 +119,18 @@ RSpec.describe OGR::Driver do
   end
 
   describe "#delete_data_source" do
-    context "does not support deleting" do
-      context "data source does not exist" do
-        it "raises a OGR::UnsupportedOperation (Memory driver doesn't support)" do
-          expect { subject.delete_data_source("we no here") }.to raise_exception OGR::UnsupportedOperation
-        end
+    context "data source does not exist" do
+      # GDAL 3.11 aliased the Memory driver to the MEM driver, which supports deleting.
+      it "raises a OGR::UnsupportedOperation (Memory driver doesn't support deleting)" do
+        skip "GDAL 3.11+ Memory driver supports deleting" if GDAL.version_num >= "3110000"
+
+        expect { subject.delete_data_source("we no here") }.to raise_exception OGR::UnsupportedOperation
+      end
+
+      it "does not raise (Memory driver supports deleting)" do
+        skip "This spec only for GDAL 3.11+" if GDAL.version_num < "3110000"
+
+        expect { subject.delete_data_source("we no here") }.not_to raise_exception
       end
     end
   end
