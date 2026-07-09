@@ -35,6 +35,12 @@ Style/StringLiterals:
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
+# Dir.glob/Dir[] ordering is filesystem-dependent and not guaranteed
+# sorted on all platforms; keep explicit .sort for deterministic
+# require order. Rubocop itself marks this cop's autocorrect unsafe.
+Lint/RedundantDirGlobSort:
+  Enabled: false
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
