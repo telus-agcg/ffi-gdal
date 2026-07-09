@@ -15,6 +15,12 @@ and this project adheres to
   (previously tested a matrix of Ruby 2.6–3.4 across Ubuntu
   20.04/22.04/24.04).
 
+### Removed
+
+- Removed the "Specs in Docker" (GDAL2) CI workflow. The `Dockerfile.gdal2`
+  and `docker-compose.yml` `gdal2` service remain for local testing against
+  GDAL 2.4.4, but this is no longer verified in CI.
+
 ### Added
 
 - Added support for Ruby 4.0 in CI.

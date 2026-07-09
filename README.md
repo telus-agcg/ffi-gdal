@@ -68,11 +68,16 @@ FFI::CPL::Conv.CPLSetConfigOption('CPL_LOG_ERRORS', 'ON')
 CI is run against:
 - Ruby 3.4, 4.0 for Ubuntu 24.04 (**GDAL 3.8.4**, PROJ 9.4.0, GEOS 3.12.1)
 - Ruby 3.4, 4.0 for Ubuntu 22.04 (**GDAL 3.4.1**, PROJ 8.2.1, GEOS 3.10.2)
-- Ruby 3.2 with **GDAL 2.4.4** (via Docker)
 
 > We intentionally pin CI to specific Ubuntu versions (rather than
 > `-latest`) so that GDAL/PROJ/GEOS library compatibility is tracked and
 > upgraded deliberately.
+
+GDAL 2.4 compatibility is no longer covered by CI, but a `docker-compose.yml`
+with a `gdal2` service (see `Dockerfile.gdal2`) is kept around for local
+testing against GDAL 2.4.4, e.g. `docker compose run --rm gdal2 bundle exec
+rspec`. This is also handy if you're on macOS/Windows and want to run specs
+against Linux + GDAL locally.
 
 > GDAL itself has differences in behaviour between versions. This means that
 > upgrading your project to a newer version of GDAL may introduce some
