@@ -73,11 +73,11 @@ module GDAL
       # @param options [GDAL::Utils::Nearblack::Options] Options.
       # @yield [GDAL::Dataset] The destination dataset.
       # @return [GDAL::Dataset] The destination dataset (only if block is not specified; dataset must be closed).
-      def self.perform(src_dataset:, dst_dataset: nil, dst_dataset_path: nil, options: Options.new, &block)
+      def self.perform(src_dataset:, dst_dataset: nil, dst_dataset_path: nil, options: Options.new, &)
         if dst_dataset
           for_dataset(dst_dataset: dst_dataset, src_dataset: src_dataset, options: options)
         else
-          for_dataset_path(dst_dataset_path: dst_dataset_path, src_dataset: src_dataset, options: options, &block)
+          for_dataset_path(dst_dataset_path: dst_dataset_path, src_dataset: src_dataset, options: options, &)
         end
       end
 
@@ -89,12 +89,12 @@ module GDAL
       end
       private_class_method :for_dataset
 
-      def self.for_dataset_path(dst_dataset_path:, src_dataset:, options: Options.new, &block)
+      def self.for_dataset_path(dst_dataset_path:, src_dataset:, options: Options.new, &)
         dst_dataset_ptr = result_dataset_ptr(
           dst_dataset_path: dst_dataset_path, src_dataset: src_dataset, options: options
         )
 
-        ::GDAL::Dataset.open(dst_dataset_ptr, "w", &block)
+        ::GDAL::Dataset.open(dst_dataset_ptr, "w", &)
       end
       private_class_method :for_dataset_path
 

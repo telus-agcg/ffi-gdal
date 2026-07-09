@@ -30,9 +30,29 @@ Style/Documentation:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
+# Keep existing explicit hash syntax; don't force Ruby 3.1+ shorthand
+# (`{x:}`) just because TargetRubyVersion was raised.
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+# Dir.glob/Dir[] ordering is filesystem-dependent and not guaranteed
+# sorted on all platforms; keep explicit .sort for deterministic
+# require order. Rubocop itself marks this cop's autocorrect unsafe.
+Lint/RedundantDirGlobSort:
+  Enabled: false
+
+# Several public methods forward **options/&block by name so their YARD
+# @param/@option docs stay accurate (anonymous `**`/`&` forwarding would
+# make the documented parameter names disappear from the signature).
+Style/ArgumentsForwarding:
+  Enabled: false
+
+Naming/BlockForwarding:
+  Enabled: false
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   NewCops: enable
   SuggestExtensions: false
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.4

@@ -43,12 +43,12 @@ module FFI
 
       header_search_paths = %w[/usr/local/include /usr/include /usr/include/gdal /opt/homebrew/include/]
 
-      header_files.map do |file|
+      header_files.filter_map do |file|
         dir = header_search_paths.find do |d|
           File.exist?("#{d}/#{file}")
         end
         dir ? "#{dir}/#{file}" : nil
-      end.compact
+      end
     end
 
     # Locates one of the files that has constants.

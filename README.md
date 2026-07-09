@@ -10,7 +10,7 @@ Ruby wrapper around GDAL, using FFI, along with some helper methods.
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
 - **GDAL 2.4** and **GDAL 3+** are supported.
-- Ruby **2.6+** supported.
+- Ruby **3.4+** supported.
 
 ## Installation
 
@@ -66,13 +66,18 @@ FFI::CPL::Conv.CPLSetConfigOption('CPL_LOG_ERRORS', 'ON')
 ## Compatibility
 
 CI is run against:
-- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 24.04
-  (**GDAL 3.8.4**, PROJ 9.4.0, GEOS 3.12.1)
-- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 22.04
-  (**GDAL 3.4.1**, PROJ 8.2.1, GEOS 3.10.2)
-- Ruby 2.6, 2.7, 3.0, 3.1, 3.2, 3.3 for Ubuntu 20.04
-  (**GDAL 3.0.4**, PROJ 6.3.1, GEOS 3.8.0)
-- Ruby 3.2 with **GDAL 2.4.4**
+- Ruby 3.4, 4.0 for Ubuntu 24.04 (**GDAL 3.8.4**, PROJ 9.4.0, GEOS 3.12.1)
+- Ruby 3.4, 4.0 for Ubuntu 22.04 (**GDAL 3.4.1**, PROJ 8.2.1, GEOS 3.10.2)
+
+> We intentionally pin CI to specific Ubuntu versions (rather than
+> `-latest`) so that GDAL/PROJ/GEOS library compatibility is tracked and
+> upgraded deliberately.
+
+GDAL 2.4 compatibility is no longer covered by CI, but a `docker-compose.yml`
+with a `gdal2` service (see `Dockerfile.gdal2`) is kept around for local
+testing against GDAL 2.4.4, e.g. `docker compose run --rm gdal2 bundle exec
+rspec`. This is also handy if you're on macOS/Windows and want to run specs
+against Linux + GDAL locally.
 
 > GDAL itself has differences in behaviour between versions. This means that
 > upgrading your project to a newer version of GDAL may introduce some
