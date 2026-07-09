@@ -29,6 +29,10 @@ and this project adheres to
   YJIT intermittently crashes the VM (`[BUG] should have cvar cache entry`
   inside `rexml`) on `ubuntu-22.04`; this is an upstream Ruby interpreter
   bug, not an issue in this gem. Remove once fixed upstream.
+- Added `benchmark` as an explicit dependency. Without it, `rubocop`
+  (pinned to `1.63.1`) fails to even start under Ruby 4.0 with
+  `LoadError: cannot load such file -- benchmark`, since Ruby 4.0 removed
+  `benchmark` from its default gems and rubocop's executable requires it.
 
 ### Removed
 
