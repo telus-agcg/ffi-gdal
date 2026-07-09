@@ -15,11 +15,20 @@ and this project adheres to
   (previously tested a matrix of Ruby 2.6–3.4 across Ubuntu
   20.04/22.04/24.04).
 
+### Fixed
+
+- Added `logger` as an explicit runtime dependency. It was removed from
+  Ruby's default gems in 4.0, and `log_switch` (used for `GDAL::Logger`)
+  requires it; without this, `require "ffi-gdal"` fails on Ruby 4.0.
+
 ### Removed
 
 - Removed the "Specs in Docker" (GDAL2) CI workflow. The `Dockerfile.gdal2`
   and `docker-compose.yml` `gdal2` service remain for local testing against
   GDAL 2.4.4, but this is no longer verified in CI.
+- Removed the Codacy Security Scan CI workflow. It has never passed
+  (fails with a credentials/tool-repository error unrelated to this repo's
+  code) and isn't worth the maintenance/noise.
 
 ### Added
 
