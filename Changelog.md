@@ -20,10 +20,11 @@ and this project adheres to
 - Added `logger` as an explicit runtime dependency. It was removed from
   Ruby's default gems in 4.0, and `log_switch` (used for `GDAL::Logger`)
   requires it; without this, `require "ffi-gdal"` fails on Ruby 4.0.
-- Replaced `Ractor#take` with `Ractor#value` in the Ractor integration spec.
-  `Ractor#take`/`Ractor.yield` were removed in Ruby 4.0 in favor of
-  `Ractor::Port`; `Ractor#value` (available since Ruby 3.1) is a compatible
-  replacement supported on both 3.4 and 4.0.
+- Fixed the Ractor integration spec on Ruby 4.0. `Ractor#take` was removed
+  in Ruby 4.0 in favor of `Ractor#value` (backed by `Ractor::Port`), but
+  `Ractor#value` doesn't exist prior to Ruby 4.0 — so neither method works
+  across our whole Ruby matrix. The spec now picks whichever method is
+  defined at runtime.
 
 ### Removed
 

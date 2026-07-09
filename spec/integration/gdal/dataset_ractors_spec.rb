@@ -29,7 +29,11 @@ RSpec.describe "Dataset with Ractors", type: :integration do
         end
       end
 
-      datasets = ractors.map(&:value)
+      # Ractor#take was removed in Ruby 4.0 in favor of Ractor#value (via
+      # Ractor::Port); Ractor#value doesn't exist prior to Ruby 4.0. Support
+      # both until we drop one of these Ruby versions.
+      fetch_result = Ractor.method_defined?(:value) ? :value : :take
+      datasets = ractors.map { |ractor| ractor.public_send(fetch_result) }
 
       expect(datasets.size).to eq(2)
       expect(datasets.map(&:description)).to eq(dataset_paths)
