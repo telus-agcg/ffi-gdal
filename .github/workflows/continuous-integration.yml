@@ -31,6 +31,11 @@ jobs:
         ruby-version: ["3.4", "4.0"]
     name: "Test on Ruby ${{ matrix.ruby-version }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
+    env:
+      # rubocop/rexml (and the VM crash they were suspected of triggering
+      # under Ruby 4.0 on ubuntu-22.04) are only needed for the separate
+      # Rubocop job, not for running specs.
+      BUNDLE_WITHOUT: lint
     steps:
       - name: Install GDAL
         run: |
@@ -44,12 +49,6 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - name: Run specs
-        # RUBY_YJIT_ENABLE=0: works around a Ruby 4.0 YJIT VM crash
-        # ("[BUG] should have cvar cache entry" in rexml) seen intermittently
-        # on ubuntu-22.04. This is a Ruby interpreter bug, not a bug in this
-        # gem; remove once fixed upstream in Ruby.
         run:
           bundle exec rspec spec --format RSpec::Github::Formatter --format
           progress
-        env:
-          RUBY_YJIT_ENABLE: 0

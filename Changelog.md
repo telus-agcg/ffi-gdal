@@ -25,14 +25,21 @@ and this project adheres to
   `Ractor#value` doesn't exist prior to Ruby 4.0 — so neither method works
   across our whole Ruby matrix. The spec now picks whichever method is
   defined at runtime.
-- Disabled YJIT (`RUBY_YJIT_ENABLE=0`) when running specs in CI. Ruby 4.0's
-  YJIT intermittently crashes the VM (`[BUG] should have cvar cache entry`
-  inside `rexml`) on `ubuntu-22.04`; this is an upstream Ruby interpreter
-  bug, not an issue in this gem. Remove once fixed upstream.
+- Disabled YJIT (`RUBY_YJIT_ENABLE=0`) when running specs in CI, suspecting
+  it caused an intermittent Ruby 4.0 VM crash (`[BUG] should have cvar
+  cache entry` inside `rexml`) on `ubuntu-22.04`. Later confirmed YJIT was
+  already off by default and unrelated to the crash — removed this in
+  favor of the `:lint` group change below.
 - Added `benchmark` as an explicit dependency. Without it, `rubocop`
   (pinned to `1.63.1`) fails to even start under Ruby 4.0 with
   `LoadError: cannot load such file -- benchmark`, since Ruby 4.0 removed
   `benchmark` from its default gems and rubocop's executable requires it.
+- Moved `rubocop`/`rubocop-performance` (and their `benchmark` dependency)
+  into a `:lint` Bundler group, excluded from the Test CI job's `bundle
+  install` (`BUNDLE_WITHOUT: lint`). Rubocop (and its `rexml` dependency,
+  which was suspected in the YJIT investigation above) isn't needed to run
+  specs; this shrinks the Test job's dependency footprint and rules out
+  rubocop/rexml as a factor in the intermittent Ruby 4.0 VM crash.
 
 ### Removed
 
