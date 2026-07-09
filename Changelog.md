@@ -46,6 +46,15 @@ and this project adheres to
   `rexml` transitively. Moving rubocop into the `:lint` group (above)
   surfaced this — the Test job's specs failed with `MultiXml.parse`
   errors once rexml was no longer implicitly installed.
+- Reverted anonymous `**`/`&` argument forwarding (introduced by rubocop's
+  autocorrect when `TargetRubyVersion` was raised to 3.4) back to named
+  `**options`/`&progress` parameters in `OGR::LayerMixins::OGRLayerMethodMethods`
+  (`clip`, `erase`, `identity`, `intersection`, `symmetrical_difference`,
+  `union`, `update`) and `GDAL::RasterBandMixins::AlgorithmMethods`
+  (`sieve_filter!`, `sieve_filter`). Anonymous forwarding made these
+  signatures no longer match their YARD `@param options`/`@option options`
+  docs. `Style/ArgumentsForwarding`/`Naming/BlockForwarding` are now
+  disabled in `.rubocop.yml` so rubocop doesn't re-autocorrect them back.
 
 ### Removed
 

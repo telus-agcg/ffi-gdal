@@ -41,6 +41,15 @@ Style/HashSyntax:
 Lint/RedundantDirGlobSort:
   Enabled: false
 
+# Several public methods forward **options/&block by name so their YARD
+# @param/@option docs stay accurate (anonymous `**`/`&` forwarding would
+# make the documented parameter names disappear from the signature).
+Style/ArgumentsForwarding:
+  Enabled: false
+
+Naming/BlockForwarding:
+  Enabled: false
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
