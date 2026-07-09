@@ -84,11 +84,11 @@ module GDAL
       # @param options [GDAL::Utils::VectorTranslate::Options] Options.
       # @yield [OGR::DataSource] The destination dataset.
       # @return [OGR::DataSource] The destination dataset (only if block is not specified; dataset must be closed).
-      def self.perform(dst_dataset: nil, dst_dataset_path: nil, src_datasets: [], options: Options.new, &block)
+      def self.perform(dst_dataset: nil, dst_dataset_path: nil, src_datasets: [], options: Options.new, &)
         if dst_dataset
           for_dataset(dst_dataset: dst_dataset, src_datasets: src_datasets, options: options)
         else
-          for_dataset_path(dst_dataset_path: dst_dataset_path, src_datasets: src_datasets, options: options, &block)
+          for_dataset_path(dst_dataset_path: dst_dataset_path, src_datasets: src_datasets, options: options, &)
         end
       end
 
@@ -100,12 +100,12 @@ module GDAL
       end
       private_class_method :for_dataset
 
-      def self.for_dataset_path(dst_dataset_path:, src_datasets: [], options: Options.new, &block)
+      def self.for_dataset_path(dst_dataset_path:, src_datasets: [], options: Options.new, &)
         dst_dataset_ptr = result_dataset_ptr(
           dst_dataset_path: dst_dataset_path, src_datasets: src_datasets, options: options
         )
 
-        ::OGR::DataSource.open(dst_dataset_ptr, "w", &block)
+        ::OGR::DataSource.open(dst_dataset_ptr, "w", &)
       end
       private_class_method :for_dataset_path
 

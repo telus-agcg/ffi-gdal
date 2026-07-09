@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.require_paths = %w[lib]
-  spec.required_ruby_version = ">= 2.6"
+  spec.required_ruby_version = ">= 3.4"
 
   spec.add_dependency "bindata", "~> 2.0"
   spec.add_dependency "ffi"

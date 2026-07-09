@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Dropped support for Ruby < 3.4. `required_ruby_version` is now `>= 3.4`.
+- CI now runs against Ruby 3.4 and 4.0 on Ubuntu 22.04/24.04 only
+  (previously tested a matrix of Ruby 2.6–3.4 across Ubuntu
+  20.04/22.04/24.04).
+
+### Added
+
+- Added support for Ruby 4.0 in CI.
+
 ## [1.1.0] — 2024-08-16
 
 ### Added

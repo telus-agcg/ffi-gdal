@@ -53,7 +53,7 @@ module GDAL
       # @yield [GDAL::Dataset] The destination dataset.
       # @return [GDAL::Dataset] The destination dataset (only if block is not specified; dataset must be closed).
       # @raise [GDAL::Error] If the operation fails.
-      def self.perform(dst_dataset_path:, src_dataset:, options: Options.new, &block)
+      def self.perform(dst_dataset_path:, src_dataset:, options: Options.new, &)
         result_code_ptr = ::FFI::MemoryPointer.new(:int)
         dst_dataset_ptr = ::FFI::GDAL::Utils.GDALTranslate(
           dst_dataset_path,
@@ -65,7 +65,7 @@ module GDAL
 
         raise ::GDAL::Error, "GDALTranslate failed." if dst_dataset_ptr.null? || !success
 
-        ::GDAL::Dataset.open(dst_dataset_ptr, "w", &block)
+        ::GDAL::Dataset.open(dst_dataset_ptr, "w", &)
       end
     end
   end

@@ -12,8 +12,6 @@ gem "fakefs"
 gem "rake"
 gem "rspec", "~> 3.0"
 gem "rspec-github"
-# NOTE: Current versions of rubocop and rubocop-performance do not support Ruby 2.6.
-# Allow some flexibility in the versions to avoid breaking the CI.
 gem "rubocop", "<= 1.63.1"
 gem "rubocop-performance", "<= 1.21.0"
 gem "simplecov", "~> 0.9"

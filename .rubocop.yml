@@ -30,9 +30,14 @@ Style/Documentation:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
+# Keep existing explicit hash syntax; don't force Ruby 3.1+ shorthand
+# (`{x:}`) just because TargetRubyVersion was raised.
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   NewCops: enable
   SuggestExtensions: false
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.4
