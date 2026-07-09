@@ -29,7 +29,7 @@ RSpec.describe "Dataset with Ractors", type: :integration do
         end
       end
 
-      datasets = ractors.map(&:take)
+      datasets = ractors.map(&:value)
 
       expect(datasets.size).to eq(2)
       expect(datasets.map(&:description)).to eq(dataset_paths)
