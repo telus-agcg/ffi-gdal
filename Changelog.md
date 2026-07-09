@@ -25,6 +25,10 @@ and this project adheres to
   `Ractor#value` doesn't exist prior to Ruby 4.0 — so neither method works
   across our whole Ruby matrix. The spec now picks whichever method is
   defined at runtime.
+- Disabled YJIT (`RUBY_YJIT_ENABLE=0`) when running specs in CI. Ruby 4.0's
+  YJIT intermittently crashes the VM (`[BUG] should have cvar cache entry`
+  inside `rexml`) on `ubuntu-22.04`; this is an upstream Ruby interpreter
+  bug, not an issue in this gem. Remove once fixed upstream.
 
 ### Removed
 

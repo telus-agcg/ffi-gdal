@@ -44,6 +44,12 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - name: Run specs
+        # RUBY_YJIT_ENABLE=0: works around a Ruby 4.0 YJIT VM crash
+        # ("[BUG] should have cvar cache entry" in rexml) seen intermittently
+        # on ubuntu-22.04. This is a Ruby interpreter bug, not a bug in this
+        # gem; remove once fixed upstream in Ruby.
         run:
           bundle exec rspec spec --format RSpec::Github::Formatter --format
           progress
+        env:
+          RUBY_YJIT_ENABLE: 0
