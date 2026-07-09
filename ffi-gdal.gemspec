@@ -31,4 +31,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "multi_xml"
   spec.add_dependency "narray", "~> 0.6.0"
   spec.add_dependency "numo-narray"
+  # `multi_xml` (used by GDAL::Driver/GDAL::MajorObject) needs a real XML
+  # parser backend (Nokogiri/LibXML/Ox/REXML); we don't otherwise depend on
+  # one, so declare rexml explicitly rather than relying on it happening to
+  # be installed as some other gem's transitive dependency.
+  spec.add_dependency "rexml"
 end

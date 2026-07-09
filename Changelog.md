@@ -36,10 +36,16 @@ and this project adheres to
   `benchmark` from its default gems and rubocop's executable requires it.
 - Moved `rubocop`/`rubocop-performance` (and their `benchmark` dependency)
   into a `:lint` Bundler group, excluded from the Test CI job's `bundle
-  install` (`BUNDLE_WITHOUT: lint`). Rubocop (and its `rexml` dependency,
-  which was suspected in the YJIT investigation above) isn't needed to run
-  specs; this shrinks the Test job's dependency footprint and rules out
-  rubocop/rexml as a factor in the intermittent Ruby 4.0 VM crash.
+  install` (`BUNDLE_WITHOUT: lint`). Rubocop (which was suspected in the
+  YJIT investigation above) isn't needed to run specs; this shrinks the
+  Test job's dependency footprint.
+- Added `rexml` as an explicit runtime dependency. `multi_xml` (used by
+  `GDAL::Driver`/`GDAL::MajorObject`) needs a real XML parser backend and
+  falls back to REXML when none of Nokogiri/LibXML/Ox are installed; it
+  was only working by accident because `rubocop` happened to pull in
+  `rexml` transitively. Moving rubocop into the `:lint` group (above)
+  surfaced this — the Test job's specs failed with `MultiXml.parse`
+  errors once rexml was no longer implicitly installed.
 
 ### Removed
 
