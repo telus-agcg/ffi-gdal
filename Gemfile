@@ -12,7 +12,7 @@ gem "fakefs"
 gem "rake"
 gem "rspec", "~> 3.0"
 gem "rspec-github"
-gem "simplecov", "~> 0.9"
+gem "simplecov", "~> 1.0"
 gem "thor"
 
 group :lint do
