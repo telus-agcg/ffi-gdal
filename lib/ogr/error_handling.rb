@@ -21,7 +21,8 @@ module OGR
       OGRERR_CORRUPT_DATA: OGR::CorruptData,
       OGRERR_FAILURE: OGR::Failure,
       OGRERR_UNSUPPORTED_SRS: OGR::UnsupportedSRS,
-      OGRERR_INVALID_HANDLE: OGR::InvalidHandle
+      OGRERR_INVALID_HANDLE: OGR::InvalidHandle,
+      OGRERR_NON_EXISTING_FEATURE: OGR::NonExistingFeature
     }.freeze
 
     # Yields, then expects the result to be a Symbol from FFI::OGR::Core::Err.
@@ -30,7 +31,7 @@ module OGR
     def self.handle_ogr_err(msg)
       ogr_err_symbol = yield
 
-      klass = ERROR_CLASS_MAP.fetch(ogr_err_symbol) { raise "Unknown OGRERR type: #{self}" }
+      klass = ERROR_CLASS_MAP.fetch(ogr_err_symbol) { raise "Unknown OGRERR type: #{ogr_err_symbol}" }
 
       raise_exception(klass, msg) if klass
     end

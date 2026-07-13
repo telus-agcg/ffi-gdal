@@ -58,6 +58,9 @@ module OGR
   class InvalidSpatialReference < StandardError
   end
 
+  class NonExistingFeature < Failure
+  end
+
   class NotEnoughData < RuntimeError
   end
 
