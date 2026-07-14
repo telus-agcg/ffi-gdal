@@ -24,6 +24,6 @@ group :lint do
   # haven't been triaged yet. Now that we've dropped Ruby < 3.4, there's no
   # longer a Ruby-version reason to hold back — this is purely deferred
   # cleanup work.
-  gem "rubocop", "<= 1.63.1"
+  gem "rubocop", "<= 1.88.3"
   gem "rubocop-performance", "<= 1.24.0"
 end
