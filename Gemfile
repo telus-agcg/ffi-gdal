@@ -25,5 +25,5 @@ group :lint do
   # longer a Ruby-version reason to hold back — this is purely deferred
   # cleanup work.
   gem "rubocop", "<= 1.63.1"
-  gem "rubocop-performance", "<= 1.21.0"
+  gem "rubocop-performance", "<= 1.24.0"
 end
