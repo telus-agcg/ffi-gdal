@@ -25,8 +25,20 @@ RSpec.describe GDAL::Dataset::RasterBandMethods do
     end
 
     context ":GMF_ALL_VALID, :GMF_NODATA" do
-      it "returns 1" do
+      it "returns 9 (the flag bits ORed together)" do
         expect(described_class.parse_mask_flag_symbols(:GMF_ALL_VALID, :GMF_NODATA)).to eq 9
+      end
+    end
+
+    context ":GMF_PER_ALPHA" do
+      it "returns 4" do
+        expect(described_class.parse_mask_flag_symbols(:GMF_PER_ALPHA)).to eq 4
+      end
+    end
+
+    context ":GMF_ALPHA" do
+      it "returns 4 (GDAL's own name for the GMF_PER_ALPHA bit)" do
+        expect(described_class.parse_mask_flag_symbols(:GMF_ALPHA)).to eq 4
       end
     end
   end

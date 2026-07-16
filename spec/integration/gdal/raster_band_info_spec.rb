@@ -175,6 +175,61 @@ RSpec.describe "Raster Band Info", type: :integration do
     end
   end
 
+  describe "#create_mask_band" do
+    context ":GMF_ALL_VALID" do
+      it "creates a mask band with the requested flag" do
+        expect(subject.create_mask_band(:GMF_ALL_VALID)).to be_nil
+        expect(subject.mask_flags).to eq([:GMF_ALL_VALID])
+      end
+    end
+
+    context ":GMF_PER_DATASET" do
+      it "creates a mask band with the requested flag" do
+        expect(subject.create_mask_band(:GMF_PER_DATASET)).to be_nil
+        expect(subject.mask_flags).to eq([:GMF_PER_DATASET])
+      end
+    end
+
+    context ":GMF_PER_ALPHA" do
+      it "creates a mask band with the requested flag" do
+        expect(subject.create_mask_band(:GMF_PER_ALPHA)).to be_nil
+
+        # NOTE: GDAL's constant for this bit is GMF_ALPHA (there is no
+        # GMF_PER_ALPHA in gdal.h); :GMF_PER_ALPHA is historical
+        # ffi-gdal naming on the create_mask_band input side.
+        expect(subject.mask_flags).to eq([:GMF_ALPHA])
+      end
+    end
+
+    context ":GMF_ALPHA" do
+      it "creates a mask band with the requested flag" do
+        expect(subject.create_mask_band(:GMF_ALPHA)).to be_nil
+        expect(subject.mask_flags).to eq([:GMF_ALPHA])
+      end
+    end
+
+    context ":GMF_NODATA" do
+      it "creates a mask band with the requested flag" do
+        expect(subject.create_mask_band(:GMF_NODATA)).to be_nil
+        expect(subject.mask_flags).to eq([:GMF_NODATA])
+      end
+    end
+
+    context "all flags" do
+      it "creates a mask band with the requested flags" do
+        expect(subject.create_mask_band(:GMF_ALL_VALID, :GMF_PER_DATASET, :GMF_PER_ALPHA, :GMF_NODATA)).to be_nil
+        expect(subject.mask_flags).to eq(%i[GMF_ALL_VALID GMF_PER_DATASET GMF_ALPHA GMF_NODATA])
+      end
+    end
+
+    context "flags passed as an Array" do
+      it "creates a mask band with the requested flags" do
+        expect(subject.create_mask_band(%i[GMF_ALL_VALID GMF_NODATA])).to be_nil
+        expect(subject.mask_flags).to eq(%i[GMF_ALL_VALID GMF_NODATA])
+      end
+    end
+  end
+
   describe "#statistics" do
     it "returns a Hash with populated values" do
       expect(subject.statistics).to be_a Hash
