@@ -18,9 +18,18 @@ RSpec.describe GDAL::Utils::Rasterize do
 
     context "when no options are provided" do
       it "raises exceptions (size or resolution must be provided)" do
+        expected_messages = [
+          "Size and resolution are missing", # GDAL 3.11+
+          "Size and resolutions are missing" # GDAL < 3.11
+        ]
+
+        # rubocop:disable Style/MultilineBlockChain
         expect do
           described_class.perform(dst_dataset_path: new_dataset_path, src_dataset: src_dataset)
-        end.to raise_exception(GDAL::Error, "Size and resolutions are missing")
+        end.to raise_exception(GDAL::Error) do |error|
+          expect(expected_messages).to include(error.message)
+        end
+        # rubocop:enable Style/MultilineBlockChain
       end
     end
 

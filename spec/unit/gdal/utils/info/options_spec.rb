@@ -32,9 +32,14 @@ RSpec.describe GDAL::Utils::Info::Options do
     let(:options) { ["-json123"] }
 
     it "raises exception" do
-      expect { subject }.to raise_exception(
-        GDAL::UnsupportedOperation, "Unknown option name '-json123'"
-      )
+      expected_errors = [
+        [GDAL::Error, "Unknown argument: -json123"], # GDAL 3.9+
+        [GDAL::UnsupportedOperation, "Unknown option name '-json123'"] # GDAL < 3.9
+      ]
+
+      expect { subject }.to raise_exception(StandardError) do |error|
+        expect(expected_errors).to include([error.class, error.message])
+      end
     end
   end
 end

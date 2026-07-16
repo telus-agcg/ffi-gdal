@@ -57,15 +57,22 @@ RSpec.describe GDAL::Utils::DEM do
 
     context "when operation fails with GDAL internal exception" do
       it "raises exception" do
+        expected_messages = [
+          "Invalid processing mode: hillshade123", # GDAL 3.10+
+          "Invalid processing" # GDAL < 3.10
+        ]
+
+        # rubocop:disable Style/MultilineBlockChain
         expect do
           described_class.perform(
             dst_dataset_path: new_dataset_path,
             src_dataset: src_dataset,
             processing: "hillshade123"
           )
-        end.to raise_exception(
-          ArgumentError, "Invalid processing"
-        )
+        end.to raise_exception(ArgumentError) do |error|
+          expect(expected_messages).to include(error.message)
+        end
+        # rubocop:enable Style/MultilineBlockChain
       end
 
       it "raises exception" do

@@ -32,9 +32,14 @@ RSpec.describe GDAL::Utils::Translate::Options do
     let(:options) { ["-unscale123"] }
 
     it "raises exception" do
-      expect { subject }.to raise_exception(
-        GDAL::UnsupportedOperation, "Unknown option name '-unscale123'"
-      )
+      expected_errors = [
+        [GDAL::Error, "Unknown argument: -unscale123"], # GDAL 3.9+
+        [GDAL::UnsupportedOperation, "Unknown option name '-unscale123'"] # GDAL < 3.9
+      ]
+
+      expect { subject }.to raise_exception(StandardError) do |error|
+        expect(expected_errors).to include([error.class, error.message])
+      end
     end
   end
 end
