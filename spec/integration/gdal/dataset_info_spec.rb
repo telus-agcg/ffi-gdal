@@ -119,50 +119,88 @@ RSpec.describe "Dataset Info", type: :integration do
   end
 
   describe "#create_mask_band" do
-    # NOTE: A dataset-level mask is per-dataset by definition, so GDAL ORs
-    # GMF_PER_DATASET into whatever flags are requested.
-    context ":GMF_ALL_VALID" do
-      it "creates a mask band with the requested flag" do
-        expect(subject.create_mask_band(:GMF_ALL_VALID)).to be_nil
-        expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_ALL_VALID GMF_PER_DATASET])
+    # GDAL 3.9 changed the GDAL_TIFF_INTERNAL_MASK default from NO to YES, so
+    # the config option is set explicitly here to get the same behaviour on
+    # every GDAL version.
+    context "external mask (GDAL_TIFF_INTERNAL_MASK=NO)" do
+      around do |example|
+        previous_value = FFI::CPL::Conv.CPLGetConfigOption("GDAL_TIFF_INTERNAL_MASK", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", "NO")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", previous_value)
+      end
+
+      # NOTE: A dataset-level mask is per-dataset by definition, so GDAL ORs
+      # GMF_PER_DATASET into whatever flags are requested.
+      context ":GMF_ALL_VALID" do
+        it "creates a mask band with the requested flag" do
+          expect(subject.create_mask_band(:GMF_ALL_VALID)).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_ALL_VALID GMF_PER_DATASET])
+        end
+      end
+
+      context ":GMF_PER_DATASET" do
+        it "creates a mask band with the requested flag" do
+          expect(subject.create_mask_band(:GMF_PER_DATASET)).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq([:GMF_PER_DATASET])
+          expect(File).to exist("#{tmp_tiff}.msk")
+        end
+      end
+
+      context ":GMF_PER_ALPHA" do
+        it "creates a mask band with the requested flag" do
+          expect(subject.create_mask_band(:GMF_PER_ALPHA)).to be_nil
+
+          # NOTE: GDAL's constant for this bit is GMF_ALPHA (there is no
+          # GMF_PER_ALPHA in gdal.h), so #mask_flags reports it as :GMF_ALPHA.
+          expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_PER_DATASET GMF_ALPHA])
+        end
+      end
+
+      context ":GMF_NODATA" do
+        it "creates a mask band with the requested flag" do
+          expect(subject.create_mask_band(:GMF_NODATA)).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_PER_DATASET GMF_NODATA])
+        end
+      end
+
+      context "all flags" do
+        it "creates a mask band with the requested flags" do
+          expect(subject.create_mask_band(:GMF_ALL_VALID, :GMF_PER_DATASET, :GMF_PER_ALPHA, :GMF_NODATA)).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_ALL_VALID GMF_PER_DATASET GMF_ALPHA GMF_NODATA])
+        end
+      end
+
+      context "flags passed as an Array" do
+        it "creates a mask band with the requested flag" do
+          expect(subject.create_mask_band([:GMF_PER_DATASET])).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq([:GMF_PER_DATASET])
+        end
       end
     end
 
-    context ":GMF_PER_DATASET" do
-      it "creates a mask band with the requested flag" do
-        expect(subject.create_mask_band(:GMF_PER_DATASET)).to be_nil
-        expect(subject.raster_band(1).mask_flags).to eq([:GMF_PER_DATASET])
+    context "internal mask (GDAL_TIFF_INTERNAL_MASK=YES)" do
+      around do |example|
+        previous_value = FFI::CPL::Conv.CPLGetConfigOption("GDAL_TIFF_INTERNAL_MASK", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", "YES")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", previous_value)
       end
-    end
 
-    context ":GMF_PER_ALPHA" do
-      it "creates a mask band with the requested flag" do
-        expect(subject.create_mask_band(:GMF_PER_ALPHA)).to be_nil
-
-        # NOTE: GDAL's constant for this bit is GMF_ALPHA (there is no
-        # GMF_PER_ALPHA in gdal.h), so #mask_flags reports it as :GMF_ALPHA.
-        expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_PER_DATASET GMF_ALPHA])
+      context ":GMF_PER_DATASET" do
+        it "creates an external mask band (dataset is read-only)" do
+          expect(subject.create_mask_band(:GMF_PER_DATASET)).to be_nil
+          expect(subject.raster_band(1).mask_flags).to eq([:GMF_PER_DATASET])
+          expect(File).to exist("#{tmp_tiff}.msk")
+        end
       end
-    end
 
-    context ":GMF_NODATA" do
-      it "creates a mask band with the requested flag" do
-        expect(subject.create_mask_band(:GMF_NODATA)).to be_nil
-        expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_PER_DATASET GMF_NODATA])
-      end
-    end
-
-    context "all flags" do
-      it "creates a mask band with the requested flags" do
-        expect(subject.create_mask_band(:GMF_ALL_VALID, :GMF_PER_DATASET, :GMF_PER_ALPHA, :GMF_NODATA)).to be_nil
-        expect(subject.raster_band(1).mask_flags).to eq(%i[GMF_ALL_VALID GMF_PER_DATASET GMF_ALPHA GMF_NODATA])
-      end
-    end
-
-    context "flags passed as an Array" do
-      it "creates a mask band with the requested flag" do
-        expect(subject.create_mask_band([:GMF_PER_DATASET])).to be_nil
-        expect(subject.raster_band(1).mask_flags).to eq([:GMF_PER_DATASET])
+      context "other flags" do
+        it "raises a GDAL::Error (internal mask supports only GMF_PER_DATASET)" do
+          expect { subject.create_mask_band(:GMF_ALL_VALID) }.to raise_exception(
+            GDAL::Error, /The only flag value supported for internal mask is GMF_PER_DATASET/
+          )
+        end
       end
     end
   end

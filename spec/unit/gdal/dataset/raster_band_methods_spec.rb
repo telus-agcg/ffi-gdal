@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "fileutils"
+require "tmpdir"
 require "gdal"
 
 RSpec.describe GDAL::Dataset::RasterBandMethods do
@@ -74,9 +76,45 @@ RSpec.describe GDAL::Dataset::RasterBandMethods do
   end
 
   describe "#create_mask_band" do
-    context "no flags given" do
-      it "returns nil" do
-        expect(subject.create_mask_band(0)).to be_nil
+    # GDAL 3.9 changed the GDAL_TIFF_INTERNAL_MASK default from NO to YES, so
+    # the config option is set explicitly here to get the same behaviour on
+    # every GDAL version.
+    context "no flags given, GDAL_TIFF_INTERNAL_MASK=NO" do
+      around do |example|
+        previous_value = FFI::CPL::Conv.CPLGetConfigOption("GDAL_TIFF_INTERNAL_MASK", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", "NO")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", previous_value)
+      end
+
+      # Use a temp copy: the external mask is written next to the opened file,
+      # and the fixture directory has a committed .msk sidecar to preserve.
+      it "creates an external mask band" do
+        Dir.mktmpdir do |tmp_dir|
+          tmp_tiff = File.join(tmp_dir, "raster_band_methods.tif")
+          FileUtils.cp(file_path, tmp_tiff)
+
+          GDAL::Dataset.open(tmp_tiff, "r", shared: false) do |dataset|
+            expect(dataset.create_mask_band).to be_nil
+          end
+
+          expect(File).to exist("#{tmp_tiff}.msk")
+        end
+      end
+    end
+
+    context "no flags given, GDAL_TIFF_INTERNAL_MASK=YES" do
+      around do |example|
+        previous_value = FFI::CPL::Conv.CPLGetConfigOption("GDAL_TIFF_INTERNAL_MASK", nil).first.dup
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", "YES")
+        example.run
+        FFI::CPL::Conv.CPLSetConfigOption("GDAL_TIFF_INTERNAL_MASK", previous_value)
+      end
+
+      it "raises a GDAL::Error (internal mask supports only GMF_PER_DATASET)" do
+        expect { subject.create_mask_band }.to raise_exception(
+          GDAL::Error, /The only flag value supported for internal mask is GMF_PER_DATASET/
+        )
       end
     end
   end
