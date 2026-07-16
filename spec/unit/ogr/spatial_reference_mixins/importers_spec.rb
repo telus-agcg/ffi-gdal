@@ -38,8 +38,9 @@ RSpec.describe OGR::SpatialReference do
             GDAL::UnsupportedOperation
           )
         else
+          # PROJ 9.7+ appends the requested code (": EPSG:1231234") to the message.
           expect { subject.import_from_epsg(1_231_234) }.to raise_exception(
-            GDAL::Error, "PROJ: proj_create_from_database: crs not found"
+            GDAL::Error, /\APROJ: proj_create_from_database: crs not found(?:: EPSG:1231234)?\z/
           )
         end
       end
