@@ -8,6 +8,7 @@ module FFI
   module OGR
     module API
       extend ::FFI::Library
+
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
       # -----------------------------------------------------------------------

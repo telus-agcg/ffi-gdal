@@ -29,6 +29,16 @@ Naming/MethodParameterName:
 Style/Documentation:
   Enabled: false
 
+# These files legitimately define more than one constant in a single file:
+# `numeric_as_data_type.rb`/`to_bool.rb` reopen several core classes to attach
+# the same extension, and `gdal.rb` defines the GDAL module alongside its
+# error-handling class. Splitting them would fragment cohesive units.
+Style/OneClassPerFile:
+  Exclude:
+    - lib/ext/numeric_as_data_type.rb
+    - lib/ext/to_bool.rb
+    - lib/gdal.rb
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 

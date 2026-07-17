@@ -7,6 +7,7 @@ module FFI
   module GDAL
     module Matching
       extend ::FFI::Library
+
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
       # TODO: Seems like this should return an array of GCPs, not just a single

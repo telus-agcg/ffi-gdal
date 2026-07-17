@@ -43,7 +43,9 @@ module OGR
       end
 
       # @return [Boolean] Is the Z flag set?
-      def has_z? # rubocop:disable Naming/PredicateName
+      # `has_z?` mirrors the WKB binary flag name; dropping the `has_` prefix
+      # would break this public API, so the prefix cop is disabled here.
+      def has_z? # rubocop:disable Naming/PredicatePrefix
         geometry_type & WKB_Z != 0
       end
 
@@ -51,7 +53,7 @@ module OGR
       #   Defined to keep the API consistent with EWKBRecord.
       def geometry_type
         # ISO SQL/MM style Z types are between 1001 and 1007
-        if wkb_type.value >= 1001 && wkb_type.value <= 1007
+        if wkb_type.value.between?(1001, 1007)
           raw_type_int = wkb_type.value - 1000
           raw_type_int | WKB_Z
         else

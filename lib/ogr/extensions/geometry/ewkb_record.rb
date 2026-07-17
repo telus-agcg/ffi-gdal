@@ -5,7 +5,6 @@ require "ffi-gdal"
 require "ogr"
 require_relative "wkb_record"
 
-# rubocop:disable Naming/PredicateName
 module OGR
   module Geometry
     # Parses raw EWKB and turns into a data structure. Only really exists for
@@ -57,6 +56,10 @@ module OGR
             geometry: wkb_record.geometry)
       end
 
+      # These `has_*?` predicates mirror the EWKB binary flag names (Z/M/SRID);
+      # dropping the `has_` prefix would break this public API and read less
+      # clearly against the spec, so the prefix cop is disabled here.
+      # rubocop:disable Naming/PredicatePrefix
       # @return [Boolean] Is the Z flag set?
       def has_z?
         wkb_type & WKB_Z != 0
@@ -71,6 +74,7 @@ module OGR
       def has_srid?
         wkb_type & WKB_SRID != 0
       end
+      # rubocop:enable Naming/PredicatePrefix
 
       # @return [Fixnum] Enum number that matches the FFI::OGR::Core::WKBGeometryType.
       def geometry_type
@@ -91,4 +95,3 @@ module OGR
     end
   end
 end
-# rubocop:enable Naming/PredicateName

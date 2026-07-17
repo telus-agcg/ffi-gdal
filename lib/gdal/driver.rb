@@ -184,6 +184,9 @@ module GDAL
     # @return [true]
     # @raise [GDAL::CreateFail] if it couldn't copy the dataset.
     # @yieldparam destination_dataset [GDAL::Dataset]
+    # Returns `true` on success; it's a command, not a query, so renaming it to
+    # a `?`-predicate would be a breaking public-API change.
+    # rubocop:disable Naming/PredicateMethod
     def copy_dataset(source_dataset, destination_path, progress_block = nil, progress_arg = nil, strict: true,
       **options)
       source_dataset_ptr = make_dataset_pointer(source_dataset)
@@ -211,6 +214,7 @@ module GDAL
 
       true
     end
+    # rubocop:enable Naming/PredicateMethod
 
     # Delete the dataset represented by +file_name+.  Depending on the driver,
     # this could mean deleting associated files, database objects, etc.

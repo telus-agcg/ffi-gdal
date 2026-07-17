@@ -39,8 +39,8 @@ module GDAL
             x_block_size = calculate_x_block_size(x_block_number)
 
             # Map the range of pixels corresponding to the current block.
-            source_x_range = x_block_number * block_size[:x]...(x_block_number * block_size[:x]) + x_block_size
-            source_y_range = y_block_number * block_size[:y]...(y_block_number * block_size[:y]) + y_block_size
+            source_x_range = (x_block_number * block_size[:x])...((x_block_number * block_size[:x]) + x_block_size)
+            source_y_range = (y_block_number * block_size[:y])...((y_block_number * block_size[:y]) + y_block_size)
 
             # Copy the corresponding pixels from the input array to the block pixels.
             block_pixels[0...y_block_size, 0...x_block_size] = pixel_array[source_y_range, source_x_range]

@@ -33,7 +33,9 @@ module GDAL
     # @param y_offset [Integer] Y offset of the destination image.
     # @param x_size [Integer] X size (width) of the destination image.
     # @param y_size [Integer] Y size (height) of the destination image.
-    def chunk_and_warp_image(x_offset, y_offset, x_size, y_size)
+    # Returns a boolean success flag; command-style public API, so renaming to
+    # a `?`-predicate would be a breaking change.
+    def chunk_and_warp_image(x_offset, y_offset, x_size, y_size) # rubocop:disable Naming/PredicateMethod
       !!FFI::GDAL::Warper.GDALChunkAndWarpImage(@c_pointer,
                                                 x_offset,
                                                 y_offset,
@@ -61,6 +63,9 @@ module GDAL
     # @param source_y_offset [Integer] Y offset of the source image.
     # @param source_x_size [Integer] X size (width) of the source image.
     # @param source_y_size [Integer] Y size (height) of the source image.
+    # Returns a boolean success flag; command-style public API, so renaming to
+    # a `?`-predicate would be a breaking change.
+    # rubocop:disable Naming/PredicateMethod
     def warp_region(destination_x_offset, destination_y_offset,
       destination_x_size, destination_y_size,
       source_x_offset, source_y_offset,
@@ -75,6 +80,7 @@ module GDAL
                                          source_x_size,
                                          source_y_size)
     end
+    # rubocop:enable Naming/PredicateMethod
 
     # @param destination_x_offset [Integer] X offset of the destination image.
     # @param destination_y_offset [Integer] Y offset of the destination image.
@@ -86,7 +92,9 @@ module GDAL
     # @param source_y_offset [Integer] Y offset of the source image.
     # @param source_x_size [Integer] X size (width) of the source image.
     # @param source_y_size [Integer] Y size (height) of the source image.
-    # rubocop:disable Metrics/ParameterLists
+    # PredicateMethod: returns a boolean success flag; command-style public API,
+    # renaming to a `?`-predicate would be a breaking change.
+    # rubocop:disable Metrics/ParameterLists, Naming/PredicateMethod
     def warp_region_to_buffer(destination_x_offset, destination_y_offset,
       destination_x_size, destination_y_size,
       buffer, data_type,
@@ -104,6 +112,6 @@ module GDAL
                                                  source_x_size,
                                                  source_y_size)
     end
-    # rubocop:enable Metrics/ParameterLists
+    # rubocop:enable Metrics/ParameterLists, Naming/PredicateMethod
   end
 end

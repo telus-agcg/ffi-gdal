@@ -23,7 +23,6 @@ module GDAL
       #   raster, suitable for heatmaps for instance.
       def rasterize_geometries!(band_numbers, geometries, burn_values,
         transformer: nil, transform_arg: nil, **options, &progress_block)
-
         if geo_transform.nil? && gcp_count.zero?
           raise "Can't rasterize geometries--no geo_transform or GCPs have been defined on the dataset."
         end

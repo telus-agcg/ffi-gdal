@@ -9,7 +9,7 @@ module OGR
     # @param [FFI::Pointer] geometry_ptr
     def initialize(geometry_ptr = nil, spatial_reference: nil)
       geometry_ptr ||= OGR::Geometry.create(:wkbPoint25D)
-      super(geometry_ptr, spatial_reference: spatial_reference)
+      super
     end
 
     # @return [Float]

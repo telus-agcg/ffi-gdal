@@ -214,16 +214,23 @@ module OGR
     end
 
     # @param new_style_table [OGR::StyleTable, FFI::Pointer]
+    # @return [OGR::StyleTable] The assigned table, wrapping the pointer when
+    #   one is passed. Note: Ruby discards a setter's return value for
+    #   `data_source.style_table = x` callers.
     def style_table=(new_style_table)
       new_style_table_ptr = GDAL._pointer(OGR::StyleTable, new_style_table)
 
       FFI::OGR::API.OGR_DS_SetStyleTable(@c_pointer, new_style_table_ptr)
 
+      # Intentionally return an OGR::StyleTable (not the raw pointer); the
+      # trailing expression is a deliberate return value, not dead code.
+      # rubocop:disable Lint/Void
       if new_style_table.instance_of? OGR::StyleTable
         new_style_table
       else
         OGR::StyleTable.new(new_style_table_ptr)
       end
+      # rubocop:enable Lint/Void
     end
 
     # @param capability [String] Must be one of: ODsCCreateLayer,
