@@ -96,6 +96,10 @@ module GDAL
       #   bands from this dataset to vectorize.  Can be a single Integer or array
       #   of Integers.
       # @return [OGR::DataSource]
+      # Orchestrates driver setup, spatial-reference derivation, and per-band
+      # polygonization as one flow whose steps share local state; the method
+      # length limit is disabled rather than splitting that shared state.
+      # rubocop:disable Metrics/MethodLength
       def to_vector(file_name, vector_driver_name, geometry_type: :wkbUnknown,
         layer_name_prefix: "band_number", band_numbers: [1],
         field_name_prefix: "field", use_band_masks: true)
@@ -141,12 +145,16 @@ module GDAL
 
         data_source
       end
+      # rubocop:enable Metrics/MethodLength
 
       # Gets the OGR::Geometry that represents the extent of the dataset.
       #
       # @return [OGR::Polygon]
       # TODO: This should return an OGR::Envelope.
-      def extent
+      # Builds a fixed five-point ring from the four dataset corners; the point
+      # assignments are one cohesive construction, so the ABC-size limit is
+      # disabled here.
+      def extent # rubocop:disable Metrics/AbcSize
         ul = geo_transform.apply_geo_transform(0, 0)
         ur = geo_transform.apply_geo_transform(raster_x_size, 0)
         lr = geo_transform.apply_geo_transform(raster_x_size, raster_y_size)

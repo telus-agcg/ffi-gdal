@@ -32,24 +32,7 @@ module GDAL
 
         block_count[:y].times do |y_block_number|
           block_count[:x].times do |x_block_number|
-            # Create a block-sized NArray of zeros. This represents the block of pixels that will be written.
-            block_pixels = nnarray.zeros(block_size[:y], block_size[:x])
-
-            y_block_size = calculate_y_block_size(y_block_number)
-            x_block_size = calculate_x_block_size(x_block_number)
-
-            # Map the range of pixels corresponding to the current block.
-            source_x_range = (x_block_number * block_size[:x])...((x_block_number * block_size[:x]) + x_block_size)
-            source_y_range = (y_block_number * block_size[:y])...((y_block_number * block_size[:y]) + y_block_size)
-
-            # Copy the corresponding pixels from the input array to the block pixels.
-            block_pixels[0...y_block_size, 0...x_block_size] = pixel_array[source_y_range, source_x_range]
-
-            GDAL._write_pointer(data_pointer, data_type, block_pixels.to_a.flatten)
-
-            write_block(x_block_number, y_block_number, data_pointer)
-
-            data_pointer.clear
+            write_pixel_block(x_block_number, y_block_number, pixel_array, data_pointer, nnarray)
           end
         end
       end
@@ -152,6 +135,35 @@ module GDAL
       end
 
       private
+
+      # Copies the pixels for a single block out of +pixel_array+ and writes
+      # that block to the band.
+      #
+      # @param x_block_number [Integer]
+      # @param y_block_number [Integer]
+      # @param pixel_array [Numo::NArray]
+      # @param data_pointer [FFI::MemoryPointer]
+      # @param nnarray [Class] The Numo::NArray subclass matching the data type.
+      def write_pixel_block(x_block_number, y_block_number, pixel_array, data_pointer, nnarray)
+        # Create a block-sized NArray of zeros. This represents the block of pixels that will be written.
+        block_pixels = nnarray.zeros(block_size[:y], block_size[:x])
+
+        y_block_size = calculate_y_block_size(y_block_number)
+        x_block_size = calculate_x_block_size(x_block_number)
+
+        # Map the range of pixels corresponding to the current block.
+        source_x_range = (x_block_number * block_size[:x])...((x_block_number * block_size[:x]) + x_block_size)
+        source_y_range = (y_block_number * block_size[:y])...((y_block_number * block_size[:y]) + y_block_size)
+
+        # Copy the corresponding pixels from the input array to the block pixels.
+        block_pixels[0...y_block_size, 0...x_block_size] = pixel_array[source_y_range, source_x_range]
+
+        GDAL._write_pointer(data_pointer, data_type, block_pixels.to_a.flatten)
+
+        write_block(x_block_number, y_block_number, data_pointer)
+
+        data_pointer.clear
+      end
 
       # Determines how many lines to read for the block, considering that not
       # all blocks can be of equal size. For example, if there are 125 lines and

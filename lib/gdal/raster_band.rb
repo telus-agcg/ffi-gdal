@@ -214,26 +214,21 @@ module GDAL
       self.class.new(band_pointer)
     end
 
+    # Maps each mask-flag bit position (least-significant first) to its GMF symbol.
+    MASK_FLAG_BITS = {
+      0 => :GMF_ALL_VALID,
+      1 => :GMF_PER_DATASET,
+      2 => :GMF_ALPHA,
+      3 => :GMF_NODATA
+    }.freeze
+
     # @return [Array<Symbol>]
     def mask_flags
       flag_list = FFI::GDAL::GDAL.GDALGetMaskFlags(@c_pointer).to_s(2).scan(/\d/)
-      flags = []
 
-      flag_list.reverse_each.with_index do |flag, i|
-        flag = flag.to_i
-
-        if i.zero? && flag == 1
-          flags << :GMF_ALL_VALID
-        elsif i == 1 && flag == 1
-          flags << :GMF_PER_DATASET
-        elsif i == 2 && flag == 1
-          flags << :GMF_ALPHA
-        elsif i == 3 && flag == 1
-          flags << :GMF_NODATA
-        end
+      flag_list.reverse_each.with_index.each_with_object([]) do |(flag, i), flags|
+        flags << MASK_FLAG_BITS[i] if flag.to_i == 1 && MASK_FLAG_BITS.key?(i)
       end
-
-      flags
     end
 
     # @param flags [Array<Symbol>, Symbol] Any of the :GMF symbols.
@@ -489,22 +484,7 @@ module GDAL
       handler = GDAL::CPLErrorHandler.new
       handler.on_warning = proc {}
       handler.on_none = proc do
-        min = min_pointer.read_double
-        max = max_pointer.read_double
-        buckets = buckets_pointer.read_int
-
-        totals = if buckets.zero?
-                   []
-                 else
-                   histogram_pointer.get_pointer(0).read_array_of_int(buckets)
-                 end
-
-        {
-          minimum: min,
-          maximum: max,
-          buckets: buckets,
-          totals: totals
-        }
+        read_default_histogram(min_pointer, max_pointer, buckets_pointer, histogram_pointer)
       end
 
       handler.custom_handle do
@@ -760,6 +740,23 @@ module GDAL
       return nil if dataset_ptr.null?
 
       GDAL::Dataset.new(dataset_ptr, access_flag, shared_open: true)
+    end
+
+    # Reads the values that GDALGetDefaultHistogram wrote into the output
+    # pointers into a result Hash.
+    #
+    # @return [Hash{minimum => Float, maximum => Float, buckets => Integer,
+    #   totals => Array<Integer>}]
+    def read_default_histogram(min_pointer, max_pointer, buckets_pointer, histogram_pointer)
+      buckets = buckets_pointer.read_int
+      totals = buckets.zero? ? [] : histogram_pointer.get_pointer(0).read_array_of_int(buckets)
+
+      {
+        minimum: min_pointer.read_double,
+        maximum: max_pointer.read_double,
+        buckets: buckets,
+        totals: totals
+      }
     end
   end
 end

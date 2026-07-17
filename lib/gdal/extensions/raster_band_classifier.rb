@@ -67,24 +67,12 @@ module GDAL
       log "Max pixel value: #{sorted_and_masked_pixels.max}"
       log "Range size: #{range_size}"
 
-      break_values = [*Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq,
-                      sorted_and_masked_pixels.max]
-      ensure_min_gap(break_values)
+      break_values = calculate_break_values(sorted_and_masked_pixels, range_size, range_count)
       log "Break values: #{break_values}"
 
       return if range_count != 1 && break_values.uniq.size - 1 != range_count
 
-      breakpoint_calculator = lambda do |range_number|
-        min = break_values[range_number]
-        max = break_values[range_number + 1]
-
-        range_for_type(min, max)
-      end
-
-      Array.new(range_count) do |i|
-        range = breakpoint_calculator.call(i)
-        { range: range, map_to: (i + 1).to_data_type(@raster_band.data_type) }
-      end
+      build_ranges(break_values, range_count)
     end
 
     # Uses the ranges that have been added to remap ranges to map_to values.
@@ -119,6 +107,33 @@ module GDAL
     end
 
     private
+
+    # Computes the evenly-weighted break values (plus the max) for the sorted
+    # pixels, then widens any that fall inside the minimum gap.
+    #
+    # @param sorted_and_masked_pixels [Array]
+    # @param range_size [Integer]
+    # @param range_count [Integer]
+    # @return [Array] The break values.
+    def calculate_break_values(sorted_and_masked_pixels, range_size, range_count)
+      break_values = [*Array.new(range_count) { |i| sorted_and_masked_pixels[range_size * i] }.uniq,
+                      sorted_and_masked_pixels.max]
+      ensure_min_gap(break_values)
+
+      break_values
+    end
+
+    # Builds the classifier ranges from the computed break values.
+    #
+    # @param break_values [Array]
+    # @param range_count [Integer]
+    # @return [Array<Hash>]
+    def build_ranges(break_values, range_count)
+      Array.new(range_count) do |i|
+        range = range_for_type(break_values[i], break_values[i + 1])
+        { range: range, map_to: (i + 1).to_data_type(@raster_band.data_type) }
+      end
+    end
 
     # @param pixels [Numo::NArray]
     # @return [Numo::NArray]

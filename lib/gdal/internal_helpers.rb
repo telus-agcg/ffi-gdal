@@ -134,23 +134,26 @@ module GDAL
         result
       end
 
+      # Maps each GDAL DataType to its corresponding FFI type.
+      GDAL_DATA_TYPE_TO_FFI = {
+        GDT_Byte: :uchar,
+        GDT_Int8: :int8,
+        GDT_UInt16: :uint16,
+        GDT_Int16: :int16, GDT_CInt16: :int16,
+        GDT_UInt32: :uint32,
+        GDT_Int32: :int32, GDT_CInt32: :int32,
+        GDT_UInt64: :uint64,
+        GDT_Int64: :int64,
+        GDT_Float32: :float, GDT_CFloat32: :float,
+        GDT_Float64: :double, GDT_CFloat64: :double
+      }.freeze
+
       # Maps GDAL DataTypes to FFI types.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]
       # @return [Symbol]
       def _gdal_data_type_to_ffi(data_type)
-        case data_type
-        when :GDT_Byte                    then :uchar
-        when :GDT_Int8                    then :int8
-        when :GDT_UInt16                  then :uint16
-        when :GDT_Int16, :GDT_CInt16      then :int16
-        when :GDT_UInt32                  then :uint32
-        when :GDT_Int32, :GDT_CInt32      then :int32
-        when :GDT_UInt64                  then :uint64
-        when :GDT_Int64                   then :int64
-        when :GDT_Float32, :GDT_CFloat32  then :float
-        when :GDT_Float64, :GDT_CFloat64  then :double
-        else
+        GDAL_DATA_TYPE_TO_FFI.fetch(data_type) do
           raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end
       end

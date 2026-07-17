@@ -40,10 +40,8 @@ module GDAL
       log "Number of points: #{point_count}"
       raise GDAL::NoValuesToGrid, "No points to grid" if point_count.zero?
 
-      points = points.transpose
-      x_input_coordinates_ptr = make_points_pointer(points[0])
-      y_input_coordinates_ptr = make_points_pointer(points[1])
-      z_input_coordinates_ptr = make_points_pointer(points[2])
+      x_input_coordinates_ptr, y_input_coordinates_ptr, z_input_coordinates_ptr =
+        make_coordinate_pointers(points.transpose)
 
       log "x_min, y_min: #{extents[:x_min]}, #{extents[:y_min]}"
       log "x_max, y_max: #{extents[:x_max]}, #{extents[:y_max]}"
@@ -70,6 +68,19 @@ module GDAL
     end
 
     private
+
+    # Builds the X, Y, and Z coordinate pointers from transposed point data.
+    #
+    # @param transposed_points [Array<Array>] Points transposed into
+    #   [x_values, y_values, z_values].
+    # @return [Array(FFI::MemoryPointer, FFI::MemoryPointer, FFI::MemoryPointer)]
+    def make_coordinate_pointers(transposed_points)
+      [
+        make_points_pointer(transposed_points[0]),
+        make_points_pointer(transposed_points[1]),
+        make_points_pointer(transposed_points[2])
+      ]
+    end
 
     # @param points [Array]
     def make_points_pointer(points)
