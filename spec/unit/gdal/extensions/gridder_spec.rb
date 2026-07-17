@@ -178,4 +178,48 @@ RSpec.describe GDAL::Gridder do
       end
     end
   end
+
+  describe "#build_block_sizes" do
+    before { allow(gridder_options).to receive(:output_size).and_return(width: 1000, height: 1000) }
+
+    context "when the x block size can grow toward the buffer size" do
+      it "grows the x block size (capped at the output width) and leaves y unchanged" do
+        result = subject.send(:build_block_sizes, { x: 10, y: 10 }, 4)
+
+        expect(result).to eq(x: 1000, y: 10)
+      end
+    end
+  end
+
+  describe "#grow_block_x_size?" do
+    before { allow(gridder_options).to receive(:output_size).and_return(width: 1000, height: 1000) }
+
+    it "is true when both dimensions are under the output size and x is under the buffer target" do
+      expect(subject.send(:grow_block_x_size?, 10, 10, 4)).to be true
+    end
+
+    it "is false when the x block already spans the full output width" do
+      expect(subject.send(:grow_block_x_size?, 1000, 10, 4)).to be false
+    end
+  end
+
+  describe "#build_block_progress" do
+    context "when a progress formatter is configured" do
+      it "returns the scaled-progress pointer and the ScaledProgress function" do
+        allow(gridder_options).to receive(:progress_formatter).and_return(proc {})
+        allow(subject).to receive(:build_scaled_progress_pointer).with(2, 5).and_return(:scaled_ptr)
+
+        expect(subject.send(:build_block_progress, 2, 5))
+          .to eq([:scaled_ptr, FFI::CPL::Progress::ScaledProgress])
+      end
+    end
+
+    context "when no progress formatter is configured" do
+      it "returns a pair of nils" do
+        allow(gridder_options).to receive(:progress_formatter).and_return(nil)
+
+        expect(subject.send(:build_block_progress, 2, 5)).to eq([nil, nil])
+      end
+    end
+  end
 end

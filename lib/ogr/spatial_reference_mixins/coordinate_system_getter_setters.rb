@@ -2,7 +2,11 @@
 
 module OGR
   module SpatialReferenceMixins
-    module CoordinateSystemGetterSetters
+    # A large but flat collection of thin getter/setter wrappers over the OSR
+    # coordinate-system C API, one pair per projection parameter. Splitting them
+    # into arbitrary sub-modules would fragment a single cohesive interface, so
+    # the module-length limit is disabled here.
+    module CoordinateSystemGetterSetters # rubocop:disable Metrics/ModuleLength
       # Set the user-visible LOCAL_CS name.
       #
       # @param name [String]

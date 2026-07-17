@@ -189,13 +189,7 @@ module GDAL
     def grid_and_write(raster_band, geo_transform)
       data_ptr = GDAL._pointer_from_data_type(@options.output_data_type, output_width * output_height)
       each_block(raster_band.block_size) do |block_number, block_count, block_size, x_offset, y_offset|
-        scaled_progress_ptr = nil
-        progress_arg = nil
-
-        if @options.progress_formatter
-          scaled_progress_ptr = build_scaled_progress_pointer(block_number, block_count)
-          progress_arg = FFI::CPL::Progress::ScaledProgress
-        end
+        scaled_progress_ptr, progress_arg = build_block_progress(block_number, block_count)
 
         x_request = build_data_request_size(block_size[:x], x_offset, output_width)
         y_request = build_data_request_size(block_size[:y], y_offset, output_height)
@@ -221,21 +215,46 @@ module GDAL
       block_x_size = raster_band_block_size[:x]
       block_y_size = raster_band_block_size[:y]
 
-      if block_x_size.to_i < output_width && block_y_size.to_i < output_height &&
-         block_x_size.to_i < DESIRED_BUFFER_SIZE / (block_y_size * data_type_size)
-        new_block_x_size = DESIRED_BUFFER_SIZE / (block_y_size * data_type_size)
-        block_x_size = (new_block_x_size / block_x_size) * block_x_size
-
-        block_x_size = output_width if block_x_size.to_i > output_width
-      elsif block_x_size.to_i == output_width && block_y_size.to_i < output_height &&
-            block_y_size.to_i < DESIRED_BUFFER_SIZE / (output_width * data_type_size)
-        new_block_y_size = DESIRED_BUFFER_SIZE / (output_width * data_type_size)
-        block_y_size = (new_block_y_size / block_y_size) * block_y_size
-
-        block_y_size = output_height if block_y_size.to_i > output_height
+      if grow_block_x_size?(block_x_size, block_y_size, data_type_size)
+        target = DESIRED_BUFFER_SIZE / (block_y_size * data_type_size)
+        block_x_size = grown_block_size(block_x_size, target, output_width)
+      elsif grow_block_y_size?(block_x_size, block_y_size, data_type_size)
+        target = DESIRED_BUFFER_SIZE / (output_width * data_type_size)
+        block_y_size = grown_block_size(block_y_size, target, output_height)
       end
 
       { x: block_x_size.freeze, y: block_y_size.freeze }
+    end
+
+    # @return [Boolean] Whether the X block size should grow toward the buffer size.
+    def grow_block_x_size?(block_x_size, block_y_size, data_type_size)
+      block_x_size.to_i < output_width && block_y_size.to_i < output_height &&
+        block_x_size.to_i < DESIRED_BUFFER_SIZE / (block_y_size * data_type_size)
+    end
+
+    # @return [Boolean] Whether the Y block size should grow toward the buffer size.
+    def grow_block_y_size?(block_x_size, block_y_size, data_type_size)
+      block_x_size.to_i == output_width && block_y_size.to_i < output_height &&
+        block_y_size.to_i < DESIRED_BUFFER_SIZE / (output_width * data_type_size)
+    end
+
+    # Grows +current_size+ toward +target_size+ in whole multiples of itself,
+    # capped at +max_size+.
+    #
+    # @return [Integer]
+    def grown_block_size(current_size, target_size, max_size)
+      grown = (target_size / current_size) * current_size
+
+      grown.to_i > max_size ? max_size : grown
+    end
+
+    # @return [Array(FFI::Pointer, Object), Array(nil, nil)] The scaled-progress
+    #   pointer and progress argument for a block, or a pair of nils when no
+    #   progress formatter is configured.
+    def build_block_progress(block_number, block_count)
+      return [nil, nil] unless @options.progress_formatter
+
+      [build_scaled_progress_pointer(block_number, block_count), FFI::CPL::Progress::ScaledProgress]
     end
 
     # Builds a pointer to a GDALScaledProgress function. This is used in

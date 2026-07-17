@@ -6,6 +6,7 @@ require_relative "../../ext/ffi_library_function_checks"
 
 module FFI
   module OGR
+    # rubocop:disable Metrics/ModuleLength
     module SRSAPI
       extend ::FFI::Library
 
@@ -350,6 +351,7 @@ module FFI
       attach_function :OPTGetParameterInfo,
                       %i[string string pointer pointer pointer],
                       :int
+      # rubocop:enable Metrics/ModuleLength
     end
   end
 end
