@@ -5,7 +5,7 @@ require "ogr/field"
 RSpec.describe OGR::Field do
   describe "#integer" do
     context "not set" do
-      it "returns 0.0" do
+      it "returns 0" do
         expect(subject.integer).to be 0
       end
     end
@@ -22,7 +22,7 @@ RSpec.describe OGR::Field do
 
   describe "#integer64" do
     context "not set" do
-      it "returns 0.0" do
+      it "returns 0" do
         expect(subject.integer64).to be 0
       end
     end
