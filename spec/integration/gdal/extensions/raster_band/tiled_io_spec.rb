@@ -25,13 +25,17 @@ RSpec.describe "Tiled RasterBand IO extensions", type: :integration do
 
   after { dataset.close }
 
-  it "reads a tiled band with more than one x-block" do
+  # The fixture must be tiled (more than one x-block) AND non-square for these
+  # examples to catch the bug: a single-x-block raster hides the stitching
+  # defect, and a square raster hides an x/y-axis swap.
+  it "reads a tiled, non-square band" do
     expect(raster_band.block_count[:x]).to be > 1
+    expect(raster_band.x_size).not_to eq(raster_band.y_size)
   end
 
   describe "#to_na" do
     it "returns an NArray whose shape matches the band's x/y sizes" do
-      expect(raster_band.to_na.shape).to eq([380, 765])
+      expect(raster_band.to_na.shape).to eq([raster_band.x_size, raster_band.y_size])
     end
 
     it "orders pixels the same as a canonical full-band read" do
@@ -43,8 +47,8 @@ RSpec.describe "Tiled RasterBand IO extensions", type: :integration do
     it "yields one full-width row per raster line" do
       lines = raster_band.read_lines_by_block.to_a
 
-      expect(lines.size).to eq(765)
-      expect(lines.map(&:size).uniq).to eq([380])
+      expect(lines.size).to eq(raster_band.y_size)
+      expect(lines.map(&:size).uniq).to eq([raster_band.x_size])
     end
 
     it "stitches x-blocks into rows matching a canonical full-band read" do
