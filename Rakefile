@@ -30,5 +30,6 @@ namespace :spec do
   end
 end
 
-task(:spec) { RSpec::Core::RakeTask.new }
+desc "Run all specs (unit and integration)"
+task spec: %w[spec:unit spec:integration]
 task default: :spec

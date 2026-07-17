@@ -3,6 +3,8 @@
 require "ogr/style_tool"
 
 RSpec.describe OGR::StyleTool do
+  subject(:pen_tool) { described_class.new(:OGRSTCPen) }
+
   describe "#initialize" do
     context "with supported classes" do
       let(:supported_classes) do
@@ -13,7 +15,7 @@ RSpec.describe OGR::StyleTool do
         supported_classes.each do |supported_class|
           expect do
             described_class.new(supported_class)
-          end.to_not raise_exception
+          end.not_to raise_exception
         end
       end
     end
@@ -33,11 +35,10 @@ RSpec.describe OGR::StyleTool do
     end
   end
 
-  subject(:pen_tool) { described_class.new(:OGRSTCPen) }
-
   describe "#style_string" do
     context "default style string" do
       subject { pen_tool.style_string }
+
       it { is_expected.to be_nil }
     end
   end
@@ -51,6 +52,7 @@ RSpec.describe OGR::StyleTool do
   describe "#unit" do
     context "default unit" do
       subject { pen_tool.unit }
+
       it { is_expected.to eq :OGRSTUMM }
     end
   end

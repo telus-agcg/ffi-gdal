@@ -7,7 +7,7 @@ RSpec.describe FFI::GDAL do
   describe "._files_with_constants" do
     it "returns a non-empty Array" do
       expect(described_class._files_with_constants).to be_an Array
-      expect(described_class._files_with_constants).to_not be_empty
+      expect(described_class._files_with_constants).not_to be_empty
     end
   end
 

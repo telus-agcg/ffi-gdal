@@ -4,14 +4,15 @@ require "ffi-gdal"
 require "gdal"
 
 RSpec.describe "GDAL Color Table access", type: :integration do
-  let(:dataset) { GDAL::Dataset.open(tmp_tiff, "r") }
-  let(:tmp_tiff) { make_temp_test_file(original_tiff) }
-  after(:each) { dataset.close }
-
   subject(:color_table) do
     band = dataset.raster_band(1)
     band.color_table
   end
+
+  let(:dataset) { GDAL::Dataset.open(tmp_tiff, "r") }
+  let(:tmp_tiff) { make_temp_test_file(original_tiff) }
+
+  after { dataset.close }
 
   context "file with color table" do
     let(:original_tiff) do
@@ -21,11 +22,13 @@ RSpec.describe "GDAL Color Table access", type: :integration do
 
     describe "#palette_interpretation" do
       subject { color_table.palette_interpretation }
+
       it { is_expected.to eq :GPI_RGB }
     end
 
     describe "#color_entry_count" do
       subject { color_table.color_entry_count }
+
       it { is_expected.to eq 256 }
     end
 

@@ -15,7 +15,7 @@ RSpec.describe OGR::Geometry::WKBRecord do
         expect(subject).to be_a described_class
         expect(subject.endianness.value).to eq FFI::OGR::Core::WKBByteOrder[:wkbNDR]
         expect(subject.wkb_type.value).to eq FFI::OGR::Core::WKBGeometryType[:wkbPoint]
-        expect(subject.has_z?).to eq false
+        expect(subject.has_z?).to be false
         expect(subject.geometry.value).to be_a String
       end
     end
@@ -28,7 +28,7 @@ RSpec.describe OGR::Geometry::WKBRecord do
         expect(subject.endianness.value).to eq FFI::OGR::Core::WKBByteOrder[:wkbNDR]
         expect(subject.wkb_type.value).to eq 1001
         expect(subject.geometry_type).to eq(described_class::WKB_Z | FFI::OGR::Core::WKBGeometryType[:wkbPoint])
-        expect(subject.has_z?).to eq true
+        expect(subject.has_z?).to be true
         expect(subject.geometry.value).to be_a String
       end
     end

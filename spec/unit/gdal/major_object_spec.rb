@@ -8,6 +8,7 @@ RSpec.describe GDAL::MajorObject do
   let(:driver) { GDAL::Driver.by_name("GTiff") }
   let(:dataset) { driver.create_dataset("/vsimem/test-#{SecureRandom.uuid}.tif", 1, 1) }
   let(:band) { dataset.raster_band(1) }
+
   after { dataset.close }
 
   describe "#description" do

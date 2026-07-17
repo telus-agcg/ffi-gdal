@@ -10,6 +10,7 @@ module GDAL
   # Wrapper for FFI::GDAL::RPCInfo.
   class RPCInfo
     extend Forwardable
+
     def_delegator :@c_struct, :[]
 
     # @param struct_or_ptr [FFI::GDAL::RPCInfo, FFI::Pointer]

@@ -10,6 +10,7 @@ RSpec.describe GDAL::Utils::Warp do
   end
 
   let(:src_dataset) { GDAL::Dataset.open(src_dataset_path, "r") }
+
   after { src_dataset.close }
 
   describe ".perform" do
@@ -85,6 +86,7 @@ RSpec.describe GDAL::Utils::Warp do
 
         dataset
       end
+
       after { dst_dataset.close }
 
       context "when no options are provided" do

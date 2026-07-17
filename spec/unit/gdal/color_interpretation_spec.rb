@@ -6,7 +6,7 @@ RSpec.describe GDAL::ColorInterpretation do
   describe ".name" do
     context "valid value" do
       it "returns an object" do
-        expect(GDAL::ColorInterpretation.name(:GCI_BlueBand)).to eq "Blue"
+        expect(described_class.name(:GCI_BlueBand)).to eq "Blue"
       end
     end
   end
@@ -14,7 +14,7 @@ RSpec.describe GDAL::ColorInterpretation do
   describe ".by_name" do
     context "valid name" do
       it "returns an object" do
-        expect(GDAL::ColorInterpretation.by_name("Blue")).to eq :GCI_BlueBand
+        expect(described_class.by_name("Blue")).to eq :GCI_BlueBand
       end
     end
   end

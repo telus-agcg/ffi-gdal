@@ -6,11 +6,12 @@ RSpec.describe OGR::SpatialReference do
   describe "#geographic?" do
     context "root is a GEOGCS node" do
       subject { described_class.new.import_from_epsg 4326 }
+
       it { is_expected.to be_geographic }
     end
 
     context "root is not a GEOGCS node" do
-      it { is_expected.to_not be_geographic }
+      it { is_expected.not_to be_geographic }
     end
   end
 
@@ -26,7 +27,7 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "root is not a LOCAL_CS node" do
-      it { is_expected.to_not be_local }
+      it { is_expected.not_to be_local }
     end
   end
 
@@ -42,7 +43,7 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "does not contain a PROJCS node" do
-      it { is_expected.to_not be_projected }
+      it { is_expected.not_to be_projected }
     end
   end
 
@@ -58,7 +59,7 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "does not contain a COMPD_CS node" do
-      it { is_expected.to_not be_compound }
+      it { is_expected.not_to be_compound }
     end
   end
 
@@ -74,7 +75,7 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "does not contain a GEOCCS node" do
-      it { is_expected.to_not be_geocentric }
+      it { is_expected.not_to be_geocentric }
     end
   end
 
@@ -90,35 +91,43 @@ RSpec.describe OGR::SpatialReference do
     end
 
     context "does not contain a VERT_CS node" do
-      it { is_expected.to_not be_vertical }
+      it { is_expected.not_to be_vertical }
     end
   end
 
   describe "#same?" do
     context "SpatialReferences describe the same system" do
       subject { described_class.new.import_from_epsg(4322) }
+
       let(:other) { described_class.new.import_from_epsg(4322) }
-      it("returns true") { expect(subject.same?(other)).to eq true }
+
+      it("returns true") { expect(subject.same?(other)).to be true }
     end
 
     context "SpatialReferences describe different systems" do
       subject { described_class.new.import_from_epsg(4322) }
+
       let(:other) { described_class.new.import_from_epsg(4326) }
-      it("returns false") { expect(subject.same?(other)).to eq false }
+
+      it("returns false") { expect(subject.same?(other)).to be false }
     end
   end
 
   describe "#geog_cs_is_same?" do
     context "SpatialReferences describe the same GEOGCS system" do
       subject { described_class.new.import_from_epsg(4322) }
+
       let(:other) { described_class.new.import_from_epsg(4322) }
-      it("returns true") { expect(subject.geog_cs_is_same?(other)).to eq true }
+
+      it("returns true") { expect(subject.geog_cs_is_same?(other)).to be true }
     end
 
     context "SpatialReferences describe different systems" do
       subject { described_class.new.import_from_epsg(4322) }
+
       let(:other) { described_class.new.import_from_epsg(4326) }
-      it("returns false") { expect(subject.geog_cs_is_same?(other)).to eq false }
+
+      it("returns false") { expect(subject.geog_cs_is_same?(other)).to be false }
     end
   end
 
@@ -136,7 +145,7 @@ RSpec.describe OGR::SpatialReference do
         sr
       end
 
-      it("returns true") { expect(subject.vert_cs_is_same?(other)).to eq true }
+      it("returns true") { expect(subject.vert_cs_is_same?(other)).to be true }
     end
 
     context "SpatialReferences describe different systems" do
@@ -152,7 +161,7 @@ RSpec.describe OGR::SpatialReference do
         sr
       end
 
-      it("returns false") { expect(subject.vert_cs_is_same?(other)).to eq false }
+      it("returns false") { expect(subject.vert_cs_is_same?(other)).to be false }
     end
   end
 end

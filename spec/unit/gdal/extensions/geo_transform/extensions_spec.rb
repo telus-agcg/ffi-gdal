@@ -14,7 +14,7 @@ RSpec.describe GDAL::GeoTransform::Extensions do
   end
 
   describe ".new_from_envelope" do
-    let(:envelope) { instance_double "OGR::Envelope" }
+    let(:envelope) { instance_double OGR::Envelope }
 
     it "builds a new GeoTransform using the extent values from the Envelope" do
       expect(envelope).to receive(:x_min).and_return(90)

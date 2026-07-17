@@ -4,6 +4,12 @@ require "ogr/data_source"
 require "ogr/spatial_reference"
 
 RSpec.describe OGR::DataSource do
+  subject(:data_source) do
+    driver.create_data_source("spec")
+  end
+
+  let(:driver) { OGR::Driver.by_name "Memory" }
+
   describe ".open" do
     context "not a data source" do
       it "raises an OGR::OpenFailure" do
@@ -14,7 +20,7 @@ RSpec.describe OGR::DataSource do
     end
 
     context "block given" do
-      let(:data_source) { instance_double "OGR::DataSource" }
+      let(:data_source) { instance_double described_class }
 
       it "yields then closes the opened DataSource" do
         allow(described_class).to receive(:new).and_return data_source
@@ -26,36 +32,36 @@ RSpec.describe OGR::DataSource do
     end
   end
 
-  let(:driver) { OGR::Driver.by_name "Memory" }
-
-  subject(:data_source) do
-    driver.create_data_source("spec")
-  end
-
   describe "#name" do
     subject { data_source.name }
+
     it { is_expected.to eq "spec" }
   end
 
   describe "#driver" do
     subject { data_source.driver.name }
+
     it { is_expected.to eq "Memory" }
   end
 
   describe "#layer_count" do
     subject { data_source.layer_count }
+
     it { is_expected.to be_zero }
   end
 
   describe "#layer" do
     context "no layers" do
       subject { data_source.layer(0) }
+
       it { is_expected.to be_nil }
     end
 
     context "1 layer" do
-      before { data_source.create_layer "unknown layer" }
       subject { data_source.layer(0) }
+
+      before { data_source.create_layer "unknown layer" }
+
       it { is_expected.to be_a OGR::Layer }
     end
   end
@@ -63,12 +69,15 @@ RSpec.describe OGR::DataSource do
   describe "#layer_by_name" do
     context "no layers" do
       subject { data_source.layer_by_name "meow" }
+
       it { is_expected.to be_nil }
     end
 
     context "1 layer" do
-      before { data_source.create_layer "unknown layer" }
       subject { data_source.layer_by_name "unknown layer" }
+
+      before { data_source.create_layer "unknown layer" }
+
       it { is_expected.to be_a OGR::Layer }
     end
   end
@@ -89,7 +98,7 @@ RSpec.describe OGR::DataSource do
         it "adds a new OGR::Layer to @layers" do
           expect do
             data_source.create_layer("unknown layer")
-          end.to change { data_source.layer_count }.by 1
+          end.to change(data_source, :layer_count).by 1
         end
 
         it "has a layer that is the given geometry type" do
@@ -102,7 +111,7 @@ RSpec.describe OGR::DataSource do
         it "adds a new OGR::Layer to @layers" do
           expect do
             data_source.create_layer("polygon layer", geometry_type: :wkbPolygon)
-          end.to change { data_source.layer_count }.by 1
+          end.to change(data_source, :layer_count).by 1
         end
 
         it "has a layer that is the given geometry type" do
@@ -117,7 +126,7 @@ RSpec.describe OGR::DataSource do
         it "adds a new OGR::Layer to @layers" do
           expect do
             data_source.create_layer("polygon layer", spatial_reference: spatial_reference)
-          end.to change { data_source.layer_count }.by 1
+          end.to change(data_source, :layer_count).by 1
         end
 
         it "has a layer that uses that spatial reference" do
@@ -134,7 +143,7 @@ RSpec.describe OGR::DataSource do
     it "adds a new OGR::Layer to @layers" do
       expect do
         subject.copy_layer(unknown_layer, "meow layer")
-      end.to change { subject.layer_count }.by 1
+      end.to change(subject, :layer_count).by 1
     end
 
     it "makes a copy of the layer" do
@@ -164,9 +173,11 @@ RSpec.describe OGR::DataSource do
       end
 
       context "1 layer" do
-        before { data_source.create_layer "unknown layer" }
         subject { data_source.delete_layer(0) }
-        it { is_expected.to eq nil }
+
+        before { data_source.create_layer "unknown layer" }
+
+        it { is_expected.to be_nil }
       end
     end
   end
@@ -174,6 +185,7 @@ RSpec.describe OGR::DataSource do
   describe "#style_table" do
     context "no associated style table" do
       subject { data_source.style_table }
+
       it { is_expected.to be_nil }
     end
   end
@@ -202,26 +214,26 @@ RSpec.describe OGR::DataSource do
       # I don't get why these return false...
       it "returns false" do
         capabilities.each do |capability|
-          expect(subject.test_capability(capability)).to eq false
+          expect(subject.test_capability(capability)).to be false
         end
       end
     end
 
     context "unsupported capabilities to check" do
       it "returns false" do
-        expect(subject.test_capability("meow")).to eq false
+        expect(subject.test_capability("meow")).to be false
       end
     end
   end
 
   describe "#sync_to_disk" do
     # NOTE: We redefine driver, as we should use file-based format to test #sync_to_disk.
-    let(:driver) { OGR::Driver.by_name("CSV") }
-    let(:tmpfile) { Tempfile.new(["spec", ".csv"]) }
-
     subject(:data_source) do
       driver.create_data_source(tmpfile.path)
     end
+
+    let(:driver) { OGR::Driver.by_name("CSV") }
+    let(:tmpfile) { Tempfile.new(["spec", ".csv"]) }
 
     it do
       expect(subject.sync_to_disk).to be_nil

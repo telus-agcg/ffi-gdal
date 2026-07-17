@@ -24,9 +24,9 @@ RSpec.describe OGR::SpatialReference do
         if GDAL.version_num < "3000000"
           # NOTE: Looks like it should be `true`, as in GDAL 3.
           # By some reason GDAL 2 returns `false`.
-          expect(subject.epsg_treats_as_lat_long?).to eq false
+          expect(subject.epsg_treats_as_lat_long?).to be false
         else
-          expect(subject.epsg_treats_as_lat_long?).to eq true
+          expect(subject.epsg_treats_as_lat_long?).to be true
         end
       end
     end
@@ -63,7 +63,7 @@ RSpec.describe OGR::SpatialReference do
 
     it "treats 4326 as lat/lon" do
       subject.import_from_epsga(4326)
-      expect(subject.epsg_treats_as_lat_long?).to eq true
+      expect(subject.epsg_treats_as_lat_long?).to be true
     end
   end
 end

@@ -10,6 +10,7 @@ RSpec.describe GDAL::Utils::Info do
   end
 
   let(:dataset) { GDAL::Dataset.open(src_dataset_path, "r") }
+
   after { dataset.close }
 
   describe ".perform" do

@@ -5,6 +5,8 @@ require "gdal/extensions/raster_band_classifier"
 require "gdal/extensions/raster_band/extensions"
 
 RSpec.describe GDAL::RasterBandClassifier do
+  subject(:classifier) { described_class.new(raster_band) }
+
   let(:driver) { GDAL::Driver.by_name("MEM") }
 
   let(:dataset) do
@@ -17,7 +19,6 @@ RSpec.describe GDAL::RasterBandClassifier do
   end
 
   let(:raster_band) { dataset.raster_band 1 }
-  subject(:classifier) { described_class.new(raster_band) }
 
   describe "#add_range" do
     context "range param is a Range" do
@@ -68,6 +69,8 @@ RSpec.describe GDAL::RasterBandClassifier do
     end
 
     context "band type is :GDT_Float32" do
+      subject { classifier.equal_count_ranges(4) }
+
       let(:raster_band) do
         band = float_dataset.raster_band 1
         new_values = band.to_na.indgen!
@@ -78,8 +81,6 @@ RSpec.describe GDAL::RasterBandClassifier do
       let(:float_dataset) do
         driver.create_dataset "test dataset", 640, 480, data_type: :GDT_Float32
       end
-
-      subject { classifier.equal_count_ranges(4) }
 
       it "is an Array of Hashes" do
         expect(subject).to be_an Array
@@ -94,11 +95,13 @@ RSpec.describe GDAL::RasterBandClassifier do
 
     context "not enough values between breaks to generate unique break values" do
       subject { classifier.equal_count_ranges(1_000) }
+
       it { is_expected.to be_nil }
     end
 
     context "all same value" do
       let(:band_narray) { Numo::Int8.new(3, 5).fill(1) }
+
       before { allow(raster_band).to receive(:to_nna).and_return(band_narray) }
 
       it "returns a single range when 1 is requested" do
@@ -108,6 +111,7 @@ RSpec.describe GDAL::RasterBandClassifier do
 
     context "all nodata pixels" do
       let(:band_narray) { Numo::Int8.new(3, 5).fill(0) }
+
       before { allow(raster_band).to receive(:to_nna).and_return(band_narray) }
 
       it "returns an empty Array" do
@@ -156,7 +160,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it "retains its NODATA pixels" do
-        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
+        expect { subject.classify! }.not_to(change { raster_band.to_na.eq(-9999.0).count_true })
       end
     end
 
@@ -186,7 +190,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it "retains its NODATA pixels" do
-        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
+        expect { subject.classify! }.not_to(change { raster_band.to_na.eq(-9999.0).count_true })
         pixels = raster_band.to_na
         expect(pixels.eq(-9999).count_true).to eq 640
         expect(pixels.eq(0).count_true).to eq 0
@@ -217,7 +221,7 @@ RSpec.describe GDAL::RasterBandClassifier do
       end
 
       it "retains its NODATA pixels" do
-        expect { subject.classify! }.to_not(change { raster_band.to_na.eq(-9999.0).count_true })
+        expect { subject.classify! }.not_to(change { raster_band.to_na.eq(-9999.0).count_true })
       end
     end
   end

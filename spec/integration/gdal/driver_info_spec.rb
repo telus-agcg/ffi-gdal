@@ -7,15 +7,16 @@ RSpec.describe "Driver Info", type: :integration do
   # Without this before block, tests fail--seemingly due to too many instances
   # of the same driver open. Seems like there might be a better solution than
   # this here, but I'm not sure what it is yet.
+  subject { GDAL::Driver.by_name "GTiff" }
+
   before { FFI::GDAL::GDAL.GDALAllRegister }
+
   let(:tmp_source_tiff) { make_temp_test_file(original_source_tiff) }
 
   let(:original_source_tiff) do
     path = "../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif"
     File.expand_path(path, __dir__)
   end
-
-  subject { GDAL::Driver.by_name "GTiff" }
 
   it_behaves_like "a major object"
 
@@ -29,7 +30,7 @@ RSpec.describe "Driver Info", type: :integration do
   describe "#c_pointer" do
     it "is a FFI::Pointer to the actual C driver" do
       expect(subject.c_pointer).to be_a FFI::Pointer
-      expect(subject.c_pointer).to_not be_null
+      expect(subject.c_pointer).not_to be_null
     end
   end
 
@@ -67,7 +68,7 @@ RSpec.describe "Driver Info", type: :integration do
       end
 
       it "returns true" do
-        expect(subject.validate_creation_options(options)).to eq true
+        expect(subject.validate_creation_options(options)).to be true
       end
     end
 
@@ -77,19 +78,20 @@ RSpec.describe "Driver Info", type: :integration do
       end
 
       it "returns false" do
-        expect(subject.validate_creation_options(options)).to eq false
+        expect(subject.validate_creation_options(options)).to be false
       end
     end
   end
 
   describe "#copy_dataset_files" do
     let(:dest_tiff) { File.expand_path("copied_tiff.tif", "tmp") }
+
     after { FileUtils.rm_f(dest_tiff) }
 
     context "source is a GTiff" do
       it "copies the file" do
         subject.copy_dataset_files(tmp_source_tiff, dest_tiff)
-        expect(File.exist?(dest_tiff)).to eq true
+        expect(File.exist?(dest_tiff)).to be true
       end
     end
 
@@ -105,12 +107,13 @@ RSpec.describe "Driver Info", type: :integration do
 
   describe "#create_dataset" do
     let(:new_dataset_path) { "tmp/driver_create_dataset.tif" }
+
     after { FileUtils.rm_f(new_dataset_path) }
 
     it "creates a dataset" do
       dataset = subject.create_dataset(new_dataset_path, 2, 2)
 
-      expect(File.exist?(new_dataset_path)).to eq true
+      expect(File.exist?(new_dataset_path)).to be true
       expect(dataset).to be_a GDAL::Dataset
       expect(dataset.raster_x_size).to eq 2
       expect(dataset.raster_y_size).to eq 2
@@ -120,6 +123,7 @@ RSpec.describe "Driver Info", type: :integration do
   describe "#copy_dataset" do
     let(:copy_dataset_path) { "tmp/driver_copy_dataset.tif" }
     let(:source_dataset) { GDAL::Dataset.open(tmp_source_tiff, "r") }
+
     after { source_dataset.close }
 
     it "copies the dataset and yields a GDAL::Dataset" do
@@ -129,7 +133,7 @@ RSpec.describe "Driver Info", type: :integration do
         expect(dest_dataset.access_flag).to eq :GA_Update
       end
 
-      expect(File.exist?(copy_dataset_path)).to eq true
+      expect(File.exist?(copy_dataset_path)).to be true
     end
   end
 

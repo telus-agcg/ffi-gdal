@@ -5,6 +5,8 @@ require "ogr/feature"
 require "ogr/field"
 
 RSpec.describe OGR::Feature do
+  subject(:feature) { described_class.new(feature_definition) }
+
   let(:integer_field_def) { OGR::FieldDefinition.new("test integer field", :OFTInteger) }
   let(:integer_list_field_def) { OGR::FieldDefinition.new("test integer list field", :OFTIntegerList) }
   let(:real_field_def) { OGR::FieldDefinition.new("test real field", :OFTReal) }
@@ -47,17 +49,16 @@ RSpec.describe OGR::Feature do
     end
   end
 
-  subject(:feature) { described_class.new(feature_definition) }
-
   describe "#clone" do
     it "returns a new Feature" do
-      expect(subject.clone).to be_a OGR::Feature
+      expect(subject.clone).to be_a described_class
     end
   end
 
   describe "#field_count" do
     context "no fields" do
       subject { empty_feature_definition.field_count }
+
       it { is_expected.to be_zero }
     end
 
@@ -299,6 +300,7 @@ RSpec.describe OGR::Feature do
       end
     end
   end
+
   describe "#field_definition" do
     context "field exists at the given index" do
       it "returns the FieldDefinition" do
@@ -330,7 +332,7 @@ RSpec.describe OGR::Feature do
   describe "#field_set?" do
     context "field at the given index is not set" do
       it "returns false" do
-        expect(subject.field_set?(0)).to eq false
+        expect(subject.field_set?(0)).to be false
       end
     end
 
@@ -340,7 +342,7 @@ RSpec.describe OGR::Feature do
       end
 
       it "returns true" do
-        expect(subject.field_set?(0)).to eq true
+        expect(subject.field_set?(0)).to be true
       end
     end
   end
@@ -349,7 +351,7 @@ RSpec.describe OGR::Feature do
     context "field is set" do
       it "removes the field" do
         subject.unset_field(0)
-        expect(subject.field_set?(0)).to eq false
+        expect(subject.field_set?(0)).to be false
       end
     end
 

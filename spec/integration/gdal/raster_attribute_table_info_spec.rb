@@ -4,6 +4,11 @@ require "ffi-gdal"
 require "gdal"
 
 RSpec.describe "Raster Attribute Table Info", type: :integration do
+  subject do
+    band = dataset.raster_band(1)
+    band.default_raster_attribute_table
+  end
+
   let(:file) { make_temp_test_file(original_source_tiff) }
 
   let(:original_source_tiff) do
@@ -12,17 +17,13 @@ RSpec.describe "Raster Attribute Table Info", type: :integration do
   end
 
   let(:dataset) { GDAL::Dataset.open(file, "r") }
-  after { dataset.close }
 
-  subject do
-    band = dataset.raster_band(1)
-    band.default_raster_attribute_table
-  end
+  after { dataset.close }
 
   describe "#changes_written_to_file?" do
     context "no changes to file" do
       it "is true" do
-        expect(subject.changes_written_to_file?).to eq true
+        expect(subject.changes_written_to_file?).to be true
       end
     end
   end
@@ -131,7 +132,7 @@ RSpec.describe "Raster Attribute Table Info", type: :integration do
 
     context "a row does not exist for the given pixel value" do
       it "returns nil" do
-        expect(subject.row_of_value(123_456)).to eq nil
+        expect(subject.row_of_value(123_456)).to be_nil
       end
     end
   end
@@ -218,11 +219,12 @@ RSpec.describe "Raster Attribute Table Info", type: :integration do
 
   describe "#dump_readable" do
     let(:output_path) { File.expand_path("tmp/raster_attribute_table_info") }
+
     after { FileUtils.rm_f(output_path) }
 
     it "writes to the file" do
       subject.dump_readable(output_path)
-      expect(File.exist?(output_path)).to eq true
+      expect(File.exist?(output_path)).to be true
     end
   end
 end

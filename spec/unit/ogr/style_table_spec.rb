@@ -5,11 +5,9 @@ require "ogr/style_table"
 RSpec.describe OGR::StyleTable do
   describe "#add_style + #find" do
     it "#add_style returns true" do
-      expect(subject.add_style("test style", "#ffffff")).to eq true
+      expect(subject.add_style("test style", "#ffffff")).to be true
     end
-  end
 
-  describe "#add_style + #find" do
     it "adds the style to the table" do
       subject.add_style("test style", "#ffffff")
       expect(subject.find("test style")).to eq "#ffffff"
@@ -55,7 +53,7 @@ RSpec.describe OGR::StyleTable do
       end
 
       it "returns true and imports the styles from the file" do
-        expect(subject.load!(file_path)).to eq true
+        expect(subject.load!(file_path)).to be true
         expect(subject.find("meow things")).to eq "Meow"
       end
     end

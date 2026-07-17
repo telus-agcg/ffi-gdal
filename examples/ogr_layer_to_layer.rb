@@ -4,6 +4,7 @@ require "bundler/setup"
 require "ffi-gdal"
 
 include GDAL::Logger # rubocop:disable Style/MixinUsage
+
 GDAL::Logger.logging_enabled = true
 
 # http://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-a-new-layer-from-the-extent-of-an-existing-layer

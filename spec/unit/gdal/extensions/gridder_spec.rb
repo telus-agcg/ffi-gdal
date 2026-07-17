@@ -3,14 +3,14 @@
 require "gdal/extensions/gridder"
 
 RSpec.describe GDAL::Gridder do
-  let(:source_layer) { instance_double "OGR::Layer" }
-  let(:dest_file_name) { "blah.docx" }
-  let(:gridder_options) { instance_double "GDAL::GridderOptions" }
-
   subject(:gridder) { described_class.new(source_layer, dest_file_name, gridder_options) }
 
+  let(:source_layer) { instance_double OGR::Layer }
+  let(:dest_file_name) { "blah.docx" }
+  let(:gridder_options) { instance_double GDAL::GridderOptions }
+
   describe "#build_output_spatial_reference" do
-    let(:spatial_reference) { instance_double "OGR::SpatialRefernce" }
+    let(:spatial_reference) { instance_double OGR::SpatialReference }
 
     context "no output_projection given, source layer has one set" do
       before do
@@ -42,7 +42,7 @@ RSpec.describe GDAL::Gridder do
       end
 
       it "returns nil" do
-        expect(subject.send(:build_output_spatial_reference)).to eq nil
+        expect(subject.send(:build_output_spatial_reference)).to be_nil
       end
     end
   end
@@ -57,7 +57,7 @@ RSpec.describe GDAL::Gridder do
     end
 
     context "output_x_extent is not set" do
-      let(:extent) { instance_double "OGR::Envelope", x_min: 456 }
+      let(:extent) { instance_double OGR::Envelope, x_min: 456 }
 
       before do
         allow(gridder_options).to receive(:output_x_extent).and_return({})
@@ -80,7 +80,7 @@ RSpec.describe GDAL::Gridder do
     end
 
     context "output_x_extent is not set" do
-      let(:extent) { instance_double "OGR::Envelope", x_max: 654 }
+      let(:extent) { instance_double OGR::Envelope, x_max: 654 }
 
       before do
         allow(gridder_options).to receive(:output_x_extent).and_return({})
@@ -103,7 +103,7 @@ RSpec.describe GDAL::Gridder do
     end
 
     context "output_y_extent is not set" do
-      let(:extent) { instance_double "OGR::Envelope", y_min: 456 }
+      let(:extent) { instance_double OGR::Envelope, y_min: 456 }
 
       before do
         allow(gridder_options).to receive(:output_y_extent).and_return({})
@@ -126,7 +126,7 @@ RSpec.describe GDAL::Gridder do
     end
 
     context "output_y_extent is not set" do
-      let(:extent) { instance_double "OGR::Envelope", y_max: 654 }
+      let(:extent) { instance_double OGR::Envelope, y_max: 654 }
 
       before do
         allow(gridder_options).to receive(:output_y_extent).and_return({})

@@ -125,13 +125,13 @@ RSpec.describe OGR::Layer do
     context "reordering is supported" do
       context "field does not exist at one of the given indexes" do
         it "returns false" do
-          expect(subject.reorder_fields(1, 0)).to eq false
+          expect(subject.reorder_fields(1, 0)).to be false
         end
       end
 
       context "no fields given" do
         it "returns false" do
-          expect(subject.reorder_fields).to eq false
+          expect(subject.reorder_fields).to be false
         end
       end
 
@@ -410,7 +410,7 @@ RSpec.describe OGR::Layer do
   describe "#set_ignored_fields" do
     context "no fields given" do
       it "returns false" do
-        expect(subject.set_ignored_fields).to eq false
+        expect(subject.set_ignored_fields).to be false
       end
     end
 

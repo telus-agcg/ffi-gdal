@@ -19,7 +19,7 @@ RSpec.describe OGR::Layer do
 
   describe "#sync_to_disk" do
     it "does not die" do
-      expect { subject.sync_to_disk }.to_not raise_exception
+      expect { subject.sync_to_disk }.not_to raise_exception
     end
   end
 
@@ -32,14 +32,14 @@ RSpec.describe OGR::Layer do
       # I don't get why these return false...
       it "returns false" do
         capabilities.each do |capability|
-          expect(subject.test_capability(capability)).to eq false
+          expect(subject.test_capability(capability)).to be false
         end
       end
     end
 
     context "unsupported capabilities to check" do
       it "returns false" do
-        expect(subject.test_capability("meow")).to eq false
+        expect(subject.test_capability("meow")).to be false
       end
     end
   end

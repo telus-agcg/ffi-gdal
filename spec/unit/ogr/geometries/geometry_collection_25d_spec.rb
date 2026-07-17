@@ -6,6 +6,7 @@ RSpec.describe OGR::GeometryCollection25D do
   describe "#type" do
     context "when created with data" do
       subject { OGR::Geometry.create_from_wkt(wkt) }
+
       let(:wkt) { "GEOMETRYCOLLECTION(POINT(4 6 8),LINESTRING(4 6 8,7 10 11))" }
 
       it "returns :wkbGeometryCollection25D" do

@@ -28,9 +28,9 @@ RSpec.describe OGR::Geometry::EWKBRecord do
         expect(subject.endianness.value).to eq 1
 
         expect(subject.wkb_type.value).to eq 1
-        expect(subject.has_z?).to eq false
-        expect(subject.has_m?).to eq false
-        expect(subject.has_srid?).to eq false
+        expect(subject.has_z?).to be false
+        expect(subject.has_m?).to be false
+        expect(subject.has_srid?).to be false
 
         expect(subject.srid.value).to eq 0
         expect(subject.geometry.value).to be_a String
@@ -46,9 +46,9 @@ RSpec.describe OGR::Geometry::EWKBRecord do
 
         expect(subject.wkb_type.value).to eq(subject.geometry_type | 0x2000_0000)
         expect(subject.geometry_type).to eq 1
-        expect(subject.has_z?).to eq false
-        expect(subject.has_m?).to eq false
-        expect(subject.has_srid?).to eq true
+        expect(subject.has_z?).to be false
+        expect(subject.has_m?).to be false
+        expect(subject.has_srid?).to be true
 
         expect(subject.srid.value).to eq 3857
 
@@ -64,9 +64,9 @@ RSpec.describe OGR::Geometry::EWKBRecord do
         expect(subject.endianness.value).to eq 1
 
         expect(subject.wkb_type.value).to eq(subject.geometry_type | 0x8000_0000)
-        expect(subject.has_z?).to eq true
-        expect(subject.has_m?).to eq false
-        expect(subject.has_srid?).to eq false
+        expect(subject.has_z?).to be true
+        expect(subject.has_m?).to be false
+        expect(subject.has_srid?).to be false
 
         expect(subject.srid.value).to eq 0
         expect(subject.geometry.value).to be_a String
@@ -82,9 +82,9 @@ RSpec.describe OGR::Geometry::EWKBRecord do
 
         expect(subject.wkb_type.value).to eq(0x8000_0000 | 0x2000_0000 | subject.geometry_type)
         expect(subject.geometry_type).to eq(subject.wkb_type.value ^ 0x2000_0000)
-        expect(subject.has_z?).to eq true
-        expect(subject.has_m?).to eq false
-        expect(subject.has_srid?).to eq true
+        expect(subject.has_z?).to be true
+        expect(subject.has_m?).to be false
+        expect(subject.has_srid?).to be true
 
         expect(subject.srid.value).to eq 3857
 
@@ -103,21 +103,25 @@ RSpec.describe OGR::Geometry::EWKBRecord do
 
     context "point, no srid" do
       subject { described_class.read(ewkb_point_no_srid).to_wkb }
+
       it_behaves_like "a WKB string"
     end
 
     context "point, SRID" do
       subject { described_class.read(ewkb_point_with_srid).to_wkb }
+
       it_behaves_like "a WKB string"
     end
 
     context "point25d, no srid" do
       subject { described_class.read(ewkb_point25d_no_srid).to_wkb }
+
       it_behaves_like "a WKB string"
     end
 
     context "point25d, SRID" do
       subject { described_class.read(ewkb_point25d_with_srid).to_wkb }
+
       it_behaves_like "a WKB string"
     end
   end
@@ -136,21 +140,25 @@ RSpec.describe OGR::Geometry::EWKBRecord do
 
     context "point, no srid" do
       let(:ewkb_record) { described_class.read(ewkb_point_no_srid) }
+
       it_behaves_like "a WKBRecord"
     end
 
     context "point, SRID" do
       let(:ewkb_record) { described_class.read(ewkb_point_with_srid) }
+
       it_behaves_like "a WKBRecord"
     end
 
     context "point25d, no srid" do
       let(:ewkb_record) { described_class.read(ewkb_point25d_no_srid) }
+
       it_behaves_like "a WKBRecord"
     end
 
     context "point25d, SRID" do
       let(:ewkb_record) { described_class.read(ewkb_point25d_with_srid) }
+
       it_behaves_like "a WKBRecord"
     end
   end

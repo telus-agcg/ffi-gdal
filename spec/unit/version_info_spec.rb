@@ -10,7 +10,7 @@ RSpec.describe GDAL::VersionInfo do
   describe "#version_num" do
     it "returns a non-empty String" do
       expect(subject.version_num).to be_a String
-      expect(subject.version_num).to_not be_empty
+      expect(subject.version_num).not_to be_empty
     end
   end
 
@@ -23,14 +23,14 @@ RSpec.describe GDAL::VersionInfo do
   describe "#release_name" do
     it "returns a non-empty String" do
       expect(subject.release_name).to be_a String
-      expect(subject.release_name).to_not be_empty
+      expect(subject.release_name).not_to be_empty
     end
   end
 
   describe "#license" do
     it "returns a non-empty String" do
       expect(subject.license).to be_a String
-      expect(subject.license).to_not be_empty
+      expect(subject.license).not_to be_empty
     end
   end
 
@@ -43,7 +43,7 @@ RSpec.describe GDAL::VersionInfo do
   describe "#long_version" do
     it "returns a non-empty String" do
       expect(subject.long_version).to be_a String
-      expect(subject.long_version).to_not be_empty
+      expect(subject.long_version).not_to be_empty
     end
   end
 end

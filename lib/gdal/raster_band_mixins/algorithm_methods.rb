@@ -95,7 +95,9 @@ module GDAL
       # @param x_size [Integer]
       # @param y_size [Integer]
       # @return [Integer] The checksum value.
-      def checksum_image(x_offset, y_offset, x_size, y_size)
+      # Command-style public API; renaming to a `?`-predicate would be a
+      # breaking change.
+      def checksum_image(x_offset, y_offset, x_size, y_size) # rubocop:disable Naming/PredicateMethod
         !!FFI::GDAL::Alg.GDALChecksumImage(
           @c_pointer,
           x_offset,
@@ -171,6 +173,9 @@ module GDAL
       #   +FFI::CPL::Progress.GDALCreateScaledProgress+.
       # @param options [Hash]
       # TODO: document what valid options are.
+      # Bang command returning a boolean success flag; renaming to a
+      # `?`-predicate would be a breaking public-API change.
+      # rubocop:disable Naming/PredicateMethod
       def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil, progress_arg: nil,
         **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
@@ -185,6 +190,7 @@ module GDAL
                                         progress_function,
                                         progress_arg)
       end
+      # rubocop:enable Naming/PredicateMethod
 
       # Creates vector polygons for all connected regions of pixels in the raster
       # that share a common pixel value. Optionally, each polygon may be

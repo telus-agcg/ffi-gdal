@@ -10,6 +10,7 @@ RSpec.describe GDAL::Utils::Nearblack do
   end
 
   let(:src_dataset) { GDAL::Dataset.open(src_dataset_path, "r") }
+
   after { src_dataset.close }
 
   describe ".perform" do

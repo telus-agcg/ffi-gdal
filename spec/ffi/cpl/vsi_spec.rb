@@ -6,42 +6,42 @@ RSpec.describe FFI::CPL::VSI do
   if GDAL.version_num >= "3060000"
     describe "VSI PathSpecificOptions" do
       around do |example|
-        FFI::CPL::VSI.VSIClearPathSpecificOptions(nil)
+        described_class.VSIClearPathSpecificOptions(nil)
         example.run
-        FFI::CPL::VSI.VSIClearPathSpecificOptions(nil)
+        described_class.VSIClearPathSpecificOptions(nil)
       end
 
       describe "VSIClearPathSpecificOptions" do
         it "properly clears credentials" do
-          FFI::CPL::VSI.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          described_class.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
 
-          FFI::CPL::VSI.VSIClearPathSpecificOptions(nil)
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be(nil)
+          described_class.VSIClearPathSpecificOptions(nil)
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be_nil
         end
       end
 
       describe "VSISetPathSpecificOption" do
         it "properly sets credential" do
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be(nil)
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be_nil
 
-          FFI::CPL::VSI.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          described_class.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
         end
       end
 
       describe "VSIGetPathSpecificOption" do
         it "properly get credential" do
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be(nil)
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to be_nil
           expect(
-            FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
+            described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
           ).to eq("DefaultValue1234")
 
-          FFI::CPL::VSI.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
+          described_class.VSISetPathSpecificOption("/vsis3/test", "Key1234", "Value1234")
 
-          expect(FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          expect(described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", nil)).to eq("Value1234")
           expect(
-            FFI::CPL::VSI.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
+            described_class.VSIGetPathSpecificOption("/vsis3/test", "Key1234", "DefaultValue1234")
           ).to eq("Value1234")
         end
       end
@@ -51,39 +51,40 @@ RSpec.describe FFI::CPL::VSI do
   if GDAL.version_num >= "3050000"
     describe "VSI Credential" do
       around do |example|
-        FFI::CPL::VSI.VSIClearCredentials(nil)
+        described_class.VSIClearCredentials(nil)
         example.run
-        FFI::CPL::VSI.VSIClearCredentials(nil)
+        described_class.VSIClearCredentials(nil)
       end
 
       describe "VSIClearCredentials" do
         it "properly clears credentials" do
-          FFI::CPL::VSI.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          described_class.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
 
-          FFI::CPL::VSI.VSIClearCredentials(nil)
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be(nil)
+          described_class.VSIClearCredentials(nil)
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be_nil
         end
       end
 
       describe "VSISetCredential" do
         it "properly sets credential" do
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be(nil)
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be_nil
 
-          FFI::CPL::VSI.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          described_class.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
         end
       end
 
       describe "VSIGetCredential" do
         it "properly get credential" do
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be(nil)
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", "DefaultValue1234")).to eq("DefaultValue1234")
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to be_nil
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234",
+                                                  "DefaultValue1234")).to eq("DefaultValue1234")
 
-          FFI::CPL::VSI.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
+          described_class.VSISetCredential("/vsis3/test", "Key1234", "Value1234")
 
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
-          expect(FFI::CPL::VSI.VSIGetCredential("/vsis3/test", "Key1234", "DefaultValue1234")).to eq("Value1234")
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", nil)).to eq("Value1234")
+          expect(described_class.VSIGetCredential("/vsis3/test", "Key1234", "DefaultValue1234")).to eq("Value1234")
         end
       end
     end

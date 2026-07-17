@@ -6,6 +6,7 @@ module FFI
   module CPL
     module String
       extend ::FFI::Library
+
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
       #------------------------------------------------------------------------

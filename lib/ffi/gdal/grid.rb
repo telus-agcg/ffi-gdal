@@ -7,6 +7,7 @@ module FFI
   module GDAL
     module Grid
       extend ::FFI::Library
+
       ffi_lib [::FFI::CURRENT_PROCESS, ::FFI::GDAL.gdal_library_path]
 
       #------------------------------------------------------------------------

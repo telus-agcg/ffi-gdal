@@ -5,11 +5,12 @@ require "ogr/extensions/driver/capability_methods"
 
 RSpec.describe OGR::Driver do
   context "Memory driver" do
-    subject(:driver) { OGR::Driver.by_name("Memory") }
+    subject(:driver) { described_class.by_name("Memory") }
 
     describe "#can_create_data_source?" do
       subject { driver.can_create_data_source? }
-      it { is_expected.to eq true }
+
+      it { is_expected.to be true }
     end
 
     describe "#can_delete_data_source?" do

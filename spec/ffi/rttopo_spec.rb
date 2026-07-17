@@ -7,7 +7,7 @@ RSpec.describe FFI::Rttopo do
   describe ".rttopo_library_path" do
     context "valid lib" do
       it "returns a String containing the path to the library" do
-        expect(described_class.rttopo_library_path).to match(/rttopo/)
+        expect(described_class.rttopo_library_path).to include("rttopo")
       end
     end
   end

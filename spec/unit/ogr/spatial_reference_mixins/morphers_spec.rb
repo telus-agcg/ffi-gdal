@@ -14,6 +14,8 @@ RSpec.describe OGR::SpatialReference do
   end
 
   describe "#morph_from_esri!" do
+    subject { described_class.new.import_from_esri(esri) }
+
     let(:esri) do
       <<-ESRI.strip
         GEOGCS["GCS_North_American_1983",
@@ -23,8 +25,6 @@ RSpec.describe OGR::SpatialReference do
            UNIT["Degree",0.0174532925199433]]
       ESRI
     end
-
-    subject { described_class.new.import_from_esri(esri) }
 
     it "changes the SRS to ESRI" do
       pending "Figure out why morphing does not change anything"

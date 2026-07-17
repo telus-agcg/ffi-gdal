@@ -3,21 +3,26 @@
 require "ogr/driver"
 
 RSpec.describe OGR::Driver do
+  subject(:memory_driver) { described_class.by_name("Memory") }
+
+  let(:shapefile_driver) { described_class.by_name("ESRI Shapefile") }
+
   describe ".count" do
     subject { described_class.count }
+
     it { is_expected.to be_a Integer }
   end
 
   describe ".by_name" do
     it "can return an OGR::Driver" do
-      expect(described_class.by_name("Memory")).to be_a OGR::Driver
+      expect(described_class.by_name("Memory")).to be_a described_class
     end
   end
 
   describe ".at_index" do
     context "valid index" do
       it "returns an OGR::Driver" do
-        expect(described_class.at_index(0)).to be_a OGR::Driver
+        expect(described_class.at_index(0)).to be_a described_class
       end
     end
 
@@ -36,11 +41,9 @@ RSpec.describe OGR::Driver do
     end
   end
 
-  subject(:memory_driver) { described_class.by_name("Memory") }
-  let(:shapefile_driver) { described_class.by_name("ESRI Shapefile") }
-
   describe "#name" do
     subject { memory_driver.name }
+
     it { is_expected.to eq "Memory" }
   end
 

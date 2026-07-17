@@ -51,7 +51,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns true" do
-        expect(subject == other_envelope).to eq true
+        expect(subject == other_envelope).to be true
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns false" do
-        expect(subject == other_envelope).to eq false
+        expect(subject == other_envelope).to be false
       end
     end
   end
@@ -131,7 +131,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns true" do
-        expect(subject.intersects?(other_envelope)).to eq true
+        expect(subject.intersects?(other_envelope)).to be true
       end
     end
 
@@ -147,7 +147,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns false" do
-        expect(subject.intersects?(other_envelope)).to eq false
+        expect(subject.intersects?(other_envelope)).to be false
       end
     end
   end
@@ -172,7 +172,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns true" do
-        expect(subject.contains?(other_envelope)).to eq true
+        expect(subject.contains?(other_envelope)).to be true
       end
     end
 
@@ -188,7 +188,7 @@ RSpec.describe OGR::Envelope::Extensions do
       end
 
       it "returns false" do
-        expect(subject.contains?(other_envelope)).to eq false
+        expect(subject.contains?(other_envelope)).to be false
       end
     end
   end

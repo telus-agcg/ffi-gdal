@@ -7,7 +7,7 @@ RSpec.describe OGR::ErrorHandling do
     context ":OGRERR_NONE" do
       it "does not raise" do
         expect { described_class.handle_ogr_err("") { :OGRERR_NONE } }
-          .to_not raise_exception
+          .not_to raise_exception
       end
     end
 

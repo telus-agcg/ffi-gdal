@@ -2,6 +2,10 @@
 
 require "ogr/extensions/geometry/container_mixins"
 
+# This file exercises the container-geometry mixin across each concrete
+# container class; the separate top-level describes are intentional (one per
+# class) rather than nested.
+# rubocop:disable RSpec/MultipleDescribes
 RSpec.describe OGR::GeometryCollection do
   describe "#collection" do
     it { is_expected.to be_collection }
@@ -9,6 +13,7 @@ RSpec.describe OGR::GeometryCollection do
 
   describe "#each" do
     subject { described_class.new.each }
+
     it { is_expected.to be_a Enumerator }
   end
 
@@ -46,3 +51,4 @@ RSpec.describe OGR::Polygon do
     let(:child_geometry) { OGR::LinearRing.new }
   end
 end
+# rubocop:enable RSpec/MultipleDescribes

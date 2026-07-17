@@ -8,6 +8,7 @@ RSpec.describe OGR::Layer do
   describe "#spatial_filter" do
     context "default" do
       subject { layer.spatial_filter }
+
       it { is_expected.to be_nil }
     end
   end
@@ -23,21 +24,21 @@ RSpec.describe OGR::Layer do
   describe "#set_spatial_filter_ex" do
     it "does not die" do
       geometry = OGR::Geometry.create_from_wkt("POINT (1 1)")
-      expect { subject.set_spatial_filter_ex(0, geometry) }.to_not raise_exception
+      expect { subject.set_spatial_filter_ex(0, geometry) }.not_to raise_exception
     end
   end
 
   describe "#set_spatial_filter_rectangle" do
     it "does not die" do
       expect { subject.set_spatial_filter_rectangle(0, 0, 1000, 1000) }
-        .to_not raise_exception
+        .not_to raise_exception
     end
   end
 
   describe "#set_spatial_filter_rectangle_ex" do
     it "does not die" do
       expect { subject.set_spatial_filter_rectangle_ex(0, 0, 0, 1000, 1000) }
-        .to_not raise_exception
+        .not_to raise_exception
     end
   end
 end

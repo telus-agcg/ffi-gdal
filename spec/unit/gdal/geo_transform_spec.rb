@@ -11,7 +11,7 @@ RSpec.describe GDAL::GeoTransform do
     context "a valid file" do
       it "reads in the file" do
         result = described_class.from_world_file(world_file_path)
-        expect(result).to be_a GDAL::GeoTransform
+        expect(result).to be_a described_class
       end
     end
 
@@ -31,31 +31,37 @@ RSpec.describe GDAL::GeoTransform do
 
     describe "#x_origin" do
       subject { world.x_origin }
+
       it { is_expected.to eq(-179.99999999999997) }
     end
 
     describe "#pixel_width" do
       subject { world.pixel_width }
+
       it { is_expected.to eq 0.03333333333333 }
     end
 
     describe "#x_rotation" do
       subject { world.x_rotation }
+
       it { is_expected.to eq 0.0 }
     end
 
     describe "#y_origin" do
       subject { world.y_origin }
+
       it { is_expected.to eq 90.0 }
     end
 
     describe "#pixel_height" do
       subject { world.pixel_height }
+
       it { is_expected.to eq(-0.03333333333333) }
     end
 
     describe "#y_rotation" do
       subject { world.y_rotation }
+
       it { is_expected.to eq 0.0 }
     end
   end
@@ -145,17 +151,6 @@ RSpec.describe GDAL::GeoTransform do
       end
 
       context "given parameter is a GeoTransform" do
-        let(:other_geo_transform) do
-          gt = described_class.new
-          gt.x_origin = 1000
-          gt.y_origin = 1000
-          gt.pixel_width = 0.5
-          gt.pixel_height = 0.25
-          gt.x_rotation = 1.0
-          gt.y_rotation = -1.0
-          gt
-        end
-
         subject do
           gt = described_class.new
           gt.x_origin = 500
@@ -168,8 +163,19 @@ RSpec.describe GDAL::GeoTransform do
           gt.compose(other_geo_transform)
         end
 
+        let(:other_geo_transform) do
+          gt = described_class.new
+          gt.x_origin = 1000
+          gt.y_origin = 1000
+          gt.pixel_width = 0.5
+          gt.pixel_height = 0.25
+          gt.x_rotation = 1.0
+          gt.y_rotation = -1.0
+          gt
+        end
+
         it "is a new GeoTransform" do
-          expect(subject).to be_a GDAL::GeoTransform
+          expect(subject).to be_a described_class
         end
 
         it "has a combined x_origin" do
@@ -212,7 +218,7 @@ RSpec.describe GDAL::GeoTransform do
       end
 
       it "returns a new GeoTransform" do
-        expect(subject).to be_a GDAL::GeoTransform
+        expect(subject).to be_a described_class
       end
 
       it "returns an inverted x_origin" do

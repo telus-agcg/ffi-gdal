@@ -103,7 +103,7 @@ RSpec.describe OGR::FieldDefinition do
   describe "#ignored?" do
     context "default" do
       it "returns false" do
-        expect(subject).to_not be_ignored
+        expect(subject).not_to be_ignored
       end
     end
   end
