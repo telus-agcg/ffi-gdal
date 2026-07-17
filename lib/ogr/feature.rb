@@ -5,7 +5,11 @@ require_relative "../ogr"
 require_relative "../gdal"
 
 module OGR
-  class Feature
+  # OGR::Feature exposes a wide, flat set of field accessors (one pair per OGR
+  # field type) that read and write through the underlying C feature. They form
+  # a single cohesive interface, so the class-length limit is disabled rather
+  # than fragmenting the accessors across mixins.
+  class Feature # rubocop:disable Metrics/ClassLength
     # @param pointer [FFI::Pointer]
     def self.release(pointer)
       return unless pointer && !pointer.null?
@@ -472,26 +476,10 @@ module OGR
 
       formatted_tz = OGR._format_time_zone_for_ruby(time_zone_flag_ptr.read_int)
 
-      if formatted_tz
-        DateTime.new(
-          year_ptr.read_int,
-          month_ptr.read_int,
-          day_ptr.read_int,
-          hour_ptr.read_int,
-          minute_ptr.read_int,
-          second_ptr.read_int,
-          formatted_tz
-        )
-      else
-        DateTime.new(
-          year_ptr.read_int,
-          month_ptr.read_int,
-          day_ptr.read_int,
-          hour_ptr.read_int,
-          minute_ptr.read_int,
-          second_ptr.read_int
-        )
-      end
+      date_time_args = [year_ptr, month_ptr, day_ptr, hour_ptr, minute_ptr, second_ptr].map(&:read_int)
+      date_time_args << formatted_tz if formatted_tz
+
+      DateTime.new(*date_time_args)
     end
 
     # @return [String]

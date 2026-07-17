@@ -74,14 +74,7 @@ module OGR
       # @return [OGR::Polygon] A polygon derived from a LinearRing that connects
       #   the 4 bounding box points (from the extent).
       def geometry_from_extent
-        ring = OGR::LinearRing.new
-
-        ring.point_count = 5
-        ring.set_point(0, extent.x_min, extent.y_min)
-        ring.set_point(1, extent.x_min, extent.y_max)
-        ring.set_point(2, extent.x_max, extent.y_max)
-        ring.set_point(3, extent.x_max, extent.y_min)
-        ring.set_point(4, extent.x_min, extent.y_min)
+        ring = build_extent_ring(extent)
 
         polygon = OGR::Polygon.new spatial_reference: spatial_reference.dup
         polygon.add_geometry(ring)
@@ -111,6 +104,10 @@ module OGR
       # @raise [OGR::UnsupportedGeometryType] if a geometry of some type is
       #   encountered that the method doesn't know how to extract point values
       #   from.
+      # Deliberately large and inlined for performance (see the note on the
+      # feature loop below): extracting its branches measurably slows gridding,
+      # so the size and complexity limits are disabled here.
+      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
       def point_values(with_attributes = {})
         return [] if feature_count.zero?
 
@@ -128,7 +125,7 @@ module OGR
         # I've tried refactoring chunks of this out to separate methods and
         # performance suffers greatly. Since this is a key part of gridding (at
         # least at this point), it needs to be as fast as possible.
-        each_feature_pointer do |feature_ptr| # rubocop:todo Metrics/BlockLength
+        each_feature_pointer do |feature_ptr| # rubocop:disable Metrics/BlockLength
           field_values = field_indices.map.with_index do |j, attribute_index|
             FFI::OGR::API.send(:"OGR_F_GetFieldAs#{with_attributes.values[attribute_index].capitalize}", feature_ptr, j)
           end
@@ -217,6 +214,7 @@ module OGR
 
         values
       end
+      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
       # Iterates through features to see if any of them are 3d.
       #
@@ -239,6 +237,22 @@ module OGR
       end
 
       private
+
+      # Builds a closed five-point ring from an extent envelope.
+      #
+      # @param extent [OGR::Envelope]
+      # @return [OGR::LinearRing]
+      def build_extent_ring(extent)
+        ring = OGR::LinearRing.new
+        ring.point_count = 5
+        ring.set_point(0, extent.x_min, extent.y_min)
+        ring.set_point(1, extent.x_min, extent.y_max)
+        ring.set_point(2, extent.x_max, extent.y_max)
+        ring.set_point(3, extent.x_max, extent.y_min)
+        ring.set_point(4, extent.x_min, extent.y_min)
+
+        ring
+      end
 
       # @param geometry_ptr [FFI::Pointer]
       # @param field_values [Array]
