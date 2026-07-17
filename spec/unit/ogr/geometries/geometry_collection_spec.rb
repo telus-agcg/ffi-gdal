@@ -14,14 +14,14 @@ RSpec.describe OGR::GeometryCollection do
   end
 
   describe "#to_polygon" do
-    let(:polygon) do
-      OGR::Geometry.create_from_wkt("POLYGON ((0 0,0 1,1 1,1 0,0 0))")
-    end
-
     subject do
       gc = described_class.new
       gc.add_geometry(polygon)
       gc
+    end
+
+    let(:polygon) do
+      OGR::Geometry.create_from_wkt("POLYGON ((0 0,0 1,1 1,1 0,0 0))")
     end
 
     it "returns a Polygon" do
@@ -30,19 +30,19 @@ RSpec.describe OGR::GeometryCollection do
   end
 
   describe "#to_multi_polygon" do
+    subject do
+      gc = described_class.new
+      gc.add_geometry(polygon1)
+      gc.add_geometry(polygon2)
+      gc
+    end
+
     let(:polygon1) do
       OGR::Geometry.create_from_wkt("POLYGON ((0 0,0 1,1 1,1 0,0 0))")
     end
 
     let(:polygon2) do
       OGR::Geometry.create_from_wkt("POLYGON ((10 10,10 11,11 11,11 10,10 10))")
-    end
-
-    subject do
-      gc = described_class.new
-      gc.add_geometry(polygon1)
-      gc.add_geometry(polygon2)
-      gc
     end
 
     it "returns a MultiPolygon" do

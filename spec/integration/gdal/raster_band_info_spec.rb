@@ -6,6 +6,8 @@ require "ffi-gdal"
 require "gdal"
 
 RSpec.describe "Raster Band Info", type: :integration do
+  subject { dataset.raster_band(1) }
+
   let(:original_tiff) do
     path = "../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif"
     File.expand_path(path, __dir__)
@@ -20,8 +22,8 @@ RSpec.describe "Raster Band Info", type: :integration do
 
   let(:tmp_tiff) { make_temp_test_file(original_tiff) }
   let(:dataset) { GDAL::Dataset.open(tmp_tiff, "w") }
+
   after { dataset.close }
-  subject { dataset.raster_band(1) }
 
   it_behaves_like "a major object"
 
@@ -84,7 +86,7 @@ RSpec.describe "Raster Band Info", type: :integration do
 
       subject.category_names.each do |category_name|
         expect(category_name).to be_a String
-        expect(category_name).to_not be_empty
+        expect(category_name).not_to be_empty
       end
     end
   end
@@ -106,7 +108,7 @@ RSpec.describe "Raster Band Info", type: :integration do
       end
 
       it "is a `false` value for :is_associated key" do
-        expect(subject.no_data_value.fetch(:is_associated)).to eq(false)
+        expect(subject.no_data_value.fetch(:is_associated)).to be(false)
       end
 
       it "has `nil` value for :value" do
@@ -131,7 +133,7 @@ RSpec.describe "Raster Band Info", type: :integration do
         expect(subject.no_data_value).to be_an Hash
 
         expect(subject.no_data_value[:value]).to be_a Float
-        expect(subject.no_data_value[:is_associated]).to_not be_nil
+        expect(subject.no_data_value[:is_associated]).not_to be_nil
       end
     end
   end
@@ -144,7 +146,7 @@ RSpec.describe "Raster Band Info", type: :integration do
 
   describe "#arbitrary_overviews?" do
     it "is true or false" do
-      expect([true, false]).to include subject.arbitrary_overviews?
+      expect(subject.arbitrary_overviews?).to be(true).or be(false)
     end
   end
 
@@ -233,8 +235,8 @@ RSpec.describe "Raster Band Info", type: :integration do
   describe "#statistics" do
     it "returns a Hash with populated values" do
       expect(subject.statistics).to be_a Hash
-      expect(%i[minimum maximum mean standard_deviation])
-        .to eq subject.statistics.keys
+      expect(subject.statistics.keys)
+        .to eq(%i[minimum maximum mean standard_deviation])
     end
 
     it "has a :minimum that ranges between 0.0/-32768.0 and 255.0" do
@@ -378,7 +380,7 @@ RSpec.describe "Raster Band Info", type: :integration do
       if histogram
         expect(histogram[:totals]).to be_an Array
         expect(histogram[:totals].size).to eq(256).or eq(0)
-        expect(histogram[:totals].all? { |t| t.instance_of?(Integer) }).to eq true
+        expect(histogram[:totals].all?(Integer)).to be true
       end
     end
   end
@@ -407,7 +409,7 @@ RSpec.describe "Raster Band Info", type: :integration do
   describe "#minimum_value" do
     it "returns a Hash with populated values" do
       expect(subject.minimum_value).to be_a Hash
-      expect(%i[value is_tight]).to eq subject.minimum_value.keys
+      expect(subject.minimum_value.keys).to eq(%i[value is_tight])
     end
 
     it "has a :value that is a Float" do
@@ -415,14 +417,14 @@ RSpec.describe "Raster Band Info", type: :integration do
     end
 
     it "has a :is_tight that is nil (since the examples are geotiffs)" do
-      # expect(subject.minimum_value[:is_tight]).to eq nil
+      skip "assertion on :is_tight not yet implemented for the geotiff fixtures"
     end
   end
 
   describe "#maximum_value" do
     it "returns a Hash with populated values" do
       expect(subject.maximum_value).to be_a Hash
-      expect(%i[value is_tight]).to eq subject.maximum_value.keys
+      expect(subject.maximum_value.keys).to eq(%i[value is_tight])
     end
 
     it "has a :value that is a Float" do
@@ -430,7 +432,7 @@ RSpec.describe "Raster Band Info", type: :integration do
     end
 
     it "has a :is_tight that is nil (since the examples are geotiffs)" do
-      # expect(subject.maximum_value[:is_tight]).to eq nil
+      skip "assertion on :is_tight not yet implemented for the geotiff fixtures"
     end
   end
 end

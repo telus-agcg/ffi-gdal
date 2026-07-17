@@ -7,7 +7,7 @@ require "ogr/extensions/geometry/rttopo_extensions"
 # results in tests here.
 #
 RSpec.describe OGR::Geometry do
-  subject { OGR::Geometry.create_from_wkt(wkt) }
+  subject { described_class.create_from_wkt(wkt) }
 
   shared_context "shared point, no crossing" do
     let(:wkt) do

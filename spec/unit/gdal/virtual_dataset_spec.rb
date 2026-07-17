@@ -7,12 +7,12 @@ RSpec.describe GDAL::VirtualDataset do
   subject(:virtual_dataset) { described_class.new(300, 200) }
 
   describe "#initialize" do
-    it { is_expected.to be_a GDAL::VirtualDataset }
+    it { is_expected.to be_a described_class }
   end
 
   describe "#flush_cache" do
-    it "does something" do
-      subject.flush_cache
+    it "does not raise" do
+      expect { subject.flush_cache }.not_to raise_error
     end
   end
 

@@ -3,14 +3,14 @@
 require "gdal/extensions/gridder"
 
 RSpec.describe GDAL::Gridder do
-  let(:source_layer) { instance_double "OGR::Layer" }
-  let(:dest_file_name) { "blah.docx" }
-  let(:gridder_options) { instance_double "GDAL::GridderOptions" }
-
   subject(:gridder) { described_class.new(source_layer, dest_file_name, gridder_options) }
 
+  let(:source_layer) { instance_double OGR::Layer }
+  let(:dest_file_name) { "blah.docx" }
+  let(:gridder_options) { instance_double GDAL::GridderOptions }
+
   describe "#points" do
-    let(:clipping_geometry) { instance_double "OGR::LineString" }
+    let(:clipping_geometry) { instance_double OGR::LineString }
 
     before do
       expect(subject).to receive(:ensure_z_values)
@@ -70,8 +70,7 @@ RSpec.describe GDAL::Gridder do
       before do
         allow(subject).to receive(:layer_missing_specified_field?).and_return false
         allow(gridder_options).to receive(:input_field_name).and_return nil
-        allow(source_layer).to receive(:any_geometries_with_z?).and_return false
-        allow(source_layer).to receive(:name).and_return "meow"
+        allow(source_layer).to receive_messages(any_geometries_with_z?: false, name: "meow")
       end
 
       it "raises an GDAL::NoValuesToGrid" do
@@ -85,6 +84,7 @@ RSpec.describe GDAL::Gridder do
 
     context "input_field_name not set" do
       before { allow(gridder_options).to receive(:input_field_name).and_return nil }
+
       it { is_expected.to be false }
     end
 

@@ -62,51 +62,61 @@ RSpec.describe GDAL::InternalHelpers do
   describe "._gdal_data_type_to_ffi" do
     context "data type is :GDT_Byte" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Byte) }
+
       it { is_expected.to eq :uchar }
     end
 
     context "data type is :GDT_Int8" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Int8) }
+
       it { is_expected.to eq :int8 }
     end
 
     context "data type is :GDT_UInt16" do
       subject { tester._gdal_data_type_to_ffi(:GDT_UInt16) }
+
       it { is_expected.to eq :uint16 }
     end
 
     context "data type is :GDT_Int16" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Int16) }
+
       it { is_expected.to eq :int16 }
     end
 
     context "data type is :GDT_UInt32" do
       subject { tester._gdal_data_type_to_ffi(:GDT_UInt32) }
+
       it { is_expected.to eq :uint32 }
     end
 
     context "data type is :GDT_Int32" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Int32) }
+
       it { is_expected.to eq :int32 }
     end
 
     context "data type is :GDT_UInt64" do
       subject { tester._gdal_data_type_to_ffi(:GDT_UInt64) }
+
       it { is_expected.to eq :uint64 }
     end
 
     context "data type is :GDT_Int64" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Int64) }
+
       it { is_expected.to eq :int64 }
     end
 
     context "data type is :GDT_Float32" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Float32) }
+
       it { is_expected.to eq :float }
     end
 
     context "data type is :GDT_Float64" do
       subject { tester._gdal_data_type_to_ffi(:GDT_Float64) }
+
       it { is_expected.to eq :double }
     end
 
@@ -169,12 +179,14 @@ RSpec.describe GDAL::InternalHelpers do
   describe "._supported?" do
     context "function is supported" do
       subject { tester._supported?(:GDALAllRegister) }
-      it { is_expected.to eq true }
+
+      it { is_expected.to be true }
     end
 
     context "function is not supported" do
       subject { tester._supported?(:darrells) }
-      it { is_expected.to eq false }
+
+      it { is_expected.to be false }
     end
   end
 
@@ -183,56 +195,67 @@ RSpec.describe GDAL::InternalHelpers do
 
     context "data_type is :GDT_Byte" do
       let(:data_type) { :GDT_Byte }
+
       it { is_expected.to eq(:byte) }
     end
 
     context "data_type is :GDT_Int16" do
       let(:data_type) { :GDT_Int16 }
+
       it { is_expected.to eq(:sint) }
     end
 
     context "data_type is :GDT_UInt16" do
       let(:data_type) { :GDT_UInt16 }
+
       it { is_expected.to eq(:int) }
     end
 
     context "data_type is :GDT_Int32" do
       let(:data_type) { :GDT_Int32 }
+
       it { is_expected.to eq(:int) }
     end
 
     context "data_type is :GDT_UInt32" do
       let(:data_type) { :GDT_UInt32 }
+
       it { is_expected.to eq(:int) }
     end
 
     context "data_type is :GDT_Float32" do
       let(:data_type) { :GDT_Float32 }
+
       it { is_expected.to eq(:float) }
     end
 
     context "data_type is :GDT_Float64" do
       let(:data_type) { :GDT_Float64 }
+
       it { is_expected.to eq(:dfloat) }
     end
 
     context "data_type is :GDT_CInt16" do
       let(:data_type) { :GDT_CInt16 }
+
       it { is_expected.to eq(:scomplex) }
     end
 
     context "data_type is :GDT_CInt32" do
       let(:data_type) { :GDT_CInt32 }
+
       it { is_expected.to eq(:scomplex) }
     end
 
     context "data_type is :GDT_CFloat32" do
       let(:data_type) { :GDT_CFloat32 }
+
       it { is_expected.to eq(:complex) }
     end
 
     context "data_type is :GDT_CFloat64" do
       let(:data_type) { :GDT_CFloat64 }
+
       it { is_expected.to eq(:dcomplex) }
     end
 
@@ -247,6 +270,7 @@ RSpec.describe GDAL::InternalHelpers do
   describe "._narray_from_data_type" do
     context "0 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte) }
+
       it { is_expected.to be_a NArray }
 
       it "has size 0" do
@@ -260,6 +284,7 @@ RSpec.describe GDAL::InternalHelpers do
 
     context "1 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte, 2) }
+
       it { is_expected.to be_a NArray }
 
       it "has size of the 2nd param" do
@@ -273,6 +298,7 @@ RSpec.describe GDAL::InternalHelpers do
 
     context "2 narray_args and known GDAL data_type" do
       subject { GDAL._narray_from_data_type(:GDT_Byte, 2, 3) }
+
       it { is_expected.to be_a NArray }
 
       it "has size of the 2nd param * 3rd param" do

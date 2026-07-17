@@ -5,9 +5,7 @@ RSpec.shared_examples "a major object" do
     it "is an Array of Strings" do
       expect(subject.metadata_domain_list).to be_an Array
 
-      subject.metadata_domain_list.each do |mdl|
-        expect(mdl).to be_a String
-      end
+      expect(subject.metadata_domain_list).to all(be_a String)
     end
   end
 
@@ -50,6 +48,6 @@ RSpec.shared_examples "a major object" do
   end
 
   describe "#null?" do
-    it { is_expected.to_not be_null }
+    it { is_expected.not_to be_null }
   end
 end

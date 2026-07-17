@@ -17,7 +17,7 @@ RSpec.describe Numeric do
     context "integer data types" do
       it "returns an Integer" do
         integer_data_types.each do |data_type|
-          expect(subject.to_data_type(data_type)).to eql 1
+          expect(subject.to_data_type(data_type)).to be 1
           expect(subject.to_data_type(data_type)).to be_an Integer
         end
       end
@@ -26,7 +26,7 @@ RSpec.describe Numeric do
     context "float data types" do
       it "returns a Float" do
         float_data_types.each do |data_type|
-          expect(subject.to_data_type(data_type)).to eql 1.0
+          expect(subject.to_data_type(data_type)).to be 1.0
           expect(subject.to_data_type(data_type)).to be_a Float
         end
       end
@@ -49,7 +49,7 @@ RSpec.describe Numeric do
 
     context "unknown data type" do
       it "returns self" do
-        expect(subject.to_data_type("meow")).to eql 1
+        expect(subject.to_data_type("meow")).to be 1
         expect(subject.to_data_type("meow")).to be_a Integer
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe Numeric do
       context "integer data types" do
         it "returns an Integer" do
           integer_data_types.each do |data_type|
-            expect(subject.to_data_type(data_type)).to eql 1
+            expect(subject.to_data_type(data_type)).to be 1
             expect(subject.to_data_type(data_type)).to be_an Integer
           end
         end
@@ -103,7 +103,7 @@ RSpec.describe Numeric do
       context "integer data types" do
         it "returns an Integer" do
           integer_data_types.each do |data_type|
-            expect(subject.to_data_type(data_type)).to eql 1
+            expect(subject.to_data_type(data_type)).to be 1
             expect(subject.to_data_type(data_type)).to be_an Integer
           end
         end

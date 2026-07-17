@@ -4,6 +4,8 @@ require "gdal/driver"
 require "gdal/extensions/raster_band/extensions"
 
 RSpec.describe "GDAL::RasterBand::IOExtensions" do
+  subject(:raster_band) { dataset_byte.raster_band(1) }
+
   let(:driver) { GDAL::Driver.by_name("MEM") }
   let(:dataset_byte) { driver.create_dataset("test", 15, 25, data_type: :GDT_Byte) }
   let(:dataset_int8) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int8) }
@@ -15,8 +17,6 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
   let(:dataset_int64) { driver.create_dataset("test", 15, 25, data_type: :GDT_Int64) }
   let(:dataset_float32) { driver.create_dataset("test", 15, 25, data_type: :GDT_Float32) }
   let(:dataset_float64) { driver.create_dataset("test", 15, 25, data_type: :GDT_Float64) }
-
-  subject(:raster_band) { dataset_byte.raster_band(1) }
 
   describe "#write_xy_narray" do
     let(:dataset) { driver.create_dataset("test dataset", 64, 4) }
@@ -152,11 +152,14 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
 
   describe "#block_buffer_size" do
     subject { raster_band.block_buffer_size }
+
     it { is_expected.to eq(15) }
   end
 
   describe "#read_lines_by_block" do
     context "block size is larger than the raster" do
+      subject { dataset.raster_band(1) }
+
       let(:rows) { (1..4).map { |i| Array.new(15) { i } } }
 
       let(:dataset_path) do
@@ -167,12 +170,9 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
         end
         filename
       end
-
-      after { FileUtils.rm_f(dataset_path) }
-
       let(:dataset) { GDAL::Dataset.open(dataset_path, "r") }
 
-      subject { dataset.raster_band(1) }
+      after { FileUtils.rm_f(dataset_path) }
 
       it "yields all block rows with correct values" do
         expect { |b| subject.read_lines_by_block(&b) }

@@ -5,6 +5,7 @@ RSpec.shared_examples "a geometry" do
 
   describe "#coordinate_dimension" do
     subject { geometry.coordinate_dimension }
+
     it { is_expected.to eq 2 }
   end
 
@@ -31,6 +32,7 @@ RSpec.shared_examples "a geometry" do
   describe "#empty?" do
     context "when empty" do
       subject { described_class.new }
+
       it { is_expected.to be_empty }
     end
 
@@ -43,6 +45,7 @@ RSpec.shared_examples "a geometry" do
 
   describe "#envelope" do
     subject { geometry.envelope }
+
     it { is_expected.to be_a OGR::Envelope }
   end
 
@@ -294,6 +297,9 @@ RSpec.shared_examples "a geometry" do
   end
 
   describe "#transform_to!" do
+    # Two distinct pending specs; their `skip` bodies coincide, which trips
+    # RSpec/RepeatedExample even though the intended behaviors differ.
+    # rubocop:disable RSpec/RepeatedExample
     it "transforms the points into the new spatial reference" do
       skip
     end
@@ -301,6 +307,7 @@ RSpec.shared_examples "a geometry" do
     it "sets the new spatial reference" do
       skip
     end
+    # rubocop:enable RSpec/RepeatedExample
   end
 
   describe "#simplify" do
@@ -371,7 +378,7 @@ RSpec.shared_examples "a geometry" do
         expect { geometry.to_wkb }.to raise_exception OGR::UnsupportedOperation
       else
         expect(geometry.to_wkb).to be_a String
-        expect(geometry.to_wkb).to_not be_empty
+        expect(geometry.to_wkb).not_to be_empty
       end
     end
   end
@@ -379,28 +386,28 @@ RSpec.shared_examples "a geometry" do
   describe "#to_wkt" do
     it "returns some String data" do
       expect(geometry.to_wkt).to be_a String
-      expect(geometry.to_wkt).to_not be_empty
+      expect(geometry.to_wkt).not_to be_empty
     end
   end
 
   describe "#to_gml" do
     it "returns some String data" do
       expect(geometry.to_gml).to be_a String
-      expect(geometry.to_gml).to_not be_empty
+      expect(geometry.to_gml).not_to be_empty
     end
   end
 
   describe "#to_kml" do
     it "returns some String data" do
       expect(geometry.to_kml).to be_a String
-      expect(geometry.to_kml).to_not be_empty
+      expect(geometry.to_kml).not_to be_empty
     end
   end
 
   describe "#to_geo_json" do
     it "returns some String data" do
       expect(geometry.to_geo_json).to be_a String
-      expect(geometry.to_geo_json).to_not be_empty
+      expect(geometry.to_geo_json).not_to be_empty
     end
   end
 end

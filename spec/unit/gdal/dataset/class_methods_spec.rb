@@ -15,7 +15,7 @@ RSpec.describe GDAL::Dataset do
     end
 
     context "block given" do
-      let(:dataset) { instance_double "GDAL::Dataset" }
+      let(:dataset) { instance_double described_class }
 
       it "yields then closes the opened DataSource" do
         allow(described_class).to receive(:new).and_return dataset
@@ -33,7 +33,7 @@ RSpec.describe GDAL::Dataset do
                     .by_name("MEM")
                     .create_dataset("testy", subject.raster_x_size, subject.raster_y_size,
                                     band_count: subject.raster_count, data_type: subject.raster_band(1).data_type)
-      described_class.copy_whole_raster(subject, destination)
+      expect { described_class.copy_whole_raster(subject, destination) }.not_to raise_error
     end
   end
 end

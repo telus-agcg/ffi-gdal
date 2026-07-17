@@ -65,7 +65,7 @@ RSpec.describe GDAL::WarpOptions do
         expect(subject.destination_no_data_real).to eq([])
         expect(subject.destination_no_data_imaginary).to eq([])
 
-        expect(subject.progress).to_not be_null
+        expect(subject.progress).not_to be_null
         expect(subject.progress_arg).to be_null
 
         expect(subject.transformer).to be_null
@@ -97,6 +97,23 @@ RSpec.describe GDAL::WarpOptions do
     end
 
     context "passing in options that are also accessor methods" do
+      subject do
+        described_class.new warp_operation_options: warp_operation_options,
+                            source_dataset: source_dataset,
+                            destination_dataset: dest_dataset,
+                            source_bands: [1, 2, 3],
+                            destination_bands: [2, 4, 6],
+                            cutline: cutline,
+                            source_no_data_real: [123.456, 78.9, -999.9],
+                            source_no_data_imaginary: [1.2, 3.4, -5.6],
+                            destination_no_data_real: [11.1, 22.2, 33.3],
+                            destination_no_data_imaginary: [-44.4, -55.5, -66.6],
+                            source_per_band_validity_mask_function: [
+                              spb_validity_mask_function1,
+                              spb_validity_mask_function2
+                            ]
+      end
+
       let(:warp_operation_options) do
         {
           init_dest: "NODATA",
@@ -116,23 +133,6 @@ RSpec.describe GDAL::WarpOptions do
       after do
         source_dataset.close
         dest_dataset.close
-      end
-
-      subject do
-        described_class.new warp_operation_options: warp_operation_options,
-                            source_dataset: source_dataset,
-                            destination_dataset: dest_dataset,
-                            source_bands: [1, 2, 3],
-                            destination_bands: [2, 4, 6],
-                            cutline: cutline,
-                            source_no_data_real: [123.456, 78.9, -999.9],
-                            source_no_data_imaginary: [1.2, 3.4, -5.6],
-                            destination_no_data_real: [11.1, 22.2, 33.3],
-                            destination_no_data_imaginary: [-44.4, -55.5, -66.6],
-                            source_per_band_validity_mask_function: [
-                              spb_validity_mask_function1,
-                              spb_validity_mask_function2
-                            ]
       end
 
       it_behaves_like "a WarpOptions object"
@@ -190,7 +190,7 @@ RSpec.describe GDAL::WarpOptions do
         expect(function_ptr).to be_a(FFI::Pointer)
 
         function = function_ptr.read_pointer
-        expect(function).to_not be_null
+        expect(function).not_to be_null
       end
     end
 
@@ -200,17 +200,6 @@ RSpec.describe GDAL::WarpOptions do
         i.write_int(int)
         i
       end
-
-      let(:progress) { proc { true } }
-      let(:test_mask_function) { proc { true } }
-
-      let(:source_per_band_validity_mask_function_arg) { make_int_pointer(5) }
-      let(:source_validity_mask_function_arg) { make_int_pointer(3) }
-      let(:source_density_mask_function_arg) { make_int_pointer(2) }
-      let(:destination_validity_mask_function_arg) { make_int_pointer(4) }
-      let(:destination_density_mask_function_arg) { make_int_pointer(11) }
-      let(:pre_warp_processor_arg) { make_int_pointer(7) }
-      let(:post_warp_processor_arg) { make_int_pointer(9) }
 
       subject do
         described_class.new warp_memory_limit: 123,
@@ -236,6 +225,17 @@ RSpec.describe GDAL::WarpOptions do
                             post_warp_processor_arg: post_warp_processor_arg,
                             cutline_blend_distance: 3.3
       end
+
+      let(:progress) { proc { true } }
+      let(:test_mask_function) { proc { true } }
+
+      let(:source_per_band_validity_mask_function_arg) { make_int_pointer(5) }
+      let(:source_validity_mask_function_arg) { make_int_pointer(3) }
+      let(:source_density_mask_function_arg) { make_int_pointer(2) }
+      let(:destination_validity_mask_function_arg) { make_int_pointer(4) }
+      let(:destination_density_mask_function_arg) { make_int_pointer(11) }
+      let(:pre_warp_processor_arg) { make_int_pointer(7) }
+      let(:post_warp_processor_arg) { make_int_pointer(9) }
 
       it_behaves_like "a WarpOptions object"
 
@@ -274,7 +274,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets source_validity_mask_function" do
-        expect(subject.source_validity_mask_function).to_not be_null
+        expect(subject.source_validity_mask_function).not_to be_null
       end
 
       it "sets source_validity_mask_function_arg" do
@@ -284,7 +284,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets source_density_mask_function" do
-        expect(subject.source_density_mask_function).to_not be_null
+        expect(subject.source_density_mask_function).not_to be_null
       end
 
       it "sets source_density_mask_function_arg" do
@@ -294,7 +294,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets destination_validity_mask_function" do
-        expect(subject.destination_validity_mask_function).to_not be_null
+        expect(subject.destination_validity_mask_function).not_to be_null
       end
 
       it "sets destination_validity_mask_function_arg" do
@@ -304,7 +304,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets destination_density_mask_function" do
-        expect(subject.destination_density_mask_function).to_not be_null
+        expect(subject.destination_density_mask_function).not_to be_null
       end
 
       it "sets destination_density_mask_function_arg" do
@@ -318,7 +318,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets pre_warp_chunk_processor_arg" do
-        expect(subject.pre_warp_processor_arg).to_not be_null
+        expect(subject.pre_warp_processor_arg).not_to be_null
       end
 
       it "sets post_warp_chunk_processor" do
@@ -326,7 +326,7 @@ RSpec.describe GDAL::WarpOptions do
       end
 
       it "sets post_warp_chunk_processor_arg" do
-        expect(subject.post_warp_processor_arg).to_not be_null
+        expect(subject.post_warp_processor_arg).not_to be_null
       end
 
       it "sets cutline_blend_distance" do

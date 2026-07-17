@@ -6,7 +6,7 @@ RSpec.describe OGR::Field do
   describe "#integer" do
     context "not set" do
       it "returns 0.0" do
-        expect(subject.integer).to eql 0
+        expect(subject.integer).to be 0
       end
     end
   end
@@ -23,7 +23,7 @@ RSpec.describe OGR::Field do
   describe "#integer64" do
     context "not set" do
       it "returns 0.0" do
-        expect(subject.integer64).to eql 0
+        expect(subject.integer64).to be 0
       end
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe OGR::Field do
   describe "#real" do
     context "not set" do
       it "returns 0.0" do
-        expect(subject.real).to eql 0.0
+        expect(subject.real).to be 0.0
       end
     end
   end

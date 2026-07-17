@@ -35,6 +35,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
   describe "#spatial_reference" do
     context "default" do
       subject { geometry_field_definition.spatial_reference }
+
       it { is_expected.to be_nil }
     end
   end
@@ -49,7 +50,7 @@ RSpec.describe OGR::GeometryFieldDefinition do
 
   describe "#ignored?" do
     context "default" do
-      it { is_expected.to_not be_ignored }
+      it { is_expected.not_to be_ignored }
     end
   end
 

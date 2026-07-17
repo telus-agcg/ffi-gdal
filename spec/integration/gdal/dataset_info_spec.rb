@@ -4,14 +4,14 @@ require "ffi-gdal"
 require "gdal"
 
 RSpec.describe "Dataset Info", type: :integration do
+  subject { GDAL::Dataset.open(tmp_tiff, "r") }
+
   let(:tmp_tiff) { make_temp_test_file(original_tiff) }
 
   let(:original_tiff) do
     path = "../../../spec/support/images/osgeo/geotiff/GeogToWGS84GeoKey/GeogToWGS84GeoKey5.tif"
     File.expand_path(path, __dir__)
   end
-
-  subject { GDAL::Dataset.open(tmp_tiff, "r") }
 
   after { subject.close if File.exist?(tmp_tiff) }
 
@@ -33,7 +33,7 @@ RSpec.describe "Dataset Info", type: :integration do
 
   describe "#flush_cache" do
     it "is a GDAL::Driver" do
-      expect { subject.flush_cache }.to_not raise_exception
+      expect { subject.flush_cache }.not_to raise_exception
     end
   end
 
@@ -237,7 +237,7 @@ RSpec.describe "Dataset Info", type: :integration do
 
         # Reopen dataset
         GDAL::Dataset.open(tmp_tiff, "r", shared: false) do |reopened_dataset|
-          expect(reopened_dataset.geo_transform).to_not eq(geo_transform)
+          expect(reopened_dataset.geo_transform).not_to eq(geo_transform)
         end
       end
     end
@@ -319,54 +319,55 @@ RSpec.describe "Dataset Info", type: :integration do
 
   describe "#build_overviews" do
     let(:ovr_file) { "#{tmp_tiff}.ovr" }
+
     after { FileUtils.rm_f(ovr_file) }
 
     context "nearest neighbor resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:nearest, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "Gauss resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:gauss, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "Cubic resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:cubic, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "Average resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:average, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "Mode resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:mode, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "Average mag phase resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:average_magphase, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
     context "no resampling" do
       it "creates an .ovr file with the same base name as the dataset file" do
         subject.build_overviews(:none, [2, 4, 8])
-        expect(File.exist?(ovr_file)).to eq true
+        expect(File.exist?(ovr_file)).to be true
       end
     end
 
@@ -413,7 +414,7 @@ RSpec.describe "Dataset Info", type: :integration do
         expect do
           subject.raster_io("w", write_buffer, x_size: 2, y_size: 1, band_numbers: [1])
           subject.flush_cache
-        end.to_not raise_exception
+        end.not_to raise_exception
       end
     end
 

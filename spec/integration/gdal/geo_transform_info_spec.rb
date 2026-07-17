@@ -4,6 +4,8 @@ require "ffi-gdal"
 require "gdal"
 
 RSpec.describe "GeoTransform Info", type: :integration do
+  subject { dataset.geo_transform }
+
   let(:file) { make_temp_test_file(original_source_tiff) }
 
   let(:original_source_tiff) do
@@ -12,8 +14,8 @@ RSpec.describe "GeoTransform Info", type: :integration do
   end
 
   let(:dataset) { GDAL::Dataset.open(file, "r") }
+
   after { dataset.close }
-  subject { dataset.geo_transform }
 
   describe "#x_origin" do
     it "is a Float" do
@@ -24,7 +26,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#x_origin=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.x_origin = 12.34 }.to change { subject.x_origin }
+        expect { subject.x_origin = 12.34 }.to change(subject, :x_origin)
           .from(-12.51100000000001).to(12.34)
       end
     end
@@ -45,7 +47,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#y_origin=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.y_origin = 12.34 }.to change { subject.y_origin }
+        expect { subject.y_origin = 12.34 }.to change(subject, :y_origin)
           .from(109.03599999999999).to(12.34)
       end
     end
@@ -66,7 +68,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#pixel_width=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.pixel_width = 12.34 }.to change { subject.pixel_width }
+        expect { subject.pixel_width = 12.34 }.to change(subject, :pixel_width)
           .from(0).to(12.34)
       end
     end
@@ -87,7 +89,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#x_rotation=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.x_rotation = 12.34 }.to change { subject.x_rotation }
+        expect { subject.x_rotation = 12.34 }.to change(subject, :x_rotation)
           .from(0.1850509803921595).to(12.34)
       end
     end
@@ -108,7 +110,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#y_rotation=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.y_rotation = 12.34 }.to change { subject.y_rotation }
+        expect { subject.y_rotation = 12.34 }.to change(subject, :y_rotation)
           .from(-0.3001842105263167).to(12.34)
       end
     end
@@ -129,7 +131,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
   describe "#pixel_height=" do
     context "param is a number" do
       it "sets the value" do
-        expect { subject.pixel_height = 12.34 }.to change { subject.pixel_height }
+        expect { subject.pixel_height = 12.34 }.to change(subject, :pixel_height)
           .from(0.0).to(12.34)
       end
     end
@@ -209,7 +211,7 @@ RSpec.describe "GeoTransform Info", type: :integration do
       subject.to_world_file("tmp/meow", "wld")
 
       file = File.expand_path("tmp/meow.wld")
-      expect(File.exist?(file)).to eq true
+      expect(File.exist?(file)).to be true
       contents = File.readlines(file).map(&:strip)
 
       # I don't understand why the resulting world file has slightly different

@@ -22,13 +22,13 @@ RSpec.describe GDAL::DataType do
   describe ".complex?" do
     context "with valid, complex data type" do
       it "returns true" do
-        expect(described_class.complex?(:GDT_CFloat64)).to eq true
+        expect(described_class.complex?(:GDT_CFloat64)).to be true
       end
     end
 
     context "with valid, simple data type" do
       it "returns true" do
-        expect(described_class.complex?(:GDT_Float64)).to eq false
+        expect(described_class.complex?(:GDT_Float64)).to be false
       end
     end
 

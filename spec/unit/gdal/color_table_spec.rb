@@ -3,6 +3,10 @@
 require "gdal/color_table"
 
 RSpec.describe GDAL::ColorTable do
+  subject do
+    described_class.new(:GPI_RGB)
+  end
+
   describe "#initialize" do
     context "with a valid PaletteInterpretation" do
       it "creates a new ColorTable" do
@@ -49,10 +53,6 @@ RSpec.describe GDAL::ColorTable do
         described_class.new(:GPI_HLS)
       end
     end
-  end
-
-  subject do
-    described_class.new(:GPI_RGB)
   end
 
   describe "#palette_interpretation" do

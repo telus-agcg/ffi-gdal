@@ -5,7 +5,7 @@ OGR::MultiPolygon.include(OGR::Geometry)
 
 RSpec.describe OGR::Geometry do
   describe "#utm_zone" do
-    let(:geom) { OGR::Geometry.create_from_wkt(wkt) }
+    let(:geom) { described_class.create_from_wkt(wkt) }
 
     let(:wkt) do
       "LINESTRING (100 100, 20 20, 30 30, 100 100)"
@@ -13,11 +13,13 @@ RSpec.describe OGR::Geometry do
 
     context "no spatial_reference" do
       subject { geom.utm_zone }
+
       it { is_expected.to be_nil }
     end
 
     context "SRID is 4326" do
       subject { geom.utm_zone }
+
       before { geom.spatial_reference = OGR::SpatialReference.new.import_from_epsg(4326) }
 
       context "geometry is valid" do

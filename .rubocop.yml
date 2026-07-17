@@ -62,6 +62,95 @@ Style/ArgumentsForwarding:
 Naming/BlockForwarding:
   Enabled: false
 
+# --- rubocop-rspec: opinionated cops disabled for this suite ---------------
+# The existing ~130-file spec suite predates rubocop-rspec. These cops are
+# stylistic/structural preferences whose autocorrection or manual churn would
+# touch thousands of lines for no behavioral gain, so they are disabled with
+# rationale rather than suppressed in a regenerated todo file.
+#
+# The five threshold cops below (MultipleExpectations, NestedGroups,
+# MultipleMemoizedHelpers, ExampleLength, ContextWording) are candidates to
+# reconsider later — configuring a Max/Prefixes value instead of a flat disable.
+
+# TODO: revisit — candidate to configure with a Max instead of disabling.
+RSpec/MultipleExpectations:
+  Enabled: false
+
+# TODO: revisit — candidate to configure with a Max instead of disabling.
+RSpec/NestedGroups:
+  Enabled: false
+
+# TODO: revisit — candidate to configure with a Max instead of disabling.
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+# TODO: revisit — candidate to configure with a Max instead of disabling.
+RSpec/ExampleLength:
+  Enabled: false
+
+# TODO: revisit — candidate to configure with Prefixes instead of disabling.
+RSpec/ContextWording:
+  Enabled: false
+
+# The suite relies on the implicit `subject` throughout; naming every one would
+# be pure churn.
+RSpec/NamedSubject:
+  Enabled: false
+
+# Spec files are organized by mixin/method-group (e.g. `dataset/accessors_spec`
+# covering `GDAL::Dataset`, `extensions/*`) mirroring `lib/`; enforcing a
+# path-matches-described-class rule would require restructuring the suite.
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+# Shared examples conditionally `skip` geometry types unsupported by some GDAL
+# builds — intentional, not missing reasons.
+RSpec/PendingWithoutReason:
+  Enabled: false
+
+# The suite mixes `have_received` spies and `expect(...).to receive` freely;
+# enforcing one style is not worth the churn.
+RSpec/MessageSpies:
+  Enabled: false
+
+# Numbered `let`s (let1/let2) are used deliberately in several data-driven specs.
+RSpec/IndexedLet:
+  Enabled: false
+
+# These thin FFI wrappers are legitimately stubbed on their own subject.
+RSpec/SubjectStub:
+  Enabled: false
+
+# Setting an expectation on a stubbed message is an intentional pattern here.
+RSpec/StubbedMock:
+  Enabled: false
+
+# Repeated example-group bodies are shared structural patterns across the
+# FFI-binding specs; the cop is false-positive-prone on them.
+RSpec/RepeatedExampleGroupBody:
+  Enabled: false
+
+# Some setup hooks legitimately assert preconditions before the examples run.
+RSpec/ExpectInHook:
+  Enabled: false
+
+# Several specs use feature-oriented `describe "..."` strings rather than a class.
+RSpec/DescribeClass:
+  Enabled: false
+
+# `any_instance_of` is required to mock across the FFI boundary in some specs.
+RSpec/AnyInstance:
+  Enabled: false
+
+# `let!` used purely for its side effect is intentional in a few specs.
+RSpec/LetSetup:
+  Enabled: false
+
+# The suite uses plain (non-verifying) doubles by design in a few places.
+RSpec/VerifiedDoubles:
+  Enabled: false
+# --------------------------------------------------------------------------
+
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true

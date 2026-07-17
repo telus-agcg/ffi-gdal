@@ -20,6 +20,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe "#field_count" do
     context "no fields" do
       subject { feature_definition.field_count }
+
       it { is_expected.to be_zero }
     end
 
@@ -98,6 +99,7 @@ RSpec.describe OGR::FeatureDefinition do
 
     context "field with requested name exists" do
       let(:field) { OGR::FieldDefinition.new("test field", :OFTString) }
+
       before { subject.add_field_definition(field) }
 
       it "returns the FieldDefinition's index" do
@@ -137,7 +139,8 @@ RSpec.describe OGR::FeatureDefinition do
   describe "#geometry_ignored?" do
     context "default" do
       subject { feature_definition.geometry_ignored? }
-      it { is_expected.to eq false }
+
+      it { is_expected.to be false }
     end
   end
 
@@ -145,14 +148,14 @@ RSpec.describe OGR::FeatureDefinition do
     context "set to ignore" do
       it "causes the geometry to be ignored" do
         subject.ignore_geometry!
-        expect(subject.geometry_ignored?).to eq true
+        expect(subject.geometry_ignored?).to be true
       end
     end
 
     context "set to not ignore" do
       it "causes the geometry to be ignored" do
         subject.ignore_geometry! ignore: false
-        expect(subject.geometry_ignored?).to eq false
+        expect(subject.geometry_ignored?).to be false
       end
     end
   end
@@ -160,7 +163,8 @@ RSpec.describe OGR::FeatureDefinition do
   describe "#style_ignored?" do
     context "default" do
       subject { feature_definition.style_ignored? }
-      it { is_expected.to eq false }
+
+      it { is_expected.to be false }
     end
   end
 
@@ -168,14 +172,14 @@ RSpec.describe OGR::FeatureDefinition do
     context "set to ignore" do
       it "causes the style to be ignored" do
         subject.ignore_style!
-        expect(subject.style_ignored?).to eq true
+        expect(subject.style_ignored?).to be true
       end
     end
 
     context "set to not ignore" do
       it "causes the style to be ignored" do
         subject.ignore_style! ignore: false
-        expect(subject.style_ignored?).to eq false
+        expect(subject.style_ignored?).to be false
       end
     end
   end
@@ -183,6 +187,7 @@ RSpec.describe OGR::FeatureDefinition do
   describe "#geometry_field_count" do
     context "default" do
       subject { feature_definition.geometry_field_count }
+
       it { is_expected.to eq 1 }
     end
   end
@@ -209,7 +214,7 @@ RSpec.describe OGR::FeatureDefinition do
     it "adds the geometry_field_definition" do
       expect do
         subject.add_geometry_field_definition geometry_field_definition
-      end.to change { subject.geometry_field_count }.by 1
+      end.to change(subject, :geometry_field_count).by 1
     end
   end
 
@@ -232,7 +237,7 @@ RSpec.describe OGR::FeatureDefinition do
       it "deletes the gfld" do
         expect do
           subject.delete_geometry_field_definition(1)
-        end.to change { subject.geometry_field_count }.by(-1)
+        end.to change(subject, :geometry_field_count).by(-1)
       end
     end
   end
@@ -246,7 +251,7 @@ RSpec.describe OGR::FeatureDefinition do
       end
 
       it "returns true" do
-        expect(subject.same?(other_feature_definition)).to eq true
+        expect(subject.same?(other_feature_definition)).to be true
       end
     end
 
@@ -256,7 +261,7 @@ RSpec.describe OGR::FeatureDefinition do
       end
 
       it "returns false" do
-        expect(subject.same?(other_feature_definition)).to eq false
+        expect(subject.same?(other_feature_definition)).to be false
       end
     end
   end

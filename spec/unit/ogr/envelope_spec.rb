@@ -7,6 +7,7 @@ RSpec.describe OGR::Envelope do
   describe "#x_min" do
     context "default value" do
       subject { described_class.new.x_min }
+
       it { is_expected.to eq(0.0) }
     end
   end
@@ -21,6 +22,7 @@ RSpec.describe OGR::Envelope do
   describe "#x_max" do
     context "default value" do
       subject { described_class.new.x_max }
+
       it { is_expected.to eq(0.0) }
     end
   end
@@ -35,6 +37,7 @@ RSpec.describe OGR::Envelope do
   describe "#y_min" do
     context "default value" do
       subject { described_class.new.y_min }
+
       it { is_expected.to eq(0.0) }
     end
   end
@@ -49,6 +52,7 @@ RSpec.describe OGR::Envelope do
   describe "#y_max" do
     context "default value" do
       subject { described_class.new.y_max }
+
       it { is_expected.to eq(0.0) }
     end
   end
@@ -64,6 +68,7 @@ RSpec.describe OGR::Envelope do
     describe "#z_min" do
       context "default value" do
         subject { described_class.new.z_min }
+
         it { is_expected.to be_nil }
       end
     end
@@ -78,6 +83,7 @@ RSpec.describe OGR::Envelope do
     describe "#z_max" do
       context "default value" do
         subject { described_class.new.z_max }
+
         it { is_expected.to be_nil }
       end
     end
@@ -96,6 +102,7 @@ RSpec.describe OGR::Envelope do
     describe "#z_min" do
       context "default value" do
         subject { described_class.new.z_min }
+
         it { is_expected.to be_nil }
       end
     end
@@ -110,6 +117,7 @@ RSpec.describe OGR::Envelope do
     describe "#z_max" do
       context "default value" do
         subject { described_class.new.z_max }
+
         it { is_expected.to be_nil }
       end
     end

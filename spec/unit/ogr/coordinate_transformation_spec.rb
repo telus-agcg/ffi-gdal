@@ -3,6 +3,8 @@
 require "ogr/coordinate_transformation"
 
 RSpec.describe OGR::CoordinateTransformation do
+  subject { described_class.new(source_srs, dest_srs) }
+
   let(:source_srs) do
     OGR::SpatialReference.new.import_from_epsg(3857).tap do |srs|
       # NOTE: GDAL 3 changed default axis order: https://github.com/OSGeo/gdal/issues/1546
@@ -23,8 +25,6 @@ RSpec.describe OGR::CoordinateTransformation do
   let(:epsg4326_x_bounds) { [-180.0, 180.0] }
   let(:epsg3857_y_bounds) { [-20_048_966.10, 20_048_966.10] }
   let(:epsg3857_x_bounds) { [-20_026_376.39, 20_026_376.39] }
-
-  subject { described_class.new(source_srs, dest_srs) }
 
   describe ".proj4_normalize" do
     context "OCTProj4Normalize not supported" do

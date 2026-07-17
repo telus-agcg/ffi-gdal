@@ -10,6 +10,7 @@ RSpec.describe GDAL::Utils::DEM do
   end
 
   let(:src_dataset) { GDAL::Dataset.open(src_dataset_path, "r") }
+
   after { src_dataset.close }
 
   describe ".perform" do
@@ -56,7 +57,7 @@ RSpec.describe GDAL::Utils::DEM do
     end
 
     context "when operation fails with GDAL internal exception" do
-      it "raises exception" do
+      it "raises exception for an invalid processing mode" do
         expected_messages = [
           "Invalid processing mode: hillshade123", # GDAL 3.10+
           "Invalid processing" # GDAL < 3.10
@@ -75,7 +76,7 @@ RSpec.describe GDAL::Utils::DEM do
         # rubocop:enable Style/MultilineBlockChain
       end
 
-      it "raises exception" do
+      it "raises exception for an invalid band number" do
         options = GDAL::Utils::DEM::Options.new(options: ["-b", "100"])
 
         expect do

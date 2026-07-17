@@ -24,12 +24,14 @@ RSpec.describe OGR::GeometryTypes::Curve::Extensions do
   describe "#closed?" do
     context "geometry is closed" do
       subject { closed_line_string }
+
       it { is_expected.to be_closed }
     end
 
     context "geometry is not closed" do
       subject { open_line_string }
-      it { is_expected.to_not be_closed }
+
+      it { is_expected.not_to be_closed }
     end
   end
 end

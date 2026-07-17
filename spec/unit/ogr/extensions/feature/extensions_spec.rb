@@ -3,6 +3,13 @@
 require "ogr/extensions/feature/extensions"
 
 RSpec.describe OGR::Feature::Extensions do
+  subject(:feature) do
+    f = OGR::Feature.new(feature_definition)
+    f.set_geometry_field(0, geometry)
+
+    f
+  end
+
   let(:integer_field_def) { OGR::FieldDefinition.new("test integer field", :OFTInteger) }
 
   let(:feature_definition) do
@@ -17,13 +24,6 @@ RSpec.describe OGR::Feature::Extensions do
   end
 
   let(:geometry) { OGR::Point.create_from_wkt("POINT (0 1)") }
-
-  subject(:feature) do
-    f = OGR::Feature.new(feature_definition)
-    f.set_geometry_field(0, geometry)
-
-    f
-  end
 
   describe "#each_field" do
     context "no block given" do

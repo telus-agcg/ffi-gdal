@@ -11,6 +11,7 @@ RSpec.describe GDAL::Utils::VectorTranslate do
   end
 
   let(:src_dataset) { OGR::DataSource.open(src_dataset_path, "r") }
+
   after { src_dataset.close }
 
   describe ".perform" do
@@ -65,6 +66,7 @@ RSpec.describe GDAL::Utils::VectorTranslate do
       let(:dst_dataset) do
         OGR::Driver.by_name("GeoJSON").create_data_source("/vsimem/test-#{SecureRandom.uuid}.geojson")
       end
+
       after { dst_dataset.close }
 
       context "when no options are provided" do

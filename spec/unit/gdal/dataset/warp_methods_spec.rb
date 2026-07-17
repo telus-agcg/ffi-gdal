@@ -27,7 +27,7 @@ RSpec.describe GDAL::Dataset do
       subject.reproject_image(dest_dataset, :GRA_CubicSpline)
 
       dest_dataset.flush_cache
-      expect(dest_dataset.projection).to match(/AUTHORITY\["EPSG","3857"\]/)
+      expect(dest_dataset.projection).to include('AUTHORITY["EPSG","3857"]')
       expect(dest_dataset.raster_count).to eq(subject.raster_count)
     end
   end
@@ -40,8 +40,8 @@ RSpec.describe GDAL::Dataset do
                                          OGR::SpatialReference.new.import_from_epsg(3857).to_wkt,
                                          GDAL::Driver.by_name("GTiff"))
 
-      dest_dataset = GDAL::Dataset.open(output_file, "r")
-      expect(dest_dataset.projection).to match(/AUTHORITY\["EPSG","3857"\]/)
+      dest_dataset = described_class.open(output_file, "r")
+      expect(dest_dataset.projection).to include('AUTHORITY["EPSG","3857"]')
       expect(dest_dataset.raster_count).to eq(subject.raster_count)
 
       dest_driver = dest_dataset.driver

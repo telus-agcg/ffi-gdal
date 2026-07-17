@@ -35,16 +35,19 @@ RSpec.describe GDAL::GridderOptions do
   describe "default values" do
     describe "#output_data_type" do
       subject { gridder_options.output_data_type }
+
       it { is_expected.to eq :GDT_Float64 }
     end
 
     describe "#output_format" do
       subject { gridder_options.output_format }
+
       it { is_expected.to eq "GTiff" }
     end
 
     describe "#output_size" do
       subject { gridder_options.output_size }
+
       it { is_expected.to eq(width: 256, height: 256) }
     end
   end

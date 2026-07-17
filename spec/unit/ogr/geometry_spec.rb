@@ -4,55 +4,65 @@ require "ogr/geometry"
 
 RSpec.describe OGR::Geometry do
   describe ".create_from_wkt" do
-    subject { OGR::Geometry.create_from_wkt(wkt) }
+    subject { described_class.create_from_wkt(wkt) }
 
     context "a 2D Point" do
       let(:wkt) { "POINT(1 32)" }
+
       it { is_expected.to be_a OGR::Point }
     end
 
     context "a 2.5D Point" do
       let(:wkt) { "POINT(1 32 100)" }
+
       it { is_expected.to be_a OGR::Point25D }
     end
 
     context "a 2D LineString" do
       let(:wkt) { "LINESTRING(3 19,12 20)" }
+
       it { is_expected.to be_a OGR::LineString }
     end
 
     context "a 2.5D LineString" do
       let(:wkt) { "LINESTRING(3 4 19,12 23 20)" }
+
       it { is_expected.to be_a OGR::LineString25D }
     end
 
     context "a 2D Polygon" do
       let(:wkt) { "POLYGON((1 1,2 2,3 3))" }
+
       it { is_expected.to be_a OGR::Polygon }
     end
 
     context "a 2.5D Polygon" do
       let(:wkt) { "POLYGON((1 1 1,2 2 2,3 3 3))" }
+
       it { is_expected.to be_a OGR::Polygon25D }
     end
 
     context "a 2D MultiPoint" do
       let(:wkt) { "MULTIPOINT((1 1),(2 2))" }
+
       it { is_expected.to be_a OGR::MultiPoint }
     end
 
     context "a 2.5D MultiPoint" do
       let(:wkt) { "MULTIPOINT((1 1 1),(2 2 2))" }
+
       it { is_expected.to be_a OGR::MultiPoint25D }
     end
 
     context "a 2D MultiLineString" do
       let(:wkt) { "MULTILINESTRING((3 4),(100 20))" }
+
       it { is_expected.to be_a OGR::MultiLineString }
     end
 
     context "a 2.5D MultiLineString" do
       let(:wkt) { "MULTILINESTRING((3 4 19),(100 20 40))" }
+
       it { is_expected.to be_a OGR::MultiLineString25D }
     end
 
@@ -74,7 +84,7 @@ RSpec.describe OGR::Geometry do
   end
 
   describe ".create_from_json" do
-    subject { OGR::Geometry.create_from_json(json) }
+    subject { described_class.create_from_json(json) }
 
     context "a 2D Point" do
       let(:json) do
@@ -260,7 +270,7 @@ RSpec.describe OGR::Geometry do
   end
 
   describe ".create_from_gml" do
-    subject { OGR::Geometry.create_from_gml(gml) }
+    subject { described_class.create_from_gml(gml) }
 
     context "a 2D Point" do
       let(:gml) do
@@ -490,17 +500,19 @@ RSpec.describe OGR::Geometry do
   end
 
   describe ".create_from_wkb" do
-    subject { OGR::Geometry.create_from_wkb(wkb) }
+    subject { described_class.create_from_wkb(wkb) }
 
     context "a 2D Point" do
       # POINT(1 32)
       let(:wkb) { ["0101000000000000000000f03f0000000000004040"].pack("H*") }
+
       it { is_expected.to be_a OGR::Point }
     end
 
     context "a 2.5D Point" do
       # POINT(1 32 100)
       let(:wkb) { ["01e9030000000000000000f03f00000000000040400000000000005940"].pack("H*") }
+
       it { is_expected.to be_a OGR::Point }
     end
 
@@ -509,6 +521,7 @@ RSpec.describe OGR::Geometry do
       let(:wkb) do
         ["0102000000020000000000000000000840000000000000334000000000000028400000000000003440"].pack("H*")
       end
+
       it { is_expected.to be_a OGR::LineString }
     end
 
@@ -544,6 +557,7 @@ RSpec.describe OGR::Geometry do
               "0000f03f000000000000f03f"
         [hex].pack("H*")
       end
+
       it { is_expected.to be_a OGR::Polygon25D }
     end
 
@@ -554,6 +568,7 @@ RSpec.describe OGR::Geometry do
               "01000000000000000000f03f000000000000f03f"
         [hex].pack("H*")
       end
+
       it { is_expected.to be_a OGR::MultiPoint }
     end
 
@@ -565,6 +580,7 @@ RSpec.describe OGR::Geometry do
               "00f03f"
         [hex].pack("H*")
       end
+
       it { is_expected.to be_a OGR::MultiPoint25D }
     end
 
@@ -577,6 +593,7 @@ RSpec.describe OGR::Geometry do
               "344000000000000034400000000000003e400000000000003e40"
         [hex].pack("H*")
       end
+
       it { is_expected.to be_a OGR::MultiLineString }
     end
 
@@ -590,6 +607,7 @@ RSpec.describe OGR::Geometry do
               "400000000000001c400000000000001c40"
         [hex].pack("H*")
       end
+
       it { is_expected.to be_a OGR::MultiLineString25D }
     end
 
@@ -627,58 +645,68 @@ RSpec.describe OGR::Geometry do
   describe ".type_to_name" do
     context "wkbUnknown" do
       subject { described_class.type_to_name(:wkbUnknown) }
+
       it { is_expected.to eq "Unknown (any)" }
     end
 
     context "wkbPoint" do
       subject { described_class.type_to_name(:wkbPoint) }
+
       it { is_expected.to eq "Point" }
     end
 
     context "wkbLineString" do
       subject { described_class.type_to_name(:wkbLineString) }
+
       it { is_expected.to eq "Line String" }
     end
 
     context "wkbPolygon" do
       subject { described_class.type_to_name(:wkbPolygon) }
+
       it { is_expected.to eq "Polygon" }
     end
 
     context "wkbMultiPoint" do
       subject { described_class.type_to_name(:wkbMultiPoint) }
+
       it { is_expected.to eq "Multi Point" }
     end
 
     context "wkbMultiLineString" do
       subject { described_class.type_to_name(:wkbMultiLineString) }
+
       it { is_expected.to eq "Multi Line String" }
     end
 
     context "wkbMultiPolygon" do
       subject { described_class.type_to_name(:wkbMultiPolygon) }
+
       it { is_expected.to eq "Multi Polygon" }
     end
 
     context "wkbGeometryCollection" do
       subject { described_class.type_to_name(:wkbGeometryCollection) }
+
       it { is_expected.to eq "Geometry Collection" }
     end
 
     context "wkbNone" do
       subject { described_class.type_to_name(:wkbNone) }
+
       it { is_expected.to eq "None" }
     end
 
     context "wkbLinearRing" do
       subject { described_class.type_to_name(:wkbLinearRing) }
+
       # Per GDAL docs, LinearRing is only used for geometry creation.
       it { is_expected.to eq "Unrecognized: 101" }
     end
   end
 
   describe "#to_geo_json_ex" do
-    subject { OGR::Geometry.create_from_wkt(wkt) }
+    subject { described_class.create_from_wkt(wkt) }
 
     let(:wkt) do
       "LINESTRING(100.01234567890123456789 100.01234567890123456789, " \
@@ -691,17 +719,17 @@ RSpec.describe OGR::Geometry do
       json1 = subject.to_geo_json_ex
       json2 = subject.to_geo_json_ex(coordinate_precision: "20")
 
-      g1 = OGR::Geometry.create_from_json(json1)
-      g2 = OGR::Geometry.create_from_json(json2)
+      g1 = described_class.create_from_json(json1)
+      g2 = described_class.create_from_json(json2)
 
       # these compare because they both use default precision
       expect(json1).to eq g1.to_geo_json_ex
 
       # these DON'T compare because the LHS has more precision than the RHS
-      expect(json2).to_not eq g2.to_geo_json_ex
+      expect(json2).not_to eq g2.to_geo_json_ex
 
       # these DON'T compare because the RHS has more precision than the LHS
-      expect(json1).to_not eq g1.to_geo_json_ex(coordinate_precision: "20")
+      expect(json1).not_to eq g1.to_geo_json_ex(coordinate_precision: "20")
 
       # these both compare because they both use extra precision
       expect(json2).to eq g2.to_geo_json_ex(coordinate_precision: "20")

@@ -112,8 +112,10 @@ RSpec.describe OGR::Layer do
     end
 
     context "has a feature" do
-      before { layer.create_feature(OGR::Feature.new(layer.feature_definition)) }
       subject { layer.next_feature }
+
+      before { layer.create_feature(OGR::Feature.new(layer.feature_definition)) }
+
       after { subject.destroy! }
 
       it "returns an OGR::Feature" do
@@ -131,6 +133,11 @@ RSpec.describe OGR::Layer do
     end
 
     context "features exist" do
+      subject do
+        layer.next_feature_index = 1
+        layer.next_feature
+      end
+
       let!(:feature1) do
         layer.create_feature(OGR::Feature.new(layer.feature_definition))
       end
@@ -139,15 +146,10 @@ RSpec.describe OGR::Layer do
         layer.create_feature(OGR::Feature.new(layer.feature_definition))
       end
 
-      subject do
-        layer.next_feature_index = 1
-        layer.next_feature
-      end
-
       after { subject.destroy! }
 
       it "sets to the given feature" do
-        expect(subject).to_not be_nil
+        expect(subject).not_to be_nil
       end
     end
   end

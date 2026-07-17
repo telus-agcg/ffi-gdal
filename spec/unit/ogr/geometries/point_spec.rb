@@ -4,6 +4,7 @@ require "ogr/geometry"
 
 RSpec.describe OGR::Point do
   subject { OGR::Geometry.create_from_wkt(wkt) }
+
   let(:wkt) { "POINT (1 2)" }
 
   let(:another_point) do
@@ -52,13 +53,13 @@ RSpec.describe OGR::Point do
     describe "#equals?" do
       context "a point with same coordinates" do
         it "returns true" do
-          expect(subject.equals?(same_point)).to eq true
+          expect(subject.equals?(same_point)).to be true
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.equals?(another_point)).to eq false
+          expect(subject.equals?(another_point)).to be false
         end
       end
     end
@@ -66,13 +67,13 @@ RSpec.describe OGR::Point do
     describe "#intersects?" do
       context "a point with same coordinates" do
         it "returns true" do
-          expect(subject.intersects?(same_point)).to eq true
+          expect(subject.intersects?(same_point)).to be true
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.intersects?(another_point)).to eq false
+          expect(subject.intersects?(another_point)).to be false
         end
       end
     end
@@ -80,13 +81,13 @@ RSpec.describe OGR::Point do
     describe "#disjoint?" do
       context "a point with same coordinates" do
         it "returns false" do
-          expect(subject.disjoint?(same_point)).to eq false
+          expect(subject.disjoint?(same_point)).to be false
         end
       end
 
       context "a point with difference coordinates" do
         it "returns true" do
-          expect(subject.disjoint?(another_point)).to eq true
+          expect(subject.disjoint?(another_point)).to be true
         end
       end
     end
@@ -95,13 +96,13 @@ RSpec.describe OGR::Point do
       context "a point with same coordinates" do
         # Not sure why this returns false...
         it "returns false" do
-          expect(subject.touches?(same_point)).to eq false
+          expect(subject.touches?(same_point)).to be false
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.touches?(another_point)).to eq false
+          expect(subject.touches?(another_point)).to be false
         end
       end
     end
@@ -109,13 +110,13 @@ RSpec.describe OGR::Point do
     describe "#crosses?" do
       context "a point with same coordinates" do
         it "returns false" do
-          expect(subject.crosses?(same_point)).to eq false
+          expect(subject.crosses?(same_point)).to be false
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.crosses?(another_point)).to eq false
+          expect(subject.crosses?(another_point)).to be false
         end
       end
     end
@@ -123,13 +124,13 @@ RSpec.describe OGR::Point do
     describe "#within?" do
       context "a point with same coordinates" do
         it "returns true" do
-          expect(subject.within?(same_point)).to eq true
+          expect(subject.within?(same_point)).to be true
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.within?(another_point)).to eq false
+          expect(subject.within?(another_point)).to be false
         end
       end
     end
@@ -137,13 +138,13 @@ RSpec.describe OGR::Point do
     describe "#contains?" do
       context "a point with same coordinates" do
         it "returns true" do
-          expect(subject.contains?(same_point)).to eq true
+          expect(subject.contains?(same_point)).to be true
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.contains?(another_point)).to eq false
+          expect(subject.contains?(another_point)).to be false
         end
       end
     end
@@ -151,38 +152,38 @@ RSpec.describe OGR::Point do
     describe "#overlaps?" do
       context "a point with same coordinates" do
         it "returns false" do
-          expect(subject.overlaps?(same_point)).to eq false
+          expect(subject.overlaps?(same_point)).to be false
         end
       end
 
       context "a point with difference coordinates" do
         it "returns false" do
-          expect(subject.overlaps?(another_point)).to eq false
+          expect(subject.overlaps?(another_point)).to be false
         end
       end
     end
 
     describe "#empty?" do
       it "returns false" do
-        expect(subject.empty?).to eq false
+        expect(subject.empty?).to be false
       end
     end
 
     describe "#valid?" do
       it "returns true" do
-        expect(subject.valid?).to eq true
+        expect(subject.valid?).to be true
       end
     end
 
     describe "#simple?" do
       it "returns true" do
-        expect(subject.simple?).to eq true
+        expect(subject.simple?).to be true
       end
     end
 
     describe "#ring?" do
       it "returns false" do
-        expect(subject.ring?).to eq false
+        expect(subject.ring?).to be false
       end
     end
 
@@ -212,21 +213,21 @@ RSpec.describe OGR::Point do
 
     describe "#set_point" do
       it "changes the x & y values" do
-        expect { subject.set_point(5, 6) }.to change { subject.point_value }
+        expect { subject.set_point(5, 6) }.to change(subject, :point_value)
           .from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe "#add_point" do
       it "changes the x & y values" do
-        expect { subject.add_point(5, 6) }.to change { subject.point_value }
+        expect { subject.add_point(5, 6) }.to change(subject, :point_value)
           .from([1.0, 2.0]).to([5.0, 6.0])
       end
     end
 
     describe "#empty!" do
       it "clears the point" do
-        expect { subject.empty! }.to change { subject.point_value }
+        expect { subject.empty! }.to change(subject, :point_value)
           .from([1.0, 2.0]).to([])
       end
     end
@@ -249,19 +250,19 @@ RSpec.describe OGR::Point do
 
     describe "#empty?" do
       it "returns true" do
-        expect(subject.empty?).to eq true
+        expect(subject.empty?).to be true
       end
     end
 
     describe "#valid?" do
       it "returns true" do
-        expect(subject.valid?).to eq true
+        expect(subject.valid?).to be true
       end
     end
 
     describe "#simple?" do
       it "returns true" do
-        expect(subject.simple?).to eq true
+        expect(subject.simple?).to be true
       end
     end
 
@@ -285,14 +286,14 @@ RSpec.describe OGR::Point do
 
     describe "#set_point" do
       it "changes the x & y values" do
-        expect { subject.set_point(5, 6) }.to change { subject.point_value }
+        expect { subject.set_point(5, 6) }.to change(subject, :point_value)
           .from([]).to([5.0, 6.0])
       end
     end
 
     describe "#add_point" do
       it "changes the x & y values" do
-        expect { subject.add_point(5, 6) }.to change { subject.point_value }
+        expect { subject.add_point(5, 6) }.to change(subject, :point_value)
           .from([]).to([5.0, 6.0])
       end
     end

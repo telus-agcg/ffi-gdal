@@ -65,7 +65,7 @@ RSpec.describe OGR::SpatialReference do
 
       it "returns a PROJ4 String" do
         expected_proj4 =
-          if GDAL.version_num >= "3000100" && OGR::SpatialReference.proj_version.major > 6
+          if GDAL.version_num >= "3000100" && described_class.proj_version.major > 6
             # Returns official PROJ4 string for EPSG:4322 (https://epsg.io/4322).
             "+proj=longlat +ellps=WGS72 +no_defs"
           else

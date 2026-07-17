@@ -11,6 +11,7 @@ RSpec.describe GDAL::Utils::Grid do
   end
 
   let(:src_dataset) { OGR::DataSource.open(src_dataset_path, "r") }
+
   after { src_dataset.close }
 
   describe ".perform" do
