@@ -5,6 +5,7 @@ require_relative "../../ext/ffi_library_function_checks"
 
 module FFI
   module GDAL
+    # rubocop:disable Metrics/ModuleLength
     module Alg
       extend FFI::Library
 
@@ -401,6 +402,7 @@ module FFI
                         :pointer
                       ],
                       FFI::GDAL::GCP.ptr
+      # rubocop:enable Metrics/ModuleLength
     end
   end
 end

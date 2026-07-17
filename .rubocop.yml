@@ -1,10 +1,4 @@
 ---
-inherit_from: .rubocop_todo.yml
-
-inherit_mode:
-  merge:
-    - Exclude
-
 plugins:
   - rubocop-performance
   - rubocop-rspec
@@ -12,6 +6,33 @@ plugins:
 
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation
+
+# Intentional Metrics limits for this FFI wrapper. Volume metrics (method and
+# ABC size) run looser than RuboCop's stock defaults: marshaling C pointers and
+# forwarding wide C signatures inflates line and ABC counts without adding real
+# logic. Branching metrics stay strict, since genuine complexity here reduces
+# cleanly to lookup tables. Values catch true outliers; the remaining documented
+# exceptions carry scoped inline disables.
+Metrics/MethodLength:
+  Max: 30
+
+Metrics/AbcSize:
+  Max: 30
+
+Metrics/ClassLength:
+  Max: 250
+
+Metrics/ModuleLength:
+  Max: 250
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/ParameterLists:
+  Max: 9
 
 Metrics/BlockLength:
   Exclude:

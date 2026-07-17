@@ -6,6 +6,7 @@ require_relative "../../ext/ffi_library_function_checks"
 
 module FFI
   module OGR
+    # rubocop:disable Metrics/ModuleLength
     module API
       extend ::FFI::Library
 
@@ -564,6 +565,7 @@ module FFI
 
       attach_function :OGRRegisterAll, [], :void
       attach_function :OGRCleanupAll, [], :void
+      # rubocop:enable Metrics/ModuleLength
     end
   end
 end
