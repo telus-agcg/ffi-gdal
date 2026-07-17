@@ -5,8 +5,10 @@ inherit_mode:
   merge:
     - Exclude
 
-require:
+plugins:
   - rubocop-performance
+  - rubocop-rspec
+  - rubocop-rake
 
 Layout/ParameterAlignment:
   EnforcedStyle: with_fixed_indentation

@@ -19,11 +19,13 @@ group :lint do
   # Ruby 4.0 removed `benchmark` from default gems; rubocop's executable
   # requires it, so rubocop can't run at all under Ruby 4.0 without this.
   gem "benchmark"
-  # TODO: Upgrade rubocop/rubocop-performance. These are pinned to old
-  # versions because bumping them pulls in ~100+ new cop violations that
-  # haven't been triaged yet. Now that we've dropped Ruby < 3.4, there's no
-  # longer a Ruby-version reason to hold back — this is purely deferred
-  # cleanup work.
-  gem "rubocop", "<= 1.63.1"
-  gem "rubocop-performance", "<= 1.24.0"
+  # RuboCop stack is now current. Gemfile.lock is gitignored (gem convention),
+  # so these EXACT pins are what keep CI reproducible and prevent a rubocop
+  # minor from silently adding cops (NewCops: enable) and breaking a green
+  # build with no code change. Upgrades are deliberate: bump the pin in a
+  # reviewed PR.
+  gem "rubocop", "= 1.88.2"
+  gem "rubocop-performance", "= 1.26.1"
+  gem "rubocop-rake", "= 0.7.1"
+  gem "rubocop-rspec", "= 3.10.2"
 end
