@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "bindata", ">= 2", "< 4"
   spec.add_dependency "ffi"
-  spec.add_dependency "log_switch", "~> 1.0.0"
+  spec.add_dependency "log_switch", ">= 1.0", "< 1.2"
   # `logger` was removed from Ruby's default gems in 4.0; log_switch
   # requires it, so declare it explicitly rather than relying on it
   # being bundled with the interpreter.
