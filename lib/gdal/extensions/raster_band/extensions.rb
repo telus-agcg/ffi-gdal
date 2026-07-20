@@ -23,7 +23,7 @@ module GDAL
 
       # @return [Array]
       def to_a
-        read_lines_by_block.to_a
+        readlines.to_a
       end
 
       # Iterates through all lines and builds an NArray of pixels.

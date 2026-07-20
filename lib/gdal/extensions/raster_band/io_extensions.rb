@@ -87,8 +87,11 @@ module GDAL
         block_size[:x] * block_size[:y]
       end
 
-      # Reads through the raster, block-by-block then line-by-line and yields
-      # the pixel data that it gathered.
+      # Reads through the raster block-by-block, stitching together the
+      # horizontally-adjacent blocks in each block-row so that it yields full
+      # raster lines. For striped rasters (a single block across the width) each
+      # block is yielded as soon as it is read; for tiled rasters one row of
+      # blocks is buffered before its lines are concatenated and yielded.
       #
       # @yieldparam row [Array<Number>] The Array of pixels for the current
       #   line.
@@ -98,11 +101,15 @@ module GDAL
       def read_lines_by_block
         return enum_for(:read_lines_by_block) unless block_given?
 
+        buffered = []
+
         read_blocks_by_block do |pixels, x_block_size, y_block_size|
-          pixels.each_slice(block_size[:x]).with_index do |row, block_row_number|
-            yield row.take(x_block_size)
-            break if block_row_number == y_block_size - 1
-          end
+          rows = pixels.each_slice(block_size[:x]).first(y_block_size).map { |row| row.first(x_block_size) }
+          buffered << rows
+          next unless buffered.size == block_count[:x]
+
+          y_block_size.times { |line| yield buffered.flat_map { |block_rows| block_rows[line] } }
+          buffered = []
         end
       end
 
