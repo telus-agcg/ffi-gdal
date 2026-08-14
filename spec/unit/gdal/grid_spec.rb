@@ -18,6 +18,13 @@ RSpec.describe GDAL::Grid do
         expect { subject.create([], {}, nil) }.to raise_exception GDAL::NoValuesToGrid
       end
     end
+
+    # Points may be passed as a typed Numo::NArray instead of a plain Array.
+    context "no points to grid, points given as a Numo::NArray" do
+      it "raises a GDAL::NoValuesToGrid" do
+        expect { subject.create(Numo::DFloat[], {}, nil) }.to raise_exception GDAL::NoValuesToGrid
+      end
+    end
   end
 
   describe "#make_points_pointer" do

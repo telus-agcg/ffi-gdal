@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "narray"
+require "numo/narray"
 require "ffi-gdal"
 require "gdal/dataset"
 require "gdal/raster_band"
@@ -190,22 +190,42 @@ module GDAL
         @raster_geometry.contains? source_geometry
       end
 
-      # Retrieves pixels from each raster band and converts this to an array of
-      # points per pixel.  For example:
+      # Retrieves pixels from each raster band and stacks them into a
+      # [y, x, band] Numo::NArray, so result[y, x, true] reads one pixel's
+      # band values (as before) and the inner-most vector of the nested
+      # representation is now that same per-pixel tuple.  For example:
       #
-      #   # If the arrays for each band look like:
-      #   red_band_array = [0, 0, 0]
-      #   green_band_array = [10, 10, 10]
-      #   blue_band_array = [99, 99, 99]
-      #   alpha_band_array = [250, 150, 2]
+      #   # If the ([row][pixel]) arrays for each band look like:
+      #   red_band_array = [
+      #     [0, 1, 2],
+      #     [3, 4, 5]
+      #   ]
+      #   green_band_array = [
+      #     [10, 11, 12],
+      #     [13, 14, 15]
+      #   ]
+      #   blue_band_array = [
+      #     [20, 21, 22],
+      #     [23, 24, 25]
+      #   ]
       #
-      #   # This array would look like:
-      #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
-      # @return NArray
+      #   # This array would look like ([row][pixel][band values]):
+      #   [
+      #     [
+      #       [0, 10, 20],
+      #       [1, 11, 21],
+      #       [2, 12, 22]
+      #     ],
+      #     [
+      #       [3, 13, 23],
+      #       [4, 14, 24],
+      #       [5, 15, 25]
+      #     ]
+      #   ]
+      #
+      # @return [Numo::NArray]
       def to_na(to_data_type = nil)
-        na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
-
-        NArray[*na.transpose]
+        Numo::NArray.dstack(raster_bands.map { |r| r.to_na(to_data_type) })
       end
     end
   end

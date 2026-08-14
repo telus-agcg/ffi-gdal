@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   # being bundled with the interpreter.
   spec.add_dependency "logger"
   spec.add_dependency "multi_xml"
-  spec.add_dependency "narray", "~> 0.6.0"
   spec.add_dependency "numo-narray"
   # `multi_xml` (used by GDAL::Driver/GDAL::MajorObject) needs a real XML
   # parser backend (Nokogiri/LibXML/Ox/REXML); we don't otherwise depend on
