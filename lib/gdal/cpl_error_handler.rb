@@ -31,6 +31,22 @@ module GDAL
     ].freeze
     FALLBACK_CPLE_EXCEPTION = { exception: GDAL::Error }.freeze
 
+    # GDAL's built-in native (C) default error handler. The attached FFI::Function is a
+    # pointer to the C symbol itself, so passing it to CPLSetErrorHandler keeps error
+    # reporting entirely in C -- it must never be wrapped in a Ruby proc/method, which would
+    # reintroduce a Ruby callback.
+    #
+    # This is installed as the *global* error handler (see GDAL's load code) so that GDAL's
+    # own worker threads never call back into Ruby. GDAL >= 3.11 reports errors/warnings from
+    # warp worker threads; routing those to a Ruby handler would require the GVL, which the
+    # calling Ruby thread holds across the blocking GDAL call, deadlocking the process. The
+    # Ruby handler is pushed onto the main thread's (thread-local) handler stack instead, so
+    # main-thread errors still raise Ruby exceptions.
+    #
+    # The default (rather than quiet) native handler is used so worker-thread warnings remain
+    # visible on stderr (respecting CPL_LOG / CPL_MAX_ERROR_REPORTS) instead of being dropped.
+    NATIVE_DEFAULT_HANDLER = ::FFI::CPL::Error.attached_functions.fetch(:CPLDefaultErrorHandler)
+
     FAIL_PROC = lambda do |exception, message|
       ex = exception ? exception.new(message) : GDAL::Error.new(message)
       ex.set_backtrace(caller(3))
