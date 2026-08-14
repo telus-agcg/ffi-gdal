@@ -190,18 +190,50 @@ module GDAL
         @raster_geometry.contains? source_geometry
       end
 
-      # Retrieves pixels from each raster band and converts this to an array of
-      # points per pixel.  For example:
+      # Retrieves pixels from each raster band and stacks them into a single
+      # NArray indexed as [y, x, band], so result[y, x, true] reads one
+      # pixel's band values -- the "points per pixel" intent this method was
+      # written for holds at the index level. The nested (#to_a)
+      # representation, however, is band-major with x/y swapped:
+      # [band][x][y]. For example:
       #
-      #   # If the arrays for each band look like:
-      #   red_band_array = [0, 0, 0]
-      #   green_band_array = [10, 10, 10]
-      #   blue_band_array = [99, 99, 99]
-      #   alpha_band_array = [250, 150, 2]
+      #   # If the ([row][pixel]) arrays for each band look like:
+      #   red_band_array = [
+      #     [0, 1, 2],
+      #     [3, 4, 5]
+      #   ]
+      #   green_band_array = [
+      #     [10, 11, 12],
+      #     [13, 14, 15]
+      #   ]
+      #   blue_band_array = [
+      #     [20, 21, 22],
+      #     [23, 24, 25]
+      #   ]
       #
-      #   # This array would look like:
-      #   [[0, 10, 99, 2], [0, 10, 99, 150], [0, 10, 99, 250]]
-      # @return NArray
+      #   # This array would look like ([band][pixel][row]):
+      #   [
+      #     [
+      #       [0, 3],
+      #       [1, 4],
+      #       [2, 5]
+      #     ],
+      #     [
+      #       [10, 13],
+      #       [11, 14],
+      #       [12, 15]
+      #     ],
+      #     [
+      #       [20, 23],
+      #       [21, 24],
+      #       [22, 25]
+      #     ]
+      #   ]
+      #
+      # Note the NMatrix intermediate widens the type: byte bands come back as
+      # int, and a :GDT_Float32 conversion comes back as double.
+      #
+      # @return [NArray]
       def to_na(to_data_type = nil)
         na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
 
