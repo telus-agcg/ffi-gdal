@@ -24,7 +24,7 @@ group :lint do
   # minor from silently adding cops (NewCops: enable) and breaking a green
   # build with no code change. Upgrades are deliberate: bump the pin in a
   # reviewed PR.
-  gem "rubocop", "= 1.88.2"
+  gem "rubocop", "1.90.0"
   gem "rubocop-performance", "= 1.26.1"
   gem "rubocop-rake", "= 0.7.1"
   gem "rubocop-rspec", "= 3.10.2"
