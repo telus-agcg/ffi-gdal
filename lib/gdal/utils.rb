@@ -18,5 +18,6 @@ module GDAL
     autoload :Translate, File.expand_path("utils/translate", __dir__)
     autoload :VectorTranslate, File.expand_path("utils/vector_translate", __dir__)
     autoload :Warp, File.expand_path("utils/warp", __dir__)
+    autoload :Footprint, File.expand_path("utils/footprint", __dir__)
   end
 end
