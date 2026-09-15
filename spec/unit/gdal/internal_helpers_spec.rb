@@ -310,6 +310,44 @@ RSpec.describe GDAL::InternalHelpers do
       end
     end
 
+    # narray has no unsigned integer types and aliases its FLOAT/COMPLEX
+    # constants to the double-precision variants, so several GDAL data types
+    # allocate wider or differently-signed storage than their names suggest.
+    # (NArray's == compares values across types, so each type needs an
+    # explicit typecode assertion.)
+    context "data_type is :GDT_UInt16" do
+      subject { GDAL._narray_from_data_type(:GDT_UInt16, 2) }
+
+      it "allocates signed int storage" do
+        expect(subject.typecode).to eq(NArray::INT)
+      end
+    end
+
+    context "data_type is :GDT_UInt32" do
+      subject { GDAL._narray_from_data_type(:GDT_UInt32, 2) }
+
+      # Values above 2**31 - 1 are not representable in the allocated array.
+      it "allocates signed int storage" do
+        expect(subject.typecode).to eq(NArray::INT)
+      end
+    end
+
+    context "data_type is :GDT_Float32" do
+      subject { GDAL._narray_from_data_type(:GDT_Float32, 2) }
+
+      it "allocates double-precision storage" do
+        expect(subject.typecode).to eq(NArray::DFLOAT)
+      end
+    end
+
+    context "data_type is :GDT_CFloat32" do
+      subject { GDAL._narray_from_data_type(:GDT_CFloat32, 2) }
+
+      it "allocates double-precision complex storage" do
+        expect(subject.typecode).to eq(NArray::DCOMPLEX)
+      end
+    end
+
     context "unknown GDAL data_type" do
       it "raises a GDAL::InvalidDataType exception" do
         expect { GDAL._narray_from_data_type(:bobo) }
