@@ -26,34 +26,36 @@ module GDAL
         readlines.to_a
       end
 
-      # Iterates through all lines and builds an NArray of pixels.
+      # Iterates through all lines and builds a Numo::NArray of pixels.
       #
-      # @return [NArray]
+      # @return [Numo::NArray]
       def to_na(to_data_type = nil)
-        narray = NArray.to_na(to_a)
+        data_array = to_a
+        target_type = to_data_type || data_type
+        numo_type = GDAL._gdal_data_type_to_numo_narray_type_constant(target_type)
 
-        return narray unless to_data_type
-
-        narray_type = GDAL._gdal_data_type_to_narray_type_constant(to_data_type)
-
-        narray.to_type(narray_type)
+        # Create a typed array from the nested array structure
+        # to_a returns [y_size][x_size] which matches Numo's row-major order [y_size, x_size]
+        numo_type.cast(data_array)
       end
 
-      # Iterates through all lines and builds an NArray of pixels.
+      # Iterates through all lines and builds a Numo::NArray of pixels.
       #
       # @return [Numo::NArray]
       def to_nna
-        Numo::NArray[*to_a]
+        to_na
       end
 
       # Each pixel of the raster projected using the dataset's geo_transform.
-      # The output NArray is a 3D array where the inner-most array is a the
-      # lat an lon, those are contained in an array per pixel line, and finally
-      # the outer array contains each of the pixel lines.
+      # The output is indexed [coord, x, y] (coord 0 = x_geo, 1 = y_geo); its
+      # nested (#to_a) representation is [coord][pixel][line]. Coordinates are
+      # stored in an array typed after the band's pixel data type, so integer
+      # bands truncate fractional projected coordinates.
       #
-      # @return [NArray]
+      # @return [Numo::NArray]
       def projected_points
-        narray = GDAL._narray_from_data_type(data_type, 2, x_size, y_size)
+        numo_type = GDAL._gdal_data_type_to_numo_narray_type_constant(data_type)
+        narray = numo_type.zeros(2, x_size, y_size)
         geo_transform = dataset.geo_transform
 
         y_size.times do |y_point|

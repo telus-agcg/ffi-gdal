@@ -27,15 +27,15 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
       row1 = Array.new(64) { 2 }
       row2 = Array.new(64) { 3 }
       row3 = Array.new(64) { 4 }
-      narray = NArray[row0, row1, row2, row3]
+      narray = Numo::NArray[row0, row1, row2, row3]
 
       raster_band.write_xy_narray(narray)
 
       pixels = raster_band.to_na
-      expect(pixels[true, 0]).to eq(NArray.to_na(row0))
-      expect(pixels[true, 1]).to eq(NArray.to_na(row1))
-      expect(pixels[true, 2]).to eq(NArray.to_na(row2))
-      expect(pixels[true, 3]).to eq(NArray.to_na(row3))
+      expect(pixels[0, true].to_a).to eq(row0)
+      expect(pixels[1, true].to_a).to eq(row1)
+      expect(pixels[2, true].to_a).to eq(row2)
+      expect(pixels[3, true].to_a).to eq(row3)
     end
   end
 
@@ -166,7 +166,7 @@ RSpec.describe "GDAL::RasterBand::IOExtensions" do
         filename = "/tmp/#{SecureRandom.uuid}.tif"
         options = { BLOCKXSIZE: 256, BLOCKYSIZE: 256, TILED: "YES" }
         GDAL::Driver.by_name("GTiff").create_dataset(filename, 15, 4, **options) do |dataset|
-          dataset.raster_band(1).write_xy_narray(NArray.to_na(rows))
+          dataset.raster_band(1).write_xy_narray(Numo::NArray[*rows])
         end
         filename
       end

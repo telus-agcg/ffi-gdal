@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "narray"
+require "numo/narray"
 require "ffi-gdal"
 require "gdal/dataset"
 require "gdal/raster_band"
@@ -190,12 +190,10 @@ module GDAL
         @raster_geometry.contains? source_geometry
       end
 
-      # Retrieves pixels from each raster band and stacks them into a single
-      # NArray indexed as [y, x, band], so result[y, x, true] reads one
-      # pixel's band values -- the "points per pixel" intent this method was
-      # written for holds at the index level. The nested (#to_a)
-      # representation, however, is band-major with x/y swapped:
-      # [band][x][y]. For example:
+      # Retrieves pixels from each raster band and stacks them into a
+      # [y, x, band] Numo::NArray, so result[y, x, true] reads one pixel's
+      # band values (as before) and the inner-most vector of the nested
+      # representation is now that same per-pixel tuple.  For example:
       #
       #   # If the ([row][pixel]) arrays for each band look like:
       #   red_band_array = [
@@ -211,33 +209,23 @@ module GDAL
       #     [23, 24, 25]
       #   ]
       #
-      #   # This array would look like ([band][pixel][row]):
+      #   # This array would look like ([row][pixel][band values]):
       #   [
       #     [
-      #       [0, 3],
-      #       [1, 4],
-      #       [2, 5]
+      #       [0, 10, 20],
+      #       [1, 11, 21],
+      #       [2, 12, 22]
       #     ],
       #     [
-      #       [10, 13],
-      #       [11, 14],
-      #       [12, 15]
-      #     ],
-      #     [
-      #       [20, 23],
-      #       [21, 24],
-      #       [22, 25]
+      #       [3, 13, 23],
+      #       [4, 14, 24],
+      #       [5, 15, 25]
       #     ]
       #   ]
       #
-      # Note the NMatrix intermediate widens the type: byte bands come back as
-      # int, and a :GDT_Float32 conversion comes back as double.
-      #
-      # @return [NArray]
+      # @return [Numo::NArray]
       def to_na(to_data_type = nil)
-        na = NMatrix.to_na(raster_bands.map { |r| r.to_na(to_data_type) })
-
-        NArray[*na.transpose]
+        Numo::NArray.dstack(raster_bands.map { |r| r.to_na(to_data_type) })
       end
     end
   end
