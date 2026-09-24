@@ -19,10 +19,10 @@ RSpec.describe GDAL::Grid do
       end
     end
 
-    # Points may be passed as a typed NArray instead of a plain Array.
-    context "no points to grid, points given as an NArray" do
+    # Points may be passed as a typed Numo::NArray instead of a plain Array.
+    context "no points to grid, points given as a Numo::NArray" do
       it "raises a GDAL::NoValuesToGrid" do
-        expect { subject.create(NArray[], {}, nil) }.to raise_exception GDAL::NoValuesToGrid
+        expect { subject.create(Numo::DFloat[], {}, nil) }.to raise_exception GDAL::NoValuesToGrid
       end
     end
   end

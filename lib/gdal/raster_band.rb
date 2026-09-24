@@ -2,7 +2,6 @@
 
 require "bigdecimal"
 require "bigdecimal/util"
-require "narray"
 require_relative "../gdal"
 require_relative "raster_band_mixins/algorithm_methods"
 require_relative "major_object"
