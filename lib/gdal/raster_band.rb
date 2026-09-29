@@ -625,7 +625,7 @@ module GDAL
     #   the buffer to the start of the next. If defaulted (0), the size of
     #   +buffer_data_type+ * +buffer_x_size* is used.
     # @return [FFI::MemoryPointer] Pointer to the data that was read/written.
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable-next Metrics/ParameterLists
     def raster_io(access_flag, buffer = nil,
       x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
       buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: data_type,
@@ -656,7 +656,6 @@ module GDAL
 
       buffer
     end
-    # rubocop:enable Metrics/ParameterLists
 
     # Read a block of image data, more efficiently than #read.  Doesn't
     # resample or do data type conversion.

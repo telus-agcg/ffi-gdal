@@ -224,13 +224,11 @@ module OGR
 
       # Intentionally return an OGR::StyleTable (not the raw pointer); the
       # trailing expression is a deliberate return value, not dead code.
-      # rubocop:disable Lint/Void
       if new_style_table.instance_of? OGR::StyleTable
         new_style_table
       else
         OGR::StyleTable.new(new_style_table_ptr)
       end
-      # rubocop:enable Lint/Void
     end
 
     # @param capability [String] Must be one of: ODsCCreateLayer,

@@ -9,7 +9,7 @@ module OGR
   # wrappers over the OGR_G_* C functions, shared by every geometry subclass.
   # Splitting these instance methods into arbitrary sub-modules would fragment
   # a single conceptual API, so the module-length limit is disabled here.
-  # rubocop:disable Metrics/ModuleLength
+  # rubocop:disable-next Metrics/ModuleLength
   module Geometry
     extend ClassMethods
 
@@ -613,5 +613,4 @@ module OGR
       OGR::Geometry.factory(new_geometry_ptr)
     end
   end
-  # rubocop:enable Metrics/ModuleLength
 end
