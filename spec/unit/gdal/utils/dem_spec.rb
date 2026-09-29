@@ -63,7 +63,7 @@ RSpec.describe GDAL::Utils::DEM do
           "Invalid processing" # GDAL < 3.10
         ]
 
-        # rubocop:disable Style/MultilineBlockChain
+        # rubocop:disable-next Style/MultilineBlockChain
         expect do
           described_class.perform(
             dst_dataset_path: new_dataset_path,
@@ -73,7 +73,6 @@ RSpec.describe GDAL::Utils::DEM do
         end.to raise_exception(ArgumentError) do |error|
           expect(expected_messages).to include(error.message)
         end
-        # rubocop:enable Style/MultilineBlockChain
       end
 
       it "raises exception for an invalid band number" do

@@ -130,7 +130,7 @@ module GDAL
       # @raise [GDAL::Error] On failure.
       # Mirrors the GDALDatasetRasterIO C signature; the parameter list and the
       # length of the annotated FFI call are inherent to that wrapping.
-      # rubocop:disable Metrics/ParameterLists, Metrics/MethodLength
+      # rubocop:disable-next Metrics/ParameterLists, Metrics/MethodLength
       def raster_io(access_flag, buffer = nil,
         x_size: nil, y_size: nil, x_offset: 0, y_offset: 0,
         buffer_x_size: nil, buffer_y_size: nil, buffer_data_type: nil,
@@ -177,7 +177,6 @@ module GDAL
 
         buffer
       end
-      # rubocop:enable Metrics/ParameterLists, Metrics/MethodLength
     end
   end
 end

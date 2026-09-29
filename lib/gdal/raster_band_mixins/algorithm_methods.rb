@@ -175,7 +175,7 @@ module GDAL
       # TODO: document what valid options are.
       # Bang command returning a boolean success flag; renaming to a
       # `?`-predicate would be a breaking public-API change.
-      # rubocop:disable Naming/PredicateMethod
+      # rubocop:disable-next Naming/PredicateMethod
       def fill_nodata!(mask_band, max_search_distance, smoothing_iterations, progress_function: nil, progress_arg: nil,
         **options)
         mask_band_ptr = GDAL._pointer(GDAL::RasterBand, mask_band)
@@ -190,7 +190,6 @@ module GDAL
                                         progress_function,
                                         progress_arg)
       end
-      # rubocop:enable Naming/PredicateMethod
 
       # Creates vector polygons for all connected regions of pixels in the raster
       # that share a common pixel value. Optionally, each polygon may be

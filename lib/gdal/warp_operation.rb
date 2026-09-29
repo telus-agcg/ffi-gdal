@@ -65,7 +65,7 @@ module GDAL
     # @param source_y_size [Integer] Y size (height) of the source image.
     # Returns a boolean success flag; command-style public API, so renaming to
     # a `?`-predicate would be a breaking change.
-    # rubocop:disable Naming/PredicateMethod
+    # rubocop:disable-next Naming/PredicateMethod
     def warp_region(destination_x_offset, destination_y_offset,
       destination_x_size, destination_y_size,
       source_x_offset, source_y_offset,
@@ -80,7 +80,6 @@ module GDAL
                                          source_x_size,
                                          source_y_size)
     end
-    # rubocop:enable Naming/PredicateMethod
 
     # @param destination_x_offset [Integer] X offset of the destination image.
     # @param destination_y_offset [Integer] Y offset of the destination image.
@@ -94,7 +93,7 @@ module GDAL
     # @param source_y_size [Integer] Y size (height) of the source image.
     # PredicateMethod: returns a boolean success flag; command-style public API,
     # renaming to a `?`-predicate would be a breaking change.
-    # rubocop:disable Metrics/ParameterLists, Naming/PredicateMethod
+    # rubocop:disable-next Metrics/ParameterLists, Naming/PredicateMethod
     def warp_region_to_buffer(destination_x_offset, destination_y_offset,
       destination_x_size, destination_y_size,
       buffer, data_type,
@@ -112,6 +111,5 @@ module GDAL
                                                  source_x_size,
                                                  source_y_size)
     end
-    # rubocop:enable Metrics/ParameterLists, Naming/PredicateMethod
   end
 end

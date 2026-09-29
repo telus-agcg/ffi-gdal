@@ -107,7 +107,7 @@ module OGR
       # Deliberately large and inlined for performance (see the note on the
       # feature loop below): extracting its branches measurably slows gridding,
       # so the size and complexity limits are disabled here.
-      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+      # rubocop:disable-next Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
       def point_values(with_attributes = {})
         return [] if feature_count.zero?
 
@@ -214,7 +214,6 @@ module OGR
 
         values
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
       # Iterates through features to see if any of them are 3d.
       #

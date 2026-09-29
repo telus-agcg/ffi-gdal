@@ -6,7 +6,7 @@ require_relative "color_entry"
 
 module FFI
   module GDAL
-    # rubocop:disable Metrics/ModuleLength
+    # rubocop:disable-next Metrics/ModuleLength
     module GDAL
       extend ::FFI::Library
 
@@ -686,6 +686,5 @@ module FFI
                       %i[pointer int int pointer int int int int],
                       :void
     end
-    # rubocop:enable Metrics/ModuleLength
   end
 end
