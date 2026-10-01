@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "narray"
 require "gdal"
 require "gdal/options"
 require "ogr"

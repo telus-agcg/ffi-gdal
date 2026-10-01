@@ -38,28 +38,22 @@ RSpec.describe "GDAL::Dataset::Extensions" do
     context "no conversion" do
       subject(:result) { dataset.to_na }
 
-      # The nested representation is band-major with x/y swapped relative to
-      # the band rows written above: result.to_a is [band][x][y], NOT the
-      # per-pixel band-value tuples the previous doc example claimed.
-      it "stacks bands into a [band][x][y]-nested NArray" do
+      it "stacks each band's pixels into per-pixel band-value tuples" do
         expect(result).to eq(
-          NArray[
+          Numo::UInt8.cast(
             [
-              [0, 3],
-              [1, 4],
-              [2, 5]
-            ],
-            [
-              [100, 103],
-              [101, 104],
-              [102, 105]
-            ],
-            [
-              [200, 203],
-              [201, 204],
-              [202, 205]
+              [
+                [0, 100, 200],
+                [1, 101, 201],
+                [2, 102, 202]
+              ],
+              [
+                [3, 103, 203],
+                [4, 104, 204],
+                [5, 105, 205]
+              ]
             ]
-          ]
+          )
         )
       end
 
@@ -75,32 +69,28 @@ RSpec.describe "GDAL::Dataset::Extensions" do
       end
 
       # Relative to the written band data ([band][row][pixel]), the nested
-      # representation keeps the band-major grouping but transposes each
-      # band's rows and pixels.
-      it "nests #to_a as the written bands with rows and pixels transposed" do
+      # representation regroups each pixel's band values into one tuple.
+      it "nests #to_a as the written bands regrouped into per-pixel tuples" do
         expect(result.to_a).to eq(
           [
             [
-              [0, 3],
-              [1, 4],
-              [2, 5]
+              [0, 100, 200],
+              [1, 101, 201],
+              [2, 102, 202]
             ],
             [
-              [100, 103],
-              [101, 104],
-              [102, 105]
-            ],
-            [
-              [200, 203],
-              [201, 204],
-              [202, 205]
+              [3, 103, 203],
+              [4, 104, 204],
+              [5, 105, 205]
             ]
           ]
         )
       end
 
-      it "upcasts byte bands to int through the NMatrix intermediate" do
-        expect(result.typecode).to eq(NArray::INT)
+      # Numo's == compares values across types, so the preserved band data
+      # type needs its own assertion.
+      it "preserves the bands' byte data type" do
+        expect(result.class).to eq(Numo::UInt8)
       end
     end
 
@@ -109,30 +99,27 @@ RSpec.describe "GDAL::Dataset::Extensions" do
 
       it "converts each band before stacking" do
         expect(result).to eq(
-          NArray[
+          Numo::SFloat.cast(
             [
-              [0.0, 3.0],
-              [1.0, 4.0],
-              [2.0, 5.0]
-            ],
-            [
-              [100.0, 103.0],
-              [101.0, 104.0],
-              [102.0, 105.0]
-            ],
-            [
-              [200.0, 203.0],
-              [201.0, 204.0],
-              [202.0, 205.0]
+              [
+                [0.0, 100.0, 200.0],
+                [1.0, 101.0, 201.0],
+                [2.0, 102.0, 202.0]
+              ],
+              [
+                [3.0, 103.0, 203.0],
+                [4.0, 104.0, 204.0],
+                [5.0, 105.0, 205.0]
+              ]
             ]
-          ]
+          )
         )
       end
 
-      # GDT_Float32 maps to NArray::FLOAT, which narray aliases to DFLOAT, so a
-      # single-precision request comes back double-precision.
-      it "widens the requested Float32 to double" do
-        expect(result.typecode).to eq(NArray::DFLOAT)
+      # A Float32 request now returns true single precision, where narray
+      # aliased FLOAT to double.
+      it "returns the requested data type" do
+        expect(result.class).to eq(Numo::SFloat)
       end
     end
   end

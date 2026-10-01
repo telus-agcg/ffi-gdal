@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "numo/narray"
+
 module GDAL
   # @private
   module InternalHelpers
@@ -62,14 +64,15 @@ module GDAL
         end
       end
 
+      # DEPRECATED: Use Numo::NArray directly instead.
       # @param data_type [FFI::GDAL::GDAL::DataType]
       # @param narray_args Args to pass to the NArray initializer.
-      # @return [NArray]
+      # @return [Numo::NArray]
       def _narray_from_data_type(data_type, *narray_args)
-        init_meth = _gdal_data_type_to_narray(data_type)
-        narray_args = 0 if narray_args.empty?
+        numo_type = _gdal_data_type_to_numo_narray_type_constant(data_type)
+        narray_args = [1] if narray_args.empty?
 
-        NArray.send(init_meth, *narray_args)
+        numo_type.zeros(*narray_args)
       end
 
       # Takes an array of strings (or things that should be converted to
@@ -158,42 +161,20 @@ module GDAL
         end
       end
 
-      # Maps GDAL DataTypes to NArray types.
+      # @deprecated Use {_gdal_data_type_to_numo_narray_type_constant} instead.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @return [Symbol]
+      # @return [Class] the Numo::NArray type constant (e.g. Numo::UInt8).
       def _gdal_data_type_to_narray(data_type)
-        case data_type
-        when :GDT_Byte                                then :byte
-        when :GDT_Int16                               then :sint
-        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32     then :int
-        when :GDT_Float32                             then :float
-        when :GDT_Float64                             then :dfloat
-        when :GDT_CInt16, :GDT_CInt32                 then :scomplex
-        when :GDT_CFloat32                            then :complex
-        when :GDT_CFloat64                            then :dcomplex
-        else
-          raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
-        end
+        _gdal_data_type_to_numo_narray_type_constant(data_type)
       end
 
-      # Maps GDAL DataTypes to NArray type constants.
+      # @deprecated Use {_gdal_data_type_to_numo_narray_type_constant} instead.
       #
       # @param data_type [FFI::GDAL::GDAL::DataType]
-      # @return [Symbol]
+      # @return [Class] the Numo::NArray type constant (e.g. Numo::UInt8).
       def _gdal_data_type_to_narray_type_constant(data_type)
-        case data_type
-        when :GDT_Byte                            then NArray::BYTE
-        when :GDT_Int16                           then NArray::SINT
-        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32 then NArray::INT
-        when :GDT_Float32                         then NArray::FLOAT
-        when :GDT_Float64                         then NArray::DFLOAT
-        when :GDT_CInt16, :GDT_CInt32             then NArray::SCOMPLEX
-        when :GDT_CFloat32                        then NArray::COMPLEX
-        when :GDT_CFloat64                        then NArray::DCOMPLEX
-        else
-          raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
-        end
+        _gdal_data_type_to_numo_narray_type_constant(data_type)
       end
 
       # Maps GDAL DataTypes to [Numo::NArray] type constants.
@@ -202,12 +183,15 @@ module GDAL
       # @return [Class]
       def _gdal_data_type_to_numo_narray_type_constant(data_type)
         case data_type
-        when :GDT_Byte                                              then Numo::UInt8
-        when :GDT_Int16                                             then Numo::Int16
-        when :GDT_UInt16, :GDT_Int32, :GDT_UInt32                   then Numo::Int32
-        when :GDT_Float32                                           then Numo::SFloat
-        when :GDT_Float64                                           then Numo::DFloat
-        when :GDT_CInt16, :GDT_CInt32, :GDT_CFloat32, :GDT_CFloat64 then Numo::SComplex
+        when :GDT_Byte                               then Numo::UInt8
+        when :GDT_Int16                              then Numo::Int16
+        when :GDT_UInt16                             then Numo::UInt16
+        when :GDT_Int32                              then Numo::Int32
+        when :GDT_UInt32                             then Numo::UInt32
+        when :GDT_Float32                            then Numo::SFloat
+        when :GDT_Float64                            then Numo::DFloat
+        when :GDT_CInt16, :GDT_CInt32, :GDT_CFloat32 then Numo::SComplex
+        when :GDT_CFloat64                           then Numo::DComplex
         else
           raise GDAL::InvalidDataType, "Unknown data type: #{data_type}"
         end

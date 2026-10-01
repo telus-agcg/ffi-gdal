@@ -12,7 +12,8 @@ RSpec.describe GDAL::RasterBandClassifier do
   let(:dataset) do
     d = driver.create_dataset("test dataset", 640, 480)
     band = d.raster_band 1
-    new_values = band.to_na.indgen!
+    new_values = band.to_na
+    new_values[] = new_values.new_narray.seq
     band.write_xy_narray(new_values)
 
     d
@@ -73,7 +74,8 @@ RSpec.describe GDAL::RasterBandClassifier do
 
       let(:raster_band) do
         band = float_dataset.raster_band 1
-        new_values = band.to_na.indgen!
+        new_values = band.to_na
+        new_values[] = new_values.new_narray.seq
         band.write_xy_narray(new_values)
         band
       end
@@ -170,8 +172,9 @@ RSpec.describe GDAL::RasterBandClassifier do
         d = driver.create_dataset("test dataset", 640, 480, data_type: :GDT_Float32)
         band = d.raster_band 1
         band.no_data_value = -9999.0
-        new_values = band.to_na.indgen!
-        new_values[true, 0] = -9999.0
+        new_values = band.to_na
+        new_values[] = new_values.new_narray.seq
+        new_values[0, true] = -9999.0 # Set first row (y=0, all x values)
         band.write_xy_narray(new_values)
 
         d
